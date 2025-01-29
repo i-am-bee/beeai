@@ -14,8 +14,8 @@ async def create_registry(registry: Registry, registry_service: RegistryServiceD
 
 
 @router.get('')
-async def list_registries(registry: Registry, registry_service: RegistryServiceDependency):
-    registries = await registry_service.list_registries(registry)
+async def list_registries(registry_service: RegistryServiceDependency):
+    registries = await registry_service.list_registries()
     return PaginatedResponse(items=registries, total_count=len(registries))
 
 

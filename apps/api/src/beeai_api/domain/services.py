@@ -1,3 +1,5 @@
+import tomllib
+
 import aiohttp
 from anyio import Path as AsyncPath
 
@@ -13,11 +15,16 @@ from beeai_api.domain.model import (
 async def get_local_connection(registry: LocalRegistry) -> ProviderConnection:
     path = AsyncPath(registry.path)
     path = await path.resolve()
-    if not path.exists():
+    if not await path.exists():
         raise ValueError(f"Registry {registry.model_dump()} does not exist")
 
     if await (path / "pyproject.toml").is_file():
-        return StdioCommand(command=["uvx", "--from", str(path), "main"])
+        toml = tomllib.loads(await (path / "pyproject.toml").read_text())
+        script = (list(((toml.get("project", {}).get("scripts", None)) or {}).keys()) or [None])[0]  # get first script
+        if not script:
+            raise ValueError("No script found in pyproject.toml")
+
+        return StdioCommand(command=["uvx", "--from", str(path), script])
 
     if await (path / "package.json").is_file():
         return StdioCommand(command=["npx", str(path)])

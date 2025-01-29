@@ -11,4 +11,4 @@ def bootstrap_dependencies():
     di._aliases.clear()  # reset aliases
     di[Configuration] = get_configuration()
     di[IRegistryRepository] = FilesystemRegistryRepository(registry_path=di[Configuration].registry_path)
-    di[SseServerTransport] = SseServerTransport("/messages")  # global SSE transport
+    di[SseServerTransport] = SseServerTransport("/mcp/messages/")  # global SSE transport

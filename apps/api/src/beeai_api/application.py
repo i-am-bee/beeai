@@ -4,8 +4,6 @@ from typing import TYPE_CHECKING
 
 from kink import di
 
-from beeai_api.services.mcp_proxy import MCPProxyServer
-
 if TYPE_CHECKING:
     from fastapi import FastAPI
 
@@ -40,11 +38,11 @@ def _include_health_routes(app):
 
 
 def mount_routes(app):
-    from beeai_api.routes.mcp_sse import router as mcp_router
+    from beeai_api.routes.mcp_sse import app as mcp_app
     from beeai_api.routes.registry import router as registry_router
 
-    app.include_router(router=mcp_router, prefix="/mcp")
     app.include_router(router=registry_router, prefix="/registry")
+    app.mount("/mcp", mcp_app)
 
     _include_health_routes(app)
 
@@ -54,6 +52,7 @@ def create_fastapi_app(in_script=False) -> "FastAPI":
     from fastapi import FastAPI
     from fastapi.responses import ORJSONResponse
 
+    from beeai_api.services.mcp_proxy import MCPProxyServer
     from beeai_api.bootstrap import bootstrap_dependencies
 
     logger.info("Bootstrapping dependencies...")
@@ -85,8 +84,11 @@ def create_fastapi_app(in_script=False) -> "FastAPI":
 
 
 def main():
-    logger.info(__name__)
     import uvicorn
 
     with suppress(KeyboardInterrupt):
-        uvicorn.run(create_fastapi_app(in_script=True), host="0.0.0.0", port=8000)
+        uvicorn.run(create_fastapi_app(in_script=True), host="0.0.0.0", port=8333)
+
+
+if __name__ == "__main__":
+    main()

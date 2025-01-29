@@ -12,6 +12,7 @@ dependencies = [
     "anyio>=4.8.0",
     "fastapi[standard]>=0.115.7",
     "kink>=0.8.1",
+    "orjson>=3.10.15",
     "pydantic>=2.10.6",
     "pydantic-settings>=2.7.1",
     "structlog>=25.1.0",
