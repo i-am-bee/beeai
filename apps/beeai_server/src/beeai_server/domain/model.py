@@ -18,7 +18,12 @@ class LocalProvider(BaseModel):
     path: Path
 
 
-Provider = Union[GithubProvider, LocalProvider]
+class HttpProvider(BaseModel):
+    model_config = ConfigDict(frozen=True)
+    url: AnyUrl
+
+
+Provider = Union[GithubProvider, LocalProvider, HttpProvider]
 
 
 # Connection to agent server
@@ -42,8 +47,8 @@ class SSEServer(BaseModel):
     url: AnyUrl
 
     @asynccontextmanager
-    def mcp_client(self):
-        with sse_client(self.url) as client:
+    async def mcp_client(self):
+        async with sse_client(str(self.url)) as client:
             yield client
 
 

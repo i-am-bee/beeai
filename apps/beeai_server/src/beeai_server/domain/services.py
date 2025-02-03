@@ -9,6 +9,8 @@ from beeai_server.domain.model import (
     StdioCommand,
     LocalProvider,
     GithubProvider,
+    HttpProvider,
+    SSEServer,
 )
 
 
@@ -31,6 +33,10 @@ async def get_local_connection(provider: LocalProvider) -> ProviderConnection:
     raise ValueError("Not a compatible provider")
 
 
+async def get_sse_connection(provider: HttpProvider):
+    return SSEServer(url=provider.url)
+
+
 async def get_github_connection(provider: GithubProvider) -> ProviderConnection:
     url = provider.github
     async with aiohttp.ClientSession() as session:
@@ -44,4 +50,6 @@ async def get_provider_connection(provider: Provider) -> ProviderConnection:
         return await get_local_connection(provider)
     elif isinstance(provider, GithubProvider):
         return await get_github_connection(provider)
+    elif isinstance(provider, HttpProvider):
+        return await get_sse_connection(provider)
     raise NotImplementedError
