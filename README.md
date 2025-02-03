@@ -20,3 +20,20 @@ uv run beeai-cli provider ls
 uv run beeai-cli list tools
 uv run beeai-cli call fetch "url=http://iambee.ai"
 ```
+
+## UI
+
+```sh
+# use correct node version
+nvm use
+
+# install pnpm if not available
+npm install -g pnpm
+
+# install dependencies
+pnpm install
+
+# Run dev server
+pnpm --filter=@beeai/ui dev
+
+```
