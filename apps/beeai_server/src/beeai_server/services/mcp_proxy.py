@@ -219,12 +219,14 @@ class NotificationHub:
 
     async def _subscribe_for_messages(self, provider: LoadedProvider):
         async def subscribe():
-            with suppress(anyio.BrokenResourceError, anyio.EndOfStream, CancelledError):
+            try:
                 async for message in provider.incoming_messages:
                     match message:
                         case ServerNotification(root=notify):
                             logger.debug(f"Dispatching notification {notify.method}")
                             await self._notification_stream_writer.send(notify)
+            except (anyio.BrokenResourceError, anyio.EndOfStream, CancelledError) as ex:
+                logger.error(f"Exception occured during reading messages: {ex}")
 
         with suppress(CancelledError):
             async with anyio.create_task_group() as tg:
@@ -442,7 +444,7 @@ class MCPProxyServer:
         read_stream: MemoryObjectReceiveStream[types.JSONRPCMessage | Exception],
         write_stream: MemoryObjectSendStream[types.JSONRPCMessage],
         initialization_options: InitializationOptions,
-        raise_exceptions: bool = False,
+        raise_exceptions: bool = True,
     ):
         """
         HACK: Modified server.run method that subscribes and forwards messages
