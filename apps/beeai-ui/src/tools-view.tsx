@@ -3,11 +3,11 @@ import { useMCPClient } from "./mcp-client";
 
 export const ToolsView = () => {
   const client = useMCPClient();
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isSuccess } = useQuery({
     queryFn: () => client.listTools(),
   });
 
-  if (isLoading || !data) {
+  if (isLoading || !data || !isSuccess) {
     return <div>Loading...</div>;
   }
 
