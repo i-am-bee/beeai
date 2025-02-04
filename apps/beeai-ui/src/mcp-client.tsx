@@ -2,9 +2,12 @@ import React, { useEffect, useState } from "react";
 import { Client as MCPClient } from "@modelcontextprotocol/sdk/client/index.js";
 import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
 
-export const MCPClientProvider = React.createContext<{
-  client: null | MCPClient;
-}>({ client: null });
+export const MCPClientProvider = React.createContext<
+  | undefined
+  | {
+      client: MCPClient;
+    }
+>(undefined);
 
 export const useCreateMCPClient = (config: { serverUrl: string }) => {
   const [connectedClient, setConnectedClient] = useState<null | MCPClient>(
@@ -50,10 +53,6 @@ export const useCreateMCPClient = (config: { serverUrl: string }) => {
 export const useMCPClient = () => {
   const context = React.useContext(MCPClientProvider);
   if (context === undefined) {
-    throw new Error("useMCPClient must be used within a MCPClientProvider");
-  }
-
-  if (context.client === null) {
     throw new Error("MCPClient is not connected");
   }
 
