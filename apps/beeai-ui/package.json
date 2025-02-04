@@ -11,8 +11,10 @@
     "clean": "rm -rf node_modules && rm -rf dist"
   },
   "dependencies": {
+    "@modelcontextprotocol/sdk": "file:../../packages/mcp-typescript-sdk",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-query": "^3.39.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
