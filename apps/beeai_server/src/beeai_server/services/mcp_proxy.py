@@ -70,6 +70,7 @@ class LoadedProvider:
         self._write_messages, self.incoming_messages = anyio.create_memory_object_stream()
         self._stopping = False
         self._stopped = asyncio.Event()
+        self._supports_agents = True
 
     async def init(self):
         return await self.__aenter__()
@@ -77,21 +78,22 @@ class LoadedProvider:
     async def close(self):
         return await self.__aexit__(None, None, None)
 
-    async def load_features(self):
+    async def load_features(self, capabilities):
         # TODO: Use low lever requests - pagination not implemented in mcp client?
-        # TODO: server exceptions (validation servers, etc.) will hang the entire process
-        with suppress(Exception):  # TODO what exception
-            self.agent_templates = (await self.session.list_agent_templates()).agentTemplates
-            logger.info(f"Loaded {len(self.agent_templates)} agent templates")
-        with suppress(Exception):  # TODO what exception
-            self.tools = (await self.session.list_tools()).tools
-            logger.info(f"Loaded {len(self.tools)} tools")
-        with suppress(Exception):  # TODO what exception
-            self.resources = (await self.session.list_resources()).resources
-            logger.info(f"Loaded {len(self.resources)} resources")
-        with suppress(Exception):  # TODO what exception
-            self.prompts = (await self.session.list_prompts()).resources
-            logger.info(f"Loaded {len(self.prompts)} prompts")
+        # TODO: server exceptions - unknown requests such as
+        with anyio.fail_after(10):
+            if capabilities.agents:
+                self.agent_templates = (await self.session.list_agent_templates()).agentTemplates
+                logger.info(f"Loaded {len(self.agent_templates)} agent templates")
+            with suppress(Exception):  # TODO what exception
+                self.tools = (await self.session.list_tools()).tools
+                logger.info(f"Loaded {len(self.tools)} tools")
+            with suppress(Exception):  # TODO what exception
+                self.resources = (await self.session.list_resources()).resources
+                logger.info(f"Loaded {len(self.resources)} resources")
+            with suppress(Exception):  # TODO what exception
+                self.prompts = (await self.session.list_prompts()).resources
+                logger.info(f"Loaded {len(self.prompts)} prompts")
 
     async def _pipe_messages(self):
         async for message in self.session.incoming_messages:
@@ -104,12 +106,12 @@ class LoadedProvider:
         connection = await get_provider_connection(self.provider)
         read_stream, write_stream = await self._session_exit_stack.enter_async_context(connection.mcp_client())
         session = await self._session_exit_stack.enter_async_context(ClientSession(read_stream, write_stream))
-        await session.initialize()
+        initialize_result = await session.initialize()
         tg = await self._session_exit_stack.enter_async_context(anyio.create_task_group())
         tg.start_soon(self._pipe_messages)
         self._session_exit_stack.callback(lambda: tg.cancel_scope.cancel())
         self.session = session
-        await self.load_features()
+        await self.load_features(initialize_result.capabilities)
 
     async def _ensure_session(self):
         if self._stopping:
@@ -425,7 +427,7 @@ class MCPProxyServer:
             return resp.content
 
         @server.run_agent()
-        async def run_agent(name: str, prompt: str, config: dict | None = None):
+        async def run_agent(name: str, config: dict, prompt: str):
             provider = self._client_container.routing_table[f"agent/{name}"]
             resp = await self._send_request_with_token(
                 provider.session,

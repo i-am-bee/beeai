@@ -9,6 +9,7 @@ import anyio
 import click
 import mcp.types as types
 from mcp.server.lowlevel import Server
+from mcp.types import TextContent
 from smolagents import AgentText, CodeAgent, LiteLLMModel, VisitWebpageTool
 from smolagents.memory import MemoryStep
 
@@ -44,7 +45,7 @@ def main(port: int, transport: str) -> int:
 
     @app.run_agent()
     async def run_agent(
-        name: str, prompt: str, arguments: dict
+        name: str, _config: dict, prompt: str
     ) -> list[types.TextContent | types.ImageContent | types.EmbeddedResource]:
         if name != "website_summarizer":
             raise ValueError(f"Unknown tool: {name}")
@@ -94,9 +95,13 @@ def main(port: int, transport: str) -> int:
                     send_progress(step_no=MAX_STEPS, text=json.dumps(output))
                 )
             ]
+            return [TextContent(type="text", text=json.dumps(output))]
 
-        await loop.run_in_executor(ThreadPoolExecutor(max_workers=10), run_agent)
+        result = await loop.run_in_executor(
+            ThreadPoolExecutor(max_workers=10), run_agent
+        )
         await asyncio.gather(*tasks)
+        return result
 
     if transport == "sse":
         from mcp.server.sse import SseServerTransport
