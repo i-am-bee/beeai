@@ -8,6 +8,8 @@ import { MCPClientProvider } from './contexts/MCPClient/MCPClientProvider';
 import { Home } from './pages/Home';
 import { NotFound } from './pages/NotFound';
 import { routes } from './utils/routes';
+import { Agent } from './pages/agents/Agent';
+import { ModalProvider } from './contexts/Modal/ModalProvider';
 
 const queryClient = new QueryClient();
 
@@ -16,15 +18,18 @@ export function App() {
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <QueryClientProvider client={queryClient}>
         <MCPClientProvider fallback={<MCPFallback />}>
-          <BrowserRouter>
-            <Routes>
-              <Route element={<AppLayout />}>
-                <Route path={routes.home()} element={<Home />} />
+          <ModalProvider>
+            <BrowserRouter>
+              <Routes>
+                <Route element={<AppLayout />}>
+                  <Route path={routes.home()} element={<Home />} />
+                  <Route path={routes.agentDetail()} element={<Agent />} />
 
-                <Route path="*" element={<NotFound />} />
-              </Route>
-            </Routes>
-          </BrowserRouter>
+                  <Route path="*" element={<NotFound />} />
+                </Route>
+              </Routes>
+            </BrowserRouter>
+          </ModalProvider>
         </MCPClientProvider>
       </QueryClientProvider>
     </ErrorBoundary>

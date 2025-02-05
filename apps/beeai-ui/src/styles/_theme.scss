@@ -45,6 +45,7 @@ $light: map.merge(
     border-subtle-00: $cool-gray-20,
     text-dark: $black,
     box-shadow-color: rgba(193, 199, 205, 0.45),
+    modal-background: rgba($cool-gray-60, 0.5),
   )
 );
 
@@ -57,6 +58,7 @@ $dark: map.merge(
     border-subtle-00: $cool-gray-80,
     text-dark: $white,
     box-shadow-color: rgba($cool-gray-70, 0.45),
+    modal-background: rgba($cool-gray-100, 0.75),
   )
 );
 
@@ -128,5 +130,7 @@ $box-shadow: 0px 2px 8px 0px $box-shadow-color;
 
 $button-tertiary: var(--cds-button-tertiary);
 $button-tertiary-hover: var(--cds-button-tertiary-hover);
+
+$modal-background: var(--cds-modal-background);
 
 @forward '@carbon/styles/scss/theme';
