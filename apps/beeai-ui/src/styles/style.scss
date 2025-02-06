@@ -1,1 +1,30 @@
-@use '@carbon/styles';
+@use '@carbon/styles/scss/reset';
+@use '@carbon/styles/scss/fonts';
+@use '@carbon/styles/scss/grid';
+// @use '@carbon/styles/scss/layer';
+// @use '@carbon/styles/scss/layout';
+// @use '@carbon/styles/scss/zone';
+
+@use 'components';
+
+:root {
+  @include theme($white);
+}
+
+// @media (prefers-color-scheme: dark) {
+//   :root {
+//     @include theme($g100);
+//   }
+// }
+
+a {
+  &:focus-visible {
+    @include focus-outline('outline');
+    outline-offset: 0;
+    border-radius: $spacing-02;
+  }
+}
+
+.cds--btn {
+  border-radius: $block-radius;
+}

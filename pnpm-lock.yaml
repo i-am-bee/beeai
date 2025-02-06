@@ -20,6 +20,12 @@ importers:
 
   apps/beeai-ui:
     dependencies:
+      '@carbon/grid':
+        specifier: ^11.31.0
+        version: 11.31.0
+      '@carbon/icons-react':
+        specifier: ^11.54.0
+        version: 11.54.0(react@19.0.0)
       '@carbon/react':
         specifier: ^1.75.0
         version: 1.75.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(sass@1.83.4)

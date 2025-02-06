@@ -13,7 +13,7 @@ const queryClient = new QueryClient();
 
 export function App() {
   return (
-    <ErrorBoundary fallback={<ErrorFallback />}>
+    <ErrorBoundary FallbackComponent={ErrorFallback}>
       <QueryClientProvider client={queryClient}>
         <MCPClientProvider fallback={<MCPFallback />}>
           <BrowserRouter>

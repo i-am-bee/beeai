@@ -1,14 +1,21 @@
-import { IconButton } from '@carbon/react';
-import Bee from './Bee.svg';
+import { routes } from '@/utils/routes';
+import { Link } from 'react-router';
+import { MainNav } from '../MainNav';
+import classes from './AppHeader.module.scss';
+import { Container } from './Container';
 
 export function AppHeader() {
   return (
-    <header>
-      <h1>BeeAI</h1>
+    <header className={classes.root}>
+      <Container size="xlg">
+        <div className={classes.holder}>
+          <Link to={routes.home()} className={classes.link}>
+            {__APP_NAME__}
+          </Link>
 
-      <IconButton kind="ghost" size="sm" label="Main navigation">
-        <Bee />
-      </IconButton>
+          <MainNav />
+        </div>
+      </Container>
     </header>
   );
 }

@@ -1,0 +1,20 @@
+@use 'sass:map';
+@use 'sass:string';
+@use 'sass:list';
+
+@function get-value($array, $path) {
+  $keys: string.split($path, '.');
+  $result: $array;
+
+  @for $i from 1 through list.length($keys) {
+    $key: list.nth($keys, $i);
+
+    @if map.has-key($result, $key) {
+      $result: map.get($result, $key);
+    } @else {
+      @return null;
+    }
+  }
+
+  @return $result;
+}

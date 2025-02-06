@@ -1,0 +1,10 @@
+@forward '@carbon/styles/scss/config' with (
+  $font-display: swap
+);
+@forward '@carbon/styles/scss/utilities';
+@forward '@carbon/styles/scss/spacing';
+@forward '@carbon/styles/scss/colors' as color-*;
+// @forward '@carbon/styles/scss/motion';
+// @forward '@carbon/styles/scss/type';
+@forward 'theme';
+@forward 'functions';
