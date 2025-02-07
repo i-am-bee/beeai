@@ -2,11 +2,10 @@
 python = "3.13"
 nodejs = "22"
 uv = "latest"
-
-[hooks]
-postinstall = "corepack enable" # to enable pnpm
+pnpm = "latest"
 
 [settings]
+experimental = true # for python.uv_venv_auto
 python.uv_venv_auto = true
 
 # TASKS
@@ -16,46 +15,62 @@ python.uv_venv_auto = true
 [tasks."prepare:ensure-submodules"]
 hide = true
 dir = "{{config_root}}"
-run = "git submodule init"
+run = "git submodule update --init"
 sources = [".gitmodules"]
+outputs = { auto = true }
+
+[tasks."prepare:create-mise-local-toml"]
+hide = true
+dir = "{{config_root}}"
+run = "test -f mise.local.toml || cp mise.local.toml-example mise.local.toml"
+sources = ["mise.local.toml-example"]
 outputs = { auto = true }
 
 ## dependencies
 
-[tasks."dependencies:pnpm"]
+[tasks."dependencies:nodejs"]
 hide = true
-depends = ["prepare:*"]
+depends = ["prepare:ensure-submodules"]
 dir = "{{config_root}}"
 run = "pnpm install"
-sources = ["pnpm-{lock,workspace}.yaml", "**/package.json"]
+sources = ["pnpm-lock.yaml", "pnpm-workspace.yaml", "**/package.json"]
 outputs = { auto = true }
 
-[tasks."dependencies:uv"]
+[tasks."dependencies:python"]
 hide = true
-depends = ["prepare:*"]
+depends = ["prepare:ensure-submodules"]
 dir = "{{config_root}}"
 run = "uv sync"
-sources = ["uv.lock", "**/pyproject.toml"]
+sources = ["uv.lock", "pyproject.toml", "**/pyproject.toml"]
 outputs = { auto = true }
+
+## setup
+
+[tasks."setup"]
+description = "Set-up repo and install dependencies"
+depends = ["prepare:*", "dependencies:*"]
 
 ## build
 
 [tasks."build:beeai-ui"]
-depends = ["dependencies:pnpm"]
+description = "Build the static files for `beeai-ui`"
+depends = ["dependencies:nodejs"]
 dir = "{{config_root}}/apps/beeai-ui"
 run = "pnpm build"
 sources = ["*.json", "*.js", "index.html", "src/**/*.tsx", "src/**/*.ts"]
 outputs = { auto = true }
 
 [tasks."build:beeai-cli"]
-depends = ["dependencies:uv"]
+description = "Build the Python wheel for `beeai-cli`"
+depends = ["dependencies:python"]
 dir = "{{config_root}}/apps/beeai-cli"
 run = "uv build . --out-dir dist"
 sources = ["**/*.py"]
 outputs = { auto = true }
 
 [tasks."build:beeai-server"]
-depends = ["dependencies:uv", "build:beeai-ui"]
+description = "Build the Python wheel for `beeai-server`"
+depends = ["dependencies:python", "build:beeai-ui"]
 dir = "{{config_root}}/apps/beeai-server"
 run = "uv build . --out-dir dist"
 sources = ["**/*.py"]
@@ -64,27 +79,32 @@ outputs = { auto = true }
 ## run
 
 [tasks."run:beeai-ui"]
-depends = ["dependencies:pnpm"]
+description = "Run the Vite development server for `beeai-ui` -- NOTE: you also need to have `beeai-server` running for the backend"
+depends = ["dependencies:nodejs"]
 dir = "{{config_root}}/apps/beeai-ui"
 run = "pnpm --filter=@beeai/ui dev"
 
 [tasks."run:beeai-cli"]
-depends = ["dependencies:uv", "build:beeai-ui"]
+description = "Run the `beeai-cli`, use double dash to pass extra args, like `mise run:beeai-cli -- provider list`"
+depends = ["dependencies:python", "build:beeai-ui"]
 dir = "{{config_root}}/apps/beeai-cli"
 run = "uv run beeai"
 
 [tasks."run:beeai-server"]
-depends = ["dependencies:uv", "build:beeai-ui"]
+description = "Run the `beeai-server`, including the UI in static mode"
+depends = ["dependencies:python", "build:beeai-ui"]
 dir = "{{config_root}}/apps/beeai-server"
 run = "uv run beeai-server"
 
 [tasks."run:example:mcp-simple-agent"]
-depends = ["dependencies:uv"]
+description = "Run an example MCP agent provider"
+depends = ["dependencies:python"]
 dir = "{{config_root}}/examples/simple-agent"
 run = "uv run mcp-simple-agent"
 
 [tasks."run:example:mcp-simple-tool"]
-depends = ["dependencies:uv"]
+description = "Run an example MCP tool provider"
+depends = ["dependencies:python"]
 dir = "{{config_root}}/examples/simple-tool"
 run = "uv run mcp-simple-tool"
 
