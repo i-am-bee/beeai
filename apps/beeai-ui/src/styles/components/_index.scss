@@ -3,6 +3,7 @@
 // @forward '@carbon/styles/scss/components/aspect-ratio';
 // @forward '@carbon/styles/scss/components/breadcrumb';
 @forward '@carbon/styles/scss/components/button';
+@forward 'button';
 // @forward '@carbon/styles/scss/components/chat-button';
 // @forward '@carbon/styles/scss/components/checkbox';
 // @forward '@carbon/styles/scss/components/code-snippet';
@@ -53,13 +54,15 @@
 // @forward '@carbon/styles/scss/components/radio-button';
 // @forward '@carbon/styles/scss/components/search';
 // @forward '@carbon/styles/scss/components/select';
-// @forward '@carbon/styles/scss/components/skeleton-styles';
+@forward '@carbon/styles/scss/components/skeleton-styles';
+@forward 'skeleton-styles';
 // @forward '@carbon/styles/scss/components/slider';
 // @forward '@carbon/styles/scss/components/slug';
 // @forward '@carbon/styles/scss/components/stack';
 // @forward '@carbon/styles/scss/components/structured-list';
 // @forward '@carbon/styles/scss/components/tabs';
-// @forward '@carbon/styles/scss/components/tag';
+@forward '@carbon/styles/scss/components/tag';
+@forward 'tag';
 // @forward '@carbon/styles/scss/components/text-area';
 // @forward '@carbon/styles/scss/components/text-input';
 // @forward '@carbon/styles/scss/components/tile';

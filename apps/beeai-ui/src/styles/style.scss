@@ -8,12 +8,12 @@
 @use 'components';
 
 :root {
-  @include theme($white);
+  @include theme($light);
 }
 
 // @media (prefers-color-scheme: dark) {
 //   :root {
-//     @include theme($g100);
+//     @include theme($dark);
 //   }
 // }
 
@@ -23,8 +23,4 @@ a {
     outline-offset: 0;
     border-radius: $spacing-02;
   }
-}
-
-.cds--btn {
-  border-radius: $block-radius;
 }

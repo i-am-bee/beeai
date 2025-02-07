@@ -9,7 +9,7 @@
 
 .holder {
   display: flex;
-  column-gap: $grid-margin;
+  column-gap: $gap;
   justify-content: space-between;
   align-items: center;
   block-size: rem(48px);

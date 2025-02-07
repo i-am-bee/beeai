@@ -1,0 +1,13 @@
+@use 'styles/common' as *;
+
+.cds--tag {
+  margin: 0;
+  min-inline-size: 0;
+}
+
+.cds--tag:has(.cds--tag__custom-icon + .cds--tag__label:empty) {
+  padding-inline-end: $spacing-02;
+  .cds--tag__custom-icon {
+    margin-inline-end: 0;
+  }
+}

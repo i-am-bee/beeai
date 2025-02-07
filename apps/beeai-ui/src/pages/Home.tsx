@@ -1,12 +1,26 @@
 import { Container } from '@/components/layouts/Container';
-import { ToolsView } from '@/modules/tools/components/ToolsView';
+import { ViewHeader } from '@/components/ViewHeader';
+import { ViewStack } from '@/components/ViewStack';
+import { AgentsFilters } from '@/modules/agents/components/AgentsFilters';
+import { AgentsList } from '@/modules/agents/components/AgentsList';
+import { Add } from '@carbon/icons-react';
+import { Button } from '@carbon/react';
 
 export function Home() {
   return (
     <Container>
-      <h1>Welcome to {__APP_NAME__}!</h1>
+      <ViewStack>
+        <ViewHeader heading="Agents">
+          {/* TODO: Add functionality */}
+          <Button kind="tertiary" size="md" renderIcon={Add}>
+            Import agents
+          </Button>
+        </ViewHeader>
 
-      <ToolsView />
+        <AgentsFilters />
+
+        <AgentsList />
+      </ViewStack>
     </Container>
   );
 }

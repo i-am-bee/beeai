@@ -1,0 +1,21 @@
+@use 'styles/common' as *;
+
+.cds--skeleton__text {
+  margin-block-end: 0;
+  block-size: auto;
+  display: flex;
+  align-items: center;
+  background: linear-gradient(
+    to bottom,
+    transparent calc(50% - 0.5em),
+    $skeleton-background calc(50% - 0.5em),
+    $skeleton-background calc(50% + 0.5em),
+    transparent calc(50% + 0.5em)
+  );
+  &::before {
+    block-size: 1em;
+  }
+  &::after {
+    content: '\a0';
+  }
+}
