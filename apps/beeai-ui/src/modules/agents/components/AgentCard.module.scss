@@ -43,12 +43,6 @@
   column-gap: $gap;
 }
 
-.tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: $spacing-03;
-}
-
 .metadata {
   @include type-style(label-01);
   color: $text-secondary;

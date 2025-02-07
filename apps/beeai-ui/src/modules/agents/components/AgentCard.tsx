@@ -1,5 +1,6 @@
+import { TagsList } from '@/components/TagsList';
 import { LogoGithub } from '@carbon/icons-react';
-import { SkeletonText, Tag, TagSkeleton } from '@carbon/react';
+import { SkeletonText, Tag } from '@carbon/react';
 import { Link } from 'react-router';
 import { Agent } from '../api/types';
 import classes from './AgentCard.module.scss';
@@ -26,17 +27,13 @@ export function AgentCard({ agent }: Props) {
 
       {/* TODO: Tags and metadata */}
       <div className={classes.footer}>
-        <ul className={classes.tags}>
-          <li>
-            <Tag type="cool-gray">BeeAI Framework</Tag>
-          </li>
-          <li>
-            <Tag type="cool-gray" renderIcon={LogoGithub} />
-          </li>
-          <li>
-            <Tag type="green">Example</Tag>
-          </li>
-        </ul>
+        <TagsList
+          tags={[
+            <Tag type="cool-gray">BeeAI Framework</Tag>,
+            <Tag type="cool-gray" renderIcon={LogoGithub} />,
+            <Tag type="green">Example</Tag>,
+          ]}
+        />
 
         <p className={classes.metadata}>50s/run (avg) | 50 tokens/run (avg) | OpenAI</p>
       </div>
@@ -54,11 +51,7 @@ AgentCard.Skeleton = function AgentCardSkeleton() {
       </div>
 
       <div className={classes.footer}>
-        <div className={classes.tags}>
-          <TagSkeleton />
-
-          <TagSkeleton />
-        </div>
+        <TagsList.Skeleton length={2} />
 
         <SkeletonText className={classes.metadata} width="33%" />
       </div>
