@@ -29,15 +29,11 @@ class ContextFilterProcessor(logging.Filter):
 
 
 class FilterDuplicates(logging.Filter):
-    def __init__(
-        self, loggers: list[str], max_time_delay: timedelta = timedelta(minutes=1)
-    ):
+    def __init__(self, loggers: list[str], max_time_delay: timedelta = timedelta(minutes=1)):
         super().__init__()
         self.loggers = loggers
         self.last_log_message_by_logger: dict[str, Any] = defaultdict(dict)
-        self.last_log_timestamp_by_logger: dict[str, datetime] = defaultdict(
-            lambda: datetime.fromtimestamp(0)
-        )
+        self.last_log_timestamp_by_logger: dict[str, datetime] = defaultdict(lambda: datetime.fromtimestamp(0))
         self.max_time_delay = max_time_delay
 
     def filter(self, record: logging.LogRecord) -> bool:
@@ -46,10 +42,7 @@ class FilterDuplicates(logging.Filter):
         if any(name.startswith(logger_name) for logger_name in self.loggers):
             time_delay = datetime.now() - self.last_log_timestamp_by_logger[name]
             dedupe_key = {getattr(record, attr, None) for attr in ["msg", "levelno"]}
-            should_skip = (
-                self.last_log_message_by_logger[name] == dedupe_key
-                and time_delay < self.max_time_delay
-            )
+            should_skip = self.last_log_message_by_logger[name] == dedupe_key and time_delay < self.max_time_delay
             self.last_log_message_by_logger[name] = dedupe_key
             self.last_log_timestamp_by_logger[name] = datetime.now()
         return not should_skip
@@ -73,9 +66,7 @@ formatter_processors: Final = [
     structlog.dev.ConsoleRenderer(
         colors=True,
         pad_event=70,
-        exception_formatter=RichTracebackFormatter(
-            show_locals=False, width=160, max_frames=10
-        ),
+        exception_formatter=RichTracebackFormatter(show_locals=False, width=160, max_frames=10),
     ),
 ]
 
@@ -128,18 +119,8 @@ def configure_logging(configuration: LoggingConfiguration | None = None) -> None
                     "level": configuration.level,
                     "propagate": True,
                 },
-                "bee_automations.flows": {"level": configuration.level_flows},
                 "httpx": {"level": logging.WARNING},
-                "pymongo": {"level": logging.WARNING},
-                "absl": {"level": logging.WARNING},
-                "nltk_data": {"level": logging.WARNING},
-                "markdown_it": {"level": logging.ERROR},
-                "langchain.retrievers.multi_query": {
-                    # only show generated queries if debug is enabled
-                    "level": logging.INFO
-                    if configuration.level == logging.DEBUG
-                    else logging.WARNING,
-                },
+                "uvicorn.error": {"level": configuration.level_uvicorn},
             },
         }
     )
@@ -161,9 +142,7 @@ def configure_logging(configuration: LoggingConfiguration | None = None) -> None
     if configuration_error:
         # log if error occured durring logging initialization
         logger = logging.getLogger(__name__)
-        logger.warning(
-            "Error occured during logging setup, application is improperly configured"
-        )
+        logger.warning("Error occured during logging setup, application is improperly configured")
 
 
 def override_uvicorn_logging_config() -> None:
@@ -183,9 +162,7 @@ def capture_context_logs_to_file(log_file: Path, filter_context_vars: dict[str, 
         structlog.dev.ConsoleRenderer(
             colors=False,
             pad_event=70,
-            exception_formatter=RichTracebackFormatter(
-                show_locals=False, width=160, max_frames=10
-            ),
+            exception_formatter=RichTracebackFormatter(show_locals=False, width=160, max_frames=10),
         ),
     ]
     formatter = structlog.stdlib.ProcessorFormatter(
