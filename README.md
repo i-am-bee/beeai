@@ -1,4 +1,4 @@
-## Setup
+## Setup
 
 This project uses [Mise-en-place](https://mise.jdx.dev/). You **don't need to install any other dependencies** (Python, Node.js, etc.). Simply run:
 
@@ -52,7 +52,7 @@ mise run:beeai-ui
 mise run:beeai-server
 ```
 
-## Development
+## Development
 
 To directly access development tools installed by Mise (`python`, `uv`, `node`, etc.), run the following command in your shell. This is recommended to ensure you are using the correct tool versions. It can be made permanent by adding this to your shell's `rc` file.
 
@@ -71,4 +71,4 @@ mise activate fish | source
 
 ## Configuration
 
-Edit `[env]` in `mise.local.toml` in the project root ((documentation)[https://mise.jdx.dev/environments/]). Run `mise setup` if you don't see the file.
+Edit `[env]` in `mise.local.toml` in the project root ([documentation](https://mise.jdx.dev/environments/)). Run `mise setup` if you don't see the file.
