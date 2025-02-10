@@ -105,7 +105,7 @@ class MCPProxyServer:
 
         @server.call_tool()
         async def call_tool(name: str, arguments: dict | None = None):
-            provider = self._client_container.routing_table[f"tool/{name}"]
+            provider = self._client_container.get_provider(f"tool/{name}")
             resp = await self._send_request_with_token(
                 provider.session,
                 server,
@@ -116,17 +116,17 @@ class MCPProxyServer:
 
         @server.create_agent()
         async def create_agent(req: CreateAgentRequest) -> CreateAgentResult:
-            provider = self._client_container.routing_table[f"agent_template/{req.params.templateName}"]
+            provider = self._client_container.get_provider(f"agent_template/{req.params.templateName}")
             return await self._send_request_with_token(provider.session, server, req, CreateAgentResult)
 
         @server.run_agent()
         async def run_agent(req: RunAgentRequest) -> RunAgentResult:
-            provider = self._client_container.routing_table[f"agent/{req.params.name}"]
+            provider = self._client_container.get_provider(f"agent/{req.params.name}")
             return await self._send_request_with_token(provider.session, server, req, RunAgentResult)
 
         @server.destroy_agent()
         async def destroy_agent(req: DestroyAgentRequest) -> DestroyAgentResult:
-            provider = self._client_container.routing_table[f"agent/{req.params.name}"]
+            provider = self._client_container.get_provider(f"agent/{req.params.name}")
             return await self._send_request_with_token(provider.session, server, req, DestroyAgentResult)
 
         return server
@@ -136,7 +136,7 @@ class MCPProxyServer:
         read_stream: MemoryObjectReceiveStream[types.JSONRPCMessage | Exception],
         write_stream: MemoryObjectSendStream[types.JSONRPCMessage],
         initialization_options: InitializationOptions,
-        raise_exceptions: bool = True,
+        raise_exceptions: bool = False,
     ):
         """
         HACK: Modified server.run method that subscribes and forwards messages
