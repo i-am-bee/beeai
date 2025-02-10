@@ -1,0 +1,49 @@
+@use 'sass:math';
+
+.root {
+  background-color: $layer-02;
+  border-radius: $border-radius;
+  box-shadow: $box-shadow;
+  padding: $spacing-06 $spacing-05 $spacing-06 $spacing-06;
+  position: relative;
+  &:has(.link:hover) {
+    background-color: $background-hover-50;
+  }
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  row-gap: $spacing-03;
+}
+
+.name {
+  font-size: rem(18px);
+  line-height: math.div(24, 18);
+}
+
+.link {
+  @include link-mask();
+  color: inherit;
+  text-decoration: none;
+}
+
+.description {
+  @include type-style(body-compact-01);
+  @include line-clamp(2);
+  color: $text-secondary;
+  letter-spacing: rem(0.32px);
+}
+
+.footer {
+  margin-block-start: $spacing-05;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  column-gap: $gap;
+}
+
+.metadata {
+  @include type-style(label-01);
+  color: $text-secondary;
+}

@@ -1,0 +1,12 @@
+@forward '@carbon/styles/scss/config' with (
+  $font-display: swap
+);
+@forward 'theme';
+@forward 'functions';
+@forward 'mixins';
+@forward '@carbon/styles/scss/spacing';
+@forward '@carbon/styles/scss/colors';
+// @forward '@carbon/styles/scss/motion';
+@forward '@carbon/styles/scss/type';
+@forward '@carbon/styles/scss/utilities/convert';
+@forward '@carbon/styles/scss/utilities/focus-outline';

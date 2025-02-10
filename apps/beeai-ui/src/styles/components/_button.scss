@@ -1,0 +1,39 @@
+@use 'styles/common' as *;
+
+.cds--btn {
+  border-radius: $border-radius;
+  padding-inline-end: rem(49px);
+}
+
+.cds--btn--icon-only {
+  padding: 0;
+}
+
+.cds--btn--ghost {
+  &,
+  &:hover,
+  &:active,
+  &:focus {
+    color: $button-tertiary;
+  }
+}
+
+.cds--btn--tertiary {
+  border-color: $border-subtle-00;
+  &:hover,
+  &:active,
+  &:focus {
+    color: $button-tertiary;
+    background-color: $button-tertiary-hover;
+  }
+  &:focus {
+    border-color: $focus;
+    background-color: transparent;
+  }
+  &:active {
+    background-color: $background-active;
+    &:not(:focus) {
+      border-color: $border-subtle-00;
+    }
+  }
+}

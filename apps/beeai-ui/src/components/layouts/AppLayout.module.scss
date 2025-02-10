@@ -1,0 +1,9 @@
+.root {
+  display: grid;
+  min-block-size: 100dvh;
+  grid-template-rows: auto 1fr;
+}
+
+.main {
+  padding-block: $spacing-09;
+}

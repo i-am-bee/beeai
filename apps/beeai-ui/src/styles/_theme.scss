@@ -1,0 +1,132 @@
+@use 'sass:map';
+@use '@carbon/styles/scss/themes';
+@use '@carbon/styles/scss/theme' as *;
+@use '@carbon/styles/scss/colors' as *;
+@use '@carbon/styles/scss/spacing' as *;
+@use '@carbon/grid/scss/config' as *;
+@use '@carbon/styles/scss/utilities/convert' as *;
+
+$grid-breakpoints: map.merge(
+  $grid-breakpoints,
+  (
+    sm: map.merge(
+        map.get($grid-breakpoints, sm),
+        (
+          margin: rem(16px),
+        )
+      ),
+    lg: map.merge(
+        map.get($grid-breakpoints, lg),
+        (
+          margin: rem(24px),
+        )
+      ),
+    xlg: map.merge(
+        map.get($grid-breakpoints, xlg),
+        (
+          margin: rem(32px),
+        )
+      ),
+    max: map.merge(
+        map.get($grid-breakpoints, max),
+        (
+          margin: rem(32px),
+        )
+      ),
+  )
+);
+
+$light: map.merge(
+  themes.$white,
+  (
+    background-hover: $cool-gray-10,
+    background-hover-50: rgba($cool-gray-10, 0.5),
+    layer-hover-01: $cool-gray-10,
+    border-subtle-00: $cool-gray-20,
+    text-dark: $black,
+    box-shadow-color: rgba(193, 199, 205, 0.45),
+  )
+);
+
+$dark: map.merge(
+  themes.$g100,
+  (
+    background-hover: $cool-gray-80,
+    background-hover-50: rgba($cool-gray-80, 0.5),
+    layer-hover-01: $cool-gray-80,
+    border-subtle-00: $cool-gray-80,
+    text-dark: $white,
+    box-shadow-color: rgba($cool-gray-70, 0.45),
+  )
+);
+
+@use '@carbon/styles/scss/components/button/tokens' as button-tokens with (
+  $button-tertiary: (
+    fallback: $black,
+    values: (
+      (theme: $light, value: $black),
+      (theme: $dark, value: $white),
+    ),
+  ),
+  $button-tertiary-hover: (
+    fallback: $background-hover,
+    values: (
+      (theme: $light, value: $background-hover),
+      (theme: $dark, value: $background-hover),
+    ),
+  ),
+  $button-tertiary-active: (
+    fallback: $background-active,
+    values: (
+      (theme: $light, value: $background-active),
+      (theme: $dark, value: $background-active),
+    ),
+  )
+);
+
+@use '@carbon/styles/scss/components/tag/tokens' as tag-tokens with (
+  $tag-color-cool-gray: (
+    fallback: $black,
+    values: (
+      (theme: $light, value: $black),
+      (theme: $dark, value: $white),
+    ),
+  ),
+  $tag-background-cool-gray: (
+    fallback: $cool-gray-10,
+    values: (
+      (theme: $light, value: $cool-gray-10),
+      (theme: $dark, value: $cool-gray-80),
+    ),
+  ),
+  $tag-color-green: (
+    fallback: $green-60,
+    values: (
+      (theme: $light, value: $green-60),
+      (theme: $dark, value: $green-20),
+    ),
+  ),
+  $tag-background-green: (
+    fallback: $green-10,
+    values: (
+      (theme: $light, value: $green-10),
+      (theme: $dark, value: $green-70),
+    ),
+  )
+);
+
+$grid-margin: var(--cds-grid-margin);
+$gap: $grid-margin;
+
+$background-hover-50: var(--cds-background-hover-50);
+
+$text-dark: var(--cds-text-dark);
+
+$border-radius: $spacing-03;
+$box-shadow-color: var(--cds-box-shadow-color);
+$box-shadow: 0px 2px 8px 0px $box-shadow-color;
+
+$button-tertiary: var(--cds-button-tertiary);
+$button-tertiary-hover: var(--cds-button-tertiary-hover);
+
+@forward '@carbon/styles/scss/theme';

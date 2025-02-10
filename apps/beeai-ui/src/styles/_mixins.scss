@@ -1,0 +1,19 @@
+@mixin line-clamp($lines: 1) {
+  overflow: hidden;
+  @if ($lines == 1) {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  } @else {
+    display: -webkit-box;
+    -webkit-line-clamp: #{$lines};
+    -webkit-box-orient: vertical;
+  }
+}
+
+@mixin link-mask() {
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+}

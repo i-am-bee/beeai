@@ -1,3 +1,9 @@
+import { ErrorLayout } from '../layouts/ErrorLayout';
+
 export function MCPFallback() {
-  return <div>Connecting to MCP...</div>;
+  return (
+    <ErrorLayout>
+      <h1>Connecting to MCP...</h1>
+    </ErrorLayout>
+  );
 }

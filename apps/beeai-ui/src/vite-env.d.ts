@@ -1,4 +1,4 @@
+/// <reference types="./@types/svg" />
 /// <reference types="vite/client" />
-/// <reference types="vite-plugin-svgr/client" />
 
-type ImportMetaEnv = unknown;
+declare const __APP_NAME__: string;

@@ -1,0 +1,25 @@
+@use 'sass:math';
+
+.root {
+  position: sticky;
+  inset-block-start: 0;
+  background-color: $background;
+  border-block-end: 1px solid $border-subtle-00;
+}
+
+.holder {
+  display: flex;
+  column-gap: $gap;
+  justify-content: space-between;
+  align-items: center;
+  block-size: rem(48px);
+}
+
+.link {
+  display: block;
+  font-size: rem(14px);
+  line-height: math.div(18, 14);
+  color: $text-dark;
+  font-weight: 600;
+  text-decoration: none;
+}

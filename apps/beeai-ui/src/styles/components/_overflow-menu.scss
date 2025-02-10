@@ -1,0 +1,51 @@
+@use 'styles/common' as *;
+
+.cds--overflow-menu__wrapper .cds--popover {
+  display: none;
+}
+
+.cds--overflow-menu.cds--overflow-menu--open {
+  box-shadow: none;
+  background-color: $layer-hover;
+}
+
+.cds--overflow-menu-options {
+  padding: $spacing-03;
+  border-radius: $border-radius;
+  transform: translate(0, $spacing-06);
+  box-shadow: $box-shadow;
+  background-color: $background;
+  inline-size: rem(224px);
+  row-gap: $spacing-02;
+
+  &::after {
+    display: none;
+  }
+
+  &[data-floating-menu-direction='top'] {
+    transform: translate(0, -$spacing-06);
+  }
+
+  .cds--overflow-menu-options__option {
+    block-size: rem(28px);
+  }
+}
+
+.cds--overflow-menu-options__option {
+  border-radius: inherit;
+}
+
+.cds--overflow-menu-options__btn {
+  max-inline-size: none;
+  color: $text-dark;
+  padding-inline: $spacing-03;
+  border-radius: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  column-gap: $spacing-03;
+  svg {
+    flex-shrink: 0;
+    fill: $text-primary;
+  }
+}
