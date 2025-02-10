@@ -1,6 +1,6 @@
 [project]
 name = "beeai-server"
-version = "0.1.0"
+version = "0.0.0"
 description = "Add your description here"
 readme = "README.md"
 authors = [
@@ -25,7 +25,7 @@ dependencies = [
 line-length = 120
 
 [project.scripts]
-beeai-server = "beeai_server.scripts:app"
+beeai-server = "beeai_server:serve"
 
 [build-system]
 requires = ["hatchling"]

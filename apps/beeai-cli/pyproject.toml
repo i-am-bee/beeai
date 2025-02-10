@@ -1,6 +1,6 @@
 [project]
 name = "beeai-cli"
-version = "0.1.0"
+version = "0.0.0"
 description = "Add your description here"
 readme = "README.md"
 authors = [
@@ -13,7 +13,11 @@ dependencies = [
     "pydantic>=2.10.6",
     "pydantic-settings>=2.7.1",
     "requests>=2.32.3",
+    "beeai_server==0.0.0",
 ]
+
+[tool.uv.sources]
+beeai_server = { workspace = true }
 
 [project.scripts]
 beeai = "beeai_cli:app"

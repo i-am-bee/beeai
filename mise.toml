@@ -106,15 +106,28 @@ description = "Publish `beeai-cli` to PyPI, but you need to configure your ~/.py
 depends = ["build:beeai-cli"]
 dir = "{{config_root}}/apps/beeai-cli"
 tools = { "pipx" = "latest", "pipx:twine" = "latest" }
-run = "twine upload --non-interactive dist/*"
-sources = ["**/*.py"]
-outputs = { auto = true }
+run = "twine upload --skip-existing --non-interactive dist/*"
 
 [tasks."publish:beeai-server"]
 description = "Publish `beeai-server` to PyPI, but you need to configure your ~/.pypirc first."
 depends = ["build:beeai-server"]
 dir = "{{config_root}}/apps/beeai-server"
 tools = { "pipx" = "latest", "pipx:twine" = "latest" }
-run = "twine upload --non-interactive dist/*"
-sources = ["**/*.py"]
-outputs = { auto = true }
+run = "twine upload --skip-existing --non-interactive dist/*"
+
+## clean
+
+[tasks."clean:beeai-ui"]
+description = "Clean the build artifacts for `beeai-ui`"
+dir = "{{config_root}}/apps/beeai-ui"
+run = "rm -rf ./dist"
+
+[tasks."clean:beeai-cli"]
+description = "Clean the build artifacts for `beeai-cli`"
+dir = "{{config_root}}/apps/beeai-cli"
+run = "rm -rf ./dist"
+
+[tasks."clean:beeai-server"]
+description = "Clean the build artifacts for `beeai-server`"
+dir = "{{config_root}}/apps/beeai-server"
+run = "rm -rf ./dist"
