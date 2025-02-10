@@ -1,0 +1,27 @@
+.root {
+  display: grid;
+  grid-template-columns: 1fr max-content;
+
+  .searchBar {
+    display: grid;
+    grid-template-columns: max-content max-content 1fr;
+    align-items: center;
+    padding-inline-start: $spacing-05;
+    border: 1px solid $border-subtle-00;
+    block-size: rem(40px);
+    border-radius: $border-radius 0 0 $border-radius;
+    border-inline-end: 0;
+
+    :global(.#{$prefix}--text-input) {
+      border: none;
+      &:active,
+      &:focus {
+        outline: none;
+      }
+    }
+  }
+
+  .filterBtn {
+    border-radius: 0 $border-radius $border-radius 0;
+  }
+}

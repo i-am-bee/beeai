@@ -52,7 +52,7 @@
 // @forward '@carbon/styles/scss/components/progress-bar';
 // @forward '@carbon/styles/scss/components/progress-indicator';
 // @forward '@carbon/styles/scss/components/radio-button';
-// @forward '@carbon/styles/scss/components/search';
+@forward '@carbon/styles/scss/components/search';
 // @forward '@carbon/styles/scss/components/select';
 @forward '@carbon/styles/scss/components/skeleton-styles';
 @forward 'skeleton-styles';
@@ -65,6 +65,7 @@
 @forward 'tag';
 // @forward '@carbon/styles/scss/components/text-area';
 // @forward '@carbon/styles/scss/components/text-input';
+@forward 'input';
 // @forward '@carbon/styles/scss/components/tile';
 // @forward '@carbon/styles/scss/components/time-picker';
 // @forward '@carbon/styles/scss/components/toggletip';
