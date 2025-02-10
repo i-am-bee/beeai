@@ -102,7 +102,7 @@ class LoadedProvider:
                 self.resources = (await self.session.list_resources()).resources
                 logger.info(f"Loaded {len(self.resources)} resources")
             if self._initialize_result.capabilities.prompts and self._LoadFeature.prompts in features:
-                self.prompts = (await self.session.list_prompts()).resources
+                self.prompts = (await self.session.list_prompts()).prompts
                 logger.info(f"Loaded {len(self.prompts)} prompts")
         except Exception as ex:
             logger.error(f"Failed to load features for provider: {self.provider}: {ex}")
