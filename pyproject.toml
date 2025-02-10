@@ -4,7 +4,7 @@ members = [
   "apps/beeai-server",
   "packages/mcp-python-sdk",
   "examples/simple-agent",
-  "examples/simple-tool",
+  "examples/simple-tool", "packages/beeai-sdk",
 ]
 
 [tool.ruff]

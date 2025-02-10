@@ -26,6 +26,9 @@ importers:
       bee-agent-framework:
         specifier: ^0.0.61
         version: 0.0.61(ollama@0.5.12)
+      beeai-sdk:
+        specifier: workspace:*
+        version: link:../../../packages/beeai-sdk
       express:
         specifier: ^4.19.2
         version: 4.21.2
@@ -139,6 +142,16 @@ importers:
       vite-tsconfig-paths:
         specifier: ^5.1.4
         version: 5.1.4(typescript@5.7.3)(vite@6.0.11(@types/node@22.13.0)(sass-embedded@1.83.4)(sass@1.83.4)(tsx@4.19.2))
+
+  packages/beeai-sdk:
+    dependencies:
+      zod:
+        specifier: ^3.24.1
+        version: 3.24.1
+    devDependencies:
+      typescript:
+        specifier: ^5.7.3
+        version: 5.7.3
 
 packages:
 
