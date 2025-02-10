@@ -1,4 +1,26 @@
-## Setup
+# BeeAI
+
+## Installation
+
+### Homebrew (recommended)
+
+```
+brew install i-am-bee/beeai/beeai
+```
+
+The services for `beeai` and `arize-phoenix` will be automatically set up for you. Run `brew list services` to see their status.
+
+### `pip` or `pipx`
+
+```
+pip install beeai-cli
+```
+
+This will not automatically set-up services. Keep `beeai serve` running in a separate terminal to use the BeeAI platform. Additionally, if you want to use Arize Phoenix, install it with `pip install arize-phoenix` and keep `phoenix serve` running in a separate terminal.
+
+## Development setup
+
+### Installation
 
 This project uses [Mise-en-place](https://mise.jdx.dev/). You **don't need to install any other dependencies** (Python, Node.js, etc.). Simply run:
 
@@ -8,7 +30,7 @@ mise trust
 mise setup
 ```
 
-## Server
+### Running the server
 
 ```sh
 # remove existing providers (due to breaking changes during rapid development)
@@ -19,7 +41,7 @@ mise run:beeai-server
 # (keep it running, open another terminal for next steps)
 ```
 
-## CLI
+### Running the CLI
 
 ```sh
 # run example SSE provider
@@ -42,7 +64,7 @@ mise run:beeai-cli -- agent list
 mise run:beeai-cli -- agent run website_summarizer "summarize iambee.ai"
 ```
 
-## UI
+### Running the UI
 
 ```sh
 # run the UI development server:
@@ -52,7 +74,7 @@ mise run:beeai-ui
 mise run:beeai-server
 ```
 
-## Development
+### Mise shell hooks
 
 To directly access development tools installed by Mise (`python`, `uv`, `node`, etc.), run the following command in your shell. This is recommended to ensure you are using the correct tool versions. It can be made permanent by adding this to your shell's `rc` file.
 
@@ -69,6 +91,6 @@ mise activate fish | source
 # other shells: see https://mise.jdx.dev/installing-mise.html#shells
 ```
 
-## Configuration
+### Configuration
 
 Edit `[env]` in `mise.local.toml` in the project root ([documentation](https://mise.jdx.dev/environments/)). Run `mise setup` if you don't see the file.
