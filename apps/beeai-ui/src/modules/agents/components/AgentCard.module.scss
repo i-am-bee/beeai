@@ -1,11 +1,11 @@
-@use 'sass:math';
-
 .root {
-  background-color: $layer-02;
+  background-color: $background;
   border-radius: $border-radius;
   box-shadow: $box-shadow;
   padding: $spacing-06 $spacing-05 $spacing-06 $spacing-06;
   position: relative;
+  transition: background-color $duration-fast-01 motion(standard, productive);
+
   &:has(.link:hover) {
     background-color: $background-hover-50;
   }
@@ -41,9 +41,4 @@
   justify-content: space-between;
   align-items: center;
   column-gap: $gap;
-}
-
-.metadata {
-  @include type-style(label-01);
-  color: $text-secondary;
 }

@@ -16,7 +16,7 @@
 
 .heading {
   font-size: rem(24px);
-  line-height: (28 / 24);
+  line-height: math.div(28, 24);
   font-weight: bold;
 }
 

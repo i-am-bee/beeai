@@ -1,0 +1,16 @@
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-05;
+}
+
+.description {
+  font-size: rem(14px);
+}
+
+.runAgent {
+  margin-block-start: $spacing-08;
+  display: grid;
+  grid-template-columns: 1fr max-content;
+  gap: $spacing-04;
+}

@@ -33,6 +33,7 @@
     margin-inline: auto;
     max-inline-size: rem(608px);
     box-sizing: content-box;
+    background-color: $background;
     > * {
       box-sizing: border-box;
     }
@@ -52,10 +53,10 @@
   :global(.#{$prefix}--modal-header) {
     padding: $spacing-05;
     h2 {
-      font-size: rem(24px);
-      line-height: rem(28px);
+      font-size: rem(32px);
+      line-height: math.div(41.6, 32);
       letter-spacing: rem(0.16px);
-      font-weight: 600;
+      font-weight: 400;
     }
   }
   :global(.#{$prefix}--modal-content) {
@@ -98,7 +99,23 @@
     }
   }
 
+  :global(.#{$prefix}--modal-close) {
+    &:hover {
+      background-color: $background-hover;
+    }
+  }
   :global(.#{$prefix}--modal-close-button) {
+    inset-block-start: $spacing-04;
+    inset-inline-end: $spacing-04;
+
+    :global(.#{$prefix}--btn) {
+      block-size: auto;
+      inline-size: auto;
+      svg {
+        min-inline-size: rem(24px);
+        block-size: rem(24px);
+      }
+    }
     :global(.#{$prefix}--popover) {
       display: none;
     }
@@ -108,18 +125,19 @@
 @include breakpoint-up(md) {
   .modal {
     :global(.#{$prefix}--modal-header) {
-      padding: $spacing-06;
+      padding: $spacing-06 $spacing-07;
     }
 
     :global(.#{$prefix}--modal-content) {
-      padding: $spacing-03 $spacing-06 $spacing-07;
+      padding: $spacing-03 $spacing-07 $spacing-07;
     }
 
     :global(.#{$prefix}--modal-footer) {
       padding: $spacing-03 $spacing-06 $spacing-06 $spacing-06;
 
-      :global(.#{$prefix}--btn) {
+      :global(.#{$prefix}--btn):global(.#{$prefix}--btn) {
         padding-inline-end: $spacing-10;
+        padding-block: 0;
       }
     }
   }

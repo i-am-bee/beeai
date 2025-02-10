@@ -1,0 +1,34 @@
+@use 'sass:map';
+
+@use '@carbon/grid/scss/config' as *;
+@use '@carbon/styles/scss/utilities/convert' as *;
+
+$grid-breakpoints: map.merge(
+  $grid-breakpoints,
+  (
+    sm: map.merge(
+        map.get($grid-breakpoints, sm),
+        (
+          margin: rem(16px),
+        )
+      ),
+    lg: map.merge(
+        map.get($grid-breakpoints, lg),
+        (
+          margin: rem(24px),
+        )
+      ),
+    xlg: map.merge(
+        map.get($grid-breakpoints, xlg),
+        (
+          margin: rem(32px),
+        )
+      ),
+    max: map.merge(
+        map.get($grid-breakpoints, max),
+        (
+          margin: rem(32px),
+        )
+      ),
+  )
+);

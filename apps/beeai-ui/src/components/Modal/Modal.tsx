@@ -100,7 +100,7 @@ export function Modal({ isOpen, onAfterClose, rootClassName, ...props }: Props) 
           variants={{
             hidden: {
               opacity: 0,
-              transition: { duration: 0, delay: parseInt(moderate02) / 1000 },
+              transition: { duration: 0, delay: FADEIN_DURATION / 1000 },
             },
             visible: {
               opacity: 1,
@@ -130,3 +130,5 @@ export function Modal({ isOpen, onAfterClose, rootClassName, ...props }: Props) 
     </AnimatePresence>
   );
 }
+
+const FADEIN_DURATION = parseInt(moderate02);

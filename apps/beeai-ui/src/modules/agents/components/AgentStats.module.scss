@@ -1,0 +1,4 @@
+.root {
+  @include type-style(label-01);
+  color: $text-secondary;
+}

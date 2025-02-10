@@ -1,9 +1,12 @@
 import { TagsList } from '@/components/TagsList';
-import { LogoGithub } from '@carbon/icons-react';
-import { SkeletonText, Tag } from '@carbon/react';
+import { SkeletonText } from '@carbon/react';
 import { Link } from 'react-router';
 import { Agent } from '../api/types';
 import classes from './AgentCard.module.scss';
+import { useModal } from '@/contexts/Modal';
+import { AgentModal } from './AgentModal';
+import { AgentStats } from './AgentStats';
+import { AgentTags } from './AgentTags';
 
 interface Props {
   agent: Agent;
@@ -11,9 +14,10 @@ interface Props {
 
 export function AgentCard({ agent }: Props) {
   const { name, description } = agent;
+  const { openModal } = useModal();
 
   return (
-    <article className={classes.root}>
+    <article className={classes.root} onClick={() => openModal((props) => <AgentModal {...props} agent={agent} />)}>
       <div className={classes.header}>
         <h2 className={classes.name}>
           {/* TODO: Link */}
@@ -27,15 +31,9 @@ export function AgentCard({ agent }: Props) {
 
       {/* TODO: Tags and metadata */}
       <div className={classes.footer}>
-        <TagsList
-          tags={[
-            <Tag type="cool-gray">BeeAI Framework</Tag>,
-            <Tag type="cool-gray" renderIcon={LogoGithub} />,
-            <Tag type="green">Example</Tag>,
-          ]}
-        />
+        <AgentTags agent={agent} />
 
-        <p className={classes.metadata}>50s/run (avg) | 50 tokens/run (avg) | OpenAI</p>
+        <AgentStats agent={agent} />
       </div>
     </article>
   );
