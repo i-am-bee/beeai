@@ -101,4 +101,20 @@ run = "uv run mcp-simple-tool"
 
 ## publish
 
-# TODO: publish to npm, pip
+[tasks."publish:beeai-cli"]
+description = "Publish `beeai-cli` to PyPI, but you need to configure your ~/.pypirc first."
+depends = ["build:beeai-cli"]
+dir = "{{config_root}}/apps/beeai-cli"
+tools = { "pipx" = "latest", "pipx:twine" = "latest" }
+run = "twine upload --non-interactive dist/*"
+sources = ["**/*.py"]
+outputs = { auto = true }
+
+[tasks."publish:beeai-server"]
+description = "Publish `beeai-server` to PyPI, but you need to configure your ~/.pypirc first."
+depends = ["build:beeai-server"]
+dir = "{{config_root}}/apps/beeai-server"
+tools = { "pipx" = "latest", "pipx:twine" = "latest" }
+run = "twine upload --non-interactive dist/*"
+sources = ["**/*.py"]
+outputs = { auto = true }
