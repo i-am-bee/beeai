@@ -221,6 +221,12 @@ class ProviderContainer:
             **{f"agent_template/{templ.name}": p for p in self.loaded_providers for templ in p.agent_templates},
         }
 
+    def get_provider(self, object_id: str):
+        try:
+            return self.routing_table[object_id]
+        except KeyError:
+            raise ValueError(f"{object_id} not found in any provider")
+
     def forward_notifications(
         self,
         session: ServerSession,
