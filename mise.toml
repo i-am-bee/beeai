@@ -87,18 +87,6 @@ depends = ["deps:py", "build:beeai-ui"]
 dir = "{{cwd}}"
 run = "uv run beeai-server"
 
-[tasks."run:example:mcp-simple-agent"]
-description = "Run an example MCP agent provider"
-depends = ["deps:py"]
-dir = "{{cwd}}"
-run = "uv run mcp-simple-agent"
-
-[tasks."run:example:mcp-simple-tool"]
-description = "Run an example MCP tool provider"
-depends = ["deps:py"]
-dir = "{{cwd}}"
-run = "uv run mcp-simple-tool"
-
 ## publish
 
 [tasks."publish:beeai-cli"]
