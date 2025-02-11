@@ -2,22 +2,15 @@ from typing import Any
 from gpt_researcher import GPTResearcher
 from mcp.server.fastmcp import FastMCP
 import mcp.types as types
-from pydantic import BaseModel
 from dotenv import load_dotenv
 load_dotenv()
-
-class Input(BaseModel):
-    prompt: str
-
-class Output(BaseModel):
-    text: str
+from beeai_sdk.prompt import PromptInput, PromptOutput
     
 class CustomLogsHandler:
     def __init__(self, send_progress):
         self.send_progress = send_progress
         
     async def send_json(self, data: dict[str, Any]) -> None:
-        print("aaaaa", data)
         await self.send_progress(data)
 
 
@@ -25,8 +18,8 @@ def main() -> int:
 
     server = FastMCP("researcher-agent")
     
-    @server.agent("GPT-researcher", "GPT Researcher is an autonomous agent designed for comprehensive web and local research on any given task.", input=Input, output=Output)
-    async def run_agent(input: Input, ctx) -> Output:
+    @server.agent("GPT-researcher", "GPT Researcher is an autonomous agent designed for comprehensive web and local research on any given task.", input=PromptInput, output=PromptOutput)
+    async def run_agent(input: PromptInput, ctx) -> PromptOutput:
 
         async def send_progress(text: str):
             await ctx.report_agent_run_progress(text)
@@ -38,7 +31,7 @@ def main() -> int:
         await researcher.conduct_research()
         # Write the report
         report = await researcher.write_report()
-        return Output(text=report)
+        return PromptOutput(text=report)
     
     server.run('sse')
 
