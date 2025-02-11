@@ -4,19 +4,23 @@
 
 ### Homebrew (recommended)
 
-```
+```sh
 brew install i-am-bee/beeai/beeai
+brew services start beeai
+brew services start arize-phoenix # (optional)
 ```
 
-The services for `beeai` and `arize-phoenix` will be automatically set up for you. Run `brew list services` to see their status.
+The services for `beeai` and `arize-phoenix` will continue to run in the background and restart with your device. Run `brew services list` to see their status.
 
 ### `pip` or `pipx`
 
-```
-pip install beeai-cli
+```sh
+pip install beeai-cli # run once to install
+beeai serve # keep running in a separate terminal
+phoenix serve # (optional) keep running in a separate terminal
 ```
 
-This will not automatically set-up services. Keep `beeai serve` running in a separate terminal to use the BeeAI platform. Additionally, if you want to use Arize Phoenix, install it with `pip install arize-phoenix` and keep `phoenix serve` running in a separate terminal.
+This variant does not support background services -- the `beeai serve` and `phoenix serve` commands need to be running in a terminal in order to use the platform.
 
 ## Development setup
 
