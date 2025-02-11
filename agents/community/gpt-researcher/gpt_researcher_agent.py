@@ -1,10 +1,11 @@
 from typing import Any
+import asyncio
 from gpt_researcher import GPTResearcher
 from mcp.server.fastmcp import FastMCP
-import mcp.types as types
 from dotenv import load_dotenv
 load_dotenv()
 from beeai_sdk.schemas.prompt import PromptInput, PromptOutput
+from beeai_sdk.providers.agent import run_agent_provider
     
 class CustomLogsHandler:
     def __init__(self, send_progress):
@@ -14,7 +15,7 @@ class CustomLogsHandler:
         await self.send_progress(data)
 
 
-def main() -> int:
+async def register_agent() -> int:
 
     server = FastMCP("researcher-agent")
     
@@ -36,9 +37,9 @@ def main() -> int:
         report = await researcher.write_report()
         return PromptOutput(text=report)
     
-    server.run('sse')
+    await run_agent_provider(server)
 
     return 0
 
-if __name__ == '__main__':
-    main()
+def main():
+    asyncio.run(register_agent())
