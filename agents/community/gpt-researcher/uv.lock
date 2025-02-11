@@ -221,11 +221,15 @@ name = "beeai-sdk"
 version = "0.1.0"
 source = { editable = "../../../packages/beeai-sdk" }
 dependencies = [
+    { name = "agentcommunicationprotocol" },
     { name = "pydantic" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "pydantic", specifier = ">=2.10.6" }]
+requires-dist = [
+    { name = "agentcommunicationprotocol", specifier = ">=0.0.4" },
+    { name = "pydantic", specifier = ">=2.10.6" },
+]
 
 [[package]]
 name = "brotli"

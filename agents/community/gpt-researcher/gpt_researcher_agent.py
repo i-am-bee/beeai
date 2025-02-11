@@ -4,7 +4,7 @@ from mcp.server.fastmcp import FastMCP
 import mcp.types as types
 from dotenv import load_dotenv
 load_dotenv()
-from beeai_sdk.prompt import PromptInput, PromptOutput
+from beeai_sdk.schemas.prompt import PromptInput, PromptOutput
     
 class CustomLogsHandler:
     def __init__(self, send_progress):
@@ -18,7 +18,10 @@ def main() -> int:
 
     server = FastMCP("researcher-agent")
     
-    @server.agent("GPT-researcher", "GPT Researcher is an autonomous agent designed for comprehensive web and local research on any given task.", input=PromptInput, output=PromptOutput)
+    @server.agent("GPT-researcher", 
+                  "GPT Researcher is an autonomous agent designed for comprehensive web and local research on any given task.", 
+                  input=PromptInput, 
+                  output=PromptOutput)
     async def run_agent(input: PromptInput, ctx) -> PromptOutput:
 
         async def send_progress(text: str):
