@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from fastapi.staticfiles import StaticFiles
 from kink import di
 
+from beeai_server.exceptions import ManifestLoadError
 
 if TYPE_CHECKING:
     from fastapi import FastAPI
@@ -20,6 +21,10 @@ def register_exception_handlers(app: "FastAPI"):
     from fastapi import HTTPException
     from fastapi.exception_handlers import http_exception_handler
     from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
+
+    @app.exception_handler(ManifestLoadError)
+    async def entity_not_found_exception_handler(request, exc: ManifestLoadError):
+        return await http_exception_handler(request, HTTPException(status_code=exc.status_code, detail=str(exc)))
 
     @app.exception_handler(Exception)
     async def custom_http_exception_handler(request, exc):

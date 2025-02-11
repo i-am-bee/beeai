@@ -40,12 +40,12 @@ logger = logging.getLogger(__name__)
 @inject
 class MCPProxyServer:
     def __init__(self, provider_repository: IProviderRepository):
-        self._client_container = ProviderContainer(provider_repository)
+        self._provider_container = ProviderContainer(provider_repository)
         self._exit_stack = AsyncExitStack()
 
     async def __aenter__(self):
         logger.info("Loading MCP proxy server")
-        await self._exit_stack.enter_async_context(self._client_container)
+        await self._exit_stack.enter_async_context(self._provider_container)
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         logger.info("Shutting down MCP proxy server")
@@ -53,7 +53,7 @@ class MCPProxyServer:
 
     @asynccontextmanager
     async def _forward_progress_notifications(self, server):
-        async with self._client_container.forward_notifications(
+        async with self._provider_container.forward_notifications(
             session=server.request_context.session,
             streams=NotificationStreamType.PROGRESS,
             request_context=server.request_context,
@@ -85,27 +85,27 @@ class MCPProxyServer:
 
         @server.list_tools()
         async def list_tools():
-            return self._client_container.tools
+            return self._provider_container.tools
 
         @server.list_resources()
         async def list_resources():
-            return self._client_container.resources
+            return self._provider_container.resources
 
         @server.list_prompts()
         async def list_prompts():
-            return self._client_container.prompts
+            return self._provider_container.prompts
 
         @server.list_agent_templates()
         async def list_agent_templates(_req):
-            return ListAgentTemplatesResult(agentTemplates=self._client_container.agent_templates)
+            return ListAgentTemplatesResult(agentTemplates=self._provider_container.agent_templates)
 
         @server.list_agents()
         async def list_agents(_req):
-            return ListAgentsResult(agents=self._client_container.agents)
+            return ListAgentsResult(agents=self._provider_container.agents)
 
         @server.call_tool()
         async def call_tool(name: str, arguments: dict | None = None):
-            provider = self._client_container.get_provider(f"tool/{name}")
+            provider = self._provider_container.get_provider(f"tool/{name}")
             resp = await self._send_request_with_token(
                 provider.session,
                 server,
@@ -116,17 +116,17 @@ class MCPProxyServer:
 
         @server.create_agent()
         async def create_agent(req: CreateAgentRequest) -> CreateAgentResult:
-            provider = self._client_container.get_provider(f"agent_template/{req.params.templateName}")
+            provider = self._provider_container.get_provider(f"agent_template/{req.params.templateName}")
             return await self._send_request_with_token(provider.session, server, req, CreateAgentResult)
 
         @server.run_agent()
         async def run_agent(req: RunAgentRequest) -> RunAgentResult:
-            provider = self._client_container.get_provider(f"agent/{req.params.name}")
+            provider = self._provider_container.get_provider(f"agent/{req.params.name}")
             return await self._send_request_with_token(provider.session, server, req, RunAgentResult)
 
         @server.destroy_agent()
         async def destroy_agent(req: DestroyAgentRequest) -> DestroyAgentResult:
-            provider = self._client_container.get_provider(f"agent/{req.params.name}")
+            provider = self._provider_container.get_provider(f"agent/{req.params.name}")
             return await self._send_request_with_token(provider.session, server, req, DestroyAgentResult)
 
         return server
@@ -144,7 +144,7 @@ class MCPProxyServer:
         """
         with warnings.catch_warnings(record=True) as w:
             async with ServerSession(read_stream, write_stream, initialization_options) as session:
-                async with self._client_container.forward_notifications(session):
+                async with self._provider_container.forward_notifications(session):
                     async for message in session.incoming_messages:
                         logger.debug(f"Received message: {message}")
 

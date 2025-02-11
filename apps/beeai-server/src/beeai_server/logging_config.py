@@ -58,6 +58,7 @@ shared_processors: Final = [
     # Add extra attributes of LogRecord objects to the event dictionary
     # so that values passed in the extra parameter of log methods pass
     # through to log output.
+    structlog.stdlib.ExtraAdder(),
     structlog.processors.TimeStamper(fmt="%Y-%m-%d %H:%M:%S"),
 ]
 
@@ -121,6 +122,7 @@ def configure_logging(configuration: LoggingConfiguration | None = None) -> None
                 },
                 "httpx": {"level": logging.WARNING},
                 "uvicorn.error": {"level": configuration.level_uvicorn},
+                "beeai_server.utils.managed_server_client": {"level": configuration.level_managed_provider},
             },
         }
     )
