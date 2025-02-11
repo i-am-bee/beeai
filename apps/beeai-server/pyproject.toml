@@ -1,6 +1,6 @@
 [project]
 name = "beeai-server"
-version = "0.0.0"
+version = "0.0.1"
 description = "Add your description here"
 readme = "README.md"
 authors = [

@@ -1,10 +1,13 @@
 import os
+import sys
 
 
 def serve():
-    os.execvp(
-        "uvicorn",
+    os.execv(
+        sys.executable,
         [
+            "python",
+            "-m",
             "uvicorn",
             "beeai_server.application:app",
             "--host=0.0.0.0",

@@ -3,12 +3,12 @@
 import express from "express";
 import { McpServer } from "@agentcommunicationprotocol/sdk/server/mcp.js";
 
-import { z } from "zod";
 import { StreamlitAgent } from "bee-agent-framework/agents/experimental/streamlit/agent";
 import { OllamaChatLLM } from "bee-agent-framework/adapters/ollama/chat";
 import { UnconstrainedMemory } from "bee-agent-framework/memory/unconstrainedMemory";
 import { Version } from "bee-agent-framework";
 import { SSEServerTransport } from "@agentcommunicationprotocol/sdk/server/sse.js";
+import { promptInputSchema, promptOutputSchema, PromptOutput } from 'beeai-sdk/src/schemas/prompt.js';
 
 async function registerAgents(server: McpServer) {
   const streamlitMeta = new StreamlitAgent({
@@ -18,12 +18,8 @@ async function registerAgents(server: McpServer) {
   server.agent(
     streamlitMeta.name,
     streamlitMeta.description,
-    z.object({
-      prompt: z.string(),
-    }),
-    z.object({
-      code: z.string(),
-    }),
+    promptInputSchema,
+    promptOutputSchema,
     async ({
       params: {
         input: { prompt },
@@ -40,13 +36,13 @@ async function registerAgents(server: McpServer) {
             if (_meta?.progressToken) {
               await server.server.sendAgentRunProgress({
                 progressToken: _meta.progressToken,
-                delta: { code: delta },
+                delta: { text: delta } as PromptOutput,
               });
             }
           });
         });
       return {
-        code: output.result.raw,
+        text: output.result.raw,
       };
     }
   );

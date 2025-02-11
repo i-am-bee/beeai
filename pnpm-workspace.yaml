@@ -1,7 +1,7 @@
 packages:
   - apps/beeai-ui
-  - packages/mcp-typescript-sdk
   - agents/official/bee-agent-framework
+  - packages/beeai-sdk
 
 catalog:
   typescript: "^5.7.3"

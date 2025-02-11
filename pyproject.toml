@@ -3,7 +3,7 @@ members = [
   "apps/beeai-cli",
   "apps/beeai-server",
   "examples/simple-agent",
-  "examples/simple-tool",
+  "examples/simple-tool", "packages/beeai-sdk",
 ]
 
 [tool.ruff]
