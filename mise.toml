@@ -21,14 +21,14 @@ outputs = { auto = true }
 
 ## dependencies
 
-[tasks."dependencies:nodejs"]
+[tasks."deps:js"]
 hide = true
 dir = "{{config_root}}"
 run = "pnpm install"
 sources = ["pnpm-lock.yaml", "pnpm-workspace.yaml", "**/package.json"]
 outputs = { auto = true }
 
-[tasks."dependencies:python"]
+[tasks."deps:py"]
 hide = true
 dir = "{{config_root}}"
 run = "uv sync"
@@ -39,13 +39,13 @@ outputs = { auto = true }
 
 [tasks."setup"]
 description = "Set-up repo and install dependencies"
-depends = ["prepare:*", "dependencies:*"]
+depends = ["prepare:*", "deps:*"]
 
 ## build
 
 [tasks."build:beeai-ui"]
 description = "Build the static files for `beeai-ui`"
-depends = ["dependencies:nodejs"]
+depends = ["deps:js"]
 dir = "{{config_root}}/apps/beeai-ui"
 run = "pnpm build"
 sources = ["*.json", "*.js", "index.html", "src/**/*.tsx", "src/**/*.ts"]
@@ -53,7 +53,7 @@ outputs = { auto = true }
 
 [tasks."build:beeai-cli"]
 description = "Build the Python wheel for `beeai-cli`"
-depends = ["dependencies:python"]
+depends = ["deps:py"]
 dir = "{{config_root}}/apps/beeai-cli"
 run = "uv build . --out-dir dist"
 sources = ["**/*.py"]
@@ -61,7 +61,7 @@ outputs = { auto = true }
 
 [tasks."build:beeai-server"]
 description = "Build the Python wheel for `beeai-server`"
-depends = ["dependencies:python", "build:beeai-ui"]
+depends = ["deps:py", "build:beeai-ui"]
 dir = "{{config_root}}/apps/beeai-server"
 run = "uv build . --out-dir dist"
 sources = ["**/*.py"]
@@ -71,31 +71,31 @@ outputs = { auto = true }
 
 [tasks."run:beeai-ui"]
 description = "Run the Vite development server for `beeai-ui` -- NOTE: you also need to have `beeai-server` running for the backend"
-depends = ["dependencies:nodejs"]
+depends = ["deps:js"]
 dir = "{{cwd}}"
 run = "pnpm --filter=@beeai/ui dev"
 
 [tasks."run:beeai-cli"]
 description = "Run the `beeai-cli`, use double dash to pass extra args, like `mise run:beeai-cli -- provider list`"
-depends = ["dependencies:python", "build:beeai-ui"]
+depends = ["deps:py", "build:beeai-ui"]
 dir = "{{cwd}}"
 run = "uv run beeai"
 
 [tasks."run:beeai-server"]
 description = "Run the `beeai-server`, including the UI in static mode"
-depends = ["dependencies:python", "build:beeai-ui"]
+depends = ["deps:py", "build:beeai-ui"]
 dir = "{{cwd}}"
 run = "uv run beeai-server"
 
 [tasks."run:example:mcp-simple-agent"]
 description = "Run an example MCP agent provider"
-depends = ["dependencies:python"]
+depends = ["deps:py"]
 dir = "{{cwd}}"
 run = "uv run mcp-simple-agent"
 
 [tasks."run:example:mcp-simple-tool"]
 description = "Run an example MCP tool provider"
-depends = ["dependencies:python"]
+depends = ["deps:py"]
 dir = "{{cwd}}"
 run = "uv run mcp-simple-tool"
 
