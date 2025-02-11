@@ -28,11 +28,19 @@
   text-decoration: none;
 }
 
-.description {
+.description p {
   @include type-style(body-compact-01);
   @include line-clamp(2);
   color: $text-secondary;
   letter-spacing: rem(0.32px);
+  line-height: math.div(16, 14);
+
+  code {
+    background-color: $layer-02;
+    font-size: rem(13px);
+    padding-inline: $spacing-02;
+    border-radius: rem(2px);
+  }
 }
 
 .footer {

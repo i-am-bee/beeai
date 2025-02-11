@@ -1,5 +1,5 @@
 import { AgentDetail } from '@/modules/agents/detail/AgentDetail';
-import { routes } from '@/utils/routes';
+import { routes } from '@/utils/router';
 import { useNavigate, useParams } from 'react-router';
 
 type Params = {

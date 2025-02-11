@@ -1,12 +1,12 @@
 import { TagsList } from '@/components/TagsList';
 import { SkeletonText } from '@carbon/react';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { Agent } from '../api/types';
 import classes from './AgentCard.module.scss';
-import { useModal } from '@/contexts/Modal';
-import { AgentModal } from './AgentModal';
 import { AgentStats } from './AgentStats';
 import { AgentTags } from './AgentTags';
+import Markdown from 'react-markdown';
+import { routes } from '@/utils/router';
 
 interface Props {
   agent: Agent;
@@ -14,10 +14,15 @@ interface Props {
 
 export function AgentCard({ agent }: Props) {
   const { name, description } = agent;
-  const { openModal } = useModal();
+  // const { openModal } = useModal();
+  const navigate = useNavigate();
 
   return (
-    <article className={classes.root} onClick={() => openModal((props) => <AgentModal {...props} agent={agent} />)}>
+    <article
+      className={classes.root}
+      onClick={() => navigate(routes.agentDetail(agent.id))}
+      // onClick={() => openModal((props) => <AgentModal {...props} agent={agent} />)}
+    >
       <div className={classes.header}>
         <h2 className={classes.name}>
           {/* TODO: Link */}
@@ -26,7 +31,7 @@ export function AgentCard({ agent }: Props) {
           </Link>
         </h2>
 
-        {description && <p className={classes.description}>{description}</p>}
+        {description && <Markdown className={classes.description}>{description}</Markdown>}
       </div>
 
       {/* TODO: Tags and metadata */}

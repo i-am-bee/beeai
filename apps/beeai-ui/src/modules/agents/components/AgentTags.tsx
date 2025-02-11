@@ -1,20 +1,22 @@
 import { TagsList } from '@/components/TagsList';
 import { Agent } from '../api/types';
 import { Tag } from '@carbon/react';
-import { LogoGithub } from '@carbon/icons-react';
+import { isNotNull } from '@/utils/helpers';
+import Bee from '@/svgs/Bee.svg';
 
 export function AgentTags({ agent }: { agent: Agent }) {
-  
-  // TODO: data from agent
-  console.debug(agent);
+  const author = agent.metadata?.author;
+  const isBeeAI = author === 'BeeAI';
 
   return (
     <TagsList
       tags={[
-        <Tag type="cool-gray">BeeAI Framework</Tag>,
-        <Tag type="cool-gray" renderIcon={LogoGithub} />,
-        <Tag type="green">Example</Tag>,
-      ]}
+        agent.metadata?.author ? (
+          <Tag type={isBeeAI ? 'green' : 'cool-gray'} renderIcon={isBeeAI ? Bee : undefined}>
+            {author}
+          </Tag>
+        ) : null,
+      ].filter(isNotNull)}
     />
   );
 }

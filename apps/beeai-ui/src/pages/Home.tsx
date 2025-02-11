@@ -3,6 +3,7 @@ import { ViewHeader } from '@/components/ViewHeader';
 import { ViewStack } from '@/components/ViewStack';
 import { AgentsFilters } from '@/modules/agents/components/AgentsFilters';
 import { AgentsList } from '@/modules/agents/components/AgentsList';
+import { AgentsProvider } from '@/modules/agents/contexts/AgentsProvider';
 import { Add } from '@carbon/icons-react';
 import { Button } from '@carbon/react';
 
@@ -17,9 +18,11 @@ export function Home() {
           </Button>
         </ViewHeader>
 
-        <AgentsFilters />
+        <AgentsProvider>
+          <AgentsFilters />
 
-        <AgentsList />
+          <AgentsList />
+        </AgentsProvider>
       </ViewStack>
     </Container>
   );

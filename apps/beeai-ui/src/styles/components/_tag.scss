@@ -3,6 +3,18 @@
 .cds--tag {
   margin: 0;
   min-inline-size: 0;
+
+  &.cds--tag--selectable.cds--tag--outline:not(:disabled) {
+    border: 1px solid $border-subtle;
+    outline: none;
+    &:hover {
+      background-color: $layer-hover-01;
+    }
+    &.cds--tag--selectable-selected {
+      background-color: $background-inverse;
+      color: $text-inverse;
+    }
+  }
 }
 
 .cds--tag:has(.cds--tag__custom-icon + .cds--tag__label:empty) {

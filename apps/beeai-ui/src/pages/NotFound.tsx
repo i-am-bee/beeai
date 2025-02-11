@@ -1,5 +1,5 @@
 import { Container } from '@/components/layouts/Container';
-import { routes } from '@/utils/routes';
+import { routes } from '@/utils/router';
 import { Button } from '@carbon/react';
 import { Link } from 'react-router';
 
