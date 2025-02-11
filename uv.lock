@@ -4,6 +4,7 @@ requires-python = ">=3.13"
 [manifest]
 members = [
     "beeai-cli",
+    "beeai-sdk",
     "beeai-server",
     "mcp-simple-agent",
     "mcp-simple-tool",
@@ -159,6 +160,17 @@ requires-dist = [
     { name = "pydantic-settings", specifier = ">=2.7.1" },
     { name = "requests", specifier = ">=2.32.3" },
 ]
+
+[[package]]
+name = "beeai-sdk"
+version = "0.1.0"
+source = { virtual = "packages/beeai-sdk" }
+dependencies = [
+    { name = "pydantic" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "pydantic", specifier = ">=2.10.6" }]
 
 [[package]]
 name = "beeai-server"
