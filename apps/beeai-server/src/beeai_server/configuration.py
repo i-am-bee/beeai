@@ -8,7 +8,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class LoggingConfiguration(BaseModel):
     level: int = logging.INFO
-    level_uvicorn: int = Field(logging.FATAL, validate_default=True)
+    level_uvicorn: int = Field(default=logging.FATAL, validate_default=True)
 
     @model_validator(mode="after")
     def level_uvicorn_validator(self):

@@ -11,3 +11,4 @@ class Configuration(pydantic_settings.BaseSettings):
         env_nested_delimiter="__",
     )
     host: pydantic.AnyUrl = "http://localhost:8333"
+    debug: bool = False

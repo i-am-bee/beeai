@@ -13,6 +13,7 @@
   "license": "MIT",
   "description": "",
   "dependencies": {
+    "beeai-sdk": "workspace:*",
     "@agentcommunicationprotocol/sdk": "^0.0.2",
     "bee-agent-framework": "^0.0.61",
     "express": "^4.19.2",
