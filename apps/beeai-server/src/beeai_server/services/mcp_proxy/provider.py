@@ -1,6 +1,6 @@
 import asyncio
 import logging
-from contextlib import AsyncExitStack, suppress
+from contextlib import AsyncExitStack
 from datetime import timedelta
 from enum import StrEnum
 from typing import Self, Literal, Final
@@ -34,6 +34,7 @@ class LoadedProvider:
 
     RECONNECT_INTERVAL = timedelta(seconds=10)
     PING_TIMEOUT = timedelta(seconds=5)
+    INITIALIZE_TIMEOUT = timedelta(seconds=10)
     session: ClientSession | None = None
     incoming_messages: MemoryObjectReceiveStream[
         RequestResponder[ReceiveRequestT, SendResultT] | ReceiveNotificationT | Exception
@@ -85,25 +86,26 @@ class LoadedProvider:
         features = self._LoadFeature.all() if features == "all" else features
         logger.info(f"Loading features for provider {self.provider}: {list(features)}.")
         try:
-            if (
-                self._initialize_result.capabilities.agents
-                and self._initialize_result.capabilities.agents.templates
-                and self._LoadFeature.agent_templates in features
-            ):
-                self.agent_templates = (await self.session.list_agent_templates()).agentTemplates
-                logger.info(f"Loaded {len(self.agent_templates)} agent templates")
-            if self._initialize_result.capabilities.agents and self._LoadFeature.agents in features:
-                self.agents = (await self.session.list_agents()).agents
-                logger.info(f"Loaded {len(self.agents)} agents")
-            if self._initialize_result.capabilities.tools and self._LoadFeature.tools in features:
-                self.tools = (await self.session.list_tools()).tools
-                logger.info(f"Loaded {len(self.tools)} tools")
-            if self._initialize_result.capabilities.resources and self._LoadFeature.resources in features:
-                self.resources = (await self.session.list_resources()).resources
-                logger.info(f"Loaded {len(self.resources)} resources")
-            if self._initialize_result.capabilities.prompts and self._LoadFeature.prompts in features:
-                self.prompts = (await self.session.list_prompts()).prompts
-                logger.info(f"Loaded {len(self.prompts)} prompts")
+            with anyio.fail_after(self.INITIALIZE_TIMEOUT.total_seconds()):
+                if (
+                    self._initialize_result.capabilities.agents
+                    and self._initialize_result.capabilities.agents.templates
+                    and self._LoadFeature.agent_templates in features
+                ):
+                    self.agent_templates = (await self.session.list_agent_templates()).agentTemplates
+                    logger.info(f"Loaded {len(self.agent_templates)} agent templates")
+                if self._initialize_result.capabilities.agents and self._LoadFeature.agents in features:
+                    self.agents = (await self.session.list_agents()).agents
+                    logger.info(f"Loaded {len(self.agents)} agents")
+                if self._initialize_result.capabilities.tools and self._LoadFeature.tools in features:
+                    self.tools = (await self.session.list_tools()).tools
+                    logger.info(f"Loaded {len(self.tools)} tools")
+                if self._initialize_result.capabilities.resources and self._LoadFeature.resources in features:
+                    self.resources = (await self.session.list_resources()).resources
+                    logger.info(f"Loaded {len(self.resources)} resources")
+                if self._initialize_result.capabilities.prompts and self._LoadFeature.prompts in features:
+                    self.prompts = (await self.session.list_prompts()).prompts
+                    logger.info(f"Loaded {len(self.prompts)} prompts")
         except Exception as ex:
             logger.error(f"Failed to load features for provider: {self.provider}: {ex}")
             self.session = None  # Mark session as broken - reinitialize connection in next period
@@ -122,18 +124,22 @@ class LoadedProvider:
             await self._write_messages.send(message)
 
     async def _initialize_session(self):
-        with suppress(Exception):
+        try:
             await self._session_exit_stack.aclose()
+        except Exception:
+            self._session_exit_stack.pop_all()
         logger.info(f"Initializing session to provider {self.provider}")
         connection = await self.provider.get_connection()
         read_stream, write_stream = await self._session_exit_stack.enter_async_context(connection.mcp_client())
         session = await self._session_exit_stack.enter_async_context(ClientSession(read_stream, write_stream))
-        self._initialize_result = await session.initialize()
+        with anyio.fail_after(self.INITIALIZE_TIMEOUT.total_seconds()):
+            self._initialize_result = await session.initialize()
         tg = await self._session_exit_stack.enter_async_context(anyio.create_task_group())
+        self._session_exit_stack.callback(lambda: tg.cancel_scope.cancel())
+
+        self.session = session
         tg.start_soon(self._stream_notifications, tg)
         tg.start_soon(self._load_features)
-        self._session_exit_stack.callback(lambda: tg.cancel_scope.cancel())
-        self.session = session
 
     async def _ensure_session(self):
         if self._stopping:
@@ -147,7 +153,7 @@ class LoadedProvider:
                 return
             await self._initialize_session()
         except TimeoutError:
-            logger.warning(f"The server did not respond in {self.PING_TIMEOUT}, we assume it is processing a request")
+            logger.warning("The server did not respond in time, we assume it is processing a request.")
         except Exception as ex:  # TODO narrow exception scope
             logger.warning(f"Connection to {self.provider} was closed, reconnecting in {self.RECONNECT_INTERVAL}: {ex}")
             self.session = None
