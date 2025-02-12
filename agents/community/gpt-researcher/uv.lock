@@ -227,7 +227,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "agentcommunicationprotocol", specifier = ">=0.0.4" },
+    { name = "agentcommunicationprotocol", specifier = ">=0.0.5" },
     { name = "pydantic", specifier = ">=2.10.6" },
 ]
 
