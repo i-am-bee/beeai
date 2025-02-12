@@ -25,8 +25,8 @@ async def register_agent() -> int:
                   output=PromptOutput)
     async def run_agent(input: PromptInput, ctx) -> PromptOutput:
 
-        async def send_progress(text: dict[str, Any]):
-            await ctx.report_agent_run_progress(text)
+        async def send_progress(delta: dict[str, Any]):
+            await ctx.report_agent_run_progress(delta)
             
         custom_logs_handler = CustomLogsHandler(send_progress)
         
