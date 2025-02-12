@@ -23,7 +23,7 @@ export async function runAgentProvider(server: McpServer): Promise<void> {
     await server.connect(transport);
   });
 
-  const port = parseInt(process.env.PORT ?? "3001");
+  const port = parseInt(process.env.PORT ?? "8000");
 
   return new Promise((resolve, reject) => {
     app
