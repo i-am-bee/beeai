@@ -4,11 +4,11 @@ import { AgentCard } from './AgentCard';
 import classes from './AgentsList.module.scss';
 import { useFormContext } from 'react-hook-form';
 import { FilterFormValues } from '../contexts/AgentsContext';
+import { ErrorMessage } from '@/components/ErrorMessage/ErrorMessage';
 
 export function AgentsList() {
-  // TODO: handle error
   const {
-    agentsQuery: { data, isPending },
+    agentsQuery: { data, isPending, error, refetch, isRefetching },
   } = useAgents();
   const { watch } = useFormContext<FilterFormValues>();
 
@@ -31,6 +31,16 @@ export function AgentsList() {
       })
       .sort((a, b) => a.name.localeCompare(b.name));
   }, [data, filterValues]);
+
+  if (error && !data)
+    return (
+      <ErrorMessage
+        title="Failed to load agents."
+        onRetry={refetch}
+        isRefetching={isRefetching}
+        subtitle={error.message}
+      />
+    );
 
   return (
     <div>

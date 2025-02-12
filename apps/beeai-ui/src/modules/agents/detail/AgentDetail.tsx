@@ -25,7 +25,7 @@ export function AgentDetail({ name }: Props) {
     <Container>
       <ViewStack>
         {!isPending ? (
-          !error && agent ? (
+          agent ? (
             <div className={classes.root}>
               <header className={classes.header}>
                 <div className={classes.metadata}>
@@ -62,7 +62,7 @@ export function AgentDetail({ name }: Props) {
               title="Failed to load the agent."
               onRetry={refetch}
               isRefetching={isRefetching}
-              subtitle={error ? error.message : 'Agent not found.'}
+              subtitle={error?.message}
             />
           )
         ) : (
