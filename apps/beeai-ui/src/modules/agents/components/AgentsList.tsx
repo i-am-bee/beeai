@@ -17,17 +17,19 @@ export function AgentsList() {
   const filteredAgents = useMemo(() => {
     const { frameworks, search } = filterValues;
 
-    return data?.filter((agent) => {
-      if (frameworks.length && !frameworks.includes(agent.framework ?? '')) {
-        return false;
-      }
+    return data
+      ?.filter((agent) => {
+        if (frameworks.length && !frameworks.includes(agent.framework ?? '')) {
+          return false;
+        }
 
-      if (search && !new RegExp(`${search}`, 'i').test(agent.name)) {
-        return false;
-      }
+        if (search && !new RegExp(`${search}`, 'i').test(agent.name)) {
+          return false;
+        }
 
-      return true;
-    });
+        return true;
+      })
+      .sort((a, b) => a.name.localeCompare(b.name));
   }, [data, filterValues]);
 
   return (
