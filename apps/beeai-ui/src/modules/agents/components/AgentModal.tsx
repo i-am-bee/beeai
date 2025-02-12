@@ -2,7 +2,7 @@ import { Button, Layer, ModalBody, ModalHeader } from '@carbon/react';
 import { Agent } from '../api/types';
 import { ModalProps } from '@/contexts/Modal/ModalContext';
 import { Modal } from '@/components/Modal/Modal';
-import { AgentStats } from './AgentStats';
+import { AgentMetadata } from './AgentMetadata';
 import { AgentTags } from './AgentTags';
 import classes from './AgentModal.module.scss';
 import { ArrowUpRight } from '@carbon/icons-react';
@@ -21,7 +21,7 @@ export function AgentModal({ agent, onRequestClose, ...modalProps }: Props) {
     <Modal {...modalProps}>
       <ModalHeader buttonOnClick={() => onRequestClose()}>
         <h2>{name}</h2>
-        <AgentStats agent={agent} />
+        <AgentMetadata agent={agent} />
       </ModalHeader>
       <ModalBody>
         <div className={classes.body}>

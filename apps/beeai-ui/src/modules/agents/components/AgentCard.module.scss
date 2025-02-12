@@ -1,14 +1,12 @@
 .root {
-  background-color: $background;
-  border-radius: $border-radius;
-  box-shadow: $box-shadow;
-  padding: $spacing-06 $spacing-05 $spacing-06 $spacing-06;
+  border-block-end: 1px solid $border-subtle;
+  padding-block-end: $gap;
   position: relative;
   transition: background-color $duration-fast-01 motion(standard, productive);
 
-  &:has(.link:hover) {
-    background-color: $background-hover-50;
-  }
+  // &:has(.link:hover) {
+  //   background-color: $background-hover-50;
+  // }
 }
 
 .header {
@@ -34,13 +32,6 @@
   color: $text-secondary;
   letter-spacing: rem(0.32px);
   line-height: math.div(16, 14);
-
-  code {
-    background-color: $layer-02;
-    font-size: rem(13px);
-    padding-inline: $spacing-02;
-    border-radius: rem(2px);
-  }
 }
 
 .footer {

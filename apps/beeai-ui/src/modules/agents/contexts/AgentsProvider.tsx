@@ -8,7 +8,7 @@ export function AgentsProvider({ children }: PropsWithChildren) {
 
   const formReturn = useForm<FilterFormValues>({
     defaultValues: {
-      authors: [],
+      frameworks: [],
     },
     mode: 'onChange',
   });

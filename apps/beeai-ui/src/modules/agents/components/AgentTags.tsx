@@ -1,22 +1,21 @@
 import { TagsList } from '@/components/TagsList';
 import { Agent } from '../api/types';
 import { Tag } from '@carbon/react';
-import { isNotNull } from '@/utils/helpers';
 import Bee from '@/svgs/Bee.svg';
+import { isNotNull } from '@/utils/helpers';
 
 export function AgentTags({ agent }: { agent: Agent }) {
-  const author = agent.metadata?.author;
-  const isBeeAI = author === 'BeeAI';
+  const { framework } = agent;
 
-  return (
-    <TagsList
-      tags={[
-        agent.metadata?.author ? (
-          <Tag type={isBeeAI ? 'green' : 'cool-gray'} renderIcon={isBeeAI ? Bee : undefined}>
-            {author}
-          </Tag>
-        ) : null,
-      ].filter(isNotNull)}
-    />
+  return <TagsList tags={[framework ? <AgentTag name={framework} /> : null].filter(isNotNull)} />;
+}
+
+function AgentTag({ name }: { name: string }) {
+  return name === 'BeeAI' ? (
+    <Tag type="green" renderIcon={Bee}>
+      {name}
+    </Tag>
+  ) : (
+    <Tag type="cool-gray">{name}</Tag>
   );
 }

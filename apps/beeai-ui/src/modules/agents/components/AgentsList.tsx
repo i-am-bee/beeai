@@ -15,10 +15,10 @@ export function AgentsList() {
   const filterValues = watch();
 
   const filteredAgents = useMemo(() => {
-    const { authors, search } = filterValues;
+    const { frameworks, search } = filterValues;
 
     return data?.filter((agent) => {
-      if (authors.length && !authors.includes(agent.metadata?.author ?? '')) {
+      if (frameworks.length && !frameworks.includes(agent.framework ?? '')) {
         return false;
       }
 
@@ -45,28 +45,3 @@ export function AgentsList() {
     </div>
   );
 }
-
-// const TEMP_DUMMY_DATA = [
-//   {
-//     name: 'Chat with transcript',
-//     description:
-//       'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Deleniti facere est dolor, et dicta blanditiis earum culpa dolores modi id possimus, beatae sit ipsam ex cum voluptates, facilis quidem unde? Lorem, ipsum dolor sit amet consectetur adipisicing elit. Deleniti facere est dolor, et dicta blanditiis earum culpa dolores modi id possimus, beatae sit ipsam ex cum voluptates, facilis quidem unde? Lorem, ipsum dolor sit amet consectetur adipisicing elit. Deleniti facere est dolor, et dicta blanditiis earum culpa dolores modi id possimus, beatae sit ipsam ex cum voluptates, facilis quidem unde?',
-//     metadata: {
-//       avgRunTime: 5,
-//       avgRunTokens: 24,
-//       author: 'BeeAI',
-//     },
-//   },
-//   {
-//     name: 'Competitive analysis',
-//     description: 'Ask a question about using Bee',
-//   },
-//   {
-//     name: 'Blog writer',
-//     description: 'Share your meeting transcript and ask questions or request a summary',
-//   },
-//   {
-//     name: 'Bee assistant',
-//     description: 'A general purpose helpful agent',
-//   },
-// ] as Agent[];

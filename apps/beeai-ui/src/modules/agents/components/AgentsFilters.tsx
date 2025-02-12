@@ -6,6 +6,7 @@ import { useAgents } from '../contexts';
 import { useFormContext } from 'react-hook-form';
 import { FilterFormValues } from '../contexts/AgentsContext';
 import clsx from 'clsx';
+import { isNotNull } from '@/utils/helpers';
 
 export function AgentsFilters() {
   const id = useId();
@@ -14,31 +15,32 @@ export function AgentsFilters() {
   } = useAgents();
   const { watch, setValue, getValues } = useFormContext<FilterFormValues>();
 
-  const authors = useMemo(() => {
+  const frameworks = useMemo(() => {
     if (!data) return [];
 
-    const authors = new Set<string>();
-    data.forEach(({ metadata }) => metadata?.author && authors.add(metadata.author));
-    return Array.from(authors);
+    return [...new Set(data.map(({ framework }) => framework))].filter(isNotNull);
   }, [data]);
 
-  const handleToggleAuthor = (author: string) => {
-    const value = getValues('authors');
-    setValue('authors', value.includes(author) ? value.filter((item) => item !== author) : [...value, author]);
+  const handleToggleFramework = (framework: string) => {
+    const value = getValues('frameworks');
+    setValue(
+      'frameworks',
+      value.includes(framework) ? value.filter((item) => item !== framework) : [...value, framework],
+    );
   };
 
-  const selectedAuthors = watch('authors');
+  const selectedFrameworks = watch('frameworks');
 
   return (
     <div className={classes.root}>
       <div className={classes.searchBar}>
         <Search />
-        {selectedAuthors.length ? (
+        {selectedFrameworks.length ? (
           <div className={classes.activeFilters}>
             <DismissibleTag
               type="high-contrast"
-              text={String(selectedAuthors.length)}
-              onClose={() => setValue('authors', [])}
+              text={String(selectedFrameworks.length)}
+              onClose={() => setValue('frameworks', [])}
             />
           </div>
         ) : null}
@@ -55,15 +57,15 @@ export function AgentsFilters() {
           type="cool-gray"
           text="All"
           className={classes.authorAll}
-          onClick={() => setValue('authors', [])}
+          onClick={() => setValue('frameworks', [])}
         />
 
-        {authors?.map((author) => (
+        {frameworks?.map((author) => (
           <Tag
             key={author}
             type="outline"
-            className={clsx({ [classes.selected]: selectedAuthors.includes(author) })}
-            onClick={() => handleToggleAuthor(author)}
+            className={clsx({ [classes.selected]: selectedFrameworks.includes(author) })}
+            onClick={() => handleToggleFramework(author)}
           >
             {author}
           </Tag>

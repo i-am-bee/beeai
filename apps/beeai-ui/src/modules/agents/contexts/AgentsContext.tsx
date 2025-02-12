@@ -9,5 +9,5 @@ interface AgentsContextValue {
 
 export interface FilterFormValues {
   search?: string;
-  authors: string[];
+  frameworks: string[];
 }

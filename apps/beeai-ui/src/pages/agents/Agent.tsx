@@ -3,17 +3,17 @@ import { routes } from '@/utils/router';
 import { useNavigate, useParams } from 'react-router';
 
 type Params = {
-  agentId: string;
+  agentName: string;
 };
 
 export function Agent() {
-  const { agentId } = useParams<Params>();
+  const { agentName } = useParams<Params>();
   const navigate = useNavigate();
 
-  if (!agentId) {
+  if (!agentName) {
     navigate(routes.notFound(), { replace: true });
     return null;
   }
 
-  return <AgentDetail id={agentId} />;
+  return <AgentDetail name={agentName} />;
 }

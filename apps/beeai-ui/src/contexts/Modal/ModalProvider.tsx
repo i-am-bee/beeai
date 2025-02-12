@@ -13,8 +13,6 @@ export function ModalProvider({ children }: PropsWithChildren) {
     const modalId = uuid();
 
     const closeModal = () => {
-      console.log('close modal request', modalId);
-
       setModals((modals) => ({
         ...modals,
         [modalId]: {

@@ -1,44 +1,43 @@
 import { TagsList } from '@/components/TagsList';
 import { SkeletonText } from '@carbon/react';
-import { Link, useNavigate } from 'react-router';
+import { Link } from 'react-router';
 import { Agent } from '../api/types';
 import classes from './AgentCard.module.scss';
-import { AgentStats } from './AgentStats';
+import { AgentMetadata } from './AgentMetadata';
 import { AgentTags } from './AgentTags';
-import Markdown from 'react-markdown';
 import { routes } from '@/utils/router';
+import { MarkdownContent } from '@/components/MarkdownContent/MarkdownContent';
 
 interface Props {
   agent: Agent;
 }
 
 export function AgentCard({ agent }: Props) {
-  const { name, description } = agent;
+  const { name, title, description } = agent;
   // const { openModal } = useModal();
-  const navigate = useNavigate();
+
+  const route = routes.agentDetail(agent.name);
 
   return (
     <article
       className={classes.root}
-      onClick={() => navigate(routes.agentDetail(agent.id))}
+      // TODO: Remove, including AgentModal file, if the modal view is not used in the final UI
       // onClick={() => openModal((props) => <AgentModal {...props} agent={agent} />)}
     >
       <div className={classes.header}>
         <h2 className={classes.name}>
-          {/* TODO: Link */}
-          <Link to="/" className={classes.link}>
-            {name}
+          <Link to={route} className={classes.link}>
+            {title ?? name}
           </Link>
         </h2>
 
-        {description && <Markdown className={classes.description}>{description}</Markdown>}
+        {description && <MarkdownContent className={classes.description}>{description}</MarkdownContent>}
       </div>
 
-      {/* TODO: Tags and metadata */}
       <div className={classes.footer}>
         <AgentTags agent={agent} />
 
-        <AgentStats agent={agent} />
+        <AgentMetadata agent={agent} />
       </div>
     </article>
   );

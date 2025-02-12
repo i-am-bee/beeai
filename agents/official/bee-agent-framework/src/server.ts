@@ -6,9 +6,13 @@ import { StreamlitAgent } from "bee-agent-framework/agents/experimental/streamli
 import { OllamaChatLLM } from "bee-agent-framework/adapters/ollama/chat";
 import { UnconstrainedMemory } from "bee-agent-framework/memory/unconstrainedMemory";
 import { Version } from "bee-agent-framework";
-import { runAgentProvider } from 'beeai-sdk/src/providers/agent.js';
-import { promptInputSchema, promptOutputSchema, PromptOutput } from 'beeai-sdk/src/schemas/prompt.js';
-import { Metadata } from 'beeai-sdk/src/schemas/metadata.js';
+import { runAgentProvider } from "beeai-sdk/src/providers/agent.js";
+import {
+  promptInputSchema,
+  promptOutputSchema,
+  PromptOutput,
+} from "beeai-sdk/src/schemas/prompt.js";
+import { Metadata } from "beeai-sdk/src/schemas/metadata.js";
 
 async function registerAgents(server: McpServer) {
   const streamlitMeta = new StreamlitAgent({
@@ -45,7 +49,63 @@ async function registerAgents(server: McpServer) {
         text: output.result.raw,
       };
     },
-    { tags: ['bee'] } as const satisfies Metadata
+    {
+      title: "Streamlit Agent",
+      framework: "BeeAI",
+      licence: "Apache 2.0",
+      fullDescription: `This is an example AI agent.
+## Features
+- Feature 1  
+- Feature 2  
+- Feature 3`,
+      avgRunTimeSeconds: 10,
+      avgRunTokens: 48,
+    } as const satisfies Metadata
+  );
+
+  // for UI development purposes
+  server.agent(
+    "another-streamlit-agent",
+    streamlitMeta.description,
+    promptInputSchema,
+    promptOutputSchema,
+    async ({
+      params: {
+        input: { prompt },
+        _meta,
+      },
+    }) => {
+      const output = await new StreamlitAgent({
+        llm: new OllamaChatLLM(),
+        memory: new UnconstrainedMemory(),
+      })
+        .run({ prompt })
+        .observe((emitter) => {
+          emitter.on("newToken", async ({ delta }) => {
+            if (_meta?.progressToken) {
+              await server.server.sendAgentRunProgress({
+                progressToken: _meta.progressToken,
+                delta: { text: delta } as PromptOutput,
+              });
+            }
+          });
+        });
+      return {
+        text: output.result.raw,
+      };
+    },
+    {
+      title: "Second Streamlit Agent",
+      framework: "CrewAI",
+      licence: "Apache 2.0",
+      fullDescription: `This is an example AI agent.
+## Features
+- Feature 1  
+- Feature 2  
+- Feature 3`,
+      avgRunTimeSeconds: 2.1,
+      avgRunTokens: 111,
+    } satisfies Metadata
   );
 }
 
@@ -62,7 +122,7 @@ export async function createServer() {
     }
   );
   await registerAgents(server);
-  return server
+  return server;
 }
 
 const server = await createServer();
