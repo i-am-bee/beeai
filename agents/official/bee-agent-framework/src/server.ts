@@ -8,6 +8,7 @@ import { UnconstrainedMemory } from "bee-agent-framework/memory/unconstrainedMem
 import { Version } from "bee-agent-framework";
 import { runAgentProvider } from 'beeai-sdk/src/providers/agent.js';
 import { promptInputSchema, promptOutputSchema, PromptOutput } from 'beeai-sdk/src/schemas/prompt.js';
+import { Metadata } from 'beeai-sdk/src/schemas/metadata.js';
 
 async function registerAgents(server: McpServer) {
   const streamlitMeta = new StreamlitAgent({
@@ -43,7 +44,8 @@ async function registerAgents(server: McpServer) {
       return {
         text: output.result.raw,
       };
-    }
+    },
+    { tags: ['bee'] } as const satisfies Metadata
   );
 }
 

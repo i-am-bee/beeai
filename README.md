@@ -48,16 +48,8 @@ mise run:beeai-server
 ### Running the CLI
 
 ```sh
-# run example SSE provider
-OPENAI_API_KEY=<your-openai-api-key> mise run:example:mcp-simple-agent -- --transport sse --port 9999
-# (keep it running, open another terminal for next steps)
-
 # add SSE provider 
 mise run:beeai-cli -- provider add mcp http://localhost:9999/sse
-
-# add local filesystem provider
-mise run:beeai-cli -- provider add uvx file://packages/mcp-python-sdk/examples/servers/simple-tool
-mise run:beeai-cli -- provider list
 
 # tools
 mise run:beeai-cli -- tool list
