@@ -8,7 +8,7 @@ resolution-markers = [
 
 [[package]]
 name = "agentcommunicationprotocol"
-version = "0.0.4"
+version = "0.0.5"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "anyio" },
@@ -22,9 +22,9 @@ dependencies = [
     { name = "starlette" },
     { name = "uvicorn" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/be/11/c6347a075ce13f65ab04117c9a9302d3d61de9c6154c395b347350c4234f/agentcommunicationprotocol-0.0.4.tar.gz", hash = "sha256:7b41f661b4bf895330a44e256337b9169d86ccd24fc8455edb565f8de85fc5d1", size = 141584 }
+sdist = { url = "https://files.pythonhosted.org/packages/ef/66/b2be9dcbb3d84c3024e0005facb058740250f5a32b60f04c98c598e249cc/agentcommunicationprotocol-0.0.5.tar.gz", hash = "sha256:bad4b46fbe35d9f13e32392c3389f6712a2203f3a4aa8330bc722bad23346afc", size = 141589 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/8c/1f/7f6c24c4aa0f38998b3e57add6663b7684f40f7fac6593b93d49eae88418/agentcommunicationprotocol-0.0.4-py3-none-any.whl", hash = "sha256:35089a3ae08a987a61e7c7e7dbef708310b678695b1cd45e156a03d8c6a23759", size = 69552 },
+    { url = "https://files.pythonhosted.org/packages/70/12/0fe53558170b7ca1b1f7567faec5e2676f05aa0b9876e4acb4b33c141a28/agentcommunicationprotocol-0.0.5-py3-none-any.whl", hash = "sha256:b0456dcfadab3cd6b25b4709a1f4a8bce60d34142bfe05af5cf719547f0a0d42", size = 69559 },
 ]
 
 [[package]]
@@ -799,7 +799,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "agentcommunicationprotocol", specifier = ">=0.0.4" },
+    { name = "agentcommunicationprotocol", specifier = ">=0.0.5" },
     { name = "beeai-sdk", editable = "../../../packages/beeai-sdk" },
     { name = "duckduckgo-search", specifier = ">=7.3.2,<8.0.0" },
     { name = "gpt-researcher", specifier = ">=0.10.11,<0.11.0" },
