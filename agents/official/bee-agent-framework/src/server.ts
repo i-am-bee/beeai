@@ -9,7 +9,6 @@ import { Version } from "bee-agent-framework";
 import { runAgentProvider } from 'beeai-sdk/src/providers/agent.js';
 import { promptInputSchema, promptOutputSchema, PromptOutput } from 'beeai-sdk/src/schemas/prompt.js';
 import { Metadata } from 'beeai-sdk/src/schemas/metadata.js';
-import { OpenAIChatLLM } from "bee-agent-framework/adapters/openai/chat";
 
 async function registerAgents(server: McpServer) {
   const streamlitMeta = new StreamlitAgent({
@@ -28,7 +27,7 @@ async function registerAgents(server: McpServer) {
       },
     }) => {
       const output = await new StreamlitAgent({
-        llm: new OpenAIChatLLM(),
+        llm: new OllamaChatLLM(),
         memory: new UnconstrainedMemory(),
       })
         .run({ prompt })
