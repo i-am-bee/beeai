@@ -7,8 +7,10 @@ export async function runAgentProvider(server: McpServer): Promise<void> {
 
   let connected = false;
   app.get("/sse", async (req, res) => {
-    if (connected)
+    if (connected) {
       res.status(400).send("Multiple connections at a time are not permitted");
+      return;
+    }
     connected = true;
     res.on("close", () => {
       connected = false;
