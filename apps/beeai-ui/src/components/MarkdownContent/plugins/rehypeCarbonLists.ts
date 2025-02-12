@@ -5,7 +5,7 @@ export function rehypeCarbonLists() {
   // we cannot use `usePrefix` obviously but this doesn't change anyway
   const prefix = 'cds';
   return (tree: Root) => {
-    visit(tree, (node, index, parent) => {
+    visit(tree, (node, _, parent) => {
       if (node.type !== 'element') return;
 
       if (node.tagName === 'li') {

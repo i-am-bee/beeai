@@ -51,7 +51,7 @@ async function registerAgents(server: McpServer) {
     },
     {
       title: "Streamlit Agent",
-      framework: "BeeAI",
+      framework: "CrewAI",
       licence: "Apache 2.0",
       fullDescription: `This is an example AI agent.
 ## Features
@@ -96,7 +96,7 @@ async function registerAgents(server: McpServer) {
     },
     {
       title: "GPT Researcher",
-      framework: "CrewAI",
+      framework: "BeeAI",
       licence: "Apache 2.0",
       fullDescription: `GPT Researcher is an autonomous agent designed for comprehensive web and local research on any given task.
 

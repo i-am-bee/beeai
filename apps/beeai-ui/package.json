@@ -37,6 +37,7 @@
     "@eslint/js": "^9.17.0",
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
+    "@types/hast": "^3.0.4",
     "@vitejs/plugin-react-swc": "^3.5.0",
     "eslint": "catalog:",
     "eslint-plugin-react-hooks": "^5.0.0",
