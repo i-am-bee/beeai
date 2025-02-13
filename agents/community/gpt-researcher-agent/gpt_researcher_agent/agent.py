@@ -1,5 +1,7 @@
 from typing import Any
 import asyncio
+
+from pydantic import BaseModel, Field
 from gpt_researcher import GPTResearcher
 from mcp.server.fastmcp import FastMCP
 from beeai_sdk.schemas.prompt import PromptInput, PromptOutput
@@ -11,22 +13,16 @@ from gpt_researcher_agent.configuration import load_env
 load_env()  # GPT Researchers uses env variables for configuration
 
 
+class Log(BaseModel):
+    content: str
+    text: str
+    metadata: Any = Field(default=None)
+
+
 class Output(PromptOutput):
-    type: None | str = None
-    content: None | str = None
-    text: None | str = None
-    metadata: None | Any = None
-
-
-class CustomLogsHandler:
-    def __init__(self, send_progress):
-        self.send_progress = send_progress
-
-    async def send_json(self, data: dict[str, Any]) -> None:
-        delta = Output(
-            type=data.get("type"), content=data.get("content"), text=data.get("output"), metadata=data.get("metadata")
-        )
-        await self.send_progress(delta)
+    logs: list[Log | None] = Field(default_factory=list)
+    images: list[str | None] = Field(default_factory=list)
+    text: str = Field(default_factory=str)
 
 
 async def register_agent() -> int:
@@ -80,17 +76,28 @@ Our view on unbiased research claims:
         ).model_dump(),
     )
     async def run_agent(input: PromptInput, ctx) -> Output:
-        async def send_progress(delta: Output):
-            await ctx.report_agent_run_progress(delta)
+        output: Output = Output()
 
-        custom_logs_handler = CustomLogsHandler(send_progress)
+        class CustomLogsHandler:
+            async def send_json(self, data: dict[str, Any]) -> None:
+                match data.get("type"):
+                    case "logs":
+                        log = Log(content=data.get("content"), text=data.get("output"), metadata=data.get("metadata"))
+                        output.logs.append(log)
+                        await ctx.report_agent_run_progress(Output(logs=[None, log]))
+                    case "images":
+                        output.images.extend(data.get("metadata"))
+                        await ctx.report_agent_run_progress(Output(images=[None, *data.get("metadata")]))
+                    case "report":
+                        output.text += data.get("output")
+                        await ctx.report_agent_run_progress(Output(text=data.get("output")))
 
-        researcher = GPTResearcher(query=input.prompt, report_type="research_report", websocket=custom_logs_handler)
+        researcher = GPTResearcher(query=input.prompt, report_type="research_report", websocket=CustomLogsHandler())
         # Conduct research on the given query
         await researcher.conduct_research()
         # Write the report
-        report = await researcher.write_report()
-        return Output(type="result", text=report)
+        await researcher.write_report()
+        return output
 
     await run_agent_provider(server)
 
