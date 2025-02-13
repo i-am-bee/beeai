@@ -3,19 +3,18 @@ from contextlib import asynccontextmanager
 from enum import StrEnum
 from typing import Literal
 
-import anyio
 import httpx
 import yaml
+from anyio import Path
 from mcp import stdio_client, StdioServerParameters
 from mcp.client.sse import sse_client
 from pydantic import BaseModel, Field, FileUrl, RootModel, field_validator
 from pydantic_core.core_schema import ValidationInfo
 
-from beeai_server.domain.constants import DEFAULT_MANIFEST_PATH
 from beeai_server.custom_types import McpClient, ID
+from beeai_server.domain.constants import DEFAULT_MANIFEST_PATH
 from beeai_server.utils.github import GithubUrl
 from beeai_server.utils.managed_server_client import managed_sse_client, ManagedServerParameters
-from anyio import Path
 
 
 class ProviderDriver(StrEnum):
@@ -199,8 +198,7 @@ class LocalFileManifestLocation(RootModel):
             raise ValueError("Cannot resolve relative file path.")
         if not (await path.is_file()):
             path = path / DEFAULT_MANIFEST_PATH
-        async with await anyio.open_file(str(path)) as f:
-            content = await f.read()
+        content = await path.read_text()
         return Provider.model_validate(
             {
                 "manifest": {**yaml.safe_load(content), "base_file_path": str(self.root.path)},

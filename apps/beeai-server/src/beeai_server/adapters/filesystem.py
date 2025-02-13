@@ -1,4 +1,3 @@
-import json
 from pathlib import Path
 from typing import AsyncIterator, Callable
 
@@ -32,7 +31,7 @@ class FilesystemProviderRepository(IProviderRepository):
     async def _write_config(self, providers: dict[str, ProviderManifest]) -> None:
         # Ensure that path exists
         await self._config_path.parent.mkdir(parents=True, exist_ok=True)
-        config = json.dumps(ProviderConfigFile(providers=providers).model_dump(mode="json"), indent=2)
+        config = yaml.dump(ProviderConfigFile(providers=providers).model_dump(mode="json"), indent=2)
         await self._config_path.write_text(config)
 
     async def _read_config(self) -> dict[str, ProviderManifest]:
