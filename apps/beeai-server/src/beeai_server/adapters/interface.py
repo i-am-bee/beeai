@@ -1,12 +1,6 @@
-from enum import StrEnum
-from typing import runtime_checkable, Protocol, AsyncIterator, Callable
+from typing import runtime_checkable, Protocol, AsyncIterator
 
 from beeai_server.domain.model import Provider
-
-
-class RepositoryEventType(StrEnum):
-    DELETE = "delete"
-    CREATE = "create"
 
 
 @runtime_checkable
@@ -16,6 +10,3 @@ class IProviderRepository(Protocol):
 
     async def create(self, *, provider: Provider) -> None: ...
     async def delete(self, *, provider_id: str) -> None: ...
-
-    def subscribe(self, *, handler: Callable[[RepositoryEventType], None]) -> None: ...
-    def unsubscribe(self, *, handler: Callable[[RepositoryEventType], None]) -> None: ...

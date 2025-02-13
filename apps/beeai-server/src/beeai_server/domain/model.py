@@ -162,6 +162,17 @@ class Provider(BaseModel):
     id: ID
 
 
+class LoadedProviderStatus(StrEnum):
+    initializing = "initializing"
+    ready = "ready"
+    error = "error"
+
+
+class ProviderWithStatus(Provider):
+    status: LoadedProviderStatus
+    last_error: str | None = None
+
+
 class GitHubManifestLocation(RootModel):
     root: GithubUrl
 

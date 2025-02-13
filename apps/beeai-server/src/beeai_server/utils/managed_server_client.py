@@ -69,11 +69,12 @@ async def managed_sse_client(server: ManagedServerParameters) -> McpClient:
                     yield streams
                     failed = False
                     break
+            except GeneratorExit:
+                break
             except Exception as ex:
                 timeout = 2**attempt
-                logger.warning(f"Failed to connect to provider. Reconnecting in {timeout} seconds: {ex}")
+                logger.warning(f"Failed to connect to provider. Reconnecting in {timeout} seconds: {ex!r}")
                 await asyncio.sleep(2)
-
 
         with anyio.move_on_after(server.graceful_terminate_timeout) as cancel_scope:
             process.terminate()

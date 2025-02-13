@@ -104,7 +104,7 @@ class NotificationHub:
                             logger.debug(f"Dispatching notification {notify.method}")
                             await self._notification_stream_writer.send(notify)
             except (anyio.BrokenResourceError, anyio.EndOfStream, CancelledError) as ex:
-                logger.error(f"Exception occured during reading messages: {ex}")
+                logger.error(f"Exception occured during reading messages: {ex!r}")
 
         with suppress(CancelledError):
             async with anyio.create_task_group() as tg:
