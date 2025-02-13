@@ -51,6 +51,7 @@ jobs:
         with:
           node-version: 18
           cache: npm
+          cache-dependency-path: ./packages/acp-typescript-sdk/package-lock.json
           registry-url: "https://registry.npmjs.org"
 
       - run: npm ci
