@@ -133,10 +133,7 @@ class LoadedProvider:
             await self._write_messages.send(message)
 
     async def _initialize_session(self):
-        try:
-            await self._session_exit_stack.aclose()
-        except Exception:
-            self._session_exit_stack.pop_all()
+        await self._close_session()
         logger.info(f"Initializing session to provider {self.id}")
         read_stream, write_stream = await self._session_exit_stack.enter_async_context(
             self.provider.manifest.mcp_client()
@@ -151,9 +148,16 @@ class LoadedProvider:
         tg.start_soon(self._stream_notifications, tg)
         tg.start_soon(self._load_features)
 
+    async def _close_session(self):
+        try:
+            await self._session_exit_stack.aclose()
+        except Exception as ex:
+            logger.warning(f"Exception occurred when stopping session {self.provider.id}: {ex!r}")
+            self._session_exit_stack.pop_all()
+
     async def _ensure_session(self):
         if self._stopping:
-            await self._session_exit_stack.aclose()
+            await self._close_session()
             self._stopped.set()
             return
         try:

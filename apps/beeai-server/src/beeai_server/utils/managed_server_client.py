@@ -6,6 +6,7 @@ from typing import Any
 import anyio
 import anyio.abc
 from anyio import create_task_group
+from httpx import ConnectError
 from mcp.client.sse import sse_client
 from mcp.client.stdio import get_default_environment
 from pydantic import BaseModel, Field
@@ -61,31 +62,35 @@ async def managed_sse_client(server: ManagedServerParameters) -> McpClient:
         tg.start_soon(log_process_stdout)
         tg.start_soon(log_process_stderr)
         failed = True
-        for attempt in range(6):
-            try:
-                async with sse_client(
-                    url=f"http://localhost:{port}/{server.endpoint.lstrip('/')}", timeout=60
-                ) as streams:
-                    yield streams
-                    failed = False
-                    break
-            except GeneratorExit:
-                break
-            except Exception as ex:
-                timeout = 2**attempt
-                logger.warning(f"Failed to connect to provider. Reconnecting in {timeout} seconds: {ex!r}")
-                await asyncio.sleep(2)
+        try:
+            for attempt in range(6):
+                try:
+                    async with sse_client(
+                        url=f"http://localhost:{port}/{server.endpoint.lstrip('/')}", timeout=60
+                    ) as streams:
+                        yield streams
+                        failed = False
+                        break
+                except* ConnectError as ex:
+                    timeout = 2**attempt
+                    logger.warning(f"Failed to connect to provider. Reconnecting in {timeout} seconds: {ex!r}")
+                    await asyncio.sleep(timeout)
+        finally:
+            with anyio.move_on_after(server.graceful_terminate_timeout) as cancel_scope:
+                try:
+                    process.terminate()
+                    await process.wait()
+                except ProcessLookupError:
+                    logger.warning("Provider process died prematurely")
 
-        with anyio.move_on_after(server.graceful_terminate_timeout) as cancel_scope:
-            process.terminate()
-            await process.wait()
-
-        if cancel_scope.cancel_called:
-            logger.warning(f"Provider process did not terminate in {server.graceful_terminate_timeout}s, killing it.")
-            process.kill()
-        tg.cancel_scope.cancel()
-        if failed:
-            raise ConnectionError("Failed to connect to provider.")
+            if cancel_scope.cancel_called:
+                logger.warning(
+                    f"Provider process did not terminate in {server.graceful_terminate_timeout}s, killing it."
+                )
+                process.kill()
+            tg.cancel_scope.cancel()
+            if failed:
+                raise ConnectionError("Failed to connect to provider.")
 
 
 async def find_free_port():
