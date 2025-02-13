@@ -1,4 +1,3 @@
-from pydantic import AnyUrl
 from starlette.status import HTTP_404_NOT_FOUND
 
 

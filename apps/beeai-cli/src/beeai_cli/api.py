@@ -6,31 +6,32 @@ from typing import AsyncGenerator
 
 import anyio
 import httpx
-import yaml
 from httpx import HTTPStatusError
-
-from beeai_cli.configuration import Configuration
 from mcp import ClientSession, types
 from mcp.client.sse import sse_client
 from mcp.shared.session import ReceiveResultT
 from mcp.types import RequestParams
 
-BASE_URL = str(Configuration().host)
+from beeai_cli.configuration import Configuration
+
+BASE_URL = str(Configuration().host).rstrip("/")
+API_BASE_URL = f"{BASE_URL}/api/v1/"
+MCP_URL = f"{BASE_URL}/mcp/sse"
 
 
 @asynccontextmanager
 async def mcp_client() -> AsyncGenerator[ClientSession, None]:
     """Context manager for MCP client connection."""
-    async with sse_client(url=urllib.parse.urljoin(BASE_URL, "mcp/sse")) as (read_stream, write_stream):
+    async with sse_client(url=MCP_URL) as (read_stream, write_stream):
         async with ClientSession(read_stream, write_stream) as session:
             await session.initialize()
             yield session
 
 
-async def request(method: str, path: str, json: dict | None = None) -> dict | None:
+async def api_request(method: str, path: str, json: dict | None = None) -> dict | None:
     """Make an API request to the server."""
     async with httpx.AsyncClient() as client:
-        response = await client.request(method, urllib.parse.urljoin(BASE_URL, path), json=json)
+        response = await client.request(method, urllib.parse.urljoin(API_BASE_URL, path), json=json)
         if response.is_error:
             try:
                 error = response.json()

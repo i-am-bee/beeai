@@ -8,6 +8,7 @@ from kink import inject
 from mcp.server.sse import SseServerTransport
 from starlette.requests import Request
 from starlette.responses import Response
+from starlette.routing import Mount, Route
 from starlette.status import HTTP_200_OK, HTTP_503_SERVICE_UNAVAILABLE
 
 from beeai_server.configuration import Configuration
@@ -43,9 +44,8 @@ def _listen_for_disconnect(request: Request, task_group: TaskGroup):
 
 
 @inject
-def create_sse_app(sse: SseServerTransport, mcp_proxy: MCPProxyServer, config: Configuration) -> FastAPI:
+def create_mcp_sse_app(sse: SseServerTransport, mcp_proxy: MCPProxyServer, config: Configuration) -> FastAPI:
     """Run the server using SSE transport (taken directly from MCP SDK)."""
-    from starlette.routing import Mount, Route
 
     async def handle_sse(request: Request):
         try:
@@ -67,6 +67,3 @@ def create_sse_app(sse: SseServerTransport, mcp_proxy: MCPProxyServer, config: C
             Mount("/messages/", app=sse.handle_post_message),
         ],
     )
-
-
-app = create_sse_app()
