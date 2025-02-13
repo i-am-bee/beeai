@@ -4,7 +4,7 @@ from pathlib import Path
 import typer
 import yaml
 
-from beeai_cli.api import request
+from beeai_cli.api import api_request
 from beeai_cli.async_typer import AsyncTyper
 
 app = AsyncTyper()
@@ -35,13 +35,13 @@ async def add(
 ) -> None:
     """Call a tool with given input."""
     location = _get_abs_location(location)
-    await request("post", "provider", json={"location": location})
+    await api_request("post", "provider", json={"location": location})
     typer.echo(f"Added provider: {location}")
 
 
 @app.command("list")
 async def list():
-    resp = await request("get", "provider")
+    resp = await api_request("get", "provider")
     typer.echo(yaml.dump(resp))
 
 
@@ -51,5 +51,5 @@ async def remove(
 ) -> None:
     """Call a tool with given input."""
     location = _get_abs_location(location)
-    await request("post", "provider/delete", json={"location": location})
+    await api_request("post", "provider/delete", json={"location": location})
     typer.echo(f"Removed provider: {location}")

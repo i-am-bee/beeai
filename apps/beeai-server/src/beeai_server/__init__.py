@@ -1,6 +1,11 @@
 import os
 import sys
 
+# configure logging before importing anything
+from beeai_server.logging_config import configure_logging
+
+configure_logging()
+
 
 def serve():
     os.execv(
