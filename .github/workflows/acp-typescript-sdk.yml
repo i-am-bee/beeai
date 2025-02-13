@@ -3,7 +3,7 @@ name: ACP Typescript SDK
 on:
   push:
     tags:
-      - "*"
+      - "acp*"
     branches:
       - main
   pull_request:
