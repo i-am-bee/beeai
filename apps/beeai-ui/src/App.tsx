@@ -10,6 +10,7 @@ import { NotFound } from './pages/NotFound';
 import { routesDefinition } from './utils/router';
 import { Agent } from './pages/agents/Agent';
 import { ModalProvider } from './contexts/Modal/ModalProvider';
+import { ToastProvider } from './contexts/Toast/ToastProvider';
 
 const queryClient = new QueryClient();
 
@@ -18,18 +19,20 @@ export function App() {
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <QueryClientProvider client={queryClient}>
         <MCPClientProvider fallback={<MCPFallback />}>
-          <ModalProvider>
-            <BrowserRouter>
-              <Routes>
-                <Route element={<AppLayout />}>
-                  <Route path={routesDefinition.home()} element={<Home />} />
-                  <Route path={routesDefinition.agentDetail()} element={<Agent />} />
+          <ToastProvider>
+            <ModalProvider>
+              <BrowserRouter>
+                <Routes>
+                  <Route element={<AppLayout />}>
+                    <Route path={routesDefinition.home()} element={<Home />} />
+                    <Route path={routesDefinition.agentDetail()} element={<Agent />} />
 
-                  <Route path="*" element={<NotFound />} />
-                </Route>
-              </Routes>
-            </BrowserRouter>
-          </ModalProvider>
+                    <Route path="*" element={<NotFound />} />
+                  </Route>
+                </Routes>
+              </BrowserRouter>
+            </ModalProvider>
+          </ToastProvider>
         </MCPClientProvider>
       </QueryClientProvider>
     </ErrorBoundary>

@@ -20,6 +20,9 @@ export default defineConfig({
       '/mcp': {
         target: 'http://localhost:8333',
       },
+      '/api': {
+        target: 'http://localhost:8333',
+      },
     },
   },
   css: {
