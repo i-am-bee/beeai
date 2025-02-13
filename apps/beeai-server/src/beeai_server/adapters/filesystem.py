@@ -1,9 +1,11 @@
+import logging
 from pathlib import Path
 from typing import AsyncIterator
+from uuid import uuid4
 
 import yaml
 from anyio import Path as AsyncPath
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 
 from beeai_server.adapters.interface import IProviderRepository
 from beeai_server.domain.model import ProviderManifest, Provider
@@ -28,7 +30,13 @@ class FilesystemProviderRepository(IProviderRepository):
             return {}
 
         config = await self._config_path.read_text()
-        return ProviderConfigFile.model_validate(yaml.safe_load(config)).providers
+        try:
+            return ProviderConfigFile.model_validate(yaml.safe_load(config)).providers
+        except ValidationError as ex:
+            backup = self._config_path.parent / f"{self._config_path.name}.bak.{uuid4().hex[:6]}"
+            logging.error(f"Invalid config file, renaming to {backup}. {ex!r}")
+            await self._config_path.rename(backup)
+            return {}
 
     async def list(self) -> AsyncIterator[Provider]:
         for provider_id, provider in (await self._read_config()).items():
