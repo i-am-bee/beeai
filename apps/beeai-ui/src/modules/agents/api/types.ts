@@ -10,6 +10,7 @@ export type Agent = SdkAgent & {
   framework?: string;
   licence?: string;
   authors?: string[];
+  ui?: 'chat';
 };
 
 export type ListAgentsParams = ListAgentsRequest['params'];

@@ -1,7 +1,7 @@
 .root {
   display: grid;
   block-size: 100dvh;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: 1fr;
   padding-block-start: rem(48px);
 }
 

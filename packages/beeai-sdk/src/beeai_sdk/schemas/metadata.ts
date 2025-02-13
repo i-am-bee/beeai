@@ -9,6 +9,7 @@ export const metadataSchema = z
     avgRunTimeSeconds: z.number(),
     avgRunTokens: z.number(),
     tags: z.array(z.string()),
+    ui: z.string(),
   })
   .partial()
   .passthrough();
