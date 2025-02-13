@@ -51,7 +51,7 @@ async function registerAgents(server: McpServer) {
     },
     {
       title: "Streamlit Agent",
-      framework: "CrewAI",
+      framework: "BeeAI",
       licence: "Apache 2.0",
       fullDescription: `This is an example AI agent.
 ## Features

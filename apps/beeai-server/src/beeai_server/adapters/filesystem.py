@@ -1,11 +1,11 @@
 from pathlib import Path
-from typing import AsyncIterator, Callable
+from typing import AsyncIterator
 
 import yaml
 from anyio import Path as AsyncPath
 from pydantic import BaseModel
 
-from beeai_server.adapters.interface import IProviderRepository, RepositoryEventType
+from beeai_server.adapters.interface import IProviderRepository
 from beeai_server.domain.model import ProviderManifest, Provider
 
 
@@ -16,17 +16,6 @@ class ProviderConfigFile(BaseModel):
 class FilesystemProviderRepository(IProviderRepository):
     def __init__(self, provider_config_path: Path):
         self._config_path = AsyncPath(provider_config_path)
-        self._subscribers: set[Callable[[RepositoryEventType], None]] = set()
-
-    def subscribe(self, *, handler: Callable[[RepositoryEventType], None]) -> None:
-        self._subscribers.add(handler)
-
-    def unsubscribe(self, *, handler: Callable[[RepositoryEventType], None]) -> None:
-        self._subscribers.remove(handler)
-
-    def _notify_subscribers(self, event: RepositoryEventType) -> None:
-        for handler in self._subscribers:
-            handler(event)
 
     async def _write_config(self, providers: dict[str, ProviderManifest]) -> None:
         # Ensure that path exists
@@ -51,10 +40,10 @@ class FilesystemProviderRepository(IProviderRepository):
             raise ValueError(f"Provider with ID {provider.id} already exists")
         providers[provider.id] = provider.manifest
         await self._write_config(providers)
-        self._notify_subscribers(RepositoryEventType.CREATE)
 
     async def delete(self, *, provider_id: str) -> None:
         repository_providers = await self._read_config()
         if repository_providers.pop(provider_id, None):
             await self._write_config(repository_providers)
-            self._notify_subscribers(RepositoryEventType.DELETE)
+            return
+        raise ValueError(f"Provider with ID {provider_id} not found")

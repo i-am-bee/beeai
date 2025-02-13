@@ -14,7 +14,7 @@ from beeai_server.bootstrap import bootstrap_dependencies
 from beeai_server.exceptions import ManifestLoadError
 from beeai_server.routes.mcp_sse import create_mcp_sse_app
 from beeai_server.routes.provider import router as provider_router
-from beeai_server.services.mcp_proxy.proxy_server import MCPProxyServer
+from beeai_server.services.mcp_proxy.provider import ProviderContainer
 
 logger = logging.getLogger(__name__)
 
@@ -62,7 +62,7 @@ def app() -> FastAPI:
     bootstrap_dependencies()
 
     app = FastAPI(
-        lifespan=lambda _: di[MCPProxyServer],
+        lifespan=lambda _: di[ProviderContainer],
         default_response_class=ORJSONResponse,  # better performance then default + handle NaN floats
     )
 

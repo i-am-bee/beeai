@@ -1,14 +1,12 @@
 import logging
 import uuid
 import warnings
-from contextlib import AsyncExitStack, asynccontextmanager
+from contextlib import asynccontextmanager
 from functools import cached_property
 
 from anyio.streams.memory import MemoryObjectReceiveStream, MemoryObjectSendStream
 from kink import inject
 
-from beeai_server.adapters.interface import IProviderRepository
-from beeai_server.services.mcp_proxy.provider import ProviderContainer
 from beeai_server.services.mcp_proxy.constants import NotificationStreamType
 from mcp import (
     ClientSession,
@@ -34,22 +32,15 @@ from mcp.types import (
     DestroyAgentResult,
 )
 
+from beeai_server.services.mcp_proxy.provider import ProviderContainer
+
 logger = logging.getLogger(__name__)
 
 
 @inject
 class MCPProxyServer:
-    def __init__(self, provider_repository: IProviderRepository):
-        self._provider_container = ProviderContainer(provider_repository)
-        self._exit_stack = AsyncExitStack()
-
-    async def __aenter__(self):
-        logger.info("Loading MCP proxy server")
-        await self._exit_stack.enter_async_context(self._provider_container)
-
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
-        logger.info("Shutting down MCP proxy server")
-        await self._exit_stack.aclose()
+    def __init__(self, provider_container: ProviderContainer):
+        self._provider_container = provider_container
 
     @asynccontextmanager
     async def _forward_progress_notifications(self, server):

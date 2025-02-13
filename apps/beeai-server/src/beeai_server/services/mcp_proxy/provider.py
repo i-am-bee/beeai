@@ -8,9 +8,10 @@ from typing import Self, Literal, Final
 import anyio
 from anyio.abc import TaskGroup
 from anyio.streams.memory import MemoryObjectReceiveStream
+from kink import inject
 
 from beeai_server.adapters.interface import IProviderRepository
-from beeai_server.domain.model import Provider
+from beeai_server.domain.model import Provider, LoadedProviderStatus
 from beeai_server.services.mcp_proxy.constants import NotificationStreamType
 from beeai_server.services.mcp_proxy.notification_hub import NotificationHub
 from beeai_server.utils.periodic import Periodic
@@ -39,6 +40,8 @@ class LoadedProvider:
     incoming_messages: MemoryObjectReceiveStream[
         RequestResponder[ReceiveRequestT, SendResultT] | ReceiveNotificationT | Exception
     ]
+    status: LoadedProviderStatus = LoadedProviderStatus.initializing
+    last_error: str | None = None
     provider: Provider
     id: str
     agent_templates: list[AgentTemplate] = []
@@ -109,8 +112,12 @@ class LoadedProvider:
                     self.prompts = (await self.session.list_prompts()).prompts
                     logger.info(f"Loaded {len(self.prompts)} prompts")
         except Exception as ex:
-            logger.error(f"Failed to load features for provider: {self.id}: {ex}")
+            msg = f"Failed to load features for provider: {self.id}: {ex!r}"
+            logger.error(msg)
             self.session = None  # Mark session as broken - reinitialize connection in next period
+            self.last_error = msg
+            self.status = LoadedProviderStatus.error
+        self.status = LoadedProviderStatus.ready
 
     async def _stream_notifications(self, task_group: TaskGroup):
         async for message in self.session.incoming_messages:
@@ -158,10 +165,10 @@ class LoadedProvider:
         except TimeoutError:
             logger.warning("The server did not respond in time, we assume it is processing a request.")
         except Exception as ex:  # TODO narrow exception scope
-            logger.warning(
-                f"Connection to {self.provider.id} was closed, reconnecting in {self.RECONNECT_INTERVAL}: {ex}"
-            )
             self.session = None
+            logger.warning(f"Error connecting to {self.provider.id}: {ex!r}")
+            self.last_error = repr(ex)
+            self.status = LoadedProviderStatus.error
 
     async def __aenter__(self):
         self._stopping = False
@@ -178,6 +185,7 @@ class LoadedProvider:
         logger.info(f"Removing provider {self.id}")
 
 
+@inject
 class ProviderContainer:
     """
     Manage group of LoadedProvider instances:
@@ -283,7 +291,7 @@ class ProviderContainer:
             await self._notification_hub.register(provider)
         self.loaded_providers = unaffected_providers + added_providers
 
-    def _handle_providers_change(self, _event):
+    def handle_providers_change(self):
         self._periodic_reload.poke()
 
     async def __aenter__(self):
@@ -291,10 +299,8 @@ class ProviderContainer:
         self._stopped.clear()
         await self._exit_stack.enter_async_context(self._notification_hub)
         await self._exit_stack.enter_async_context(self._periodic_reload)
-        self._repository.subscribe(handler=self._handle_providers_change)
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
-        self._repository.unsubscribe(handler=self._handle_providers_change)
         self._stopping = True
         self._periodic_reload.poke()
         await self._stopped.wait()
