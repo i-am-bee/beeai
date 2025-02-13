@@ -7,8 +7,6 @@ on:
   pull_request:
     paths:
       - "packages/acp-typescript-sdk/**"
-  release:
-    types: [published]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -28,6 +26,7 @@ jobs:
         with:
           node-version: 18
           cache: npm
+          cache-dependency-path: ./packages/acp-typescript-sdk/package-lock.json
 
       - run: npm ci
       - run: npm run build
