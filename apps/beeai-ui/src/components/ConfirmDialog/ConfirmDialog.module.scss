@@ -1,0 +1,31 @@
+.heading {
+  font-size: rem(24px);
+  line-height: math.div(28, 24);
+  font-weight: bold;
+}
+
+.root {
+  :global(.#{$prefix}--modal-header) {
+    padding: $spacing-05 $spacing-05 0;
+  }
+
+  :global(.#{$prefix}--modal-content) {
+    margin: 0;
+    padding: $spacing-03 $spacing-05 $spacing-07;
+    min-block-size: rem(100px);
+  }
+
+  :global(.#{$prefix}--modal-footer) {
+    :global(.#{$prefix}--btn--ghost) {
+      color: currentColor;
+    }
+
+    :global(.#{$prefix}--btn--danger) {
+      column-gap: $spacing-05;
+      padding-inline-end: $spacing-05;
+      svg {
+        flex-shrink: 0;
+      }
+    }
+  }
+}

@@ -1,14 +1,12 @@
-@use 'sass:math';
-
 .root {
-  background-color: $layer-02;
-  border-radius: $border-radius;
-  box-shadow: $box-shadow;
-  padding: $spacing-06 $spacing-05 $spacing-06 $spacing-06;
+  border-block-end: 1px solid $border-subtle;
+  padding-block-end: $gap;
   position: relative;
-  &:has(.link:hover) {
-    background-color: $background-hover-50;
-  }
+  transition: background-color $duration-fast-01 motion(standard, productive);
+
+  // &:has(.link:hover) {
+  //   background-color: $background-hover-50;
+  // }
 }
 
 .header {
@@ -28,11 +26,12 @@
   text-decoration: none;
 }
 
-.description {
+.description p {
   @include type-style(body-compact-01);
   @include line-clamp(2);
   color: $text-secondary;
   letter-spacing: rem(0.32px);
+  line-height: math.div(16, 14);
 }
 
 .footer {
@@ -41,9 +40,4 @@
   justify-content: space-between;
   align-items: center;
   column-gap: $gap;
-}
-
-.metadata {
-  @include type-style(label-01);
-  color: $text-secondary;
 }

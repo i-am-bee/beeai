@@ -1,0 +1,35 @@
+.root {
+  > :first-child {
+    margin-block-start: 0;
+  }
+
+  h2 {
+    font-size: rem(20px);
+    margin-block: $spacing-06 $spacing-04;
+  }
+  code {
+    background-color: $layer-02;
+    font-size: 0.9em;
+    padding-inline: $spacing-02;
+    border-radius: rem(2px);
+  }
+  ol {
+    margin-inline-start: rem(20px);
+    margin-block: $spacing-03;
+  }
+  ul {
+    > :global(.#{$prefix}--list__item)::before {
+      content: '';
+      block-size: rem(4px);
+      inline-size: rem(4px);
+      background-color: $text-primary;
+      border-radius: rem(2px);
+      inset-block-start: 0.6em;
+      inset-inline-start: -$spacing-04;
+    }
+  }
+  p {
+    font-size: rem(14px);
+    margin-block: $spacing-05;
+  }
+}

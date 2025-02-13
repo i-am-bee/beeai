@@ -1,0 +1,75 @@
+.root {
+  display: contents;
+
+  hr {
+    inline-size: 100%;
+    border: none;
+    border-block-start: 1px solid $border-subtle;
+    margin-block: $spacing-07;
+  }
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-03;
+
+  h1 {
+    font-size: rem(40px);
+    line-height: math.div(52, 40);
+    font-weight: 400;
+  }
+}
+
+.metadata {
+  display: flex;
+  justify-content: space-between;
+}
+
+.description p {
+  font-size: rem(18px);
+  line-height: math.div(23.4, 18);
+}
+
+.runAgent {
+  display: flex;
+  gap: $spacing-04;
+
+  .runCommandInput {
+    min-inline-size: rem(368px);
+  }
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-05;
+  font-size: rem(14px);
+
+  h2 {
+    font-size: rem(14px);
+    font-weight: 700;
+  }
+}
+
+.skeleton {
+  display: contents;
+  h1 > div {
+    inline-size: 40%;
+    block-size: rem(34px);
+  }
+  .body > div {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-03;
+  }
+  .runAgent {
+    :global(.#{$prefix}--skeleton) {
+      block-size: rem(48px);
+      overflow: hidden;
+      &:first-child {
+        inline-size: 40%;
+      }
+    }
+  }
+}

@@ -1,8 +1,8 @@
 import react from '@vitejs/plugin-react-swc';
-import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vite';
 import svgr from 'vite-plugin-svgr';
 import tsconfigPaths from 'vite-tsconfig-paths';
+import { fileURLToPath, URL } from 'url';
 
 export default defineConfig({
   plugins: [
@@ -25,10 +25,13 @@ export default defineConfig({
   css: {
     preprocessorOptions: {
       scss: {
-        additionalData: `@use 'styles/common' as *;`,
+        additionalData: `@use 'styles/common' as *; @use 'sass:math';`,
         silenceDeprecations: ['mixed-decls', 'global-builtin'],
         loadPaths: [fileURLToPath(new URL('src/', import.meta.url))],
       },
+    },
+    modules: {
+      generateScopedName: '[name]_[local]_[hash:base64:5]',
     },
   },
 });

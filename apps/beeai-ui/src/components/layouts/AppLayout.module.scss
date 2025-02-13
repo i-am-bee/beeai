@@ -1,9 +1,12 @@
 .root {
   display: grid;
-  min-block-size: 100dvh;
+  block-size: 100dvh;
   grid-template-rows: auto 1fr;
+  padding-block-start: rem(48px);
 }
 
 .main {
   padding-block: $spacing-09;
+  overflow: auto;
+  scrollbar-gutter: stable;
 }

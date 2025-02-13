@@ -1,0 +1,128 @@
+.root {
+  position: relative;
+  z-index: z('modal');
+}
+
+.modal {
+  &:global(.#{$prefix}--modal) {
+    background-color: $modal-background;
+    scrollbar-gutter: stable;
+    overflow-y: auto;
+  }
+  :global(.#{$prefix}--modal-container) {
+    inline-size: 100%;
+    box-shadow: $box-shadow;
+    border-radius: $spacing-03;
+    min-block-size: 0;
+    margin-inline: auto;
+    max-inline-size: rem(608px);
+    box-sizing: content-box;
+    background-color: $background;
+    > * {
+      box-sizing: border-box;
+    }
+    &:global(.#{$prefix}--modal-container--xs) {
+      max-inline-size: rem(400px);
+    }
+    &:global(.#{$prefix}--modal-container--sm) {
+      max-inline-size: rem(568px);
+    }
+    &:global(.#{$prefix}--modal-container--md) {
+      max-inline-size: rem(672px);
+    }
+    &:global(.#{$prefix}--modal-container--lg) {
+      max-inline-size: rem(928px);
+    }
+  }
+  :global(.#{$prefix}--modal-header) {
+    padding: $spacing-05;
+    h2 {
+      font-size: rem(32px);
+      line-height: math.div(41.6, 32);
+      letter-spacing: rem(0.16px);
+      font-weight: 400;
+    }
+  }
+  :global(.#{$prefix}--modal-content) {
+    padding: 0 $spacing-05 $spacing-05;
+    &:global(.#{$prefix}--modal-scroll-content) {
+      mask-image: none;
+      padding-block-end: $spacing-09;
+      border-block-end: 0;
+      > :last-child {
+        margin-block-end: 0;
+      }
+    }
+    &:focus {
+      outline: none;
+    }
+  }
+  :global(.#{$prefix}--modal-footer) {
+    border-radius: 0 0 $spacing-03 $spacing-03;
+    padding: $spacing-03 $spacing-05 $spacing-05 $spacing-05;
+
+    &:global(.#{$prefix}--btn-set) {
+      block-size: auto;
+      gap: $spacing-04;
+    }
+
+    :global(.#{$prefix}--btn) {
+      block-size: rem(48px);
+      padding-block: 0;
+      display: flex;
+      align-items: center;
+      flex: 0 1 auto;
+      white-space: nowrap;
+      inline-size: auto;
+      // padding-inline-end: $spacing-10;
+      box-shadow: none !important;
+
+      &:last-child {
+        flex-grow: 0;
+      }
+    }
+  }
+
+  :global(.#{$prefix}--modal-close) {
+    &:hover {
+      background-color: $background-hover;
+    }
+  }
+  :global(.#{$prefix}--modal-close-button) {
+    inset-block-start: $spacing-04;
+    inset-inline-end: $spacing-04;
+
+    :global(.#{$prefix}--btn) {
+      block-size: auto;
+      inline-size: auto;
+      svg {
+        min-inline-size: rem(24px);
+        block-size: rem(24px);
+      }
+    }
+    :global(.#{$prefix}--popover) {
+      display: none;
+    }
+  }
+}
+
+@include breakpoint-up(md) {
+  .modal {
+    :global(.#{$prefix}--modal-header) {
+      padding: $spacing-06 $spacing-07;
+    }
+
+    :global(.#{$prefix}--modal-content) {
+      padding: $spacing-03 $spacing-07 $spacing-07;
+    }
+
+    :global(.#{$prefix}--modal-footer) {
+      padding: $spacing-03 $spacing-06 $spacing-06 $spacing-06;
+
+      :global(.#{$prefix}--btn):global(.#{$prefix}--btn) {
+        padding-inline-end: $spacing-10;
+        padding-block: 0;
+      }
+    }
+  }
+}

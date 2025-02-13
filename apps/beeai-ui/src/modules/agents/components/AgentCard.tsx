@@ -1,41 +1,43 @@
 import { TagsList } from '@/components/TagsList';
-import { LogoGithub } from '@carbon/icons-react';
-import { SkeletonText, Tag } from '@carbon/react';
+import { SkeletonText } from '@carbon/react';
 import { Link } from 'react-router';
 import { Agent } from '../api/types';
 import classes from './AgentCard.module.scss';
+import { AgentMetadata } from './AgentMetadata';
+import { AgentTags } from './AgentTags';
+import { routes } from '@/utils/router';
+import { MarkdownContent } from '@/components/MarkdownContent/MarkdownContent';
 
 interface Props {
   agent: Agent;
 }
 
 export function AgentCard({ agent }: Props) {
-  const { name, description } = agent;
+  const { name, title, description } = agent;
+  // const { openModal } = useModal();
+
+  const route = routes.agentDetail(agent.name);
 
   return (
-    <article className={classes.root}>
+    <article
+      className={classes.root}
+      // TODO: Remove, including AgentModal file, if the modal view is not used in the final UI
+      // onClick={() => openModal((props) => <AgentModal {...props} agent={agent} />)}
+    >
       <div className={classes.header}>
         <h2 className={classes.name}>
-          {/* TODO: Link */}
-          <Link to="/" className={classes.link}>
-            {name}
+          <Link to={route} className={classes.link}>
+            {title ?? name}
           </Link>
         </h2>
 
-        {description && <p className={classes.description}>{description}</p>}
+        {description && <MarkdownContent className={classes.description}>{description}</MarkdownContent>}
       </div>
 
-      {/* TODO: Tags and metadata */}
       <div className={classes.footer}>
-        <TagsList
-          tags={[
-            <Tag type="cool-gray">BeeAI Framework</Tag>,
-            <Tag type="cool-gray" renderIcon={LogoGithub} />,
-            <Tag type="green">Example</Tag>,
-          ]}
-        />
+        <AgentTags agent={agent} />
 
-        <p className={classes.metadata}>50s/run (avg) | 50 tokens/run (avg) | OpenAI</p>
+        <AgentMetadata agent={agent} />
       </div>
     </article>
   );

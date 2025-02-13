@@ -1,10 +1,10 @@
-@use 'sass:math';
-
 .root {
-  position: sticky;
+  position: fixed;
   inset-block-start: 0;
+  inline-size: 100vw;
   background-color: $background;
   border-block-end: 1px solid $border-subtle-00;
+  z-index: z('header');
 }
 
 .holder {

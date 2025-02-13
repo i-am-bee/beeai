@@ -3,48 +3,32 @@
 @use '@carbon/styles/scss/theme' as *;
 @use '@carbon/styles/scss/colors' as *;
 @use '@carbon/styles/scss/spacing' as *;
-@use '@carbon/grid/scss/config' as *;
-@use '@carbon/styles/scss/utilities/convert' as *;
-
-$grid-breakpoints: map.merge(
-  $grid-breakpoints,
-  (
-    sm: map.merge(
-        map.get($grid-breakpoints, sm),
-        (
-          margin: rem(16px),
-        )
-      ),
-    lg: map.merge(
-        map.get($grid-breakpoints, lg),
-        (
-          margin: rem(24px),
-        )
-      ),
-    xlg: map.merge(
-        map.get($grid-breakpoints, xlg),
-        (
-          margin: rem(32px),
-        )
-      ),
-    max: map.merge(
-        map.get($grid-breakpoints, max),
-        (
-          margin: rem(32px),
-        )
-      ),
-  )
-);
 
 $light: map.merge(
   themes.$white,
   (
     background-hover: $cool-gray-10,
     background-hover-50: rgba($cool-gray-10, 0.5),
+    layer-01: $white,
+    layer-02: $cool-gray-10,
+    layer-03: $cool-gray-20,
+
     layer-hover-01: $cool-gray-10,
+    layer-hover-02: $cool-gray-20,
+    layer-hover-03: $cool-gray-30,
+
+    layer-selected-hover-01: $cool-gray-20,
+    layer-selected-hover-02: $cool-gray-30,
+    layer-selected-hover-03: $cool-gray-40,
+
+    layer-accent-01: $cool-gray-10,
+    layer-accent-02: $cool-gray-20,
+    layer-accent-03: $cool-gray-30,
+
     border-subtle-00: $cool-gray-20,
     text-dark: $black,
     box-shadow-color: rgba(193, 199, 205, 0.45),
+    modal-background: rgba($cool-gray-60, 0.5),
   )
 );
 
@@ -57,10 +41,32 @@ $dark: map.merge(
     border-subtle-00: $cool-gray-80,
     text-dark: $white,
     box-shadow-color: rgba($cool-gray-70, 0.45),
+    modal-background: rgba($cool-gray-100, 0.75),
   )
 );
 
 @use '@carbon/styles/scss/components/button/tokens' as button-tokens with (
+  $button-primary: (
+    fallback: $black,
+    values: (
+      (theme: $light, value: $black),
+      (theme: $dark, value: $white),
+    ),
+  ),
+  $button-primary-hover: (
+    fallback: $background-inverse-hover,
+    values: (
+      (theme: $light, value: $background-inverse-hover),
+      (theme: $dark, value: $background-inverse-hover),
+    ),
+  ),
+  $button-primary-active: (
+    fallback: $background-inverse-hover,
+    values: (
+      (theme: $light, value: $background-inverse-hover),
+      (theme: $dark, value: $background-inverse-hover),
+    ),
+  ),
   $button-tertiary: (
     fallback: $black,
     values: (
@@ -128,5 +134,7 @@ $box-shadow: 0px 2px 8px 0px $box-shadow-color;
 
 $button-tertiary: var(--cds-button-tertiary);
 $button-tertiary-hover: var(--cds-button-tertiary-hover);
+
+$modal-background: var(--cds-modal-background);
 
 @forward '@carbon/styles/scss/theme';

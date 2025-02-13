@@ -1,6 +1,10 @@
-@use 'sass:math';
-
 .root {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-03;
+}
+
+.body {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -12,4 +16,8 @@
   line-height: math.div(28, 24);
   font-weight: normal;
   color: $text-dark;
+}
+
+.label {
+  inline-size: 100%;
 }

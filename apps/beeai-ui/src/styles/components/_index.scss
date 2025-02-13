@@ -33,16 +33,16 @@
 // @forward '@carbon/styles/scss/components/fluid-time-picker';
 // @forward '@carbon/styles/scss/components/form';
 // @forward '@carbon/styles/scss/components/icon-indicator';
-// @forward '@carbon/styles/scss/components/inline-loading';
+@forward '@carbon/styles/scss/components/inline-loading';
 // @forward '@carbon/styles/scss/components/link';
-// @forward '@carbon/styles/scss/components/list';
+@forward '@carbon/styles/scss/components/list';
 // @forward '@carbon/styles/scss/components/list-box';
 // @forward '@carbon/styles/scss/components/loading';
 // @forward '@carbon/styles/scss/components/menu-button';
 // @forward '@carbon/styles/scss/components/menu';
-// @forward '@carbon/styles/scss/components/modal';
+@forward '@carbon/styles/scss/components/modal';
 // @forward '@carbon/styles/scss/components/multiselect';
-// @forward '@carbon/styles/scss/components/notification';
+@forward '@carbon/styles/scss/components/notification';
 // @forward '@carbon/styles/scss/components/number-input';
 @forward '@carbon/styles/scss/components/overflow-menu';
 @forward 'overflow-menu';
@@ -52,7 +52,7 @@
 // @forward '@carbon/styles/scss/components/progress-bar';
 // @forward '@carbon/styles/scss/components/progress-indicator';
 // @forward '@carbon/styles/scss/components/radio-button';
-// @forward '@carbon/styles/scss/components/search';
+@forward '@carbon/styles/scss/components/search';
 // @forward '@carbon/styles/scss/components/select';
 @forward '@carbon/styles/scss/components/skeleton-styles';
 @forward 'skeleton-styles';
@@ -65,6 +65,7 @@
 @forward 'tag';
 // @forward '@carbon/styles/scss/components/text-area';
 // @forward '@carbon/styles/scss/components/text-input';
+@forward 'input';
 // @forward '@carbon/styles/scss/components/tile';
 // @forward '@carbon/styles/scss/components/time-picker';
 // @forward '@carbon/styles/scss/components/toggletip';

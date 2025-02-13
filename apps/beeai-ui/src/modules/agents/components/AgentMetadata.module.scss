@@ -1,0 +1,17 @@
+.root {
+  @include type-style(label-01);
+  color: $text-secondary;
+  display: flex;
+  gap: $spacing-03;
+  li {
+    block-size: rem(16px);
+    display: flex;
+    align-items: center;
+    gap: $spacing-02;
+
+    &:not(:last-child) {
+      padding-inline-end: $spacing-03;
+      border-inline-end: 1px solid $border-subtle-00;
+    }
+  }
+}

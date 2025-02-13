@@ -1,4 +1,4 @@
-import { routes } from '@/utils/routes';
+import { routes } from '@/utils/router';
 import { Link } from 'react-router';
 import { MainNav } from '../MainNav';
 import classes from './AppHeader.module.scss';
