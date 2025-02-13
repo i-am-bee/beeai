@@ -6,6 +6,8 @@ from typing import AsyncGenerator
 
 import anyio
 import httpx
+import yaml
+from httpx import HTTPStatusError
 
 from beeai_cli.configuration import Configuration
 from mcp import ClientSession, types
@@ -29,7 +31,13 @@ async def request(method: str, path: str, json: dict | None = None) -> dict | No
     """Make an API request to the server."""
     async with httpx.AsyncClient() as client:
         response = await client.request(method, urllib.parse.urljoin(BASE_URL, path), json=json)
-        response.raise_for_status()
+        if response.is_error:
+            try:
+                error = response.json()
+                error = error.get("detail", str(error))
+            except Exception:
+                response.raise_for_status()
+            raise HTTPStatusError(message=error, request=response.request, response=response)
         if response.content:
             return response.json()
 

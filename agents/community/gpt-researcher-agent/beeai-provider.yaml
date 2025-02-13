@@ -1,0 +1,10 @@
+manifestVersion: 1
+driver: python
+package: "file://."
+serverType: http
+mcpTransport: sse
+mcpEndpoint: /sse
+command: [ "gpt-researcher-agent" ]
+
+
+

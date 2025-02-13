@@ -95,8 +95,8 @@ mise run:beeai-server
 #### CLI
 
 ```sh
-# add SSE provider 
-mise run:beeai-cli -- provider add mcp http://localhost:9999/sse
+# add official framework provider 
+mise run:beeai-cli -- provider add file://agents/official/bee-agent-framework/beeai-provider.yaml
 
 # tools
 mise run:beeai-cli -- tool list

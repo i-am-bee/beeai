@@ -9,7 +9,6 @@ from anyio.abc import TaskGroup
 from anyio.streams.memory import MemoryObjectReceiveStream, MemoryObjectSendStream
 from mcp.types import AgentRunProgressNotification
 
-from beeai_server.domain.model import Provider
 from beeai_server.services.mcp_proxy.constants import NotificationStreamType
 from mcp import ServerNotification, ServerSession, ProgressNotification
 from mcp.shared.context import RequestContext
@@ -39,15 +38,15 @@ class NotificationHub:
         self._notification_stream_writer, self._notification_stream_reader = anyio.create_memory_object_stream[
             ServerNotification
         ]()
-        self._provider_cleanups: dict[Provider, Callable[[], None]] = defaultdict(lambda: lambda: None)
+        self._provider_cleanups: dict[str, Callable[[], None]] = defaultdict(lambda: lambda: None)
 
-    async def register(self, provider: "LoadedProvider"):
-        self._notification_pipe.start_soon(self._subscribe_for_messages, provider)
-        logger.info(f"Started listening for notifications from: {provider.provider}")
+    async def register(self, loaded_provider: "LoadedProvider"):
+        self._notification_pipe.start_soon(self._subscribe_for_messages, loaded_provider)
+        logger.info(f"Started listening for notifications from: {loaded_provider.id}")
 
-    async def remove(self, provider: "LoadedProvider"):
-        self._provider_cleanups[provider.provider]()
-        logger.info(f"Stopped listening for notifications from: {provider.provider}")
+    async def remove(self, loaded_provider: "LoadedProvider"):
+        self._provider_cleanups[loaded_provider.id]()
+        logger.info(f"Stopped listening for notifications from: {loaded_provider.id}")
 
     @asynccontextmanager
     async def forward_notifications(
@@ -67,6 +66,8 @@ class NotificationHub:
                             return
                         if not (request_context.meta and request_context.meta.progressToken):
                             logger.warning("Could not dispatch progress notification, missing progress Token")
+                            return
+                        if notification.params.progressToken != request_context.meta.progressToken:
                             return
                         notification.model_extra.pop("jsonrpc", None)
                         await session.send_notification(notification)
@@ -94,10 +95,10 @@ class NotificationHub:
                 except Exception as e:
                     logger.warning(f"Failed to forward notification: {e}", exc_info=e)
 
-    async def _subscribe_for_messages(self, provider: "LoadedProvider"):
+    async def _subscribe_for_messages(self, loaded_provider: "LoadedProvider"):
         async def subscribe():
             try:
-                async for message in provider.incoming_messages:
+                async for message in loaded_provider.incoming_messages:
                     match message:
                         case ServerNotification(root=notify):
                             logger.debug(f"Dispatching notification {notify.method}")
@@ -108,7 +109,7 @@ class NotificationHub:
         with suppress(CancelledError):
             async with anyio.create_task_group() as tg:
                 tg.start_soon(subscribe)
-        self._provider_cleanups[provider.provider] = lambda: tg.cancel_scope.cancel()
+        self._provider_cleanups[loaded_provider.id] = lambda: tg.cancel_scope.cancel()
 
     async def __aenter__(self):
         self._notification_pipe = await self._exit_stack.enter_async_context(anyio.create_task_group())

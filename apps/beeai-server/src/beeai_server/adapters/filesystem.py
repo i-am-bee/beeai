@@ -1,4 +1,3 @@
-import json
 from pathlib import Path
 from typing import AsyncIterator, Callable
 
@@ -7,11 +6,11 @@ from anyio import Path as AsyncPath
 from pydantic import BaseModel
 
 from beeai_server.adapters.interface import IProviderRepository, RepositoryEventType
-from beeai_server.domain.model import Provider
+from beeai_server.domain.model import ProviderManifest, Provider
 
 
 class ProviderConfigFile(BaseModel):
-    providers: list[Provider]
+    providers: dict[str, ProviderManifest]
 
 
 class FilesystemProviderRepository(IProviderRepository):
@@ -29,33 +28,33 @@ class FilesystemProviderRepository(IProviderRepository):
         for handler in self._subscribers:
             handler(event)
 
-    async def _write_config(self, providers: list[Provider]) -> None:
+    async def _write_config(self, providers: dict[str, ProviderManifest]) -> None:
         # Ensure that path exists
         await self._config_path.parent.mkdir(parents=True, exist_ok=True)
-        config = json.dumps(ProviderConfigFile(providers=providers).model_dump(mode="json"), indent=2)
+        config = yaml.dump(ProviderConfigFile(providers=providers).model_dump(mode="json"), indent=2)
         await self._config_path.write_text(config)
 
-    async def _read_config(self) -> list[Provider]:
+    async def _read_config(self) -> dict[str, ProviderManifest]:
         if not await self._config_path.exists():
-            return []
+            return {}
 
         config = await self._config_path.read_text()
         return ProviderConfigFile.model_validate(yaml.safe_load(config)).providers
 
     async def list(self) -> AsyncIterator[Provider]:
-        for provider in await self._read_config():
-            yield provider
+        for provider_id, provider in (await self._read_config()).items():
+            yield Provider(id=provider_id, manifest=provider)
 
     async def create(self, *, provider: Provider) -> None:
-        providers = [provider async for provider in self.list()]
-        if provider not in providers:
-            providers.append(provider)
-            await self._write_config(providers)
-            self._notify_subscribers(RepositoryEventType.CREATE)
+        providers = await self._read_config()
+        if provider.id in providers:
+            raise ValueError(f"Provider with ID {provider.id} already exists")
+        providers[provider.id] = provider.manifest
+        await self._write_config(providers)
+        self._notify_subscribers(RepositoryEventType.CREATE)
 
-    async def delete(self, *, provider: Provider) -> None:
-        repository_providers = [provider async for provider in self.list()]
-        new_providers = [prov for prov in repository_providers if prov != provider]
-        if len(new_providers) != len(repository_providers):
-            await self._write_config(new_providers)
+    async def delete(self, *, provider_id: str) -> None:
+        repository_providers = await self._read_config()
+        if repository_providers.pop(provider_id, None):
+            await self._write_config(repository_providers)
             self._notify_subscribers(RepositoryEventType.DELETE)

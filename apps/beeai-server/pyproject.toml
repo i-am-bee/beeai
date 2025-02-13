@@ -13,6 +13,7 @@ dependencies = [
     "anyio>=4.8.0",
     "asgiref>=3.8.1",
     "fastapi[standard]>=0.115.7",
+    "httpx>=0.28.1",
     "kink>=0.8.1",
     "orjson>=3.10.15",
     "pydantic>=2.10.6",
@@ -30,6 +31,13 @@ beeai-server = "beeai_server:serve"
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.4",
+    "pytest-asyncio>=0.25.3",
+    "pytest-httpx>=0.35.0",
+]
 
 [tool.hatch.build.targets.wheel]
 artifacts = ["static/"]

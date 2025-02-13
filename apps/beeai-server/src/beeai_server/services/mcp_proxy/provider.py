@@ -34,12 +34,13 @@ class LoadedProvider:
 
     RECONNECT_INTERVAL = timedelta(seconds=10)
     PING_TIMEOUT = timedelta(seconds=5)
-    INITIALIZE_TIMEOUT = timedelta(seconds=10)
+    INITIALIZE_TIMEOUT = timedelta(seconds=30)
     session: ClientSession | None = None
     incoming_messages: MemoryObjectReceiveStream[
         RequestResponder[ReceiveRequestT, SendResultT] | ReceiveNotificationT | Exception
     ]
     provider: Provider
+    id: str
     agent_templates: list[AgentTemplate] = []
     agents: list[Agent] = []
     tools: list[Tool] = []
@@ -48,11 +49,12 @@ class LoadedProvider:
 
     def __init__(self, provider: Provider):
         self.provider = provider
+        self.id = provider.id
         self._open = False
         self._ensure_session_periodic = Periodic(
             executor=self._ensure_session,
             period=self.RECONNECT_INTERVAL,
-            name=f"Ensure session for provider: {provider}",
+            name=f"Ensure session for provider: {provider.id}",
         )
         self._session_exit_stack = AsyncExitStack()
         self._writers_exit_stack = AsyncExitStack()
@@ -84,7 +86,7 @@ class LoadedProvider:
         TODO: Use low lever requests - pagination not implemented in mcp client?
         """
         features = self._LoadFeature.all() if features == "all" else features
-        logger.info(f"Loading features for provider {self.provider}: {list(features)}.")
+        logger.info(f"Loading features for provider {self.provider.id}: {list(features)}.")
         try:
             with anyio.fail_after(self.INITIALIZE_TIMEOUT.total_seconds()):
                 if (
@@ -107,7 +109,7 @@ class LoadedProvider:
                     self.prompts = (await self.session.list_prompts()).prompts
                     logger.info(f"Loaded {len(self.prompts)} prompts")
         except Exception as ex:
-            logger.error(f"Failed to load features for provider: {self.provider}: {ex}")
+            logger.error(f"Failed to load features for provider: {self.id}: {ex}")
             self.session = None  # Mark session as broken - reinitialize connection in next period
 
     async def _stream_notifications(self, task_group: TaskGroup):
@@ -128,9 +130,10 @@ class LoadedProvider:
             await self._session_exit_stack.aclose()
         except Exception:
             self._session_exit_stack.pop_all()
-        logger.info(f"Initializing session to provider {self.provider}")
-        connection = await self.provider.get_connection()
-        read_stream, write_stream = await self._session_exit_stack.enter_async_context(connection.mcp_client())
+        logger.info(f"Initializing session to provider {self.id}")
+        read_stream, write_stream = await self._session_exit_stack.enter_async_context(
+            self.provider.manifest.mcp_client()
+        )
         session = await self._session_exit_stack.enter_async_context(ClientSession(read_stream, write_stream))
         with anyio.fail_after(self.INITIALIZE_TIMEOUT.total_seconds()):
             self._initialize_result = await session.initialize()
@@ -155,12 +158,14 @@ class LoadedProvider:
         except TimeoutError:
             logger.warning("The server did not respond in time, we assume it is processing a request.")
         except Exception as ex:  # TODO narrow exception scope
-            logger.warning(f"Connection to {self.provider} was closed, reconnecting in {self.RECONNECT_INTERVAL}: {ex}")
+            logger.warning(
+                f"Connection to {self.provider.id} was closed, reconnecting in {self.RECONNECT_INTERVAL}: {ex}"
+            )
             self.session = None
 
     async def __aenter__(self):
         self._stopping = False
-        logger.info(f"Loading provider {self.provider}")
+        logger.info(f"Loading provider {self.id}")
         await self._writers_exit_stack.enter_async_context(self._write_messages)
         await self._ensure_session_periodic.start()
 
@@ -170,7 +175,7 @@ class LoadedProvider:
         self._ensure_session_periodic.poke()
         await self._stopped.wait()
         await self._ensure_session_periodic.stop()
-        logger.info(f"Removing provider {self.provider}")
+        logger.info(f"Removing provider {self.id}")
 
 
 class ProviderContainer:
@@ -259,16 +264,16 @@ class ProviderContainer:
             self._stopped.set()
             return
 
-        logger.info("Loading MCP providers.")
-        repository_providers = {provider async for provider in self._repository.list()}
+        repository_providers = [provider async for provider in self._repository.list()]
+        repository_provider_ids = {provider.id for provider in repository_providers}
 
-        added_providers = repository_providers - {p.provider for p in self.loaded_providers}
-        added_providers = [LoadedProvider(p) for p in added_providers]
-        removed_providers = [p for p in self.loaded_providers if p.provider not in repository_providers]
-        unaffected_providers = [p for p in self.loaded_providers if p.provider in repository_providers]
+        added_providers = repository_provider_ids - {p.id for p in self.loaded_providers}
+        added_providers = [LoadedProvider(p) for p in repository_providers if p.id in added_providers]
+        removed_providers = [p for p in self.loaded_providers if p.id not in repository_provider_ids]
+        unaffected_providers = [p for p in self.loaded_providers if p.id in repository_provider_ids]
 
-        logger.info(f"Removing {len(removed_providers)} old providers")
-        logger.info(f"Discovered {len(added_providers)} new providers")
+        removed_providers and logger.info(f"Removing {len(removed_providers)} old providers")
+        added_providers and logger.info(f"Discovered {len(added_providers)} new providers")
 
         for provider in removed_providers:
             await provider.close()

@@ -8,6 +8,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class LoggingConfiguration(BaseModel):
     level: int = logging.INFO
+    level_managed_provider: int = logging.INFO
     level_uvicorn: int = Field(default=logging.FATAL, validate_default=True)
 
     @model_validator(mode="after")
@@ -16,7 +17,7 @@ class LoggingConfiguration(BaseModel):
             self.level_uvicorn = logging.WARNING
         return self
 
-    @field_validator("level", "level_uvicorn", mode="before")
+    @field_validator("level", "level_uvicorn", "level_managed_provider", mode="before")
     def validate_level(cls, v: str | int | None):
         return v if isinstance(v, int) else logging.getLevelNamesMapping()[v]
 
