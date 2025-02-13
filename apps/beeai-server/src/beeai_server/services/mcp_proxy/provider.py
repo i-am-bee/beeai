@@ -133,8 +133,8 @@ class LoadedProvider:
             await self._write_messages.send(message)
 
     async def _initialize_session(self):
-        await self._close_session()
         logger.info(f"Initializing session to provider {self.id}")
+        await self._close_session()
         read_stream, write_stream = await self._session_exit_stack.enter_async_context(
             self.provider.manifest.mcp_client()
         )
