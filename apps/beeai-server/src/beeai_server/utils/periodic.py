@@ -93,7 +93,7 @@ class Periodic(Generic[AnyCallableT]):
             try:
                 await self._executor()
             except Exception as ex:
-                logger.error(f"Exception occured during periodic run of {self.name}: {str(ex)}")
+                logger.error(f"Exception occured during periodic run of {self.name}: {ex!r}")
             duration = time.time() - check_start
             remaining_sleep = max(0.0, self._period.total_seconds() - duration)
             logger.info(f"Periodic [{self.name}]: finish, next run in {remaining_sleep:.2f}s")

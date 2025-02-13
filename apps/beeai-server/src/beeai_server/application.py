@@ -1,13 +1,12 @@
 import logging
 import pathlib
 
-from fastapi import FastAPI
+from fastapi import FastAPI, APIRouter
 from fastapi import HTTPException
 from fastapi.exception_handlers import http_exception_handler
 from fastapi.responses import ORJSONResponse
 from fastapi.staticfiles import StaticFiles
 from kink import di
-from starlette.responses import RedirectResponse
 from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 
 from beeai_server.bootstrap import bootstrap_dependencies
@@ -44,14 +43,14 @@ def mount_routes(app: FastAPI):
 
     ui_app = FastAPI()
     ui_app.mount("/", StaticFiles(directory=static_directory, html=True))
-    ui_app.add_exception_handler(404, lambda _req, _exc: RedirectResponse(url="/index.html"))
+    # ui_app.add_exception_handler(404, lambda _req, _exc: RedirectResponse(url="/index.html"))
 
-    server_app = FastAPI()
-    server_app.include_router(provider_router, prefix="/provider", tags=["provider"])
+    server_router = APIRouter()
+    server_router.include_router(provider_router, prefix="/provider", tags=["provider"])
 
     app.mount("/healthcheck", lambda: "OK")
     app.mount("/mcp", create_mcp_sse_app())
-    app.mount("/api/v1", server_app)
+    app.include_router(server_router, prefix="/api/v1", tags=["provider"])
     app.mount("/", ui_app)
 
 
