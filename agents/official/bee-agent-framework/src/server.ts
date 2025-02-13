@@ -62,38 +62,6 @@ async function registerAgents(server: McpServer) {
       avgRunTokens: 48,
     } as const satisfies Metadata
   );
-
-  // for UI development purposes
-  server.agent(
-    "gpt-researcher",
-    "LLM based autonomous agent that conducts deep local and web research on any topic and generates a long report with citations.",
-    promptInputSchema,
-    promptOutputSchema,
-    async ({
-      params: {
-        input: { prompt },
-        _meta,
-      },
-    }) => {
-      const output = await new StreamlitAgent({
-        llm: new OllamaChatLLM(),
-        memory: new UnconstrainedMemory(),
-      })
-        .run({ prompt })
-        .observe((emitter) => {
-          emitter.on("newToken", async ({ delta }) => {
-            if (_meta?.progressToken) {
-              await server.server.sendAgentRunProgress({
-                progressToken: _meta.progressToken,
-                delta: { text: delta } as PromptOutput,
-              });
-            }
-          });
-        });
-      return {
-        text: output.result.raw,
-      };
-    })
 }
 
 export async function createServer() {
