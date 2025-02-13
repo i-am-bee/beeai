@@ -1,9 +1,11 @@
+name: ACP Typescript SDK
+
 on:
   push:
+    tags:
+      - "*"
     branches:
       - main
-    paths:
-      - "packages/acp-typescript-sdk/**"
   pull_request:
     paths:
       - "packages/acp-typescript-sdk/**"
@@ -35,7 +37,7 @@ jobs:
 
   publish:
     runs-on: ubuntu-latest
-    if: github.event_name == 'release'
+    if: startsWith(github.ref, 'refs/tags/acp')
     environment: release
     needs: build
 
