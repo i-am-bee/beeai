@@ -1,9 +1,9 @@
 import http from "node:http";
 import express from "express";
 import { createTerminus } from "@godaddy/terminus";
-import { McpServer } from "@agentcommunicationprotocol/sdk/server/mcp";
-import { SSEServerTransport } from "@agentcommunicationprotocol/sdk/server/sse";
-import { Implementation } from "@agentcommunicationprotocol/sdk/types";
+import { McpServer } from "@agentcommunicationprotocol/sdk/server/mcp.js";
+import { SSEServerTransport } from "@agentcommunicationprotocol/sdk/server/sse.js";
+import { Implementation } from "@agentcommunicationprotocol/sdk/types.js";
 import { NodeSDK, resources } from "@opentelemetry/sdk-node";
 import { trace, SpanStatusCode } from "@opentelemetry/api";
 import {
