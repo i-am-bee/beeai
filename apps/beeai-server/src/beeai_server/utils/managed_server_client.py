@@ -61,7 +61,6 @@ async def managed_sse_client(server: ManagedServerParameters) -> McpClient:
     async with process, create_task_group() as tg:
         tg.start_soon(log_process_stdout)
         tg.start_soon(log_process_stderr)
-        failed = True
         try:
             for attempt in range(6):
                 try:
@@ -69,12 +68,16 @@ async def managed_sse_client(server: ManagedServerParameters) -> McpClient:
                         url=f"http://localhost:{port}/{server.endpoint.lstrip('/')}", timeout=60
                     ) as streams:
                         yield streams
-                        failed = False
                         break
                 except* ConnectError as ex:
+                    if process.returncode:
+                        raise ConnectionError(f"Provider process exited with code {process.returncode}")
                     timeout = 2**attempt
                     logger.warning(f"Failed to connect to provider. Reconnecting in {timeout} seconds: {ex!r}")
                     await asyncio.sleep(timeout)
+            else:
+                raise ConnectionError("Failed to connect to provider.")
+
         finally:
             with anyio.move_on_after(server.graceful_terminate_timeout) as cancel_scope:
                 try:
@@ -89,8 +92,6 @@ async def managed_sse_client(server: ManagedServerParameters) -> McpClient:
                 )
                 process.kill()
             tg.cancel_scope.cancel()
-            if failed:
-                raise ConnectionError("Failed to connect to provider.")
 
 
 async def find_free_port():
