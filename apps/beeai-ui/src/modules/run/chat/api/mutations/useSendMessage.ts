@@ -23,11 +23,15 @@ export function useSendMessage({ onMessageDelta }: Props = {}) {
         },
       );
 
-      return client.runAgent({
-        _meta: { progressToken },
-        name: agent.name,
-        input: { prompt: input },
-      });
+      return client.runAgent(
+        {
+          _meta: { progressToken },
+          name: agent.name,
+          input: { prompt: input },
+        },
+        // TODO: abort
+        // {signal},
+      );
     },
   });
 
