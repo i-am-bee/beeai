@@ -67,6 +67,14 @@ run = "uv build . --out-dir dist"
 sources = ["**/*.py"]
 outputs = { auto = true }
 
+[tasks."build:beeai-sdk"]
+description = "Build the Python wheel for `beeai-sdk`"
+depends = ["deps:py"]
+dir = "{{config_root}}/packages/beeai-sdk"
+run = "uv build . --out-dir dist"
+sources = ["**/*.py"]
+outputs = { auto = true }
+
 ## run
 
 [tasks."run:beeai-ui"]
@@ -100,6 +108,13 @@ run = "twine upload --skip-existing --non-interactive dist/*"
 description = "Publish `beeai-server` to PyPI, but you need to configure your ~/.pypirc first."
 depends = ["build:beeai-server"]
 dir = "{{config_root}}/apps/beeai-server"
+tools = { "pipx" = "latest", "pipx:twine" = "latest" }
+run = "twine upload --skip-existing --non-interactive dist/*"
+
+[tasks."publish:beeai-sdk"]
+description = "Publish `beeai-sdk` to PyPI, but you need to configure your ~/.pypirc first."
+depends = ["build:beeai-sdk"]
+dir = "{{config_root}}/packages/beeai-sdk"
 tools = { "pipx" = "latest", "pipx:twine" = "latest" }
 run = "twine upload --skip-existing --non-interactive dist/*"
 

@@ -148,7 +148,7 @@ requires-dist = [
 
 [[package]]
 name = "beeai-sdk"
-version = "0.1.0"
+version = "0.0.1"
 source = { virtual = "packages/beeai-sdk" }
 dependencies = [
     { name = "agentcommunicationprotocol" },
