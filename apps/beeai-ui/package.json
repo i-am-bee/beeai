@@ -21,6 +21,7 @@
     "@tanstack/react-query": "^5.66.0",
     "clsx": "^2.1.1",
     "framer-motion": "^12.3.1",
+    "ky": "^1.7.5",
     "mdast-util-to-hast": "^13.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -35,9 +36,9 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
+    "@types/hast": "^3.0.4",
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
-    "@types/hast": "^3.0.4",
     "@vitejs/plugin-react-swc": "^3.5.0",
     "eslint": "catalog:",
     "eslint-plugin-react-hooks": "^5.0.0",
