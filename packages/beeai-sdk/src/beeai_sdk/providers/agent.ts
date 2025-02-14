@@ -1,11 +1,8 @@
-import http from "node:http";
 import express from "express";
-import { createTerminus } from "@godaddy/terminus";
 import { McpServer } from "@agentcommunicationprotocol/sdk/server/mcp.js";
 import { SSEServerTransport } from "@agentcommunicationprotocol/sdk/server/sse.js";
 import { Implementation } from "@agentcommunicationprotocol/sdk/types.js";
 import { NodeSDK, resources } from "@opentelemetry/sdk-node";
-import { trace, SpanStatusCode } from "@opentelemetry/api";
 import {
   ATTR_SERVICE_NAME,
   ATTR_SERVICE_VERSION,
@@ -27,59 +24,51 @@ export async function runAgentProvider(
     });
   sdk.start();
   try {
-    await trace
-      .getTracer("beeai-sdk")
-      .startActiveSpan("agent-provider", async (span) => {
-        try {
-          const app = express();
+    const app = express();
 
-          let connected = false;
-          app.get("/sse", async (req, res) => {
-            if (connected) {
-              res
-                .status(400)
-                .send("Multiple connections at a time are not permitted");
-              return;
-            }
-            connected = true;
-            res.on("close", () => {
-              connected = false;
-            });
-
-            const transport = new SSEServerTransport("/messages", res);
-            app.post("/messages", async (req, res) => {
-              await transport.handlePostMessage(req, res);
-            });
-            await server.connect(transport);
-          });
-
-          return await new Promise<void>((resolve, reject) => {
-            const port = parseInt(process.env.PORT ?? "8000");
-            const httpServer = http.createServer(app);
-            createTerminus(httpServer, {
-              signals: ["SIGINT", "SIGTERM"],
-              beforeShutdown: async () => {
-                resolve();
-              },
-            });
-            httpServer
-              .listen(port, () => {
-                console.log(`Server is running on port ${port}`);
-              })
-              .on("close", resolve)
-              .on("error", (err) => reject(err));
-          });
-        } catch (err) {
-          span.setStatus({
-            code: SpanStatusCode.ERROR,
-            message: err instanceof Error ? err.message : undefined,
-          });
-          throw err;
-        } finally {
-          span.end();
-        }
+    let connected = false;
+    app.get("/sse", async (req, res) => {
+      if (connected) {
+        res
+          .status(400)
+          .send("Multiple connections at a time are not permitted");
+        return;
+      }
+      connected = true;
+      res.on("close", () => {
+        connected = false;
       });
+
+      const transport = new SSEServerTransport("/messages", res);
+      app.post("/messages", async (req, res) => {
+        await transport.handlePostMessage(req, res);
+      });
+      await server.connect(transport);
+    });
+
+    const port = parseInt(process.env.PORT ?? "8000");
+
+    await new Promise<void>((resolve, reject) => {
+      const server = app.listen(port, () => {
+        console.log(`Server is running on port ${port}`);
+      });
+
+      server.on("error", (err) => {
+        reject(err);
+      });
+
+      const shutdownHandler = () => {
+        server.close(() => {
+          process.removeListener("SIGINT", shutdownHandler);
+          resolve();
+        });
+      };
+
+      process.on("SIGINT", shutdownHandler);
+    });
   } finally {
-    await sdk.shutdown();
+    await sdk.shutdown().catch(() => {});
   }
 }
+
+await runAgentProvider(new McpServer({ name: "foo", version: "bar" }, {}));
