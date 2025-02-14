@@ -17,12 +17,13 @@ def serve():
     config = get_configuration()
     host = "0.0.0.0"
 
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+    with socket.socket(socket.AF_INET) as sock:
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         try:
-            s.bind((host, config.port))
-        except socket.error:
-            logger.fatal(f"Failed to bind to port {config.port}")
-            sys.exit(1)
+            sock.bind((host, config.port))
+        except OSError as exc:  # pragma: full coverage
+            logger.error(exc)
+            return
 
     os.execv(
         sys.executable,
