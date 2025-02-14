@@ -62,7 +62,7 @@ async def managed_sse_client(server: ManagedServerParameters) -> McpClient:
         tg.start_soon(log_process_stdout)
         tg.start_soon(log_process_stderr)
         try:
-            for attempt in range(6):
+            for attempt in range(8):
                 try:
                     async with sse_client(
                         url=f"http://localhost:{port}/{server.endpoint.lstrip('/')}", timeout=60

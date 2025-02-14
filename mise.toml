@@ -83,6 +83,12 @@ depends = ["deps:js"]
 dir = "{{cwd}}"
 run = "pnpm --filter=@beeai/ui dev"
 
+[tasks."run:docs"]
+description = "Show the mintlify documentation in docs/"
+depends = ["deps:js"]
+dir = "{{cwd}}"
+run = "pnpm --filter=@beeai/docs dev"
+
 [tasks."run:beeai-cli"]
 description = "Run the `beeai-cli`, use double dash to pass extra args, like `mise run:beeai-cli -- provider list`"
 depends = ["deps:py", "build:beeai-ui"]
