@@ -1,5 +1,4 @@
 from kink import inject
-from pydantic import ValidationError
 from starlette.status import HTTP_400_BAD_REQUEST
 
 from beeai_server.adapters.interface import IProviderRepository
@@ -17,17 +16,17 @@ class ProviderService:
     async def add_provider(self, location: ManifestLocation):
         try:
             provider = await location.load()
-        except ValidationError as ex:
+            await self._repository.create(provider=provider)
+        except ValueError as ex:
             raise ManifestLoadError(location=location, message=str(ex), status_code=HTTP_400_BAD_REQUEST) from ex
         except Exception as ex:
             raise ManifestLoadError(location=location, message=str(ex)) from ex
-        await self._repository.create(provider=provider)
-        await self._loaded_provider_container.handle_providers_change()
+        self._loaded_provider_container.handle_providers_change()
 
     async def delete_provider(self, location: ManifestLocation):
         await location.resolve()
         await self._repository.delete(provider_id=str(location))
-        await self._loaded_provider_container.handle_providers_change()
+        self._loaded_provider_container.handle_providers_change()
 
     async def list_providers(self) -> list[ProviderWithStatus]:
         loaded_providers = {

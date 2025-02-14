@@ -1,5 +1,3 @@
-'use client';
-
 import { memo, PropsWithChildren, useCallback, useLayoutEffect, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { v4 as uuid } from 'uuid';

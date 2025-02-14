@@ -14,3 +14,7 @@ export type Agent = SdkAgent & {
 };
 
 export type ListAgentsParams = ListAgentsRequest['params'];
+
+export interface CreateProviderBody {
+  location: string;
+}

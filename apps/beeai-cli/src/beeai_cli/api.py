@@ -6,8 +6,9 @@ from typing import AsyncGenerator
 
 import anyio
 import httpx
+import typer
 from httpx import HTTPStatusError
-from mcp import ClientSession, types
+from mcp import ClientSession, types, ServerNotification
 from mcp.client.sse import sse_client
 from mcp.shared.session import ReceiveResultT
 from mcp.types import RequestParams
@@ -43,7 +44,9 @@ async def api_request(method: str, path: str, json: dict | None = None) -> dict 
             return response.json()
 
 
-async def send_request_with_notifications(req: types.Request, result_type: type[ReceiveResultT]):
+async def send_request_with_notifications(
+    req: types.Request, result_type: type[ReceiveResultT]
+) -> AsyncGenerator[ReceiveResultT | ServerNotification | None]:
     resp: ReceiveResultT | None = None
     async with mcp_client() as session:
         await session.initialize()
@@ -67,7 +70,11 @@ async def send_request_with_notifications(req: types.Request, result_type: type[
             async def read_notifications():
                 # IMPORTANT(!) if the client does not read the notifications, it gets blocked never receiving the response
                 async for message in session.incoming_messages:
-                    await message_writer.send(message)
+                    try:
+                        notification = ServerNotification.model_validate(message)
+                        await message_writer.send(notification)
+                    except ValueError:
+                        typer.echo(f"Unable to parse message from server: {message}")
 
             notif_task = task_group.start_soon(read_notifications)
             request_task = task_group.start_soon(request_task)
