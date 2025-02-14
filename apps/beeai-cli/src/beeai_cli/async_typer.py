@@ -11,6 +11,7 @@ from beeai_cli.utils import extract_messages
 DEBUG = Configuration().debug
 
 err_console = Console(stderr=True)
+console = Console()
 
 
 class AsyncTyper(typer.Typer):

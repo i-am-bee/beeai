@@ -9,6 +9,7 @@ import anyio
 from anyio.abc import TaskGroup
 from anyio.streams.memory import MemoryObjectReceiveStream
 from kink import inject
+from structlog.contextvars import bind_contextvars, unbind_contextvars
 
 from beeai_server.adapters.interface import IProviderRepository
 from beeai_server.domain.model import Provider, LoadedProviderStatus
@@ -19,6 +20,8 @@ from mcp import ClientSession, Tool, Resource, InitializeResult, types, ServerSe
 from mcp.shared.context import RequestContext
 from mcp.shared.session import RequestResponder, ReceiveRequestT, SendResultT, ReceiveNotificationT
 from mcp.types import AgentTemplate, Prompt, Agent
+
+from beeai_server.utils.utils import extract_messages
 
 logger = logging.getLogger(__name__)
 
@@ -112,10 +115,9 @@ class LoadedProvider:
                     self.prompts = (await self.session.list_prompts()).prompts
                     logger.info(f"Loaded {len(self.prompts)} prompts")
         except Exception as ex:
-            msg = f"Failed to load features for provider: {self.id}: {ex!r}"
-            logger.error(msg)
+            logger.error(f"Failed to load features: {ex!r}")
             self.session = None  # Mark session as broken - reinitialize connection in next period
-            self.last_error = msg
+            self.last_error = f"Failed to load features: {extract_messages(ex)}"
             self.status = LoadedProviderStatus.error
         self.status = LoadedProviderStatus.ready
 
@@ -133,7 +135,7 @@ class LoadedProvider:
             await self._write_messages.send(message)
 
     async def _initialize_session(self):
-        logger.info(f"Initializing session to provider {self.id}")
+        logger.info("Initializing session")
         await self._close_session()
         read_stream, write_stream = await self._session_exit_stack.enter_async_context(
             self.provider.manifest.mcp_client()
@@ -152,13 +154,15 @@ class LoadedProvider:
         try:
             await self._session_exit_stack.aclose()
         except Exception as ex:
-            logger.warning(f"Exception occurred when stopping session {self.provider.id}: {ex!r}")
+            logger.warning(f"Exception occurred when stopping session: {ex!r}")
             self._session_exit_stack.pop_all()
 
     async def _ensure_session(self):
+        bind_contextvars(provider=self.id)
         if self._stopping:
             await self._close_session()
             self._stopped.set()
+            unbind_contextvars("provider")
             return
         try:
             if self.session:
@@ -170,13 +174,15 @@ class LoadedProvider:
             logger.warning("The server did not respond in time, we assume it is processing a request.")
         except Exception as ex:  # TODO narrow exception scope
             self.session = None
-            logger.warning(f"Error connecting to {self.provider.id}: {ex!r}")
-            self.last_error = repr(ex)
+            logger.warning(f"Error connecting to provider: {ex!r}")
+            self.last_error = f"Error connecting to provider: {extract_messages(ex)}"
             self.status = LoadedProviderStatus.error
+        finally:
+            unbind_contextvars("provider")
 
     async def __aenter__(self):
         self._stopping = False
-        logger.info(f"Loading provider {self.id}")
+        logger.info("Loading provider")
         await self._writers_exit_stack.enter_async_context(self._write_messages)
         await self._ensure_session_periodic.start()
 
@@ -186,7 +192,7 @@ class LoadedProvider:
         self._ensure_session_periodic.poke()
         await self._stopped.wait()
         await self._ensure_session_periodic.stop()
-        logger.info(f"Removing provider {self.id}")
+        logger.info("Removing provider")
 
 
 @inject

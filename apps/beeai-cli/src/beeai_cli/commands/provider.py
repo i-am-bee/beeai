@@ -2,10 +2,10 @@ from enum import StrEnum
 from pathlib import Path
 
 import typer
-import yaml
+from rich.table import Table
 
 from beeai_cli.api import api_request
-from beeai_cli.async_typer import AsyncTyper
+from beeai_cli.async_typer import AsyncTyper, console
 
 app = AsyncTyper()
 
@@ -39,10 +39,26 @@ async def add(
     typer.echo(f"Added provider: {location}")
 
 
+def render_enum(value: str, colors: dict[str, str]) -> str:
+    if color := colors.get(value, None):
+        return f"[{color}]{value}[/{color}]"
+    return value
+
+
 @app.command("list")
 async def list():
+    # TODO: extract server schemas to a separate package
     resp = await api_request("get", "provider")
-    typer.echo(yaml.dump(resp))
+    table = Table("ID", "Status", "Last Error", expand=True)
+    for item in sorted(
+        sorted(resp["items"], key=lambda item: item["id"]), key=lambda item: item["status"], reverse=True
+    ):
+        table.add_row(
+            item["id"],
+            render_enum(item["status"], {"ready": "green", "initializing": "yellow", "error": "red"}),
+            item["last_error"] if item["status"] != "ready" else "",
+        )
+    console.print(table)
 
 
 @app.command("remove")
@@ -52,4 +68,4 @@ async def remove(
     """Call a tool with given input."""
     location = _get_abs_location(location)
     await api_request("post", "provider/delete", json={"location": location})
-    typer.echo(f"Removed provider: {location}")
+    console.print(f"Removed provider: {location}")

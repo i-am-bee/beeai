@@ -3,9 +3,10 @@ import sys
 import typer
 from mcp import types, ServerNotification, RunAgentResult
 from mcp.types import AgentRunProgressNotification, AgentRunProgressNotificationParams
+from rich.table import Table
 
 from beeai_cli.api import send_request, send_request_with_notifications
-from beeai_cli.async_typer import AsyncTyper
+from beeai_cli.async_typer import AsyncTyper, console
 from beeai_cli.utils import format_model
 
 app = AsyncTyper()
@@ -45,4 +46,8 @@ async def run(
 @app.command("list")
 async def list_agents():
     result = await send_request(types.ListAgentsRequest(method="agents/list"), types.ListAgentsResult)
-    typer.echo(format_model(result.agents))
+    extra_cols = list({col for agent in result.agents for col in agent.model_extra if col != "fullDescription"})
+    table = Table("Name", "Description", *extra_cols, expand=True, show_lines=True)
+    for agent in result.agents:
+        table.add_row(agent.name, agent.description, *[str(agent.model_extra.get(col, "")) for col in extra_cols])
+    console.print(table)

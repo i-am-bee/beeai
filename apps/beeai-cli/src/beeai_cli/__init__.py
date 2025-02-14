@@ -15,5 +15,6 @@ async def serve():
 
     beeai_server.serve()
 
+
 if __name__ == "__main__":
     app()

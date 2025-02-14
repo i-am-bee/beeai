@@ -26,6 +26,7 @@ class Configuration(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", env_nested_delimiter="__")
     logging: LoggingConfiguration = LoggingConfiguration()
     provider_config_path: Path = Path.home() / ".beeai" / "providers.yaml"
+    port: int = 8333
 
 
 @cache
