@@ -13,8 +13,8 @@
   "license": "MIT",
   "description": "",
   "dependencies": {
-    "beeai-sdk": "workspace:*",
     "@agentcommunicationprotocol/sdk": "^0.0.2",
+    "@i-am-bee/beeai-sdk": "^0.0.1",
     "bee-agent-framework": "^0.0.61",
     "ollama": "^0.5.12",
     "tsx": "^4.19.2"

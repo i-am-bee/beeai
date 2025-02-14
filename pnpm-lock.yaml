@@ -23,12 +23,12 @@ importers:
       '@agentcommunicationprotocol/sdk':
         specifier: ^0.0.2
         version: 0.0.2
+      '@i-am-bee/beeai-sdk':
+        specifier: ^0.0.1
+        version: 0.0.1
       bee-agent-framework:
         specifier: ^0.0.61
         version: 0.0.61(@grpc/grpc-js@1.12.6)(@grpc/proto-loader@0.7.13)(ollama@0.5.12)
-      beeai-sdk:
-        specifier: workspace:*
-        version: link:../../../packages/beeai-sdk
       ollama:
         specifier: ^0.5.12
         version: 0.5.12
@@ -780,6 +780,9 @@ packages:
   '@humanwhocodes/retry@0.4.1':
     resolution: {integrity: sha512-c7hNEllBlenFTHBky65mhq8WD2kbN9Q6gk0bTk8lSBvc554jpXSkST1iePudpt7+A/AQvuHs9EMqjHDXMY1lrA==}
     engines: {node: '>=18.18'}
+
+  '@i-am-bee/beeai-sdk@0.0.1':
+    resolution: {integrity: sha512-XgIHnsyczUHdSBJjY3M/KoTzWTSw7104RVu0Xm/MbZKI4n7VV/cAI5Q09WwNEOZkzY5sNZ/4xeJWoOsmml7wzA==}
 
   '@ibm/plex-mono@0.0.3-alpha.0':
     resolution: {integrity: sha512-xSa/c1vrzGmMR5xQr/aWP/q62jUD41mKwm2w4kFsvIVyT9fxC3wq81UYMSGBxQZ6+P1AROMSefF22aLXkv6uqw==}
@@ -4502,6 +4505,18 @@ snapshots:
   '@humanwhocodes/retry@0.3.1': {}
 
   '@humanwhocodes/retry@0.4.1': {}
+
+  '@i-am-bee/beeai-sdk@0.0.1':
+    dependencies:
+      '@agentcommunicationprotocol/sdk': 0.0.2
+      '@godaddy/terminus': 4.12.1
+      '@opentelemetry/api': 1.9.0
+      '@opentelemetry/sdk-node': 0.57.1(@opentelemetry/api@1.9.0)
+      '@opentelemetry/semantic-conventions': 1.30.0
+      express: 4.21.2
+      zod: 3.24.1
+    transitivePeerDependencies:
+      - supports-color
 
   '@ibm/plex-mono@0.0.3-alpha.0': {}
 

@@ -6,13 +6,13 @@ import { StreamlitAgent } from "bee-agent-framework/agents/experimental/streamli
 import { OllamaChatLLM } from "bee-agent-framework/adapters/ollama/chat";
 import { UnconstrainedMemory } from "bee-agent-framework/memory/unconstrainedMemory";
 import { Version } from "bee-agent-framework";
-import { runAgentProvider } from "beeai-sdk/src/beeai_sdk/providers/agent.js";
+import { runAgentProvider } from "@i-am-bee/beeai-sdk/providers/agent";
 import {
   promptInputSchema,
   promptOutputSchema,
   PromptOutput,
-} from "beeai-sdk/src/beeai_sdk/schemas/prompt.js";
-import { Metadata } from "beeai-sdk/src/beeai_sdk/schemas/metadata.js";
+} from "@i-am-bee/beeai-sdk/schemas/prompt";
+import { Metadata } from "@i-am-bee/beeai-sdk/schemas/metadata";
 
 async function registerAgents(server: McpServer) {
   const streamlitMeta = new StreamlitAgent({
