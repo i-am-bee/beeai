@@ -7,6 +7,7 @@ from fastapi.exception_handlers import http_exception_handler
 from fastapi.responses import ORJSONResponse
 from fastapi.staticfiles import StaticFiles
 from kink import di
+from starlette.responses import FileResponse
 from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 
 from beeai_server.bootstrap import bootstrap_dependencies
@@ -43,7 +44,7 @@ def mount_routes(app: FastAPI):
 
     ui_app = FastAPI()
     ui_app.mount("/", StaticFiles(directory=static_directory, html=True))
-    # ui_app.add_exception_handler(404, lambda _req, _exc: RedirectResponse(url="/index.html"))
+    ui_app.add_exception_handler(404, lambda _req, _exc: FileResponse(static_directory / "index.html", status_code=200))
 
     server_router = APIRouter()
     server_router.include_router(provider_router, prefix="/provider", tags=["provider"])
