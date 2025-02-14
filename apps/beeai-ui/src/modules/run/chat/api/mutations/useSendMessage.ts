@@ -30,7 +30,7 @@ export function useSendMessage({ onMessageDelta }: Props = {}) {
           input: { prompt: input },
         },
         // TODO: abort
-        // {signal},
+        {timeout: 10 * 60 * 1000}, // 10 minutes
       );
     },
   });

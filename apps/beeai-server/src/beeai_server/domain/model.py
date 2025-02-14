@@ -8,6 +8,7 @@ import yaml
 from anyio import Path
 from mcp import stdio_client, StdioServerParameters
 from mcp.client.sse import sse_client
+from packaging import version
 from pydantic import BaseModel, Field, FileUrl, RootModel, field_validator
 from pydantic_core.core_schema import ValidationInfo
 
@@ -116,10 +117,20 @@ class NodeJsProvider(ManagedProvider):
 
 class PythonProvider(ManagedProvider):
     driver: Literal[ProviderDriver.python] = ProviderDriver.python
+    pythonVersion: str | None = None
     package: str = Field(
         default=None,
         description='PyPI package or "git+https://..." URL, or "file://..." URL (not allowed in remote manifests)',
     )
+
+    @field_validator("pythonVersion", mode="after")
+    @classmethod
+    def _validate_python_version(cls, value: str | None, info: ValidationInfo) -> str | None:
+        if value:
+            parsed_version = version.parse(value)
+            if parsed_version.major != 3 or parsed_version.minor <= 7:
+                raise ValueError(f"Invalid Python version {version}, supported python >=3.8")
+        return value
 
     @field_validator("package", mode="after")
     @classmethod
@@ -136,8 +147,9 @@ class PythonProvider(ManagedProvider):
 
     @asynccontextmanager
     async def mcp_client(self) -> McpClient:  # noqa: F821
+        python = [] if not self.pythonVersion else ["--python", self.pythonVersion]
         async with super()._get_mcp_client(
-            command=["uvx", "--from", self.package, "--reinstall", *self.command]
+            command=["uvx", *python, "--from", self.package, "--reinstall", *self.command]
         ) as client:
             yield client
 
@@ -185,7 +197,9 @@ class GitHubManifestLocation(RootModel):
 
     async def load(self) -> Provider:
         await self.resolve()
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(
+            headers={"Cache-Control": "no-cache, no-store, must-revalidate", "Pragma": "no-cache", "Expires": "0"}
+        ) as client:
             resp = await client.get(str(self.root.get_raw_url(self.root.path or DEFAULT_MANIFEST_PATH)))
             resp.raise_for_status()
         return Provider.model_validate({"manifest": yaml.safe_load(resp.text), "id": self.provider_id})
