@@ -25,7 +25,7 @@ export function Message({ message }: Props) {
       </div>
 
       <div className={classes.body}>
-        {!isUserMessage && message.isPending ? (
+        {!isUserMessage && message.isPending && !message.content ? (
           <Spinner />
         ) : message.error ? (
           <ErrorMessage title="Failed to load agents." subtitle={message.error.message} />

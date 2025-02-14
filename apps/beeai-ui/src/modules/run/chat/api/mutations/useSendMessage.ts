@@ -3,7 +3,11 @@ import { useMutation } from '@tanstack/react-query';
 import { Agent, AgentRunProgressNotificationSchema } from '@agentcommunicationprotocol/sdk/types.js';
 // import { promptOutputSchema } from 'beeai-sdk/src/beeai_sdk/schemas/prompt.js';
 
-export function useSendMessage() {
+interface Props {
+  onMessageDelta?: (delta: string) => void;
+}
+
+export function useSendMessage({ onMessageDelta }: Props = {}) {
   const client = useMCPClient();
 
   const query = useMutation({
@@ -12,9 +16,10 @@ export function useSendMessage() {
 
       client.setNotificationHandler(
         AgentRunProgressNotificationSchema,
-        // AgentRunProgressNotificationSchema.extend({ params: { delta: promptOutputSchema } }),
+        // TODO: extend with promptOutputSchema
+        // AgentRunProgressNotificationSchema.extend({ params: z.object({ delta: promptOutputSchema }) }),
         (notification) => {
-          console.log(notification);
+          onMessageDelta?.(String(notification.params.delta.text));
         },
       );
 

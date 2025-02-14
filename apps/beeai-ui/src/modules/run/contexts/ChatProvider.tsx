@@ -11,7 +11,6 @@ interface Props {
 
 export function ChatProvider({ agent, children }: PropsWithChildren<Props>) {
   const [getMessages, setMessages] = useImmerWithGetter<ChatMessage[]>([]);
-  const { mutateAsync: mutateSendMessage, isPending } = useSendMessage();
 
   const updateLastAgentMessage = useCallback(
     (updater: (message: AgentMessage) => void) => {
@@ -24,6 +23,14 @@ export function ChatProvider({ agent, children }: PropsWithChildren<Props>) {
     },
     [setMessages],
   );
+
+  const { mutateAsync: mutateSendMessage, isPending } = useSendMessage({
+    onMessageDelta: (delta: string) => {
+      updateLastAgentMessage((message) => {
+        message.content += delta;
+      });
+    },
+  });
 
   const sendMessage = useCallback(
     async (input: string) => {
