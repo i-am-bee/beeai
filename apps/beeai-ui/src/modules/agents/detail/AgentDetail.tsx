@@ -11,6 +11,7 @@ import { isStringTerminalParameterSafe } from '@/utils/strings';
 import { MarkdownContent } from '@/components/MarkdownContent/MarkdownContent';
 import { useAgent } from '../api/queries/useAgent';
 import { ErrorMessage } from '@/components/ErrorMessage/ErrorMessage';
+import { routes } from '@/utils/router';
 
 interface Props {
   name: string;
@@ -43,7 +44,7 @@ export function AgentDetail({ name }: Props) {
                     {runCommand}
                   </TextWithCopyButton>
                 </Layer>
-                <Button kind="primary" renderIcon={ArrowUpRight} size="md">
+                <Button kind="primary" renderIcon={ArrowUpRight} size="md" href={routes.agentRun(name)}>
                   Try this agent
                 </Button>
               </div>

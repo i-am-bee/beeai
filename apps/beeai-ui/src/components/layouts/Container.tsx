@@ -4,8 +4,9 @@ import classes from './Container.module.scss';
 
 interface Props {
   size?: 'md' | 'xlg';
+  className?: string;
 }
 
-export function Container({ size = 'md', children }: PropsWithChildren<Props>) {
-  return <div className={clsx(classes.root, { [classes[size]]: size })}>{children}</div>;
+export function Container({ size = 'md', className, children }: PropsWithChildren<Props>) {
+  return <div className={clsx(classes.root, className, { [classes[size]]: size })}>{children}</div>;
 }

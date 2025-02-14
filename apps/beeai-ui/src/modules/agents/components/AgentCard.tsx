@@ -26,7 +26,7 @@ export function AgentCard({ agent }: Props) {
     >
       <div className={classes.header}>
         <h2 className={classes.name}>
-          <Link to={route} className={classes.link}>
+          <Link to={route} className={classes.link} viewTransition>
             {title ?? name}
           </Link>
         </h2>

@@ -1,0 +1,53 @@
+@use '@carbon/styles/scss/utilities/visually-hidden' as *;
+@use '@carbon/styles/scss/utilities/button-reset';
+
+.root {
+  display: grid;
+  row-gap: $spacing-02;
+}
+
+.container {
+  position: relative;
+  border: 1px solid $border-subtle;
+  border-radius: $spacing-03;
+  background-color: $background;
+}
+
+.inputContainer {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.actionBar {
+  display: flex;
+  justify-content: flex-end;
+  padding: $spacing-02;
+}
+
+.files {
+  padding: $spacing-04 $spacing-04 0;
+}
+
+.root .textarea {
+  &::after,
+  > textarea {
+    padding-inline: $spacing-04;
+    padding-block: rem(10px);
+    border-radius: $spacing-03;
+  }
+  > textarea {
+    color: inherit;
+    background-color: $background;
+    &::placeholder {
+      transition: opacity $duration-fast-02;
+      color: $text-placeholder;
+    }
+    &:focus-visible {
+      outline: 0;
+      &::placeholder {
+        opacity: 0.5;
+      }
+    }
+  }
+}

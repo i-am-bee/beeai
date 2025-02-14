@@ -60,6 +60,7 @@ async function registerAgents(server: McpServer) {
 - Feature 3`,
       avgRunTimeSeconds: 10,
       avgRunTokens: 48,
+      ui: "chat",
     } as const satisfies Metadata
   );
 }

@@ -1,0 +1,29 @@
+.root {
+  block-size: 1rem;
+  inline-size: 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transform: translate(0, 0.2rem);
+
+  &.size-sm {
+    inline-size: 1rem;
+    transform: translate(0, 0.1rem);
+    .content {
+      block-size: 2.8rem;
+      min-inline-size: 2.8rem;
+      transform: translate(0, 0.1rem);
+    }
+  }
+
+  .content {
+    display: flex;
+    block-size: 3.5rem;
+    min-inline-size: 3.5rem;
+    transform: translate(0, 0.2rem);
+    svg path {
+      fill: currentColor !important;
+    }
+  }
+}

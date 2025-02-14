@@ -10,5 +10,6 @@ class Metadata(BaseModel):
     avgRunTimeSeconds: Optional[float] = None
     avgRunTokens: Optional[float] = None
     tags: Optional[list[str]] = None
+    ui: Optional[str] = None
 
     model_config = ConfigDict(extra="allow")

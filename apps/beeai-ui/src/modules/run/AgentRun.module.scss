@@ -1,0 +1,25 @@
+.container {
+  block-size: 100%;
+  max-block-size: 100%;
+}
+
+.root {
+  h1 {
+    font-size: rem(16px);
+    font-weight: 400;
+  }
+}
+
+.loading {
+  inset: 0;
+  block-size: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.uiNotAvailable {
+  margin-block-start: 30vh;
+  font-size: rem(24px);
+  font-weight: 400;
+}

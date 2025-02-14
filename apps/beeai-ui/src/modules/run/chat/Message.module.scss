@@ -1,0 +1,31 @@
+$avatar-padding-left: $spacing-04 + rem(32px);
+
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-04;
+}
+
+.sender {
+  display: flex;
+  align-items: center;
+  gap: $spacing-04;
+
+  .senderIcon {
+    inline-size: rem(32px);
+  }
+  .senderName {
+    color: $text-secondary;
+    font-size: rem(12px);
+  }
+}
+
+.body {
+  padding-inline-start: $avatar-padding-left;
+}
+
+.content {
+  @include font-family(serif);
+  font-size: rem(16px);
+  line-height: math.div(26, 16);
+}

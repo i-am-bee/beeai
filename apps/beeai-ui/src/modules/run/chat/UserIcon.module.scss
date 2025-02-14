@@ -1,0 +1,13 @@
+.root {
+  block-size: rem(32px);
+  inline-size: rem(32px);
+  border-radius: 50%;
+  background-color: $layer-02;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    block-size: rem(16px);
+  }
+}

@@ -10,6 +10,7 @@ import { NotFound } from './pages/NotFound';
 import { routesDefinition } from './utils/router';
 import { Agent } from './pages/agents/Agent';
 import { ModalProvider } from './contexts/Modal/ModalProvider';
+import { AgentRunPage } from './pages/run/AgentRunPage';
 import { ToastProvider } from './contexts/Toast/ToastProvider';
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ export function App() {
                   <Route element={<AppLayout />}>
                     <Route path={routesDefinition.home()} element={<Home />} />
                     <Route path={routesDefinition.agentDetail()} element={<Agent />} />
+                    <Route path={routesDefinition.agentRun()} element={<AgentRunPage />} />
 
                     <Route path="*" element={<NotFound />} />
                   </Route>
