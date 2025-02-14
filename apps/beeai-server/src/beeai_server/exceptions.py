@@ -9,3 +9,6 @@ class ManifestLoadError(Exception):
         message = message or f"Manifest at location {location} not found."
         self.status_code = status_code
         super().__init__(message)
+
+
+class LoadFeaturesError(Exception): ...

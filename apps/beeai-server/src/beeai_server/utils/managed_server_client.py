@@ -52,11 +52,11 @@ async def managed_sse_client(server: ManagedServerParameters) -> McpClient:
 
     async def log_process_stdout():
         async for line in process.stdout:
-            logger.info(line.decode().strip(), extra={"managed_sse_provider": port})
+            logger.info(line.decode().strip())
 
     async def log_process_stderr():
         async for line in process.stderr:
-            logger.info(line.decode().strip(), extra={"managed_sse_provider": port})
+            logger.info(line.decode().strip())
 
     async with process, create_task_group() as tg:
         tg.start_soon(log_process_stdout)

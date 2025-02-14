@@ -1,6 +1,11 @@
 import json
+
+import rich
 import typer
-from beeai_cli.async_typer import AsyncTyper
+from rich.table import Table
+import rich.json
+
+from beeai_cli.async_typer import AsyncTyper, console
 from beeai_cli.api import send_request, send_request_with_notifications
 from beeai_cli.utils import format_model
 
@@ -34,4 +39,7 @@ async def run(
 @app.command("list")
 async def list():
     result = await send_request(types.ListToolsRequest(method="tools/list"), types.ListToolsResult)
-    typer.echo(format_model(result.tools))
+    table = Table("Name", "Description", "Input Schema", expand=True)
+    for tool in result.tools:
+        table.add_row(tool.name, tool.description, rich.json.JSON.from_data(tool.inputSchema, indent=2))
+    console.print(table)
