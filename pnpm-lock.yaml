@@ -63,15 +63,15 @@ importers:
       '@carbon/styles':
         specifier: ^1.74.0
         version: 1.74.0(sass@1.83.4)
+      '@i-am-bee/beeai-sdk':
+        specifier: workspace:*
+        version: link:../../packages/beeai-sdk
       '@tanstack/react-query':
         specifier: ^5.66.0
         version: 5.66.0(react@19.0.0)
       '@types/react-resizable':
         specifier: ^3.0.8
         version: 3.0.8
-      beeai-sdk:
-        specifier: workspace:*
-        version: link:../../packages/beeai-sdk
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
@@ -81,15 +81,15 @@ importers:
       immer:
         specifier: ^10.1.1
         version: 10.1.1
+      ky:
+        specifier: ^1.7.5
+        version: 1.7.5
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
       lottie-react:
         specifier: ^2.4.1
         version: 2.4.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
-      ky:
-        specifier: ^1.7.5
-        version: 1.7.5
       mdast-util-to-hast:
         specifier: ^13.1.0
         version: 13.2.0
