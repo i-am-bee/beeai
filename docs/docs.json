@@ -1,0 +1,73 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "BeeAI platform",
+  "colors": {
+    "primary": "#F3C622",
+    "light": "#F3C622",
+    "dark": "#F3C622"
+  },
+  "favicon": "/favicon.svg",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Guides",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "get-started/introduction",
+              "get-started/quickstart",
+              "get-started/development"
+            ]
+          },
+          {
+            "group": "Create Agents",
+            "pages": [
+              "create-agents/overview",
+              "create-agents/beeai-framework",
+              "create-agents/crewai"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "openapi": {
+          "source": "api-reference/openapi.json",
+          "directory": "api-reference"
+        }
+      }
+    ],
+    "global": {
+      "anchors": [
+        {
+          "anchor": "BeeAI website",
+          "href": "https://iambee.ai/",
+          "icon": "globe-pointer"
+        },
+        {
+          "anchor": "Community",
+          "href": "https://discord.gg/AZFrp3UF5k",
+          "icon": "discord"
+        }
+      ]
+    }
+  },
+  "logo": {
+    "light": "/logo/logo.svg",
+    "dark": "/logo/logo.svg"
+  },
+  "navbar": {
+    "primary": {
+      "type": "button",
+      "label": "GitHub",
+      "href": "https://github.com/i-am-bee/beeai"
+    }
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/i-am-bee/beeai"
+    }
+  }
+}
