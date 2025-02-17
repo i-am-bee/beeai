@@ -4,7 +4,7 @@ import annotated_types
 import pytest
 from pydantic import BaseModel, Field
 
-from mcp.server.fastmcp.utilities.func_metadata import func_metadata
+from acp.server.highlevel.utilities.func_metadata import func_metadata
 
 
 class SomeInputModelA(BaseModel):

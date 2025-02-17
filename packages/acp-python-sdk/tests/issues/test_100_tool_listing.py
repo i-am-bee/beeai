@@ -1,12 +1,12 @@
 import pytest
 
-from mcp.server.fastmcp import FastMCP
+from acp.server.highlevel import Server
 
 pytestmark = pytest.mark.anyio
 
 
 async def test_list_tools_returns_all_tools():
-    mcp = FastMCP("TestTools")
+    mcp = Server("TestTools")
 
     # Create 100 tools with unique names
     num_tools = 100

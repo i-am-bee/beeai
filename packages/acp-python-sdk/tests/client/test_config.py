@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 import pytest
 
-from mcp.cli.claude import update_claude_config
+from acp.cli.claude import update_claude_config
 
 
 @pytest.fixture

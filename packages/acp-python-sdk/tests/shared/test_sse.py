@@ -12,12 +12,12 @@ from starlette.applications import Starlette
 from starlette.requests import Request
 from starlette.routing import Mount, Route
 
-from mcp.client.session import ClientSession
-from mcp.client.sse import sse_client
-from mcp.server import Server
-from mcp.server.sse import SseServerTransport
-from mcp.shared.exceptions import McpError
-from mcp.types import (
+from acp.client.session import ClientSession
+from acp.client.sse import sse_client
+from acp.server import Server
+from acp.server.sse import SseServerTransport
+from acp.shared.exceptions import McpError
+from acp.types import (
     EmptyResult,
     ErrorData,
     InitializeResult,

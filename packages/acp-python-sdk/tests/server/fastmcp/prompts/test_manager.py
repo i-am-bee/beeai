@@ -1,7 +1,7 @@
 import pytest
 
-from mcp.server.fastmcp.prompts.base import Prompt, TextContent, UserMessage
-from mcp.server.fastmcp.prompts.manager import PromptManager
+from acp.server.highlevel.prompts.base import Prompt, TextContent, UserMessage
+from acp.server.highlevel.prompts.manager import PromptManager
 
 
 class TestPromptManager:

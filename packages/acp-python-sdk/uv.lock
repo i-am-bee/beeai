@@ -6,14 +6,14 @@ resolution-mode = "lowest-direct"
 
 [manifest]
 members = [
-    "agentcommunicationprotocol",
+    "acp-sdk",
     "mcp-simple-prompt",
     "mcp-simple-resource",
     "mcp-simple-tool",
 ]
 
 [[package]]
-name = "agentcommunicationprotocol"
+name = "acp-sdk"
 version = "0.0.5"
 source = { editable = "." }
 dependencies = [

@@ -5,7 +5,7 @@ from tempfile import NamedTemporaryFile
 import pytest
 from pydantic import FileUrl
 
-from mcp.server.fastmcp.resources import FileResource
+from acp.server.highlevel.resources import FileResource
 
 
 @pytest.fixture

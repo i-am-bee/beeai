@@ -7,10 +7,10 @@ from typing import Sequence
 import anyio
 import pytest
 
-from mcp.client.session import ClientSession
-from mcp.server.lowlevel import Server
-from mcp.shared.exceptions import McpError
-from mcp.types import (
+from acp.client.session import ClientSession
+from acp.server.lowlevel import Server
+from acp.shared.exceptions import McpError
+from acp.types import (
     EmbeddedResource,
     ImageContent,
     TextContent,

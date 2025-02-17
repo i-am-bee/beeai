@@ -1,14 +1,14 @@
 import pytest
 from pydantic import FileUrl
 
-from mcp.server.fastmcp.prompts.base import (
+from acp.server.highlevel.prompts.base import (
     AssistantMessage,
     Message,
     Prompt,
     TextContent,
     UserMessage,
 )
-from mcp.types import EmbeddedResource, TextResourceContents
+from acp.types import EmbeddedResource, TextResourceContents
 
 
 class TestRenderPrompt:

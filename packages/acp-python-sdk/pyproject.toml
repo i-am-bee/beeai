@@ -1,10 +1,10 @@
 [project]
-name = "agentcommunicationprotocol"
+name = "acp-sdk"
 version = "0.0.5"
 description = "Agent Communication Protocol SDK"
 readme = "README.md"
 requires-python = ">=3.10"
-authors = [{ name = "IBM Corp." }]
+authors = [{ name = "IBM Corp." }, { name = "Anthropic, PBC" }]
 maintainers = []
 keywords = ["git", "acp", "llm"]
 license = { text = "MIT" }
@@ -36,7 +36,7 @@ rich = ["rich>=13.9.4"]
 cli = ["typer>=0.12.4", "python-dotenv>=1.0.0"]
 
 [project.scripts]
-mcp = "mcp.cli:app [cli]"
+acp = "acp.cli:app [cli]"
 
 [tool.uv]
 resolution = "lowest-direct"
@@ -54,15 +54,15 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project.urls]
-Homepage = "https://github.com/i-am-bee/acp-python-sdk"
-Repository = "https://github.com/i-am-bee/acp-python-sdk"
-Issues = "https://github.com/i-am-bee/acp-python-sdk/issues"
+Homepage = "https://github.com/i-am-bee/beeai"
+Repository = "https://github.com/i-am-bee/beeai"
+Issues = "https://github.com/i-am-bee/beeai/issues"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/mcp"]
+packages = ["src/acp"]
 
 [tool.pyright]
-include = ["src/mcp"]
+include = ["src/acp"]
 venvPath = "."
 venv = ".venv"
 

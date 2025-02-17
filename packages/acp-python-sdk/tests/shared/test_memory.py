@@ -2,12 +2,12 @@ import pytest
 from pydantic import AnyUrl
 from typing_extensions import AsyncGenerator
 
-from mcp.client.session import ClientSession
-from mcp.server import Server
-from mcp.shared.memory import (
+from acp.client.session import ClientSession
+from acp.server import Server
+from acp.shared.memory import (
     create_connected_server_and_client_session,
 )
-from mcp.types import (
+from acp.types import (
     EmptyResult,
     Resource,
 )

@@ -3,7 +3,7 @@ import json
 import pytest
 from pydantic import BaseModel
 
-from mcp.server.fastmcp.resources import FunctionResource, ResourceTemplate
+from acp.server.highlevel.resources import FunctionResource, ResourceTemplate
 
 
 class TestResourceTemplate:

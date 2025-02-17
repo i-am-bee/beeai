@@ -1,7 +1,7 @@
 import pytest
 from pydantic import AnyUrl, BaseModel
 
-from mcp.server.fastmcp.resources import FunctionResource
+from acp.server.highlevel.resources import FunctionResource
 
 
 class TestFunctionResource:

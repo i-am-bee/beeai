@@ -3,12 +3,12 @@
 import pytest
 from pydantic import Field
 
-from mcp.server.fastmcp import FastMCP
+from acp.server.highlevel import Server
 
 
 @pytest.mark.anyio
 async def test_parameter_descriptions():
-    mcp = FastMCP("Test Server")
+    mcp = Server("Test Server")
 
     @mcp.tool()
     def greet(

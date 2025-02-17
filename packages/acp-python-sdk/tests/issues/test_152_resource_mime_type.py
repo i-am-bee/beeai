@@ -3,11 +3,11 @@ import base64
 import pytest
 from pydantic import AnyUrl
 
-from mcp import types
-from mcp.server.fastmcp import FastMCP
-from mcp.server.lowlevel import Server
-from mcp.server.lowlevel.helper_types import ReadResourceContents
-from mcp.shared.memory import (
+from acp import types
+from acp.server.highlevel import Server as ACPServer
+from acp.server.lowlevel import Server
+from acp.server.lowlevel.helper_types import ReadResourceContents
+from acp.shared.memory import (
     create_connected_server_and_client_session as client_session,
 )
 
@@ -16,7 +16,7 @@ pytestmark = pytest.mark.anyio
 
 async def test_fastmcp_resource_mime_type():
     """Test that mime_type parameter is respected for resources."""
-    mcp = FastMCP("test")
+    mcp = ACPServer("test")
 
     # Create a small test image as bytes
     image_bytes = b"fake_image_data"

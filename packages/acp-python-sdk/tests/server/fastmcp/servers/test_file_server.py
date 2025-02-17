@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from mcp.server.fastmcp import FastMCP
+from acp.server.highlevel import Server
 
 
 @pytest.fixture()
@@ -20,14 +20,14 @@ def test_dir(tmp_path_factory) -> Path:
 
 
 @pytest.fixture
-def mcp() -> FastMCP:
-    mcp = FastMCP()
+def mcp() -> Server:
+    mcp = Server()
 
     return mcp
 
 
 @pytest.fixture(autouse=True)
-def resources(mcp: FastMCP, test_dir: Path) -> FastMCP:
+def resources(mcp: Server, test_dir: Path) -> Server:
     @mcp.resource("dir://test_dir")
     def list_test_dir() -> list[str]:
         """List the files in the test directory"""
@@ -61,7 +61,7 @@ def resources(mcp: FastMCP, test_dir: Path) -> FastMCP:
 
 
 @pytest.fixture(autouse=True)
-def tools(mcp: FastMCP, test_dir: Path) -> FastMCP:
+def tools(mcp: Server, test_dir: Path) -> Server:
     @mcp.tool()
     def delete_file(path: str) -> bool:
         # ensure path is in test_dir
@@ -74,7 +74,7 @@ def tools(mcp: FastMCP, test_dir: Path) -> FastMCP:
 
 
 @pytest.mark.anyio
-async def test_list_resources(mcp: FastMCP):
+async def test_list_resources(mcp: Server):
     resources = await mcp.list_resources()
     assert len(resources) == 4
 
@@ -87,7 +87,7 @@ async def test_list_resources(mcp: FastMCP):
 
 
 @pytest.mark.anyio
-async def test_read_resource_dir(mcp: FastMCP):
+async def test_read_resource_dir(mcp: Server):
     res = await mcp.read_resource("dir://test_dir")
     assert res.mime_type == "text/plain"
 
@@ -101,13 +101,13 @@ async def test_read_resource_dir(mcp: FastMCP):
 
 
 @pytest.mark.anyio
-async def test_read_resource_file(mcp: FastMCP):
+async def test_read_resource_file(mcp: Server):
     res = await mcp.read_resource("file://test_dir/example.py")
     assert res.content == "print('hello world')"
 
 
 @pytest.mark.anyio
-async def test_delete_file(mcp: FastMCP, test_dir: Path):
+async def test_delete_file(mcp: Server, test_dir: Path):
     await mcp.call_tool(
         "delete_file", arguments=dict(path=str(test_dir / "example.py"))
     )
@@ -115,7 +115,7 @@ async def test_delete_file(mcp: FastMCP, test_dir: Path):
 
 
 @pytest.mark.anyio
-async def test_delete_file_and_check_resources(mcp: FastMCP, test_dir: Path):
+async def test_delete_file_and_check_resources(mcp: Server, test_dir: Path):
     await mcp.call_tool(
         "delete_file", arguments=dict(path=str(test_dir / "example.py"))
     )

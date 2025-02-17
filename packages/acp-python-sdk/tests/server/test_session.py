@@ -1,12 +1,12 @@
 import anyio
 import pytest
 
-from mcp.client.session import ClientSession
-from mcp.server import Server
-from mcp.server.lowlevel import NotificationOptions
-from mcp.server.models import InitializationOptions
-from mcp.server.session import ServerSession
-from mcp.types import (
+from acp.client.session import ClientSession
+from acp.server import Server
+from acp.server.lowlevel import NotificationOptions
+from acp.server.models import InitializationOptions
+from acp.server.session import ServerSession
+from acp.types import (
     ClientNotification,
     InitializedNotification,
     JSONRPCMessage,

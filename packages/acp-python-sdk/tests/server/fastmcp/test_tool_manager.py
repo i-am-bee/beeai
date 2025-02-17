@@ -5,8 +5,8 @@ from typing import Optional
 import pytest
 from pydantic import BaseModel
 
-from mcp.server.fastmcp.exceptions import ToolError
-from mcp.server.fastmcp.tools import ToolManager
+from acp.server.highlevel.exceptions import ToolError
+from acp.server.highlevel.tools import ToolManager
 
 
 class TestAddTools:
@@ -195,7 +195,7 @@ class TestCallTools:
 
     @pytest.mark.anyio
     async def test_call_tool_with_complex_model(self):
-        from mcp.server.fastmcp import Context
+        from acp.server.highlevel import Context
 
         class MyShrimpTank(BaseModel):
             class Shrimp(BaseModel):
@@ -224,7 +224,7 @@ class TestCallTools:
 class TestToolSchema:
     @pytest.mark.anyio
     async def test_context_arg_excluded_from_schema(self):
-        from mcp.server.fastmcp import Context
+        from acp.server.highlevel import Context
 
         def something(a: int, ctx: Context) -> int:
             return a
@@ -242,7 +242,7 @@ class TestContextHandling:
     def test_context_parameter_detection(self):
         """Test that context parameters are properly detected in
         Tool.from_function()."""
-        from mcp.server.fastmcp import Context
+        from acp.server.highlevel import Context
 
         def tool_with_context(x: int, ctx: Context) -> str:
             return str(x)
@@ -260,7 +260,7 @@ class TestContextHandling:
     @pytest.mark.anyio
     async def test_context_injection(self):
         """Test that context is properly injected during tool execution."""
-        from mcp.server.fastmcp import Context, FastMCP
+        from acp.server.highlevel import Context, Server
 
         def tool_with_context(x: int, ctx: Context) -> str:
             assert isinstance(ctx, Context)
@@ -269,7 +269,7 @@ class TestContextHandling:
         manager = ToolManager()
         manager.add_tool(tool_with_context)
 
-        mcp = FastMCP()
+        mcp = Server()
         ctx = mcp.get_context()
         result = await manager.call_tool("tool_with_context", {"x": 42}, context=ctx)
         assert result == "42"
@@ -277,7 +277,7 @@ class TestContextHandling:
     @pytest.mark.anyio
     async def test_context_injection_async(self):
         """Test that context is properly injected in async tools."""
-        from mcp.server.fastmcp import Context, FastMCP
+        from acp.server.highlevel import Context, Server
 
         async def async_tool(x: int, ctx: Context) -> str:
             assert isinstance(ctx, Context)
@@ -286,7 +286,7 @@ class TestContextHandling:
         manager = ToolManager()
         manager.add_tool(async_tool)
 
-        mcp = FastMCP()
+        mcp = Server()
         ctx = mcp.get_context()
         result = await manager.call_tool("async_tool", {"x": 42}, context=ctx)
         assert result == "42"
@@ -294,7 +294,7 @@ class TestContextHandling:
     @pytest.mark.anyio
     async def test_context_optional(self):
         """Test that context is optional when calling tools."""
-        from mcp.server.fastmcp import Context
+        from acp.server.highlevel import Context
 
         def tool_with_context(x: int, ctx: Optional[Context] = None) -> str:
             return str(x)
@@ -308,7 +308,7 @@ class TestContextHandling:
     @pytest.mark.anyio
     async def test_context_error_handling(self):
         """Test error handling when context injection fails."""
-        from mcp.server.fastmcp import Context, FastMCP
+        from acp.server.highlevel import Context, Server
 
         def tool_with_context(x: int, ctx: Context) -> str:
             raise ValueError("Test error")
@@ -316,7 +316,7 @@ class TestContextHandling:
         manager = ToolManager()
         manager.add_tool(tool_with_context)
 
-        mcp = FastMCP()
+        mcp = Server()
         ctx = mcp.get_context()
         with pytest.raises(ToolError, match="Error executing tool tool_with_context"):
             await manager.call_tool("tool_with_context", {"x": 42}, context=ctx)

@@ -1,6 +1,6 @@
 import pytest
 
-from mcp.types import (
+from acp.types import (
     LATEST_PROTOCOL_VERSION,
     ClientRequest,
     JSONRPCMessage,

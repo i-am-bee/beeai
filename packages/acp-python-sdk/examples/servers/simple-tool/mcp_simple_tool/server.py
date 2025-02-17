@@ -1,8 +1,8 @@
 import anyio
 import click
 import httpx
-import mcp.types as types
-from mcp.server.lowlevel import Server
+import acp.types as types
+from acp.server.lowlevel import Server
 
 
 async def fetch_website(
@@ -58,7 +58,7 @@ def main(port: int, transport: str) -> int:
         ]
 
     if transport == "sse":
-        from mcp.server.sse import SseServerTransport
+        from acp.server.sse import SseServerTransport
         from starlette.applications import Starlette
         from starlette.routing import Mount, Route
 
@@ -84,7 +84,7 @@ def main(port: int, transport: str) -> int:
 
         uvicorn.run(starlette_app, host="0.0.0.0", port=port)
     else:
-        from mcp.server.stdio import stdio_server
+        from acp.server.stdio import stdio_server
 
         async def arun():
             async with stdio_server() as streams:
