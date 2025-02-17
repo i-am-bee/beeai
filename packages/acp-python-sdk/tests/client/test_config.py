@@ -18,7 +18,7 @@ def temp_config_dir(tmp_path):
 @pytest.fixture
 def mock_config_path(temp_config_dir):
     """Mock get_claude_config_path to return our temporary directory."""
-    with patch("mcp.cli.claude.get_claude_config_path", return_value=temp_config_dir):
+    with patch("acp.cli.claude.get_claude_config_path", return_value=temp_config_dir):
         yield temp_config_dir
 
 

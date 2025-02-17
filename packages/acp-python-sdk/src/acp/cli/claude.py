@@ -8,7 +8,7 @@ from acp.server.highlevel.utilities.logging import get_logger
 
 logger = get_logger(__name__)
 
-MCP_PACKAGE = "mcp[cli]"
+MCP_PACKAGE = "acp[cli]"
 
 
 def get_claude_config_path() -> Path | None:
@@ -109,7 +109,7 @@ def update_claude_config(
             file_spec = str(Path(file_spec).resolve())
 
         # Add fastmcp run command
-        args.extend(["mcp", "run", file_spec])
+        args.extend(["acp", "run", file_spec])
 
         server_config = {
             "command": "uv",

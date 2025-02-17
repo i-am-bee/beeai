@@ -520,7 +520,7 @@ class TestContextInjection:
     async def test_context_logging(self):
         from unittest.mock import patch
 
-        import mcp.server.session
+        import acp.server.session
 
         """Test that context logging methods work."""
         mcp = Server()
@@ -534,7 +534,7 @@ class TestContextInjection:
 
         mcp.add_tool(logging_tool)
 
-        with patch("mcp.server.session.ServerSession.send_log_message") as mock_log:
+        with patch("acp.server.session.ServerSession.send_log_message") as mock_log:
             async with client_session(mcp._mcp_server) as client:
                 result = await client.call_tool("logging_tool", {"msg": "test"})
                 assert len(result.content) == 1
