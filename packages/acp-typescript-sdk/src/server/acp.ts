@@ -63,7 +63,7 @@ import { Transport } from "../shared/transport.js";
  * For advanced usage (like sending notifications or setting custom request handlers), use the underlying
  * Server instance available via the `server` property.
  */
-export class McpServer {
+export class AcpServer {
   /**
    * The underlying Server instance, useful for advanced operations like sending notifications.
    */

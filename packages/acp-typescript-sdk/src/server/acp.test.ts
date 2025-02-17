@@ -1,4 +1,4 @@
-import { McpServer } from "./mcp.js";
+import { AcpServer } from "./acp.js";
 import { Client } from "../client/index.js";
 import { InMemoryTransport } from "../inMemory.js";
 import { z } from "zod";
@@ -12,13 +12,13 @@ import {
   GetPromptResultSchema,
   CompleteResultSchema,
 } from "../types.js";
-import { ResourceTemplate } from "./mcp.js";
+import { ResourceTemplate } from "./acp.js";
 import { completable } from "./completable.js";
 import { UriTemplate } from "../shared/uriTemplate.js";
 
 describe("McpServer", () => {
   test("should expose underlying Server instance", () => {
-    const mcpServer = new McpServer({
+    const mcpServer = new AcpServer({
       name: "test server",
       version: "1.0",
     });
@@ -27,7 +27,7 @@ describe("McpServer", () => {
   });
 
   test("should allow sending notifications via Server", async () => {
-    const mcpServer = new McpServer(
+    const mcpServer = new AcpServer(
       {
         name: "test server",
         version: "1.0",
@@ -93,7 +93,7 @@ describe("ResourceTemplate", () => {
 
 describe("tool()", () => {
   test("should register zero-argument tool", async () => {
-    const mcpServer = new McpServer({
+    const mcpServer = new AcpServer({
       name: "test server",
       version: "1.0",
     });
@@ -134,7 +134,7 @@ describe("tool()", () => {
   });
 
   test("should register tool with args schema", async () => {
-    const mcpServer = new McpServer({
+    const mcpServer = new AcpServer({
       name: "test server",
       version: "1.0",
     });
@@ -186,7 +186,7 @@ describe("tool()", () => {
   });
 
   test("should register tool with description", async () => {
-    const mcpServer = new McpServer({
+    const mcpServer = new AcpServer({
       name: "test server",
       version: "1.0",
     });
@@ -225,7 +225,7 @@ describe("tool()", () => {
   });
 
   test("should validate tool args", async () => {
-    const mcpServer = new McpServer({
+    const mcpServer = new AcpServer({
       name: "test server",
       version: "1.0",
     });
@@ -284,7 +284,7 @@ describe("tool()", () => {
   });
 
   test("should prevent duplicate tool registration", () => {
-    const mcpServer = new McpServer({
+    const mcpServer = new AcpServer({
       name: "test server",
       version: "1.0",
     });
@@ -311,20 +311,20 @@ describe("tool()", () => {
   });
 
   test("should allow registering multiple tools", () => {
-    const mcpServer = new McpServer({
+    const mcpServer = new AcpServer({
       name: "test server",
       version: "1.0",
     });
 
     // This should succeed
     mcpServer.tool("tool1", () => ({ content: [] }));
-    
+
     // This should also succeed and not throw about request handlers
     mcpServer.tool("tool2", () => ({ content: [] }));
   });
 
   test("should allow client to call server tools", async () => {
-    const mcpServer = new McpServer({
+    const mcpServer = new AcpServer({
       name: "test server",
       version: "1.0",
     });
@@ -387,7 +387,7 @@ describe("tool()", () => {
   });
 
   test("should handle server tool errors gracefully", async () => {
-    const mcpServer = new McpServer({
+    const mcpServer = new AcpServer({
       name: "test server",
       version: "1.0",
     });
@@ -436,7 +436,7 @@ describe("tool()", () => {
   });
 
   test("should throw McpError for invalid tool name", async () => {
-    const mcpServer = new McpServer({
+    const mcpServer = new AcpServer({
       name: "test server",
       version: "1.0",
     });
@@ -486,7 +486,7 @@ describe("tool()", () => {
 
 describe("resource()", () => {
   test("should register resource with uri and readCallback", async () => {
-    const mcpServer = new McpServer({
+    const mcpServer = new AcpServer({
       name: "test server",
       version: "1.0",
     });
@@ -525,7 +525,7 @@ describe("resource()", () => {
   });
 
   test("should register resource with metadata", async () => {
-    const mcpServer = new McpServer({
+    const mcpServer = new AcpServer({
       name: "test server",
       version: "1.0",
     });
@@ -572,7 +572,7 @@ describe("resource()", () => {
   });
 
   test("should register resource template", async () => {
-    const mcpServer = new McpServer({
+    const mcpServer = new AcpServer({
       name: "test server",
       version: "1.0",
     });
@@ -617,7 +617,7 @@ describe("resource()", () => {
   });
 
   test("should register resource template with listCallback", async () => {
-    const mcpServer = new McpServer({
+    const mcpServer = new AcpServer({
       name: "test server",
       version: "1.0",
     });
@@ -675,7 +675,7 @@ describe("resource()", () => {
   });
 
   test("should pass template variables to readCallback", async () => {
-    const mcpServer = new McpServer({
+    const mcpServer = new AcpServer({
       name: "test server",
       version: "1.0",
     });
@@ -721,7 +721,7 @@ describe("resource()", () => {
   });
 
   test("should prevent duplicate resource registration", () => {
-    const mcpServer = new McpServer({
+    const mcpServer = new AcpServer({
       name: "test server",
       version: "1.0",
     });
@@ -748,7 +748,7 @@ describe("resource()", () => {
   });
 
   test("should allow registering multiple resources", () => {
-    const mcpServer = new McpServer({
+    const mcpServer = new AcpServer({
       name: "test server",
       version: "1.0",
     });
@@ -762,7 +762,7 @@ describe("resource()", () => {
         },
       ],
     }));
-    
+
     // This should also succeed and not throw about request handlers
     mcpServer.resource("resource2", "test://resource2", async () => ({
       contents: [
@@ -775,7 +775,7 @@ describe("resource()", () => {
   });
 
   test("should prevent duplicate resource template registration", () => {
-    const mcpServer = new McpServer({
+    const mcpServer = new AcpServer({
       name: "test server",
       version: "1.0",
     });
@@ -810,7 +810,7 @@ describe("resource()", () => {
   });
 
   test("should handle resource read errors gracefully", async () => {
-    const mcpServer = new McpServer({
+    const mcpServer = new AcpServer({
       name: "test server",
       version: "1.0",
     });
@@ -845,7 +845,7 @@ describe("resource()", () => {
   });
 
   test("should throw McpError for invalid resource URI", async () => {
-    const mcpServer = new McpServer({
+    const mcpServer = new AcpServer({
       name: "test server",
       version: "1.0",
     });
@@ -885,7 +885,7 @@ describe("resource()", () => {
   });
 
   test("should support completion of resource template parameters", async () => {
-    const mcpServer = new McpServer({
+    const mcpServer = new AcpServer({
       name: "test server",
       version: "1.0",
     });
@@ -950,7 +950,7 @@ describe("resource()", () => {
   });
 
   test("should support filtered completion of resource template parameters", async () => {
-    const mcpServer = new McpServer({
+    const mcpServer = new AcpServer({
       name: "test server",
       version: "1.0",
     });
@@ -1020,7 +1020,7 @@ describe("resource()", () => {
 
 describe("prompt()", () => {
   test("should register zero-argument prompt", async () => {
-    const mcpServer = new McpServer({
+    const mcpServer = new AcpServer({
       name: "test server",
       version: "1.0",
     });
@@ -1062,7 +1062,7 @@ describe("prompt()", () => {
   });
 
   test("should register prompt with args schema", async () => {
-    const mcpServer = new McpServer({
+    const mcpServer = new AcpServer({
       name: "test server",
       version: "1.0",
     });
@@ -1114,7 +1114,7 @@ describe("prompt()", () => {
   });
 
   test("should register prompt with description", async () => {
-    const mcpServer = new McpServer({
+    const mcpServer = new AcpServer({
       name: "test server",
       version: "1.0",
     });
@@ -1156,7 +1156,7 @@ describe("prompt()", () => {
   });
 
   test("should validate prompt args", async () => {
-    const mcpServer = new McpServer({
+    const mcpServer = new AcpServer({
       name: "test server",
       version: "1.0",
     });
@@ -1218,7 +1218,7 @@ describe("prompt()", () => {
   });
 
   test("should prevent duplicate prompt registration", () => {
-    const mcpServer = new McpServer({
+    const mcpServer = new AcpServer({
       name: "test server",
       version: "1.0",
     });
@@ -1251,7 +1251,7 @@ describe("prompt()", () => {
   });
 
   test("should allow registering multiple prompts", () => {
-    const mcpServer = new McpServer({
+    const mcpServer = new AcpServer({
       name: "test server",
       version: "1.0",
     });
@@ -1268,7 +1268,7 @@ describe("prompt()", () => {
         },
       ],
     }));
-    
+
     // This should also succeed and not throw about request handlers
     mcpServer.prompt("prompt2", async () => ({
       messages: [
@@ -1284,29 +1284,27 @@ describe("prompt()", () => {
   });
 
   test("should allow registering prompts with arguments", () => {
-    const mcpServer = new McpServer({
+    const mcpServer = new AcpServer({
       name: "test server",
       version: "1.0",
     });
 
     // This should succeed
-    mcpServer.prompt(
-      "echo",
-      { message: z.string() },
-      ({ message }) => ({
-        messages: [{
+    mcpServer.prompt("echo", { message: z.string() }, ({ message }) => ({
+      messages: [
+        {
           role: "user",
           content: {
             type: "text",
-            text: `Please process this message: ${message}`
-          }
-        }]
-      })
-    );
+            text: `Please process this message: ${message}`,
+          },
+        },
+      ],
+    }));
   });
 
   test("should allow registering both resources and prompts with completion handlers", () => {
-    const mcpServer = new McpServer({
+    const mcpServer = new AcpServer({
       name: "test server",
       version: "1.0",
     });
@@ -1335,19 +1333,21 @@ describe("prompt()", () => {
       "echo",
       { message: completable(z.string(), () => ["hello", "world"]) },
       ({ message }) => ({
-        messages: [{
-          role: "user",
-          content: {
-            type: "text",
-            text: `Please process this message: ${message}`
-          }
-        }]
-      })
+        messages: [
+          {
+            role: "user",
+            content: {
+              type: "text",
+              text: `Please process this message: ${message}`,
+            },
+          },
+        ],
+      }),
     );
   });
 
   test("should throw McpError for invalid prompt name", async () => {
-    const mcpServer = new McpServer({
+    const mcpServer = new AcpServer({
       name: "test server",
       version: "1.0",
     });
@@ -1398,7 +1398,7 @@ describe("prompt()", () => {
   });
 
   test("should support completion of prompt arguments", async () => {
-    const mcpServer = new McpServer({
+    const mcpServer = new AcpServer({
       name: "test server",
       version: "1.0",
     });
@@ -1463,7 +1463,7 @@ describe("prompt()", () => {
   });
 
   test("should support filtered completion of prompt arguments", async () => {
-    const mcpServer = new McpServer({
+    const mcpServer = new AcpServer({
       name: "test server",
       version: "1.0",
     });
