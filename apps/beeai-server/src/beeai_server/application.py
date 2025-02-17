@@ -11,6 +11,7 @@ from starlette.responses import FileResponse
 from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 
 from beeai_server.bootstrap import bootstrap_dependencies
+from beeai_server.configuration import Configuration
 from beeai_server.exceptions import ManifestLoadError
 from beeai_server.routes.mcp_sse import create_mcp_sse_app
 from beeai_server.routes.provider import router as provider_router
@@ -42,7 +43,7 @@ def mount_routes(app: FastAPI):
     if not static_directory.joinpath("index.html").exists():  # this check is for running locally
         raise RuntimeError("Could not find static files -- ensure that beeai-ui is built: `mise build:beeai-ui`")
 
-    ui_app = FastAPI()
+    ui_app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
     ui_app.mount("/", StaticFiles(directory=static_directory, html=True))
     ui_app.add_exception_handler(404, lambda _req, _exc: FileResponse(static_directory / "index.html", status_code=200))
 
@@ -60,10 +61,14 @@ def app() -> FastAPI:
 
     logger.info("Bootstrapping dependencies...")
     bootstrap_dependencies()
+    configuration = di[Configuration]
 
     app = FastAPI(
         lifespan=lambda _: di[ProviderContainer],
         default_response_class=ORJSONResponse,  # better performance then default + handle NaN floats
+        docs_url="/api/v1/docs",
+        openapi_url="/api/v1/openapi.json",
+        servers=[{"url": f"http://localhost:{configuration.port}"}],
     )
 
     logger.info("Mounting routes...")
