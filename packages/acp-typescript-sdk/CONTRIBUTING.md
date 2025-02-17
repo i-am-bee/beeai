@@ -14,7 +14,7 @@ We welcome contributions to the Agent Communication Protocol TypeScript SDK! Thi
 
 1. Create a new branch for your changes
 2. Make your changes
-3. Run `npm run lint` to ensure code style compliance
+3. Run `npm run check` to ensure code style compliance
 4. Run `npm test` to verify all tests pass
 5. Submit a pull request
 

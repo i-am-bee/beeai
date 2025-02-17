@@ -7,3 +7,4 @@ members = [
 
 [tool.ruff]
 line-length = 120
+target-version = "py311"

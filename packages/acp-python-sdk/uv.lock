@@ -1,5 +1,5 @@
 version = 1
-requires-python = ">=3.10"
+requires-python = ">=3.10, <4.0"
 
 [options]
 resolution-mode = "lowest-direct"

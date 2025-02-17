@@ -1,5 +1,5 @@
 [tools]
-python = "3.13"
+python = "3.11"
 nodejs = "22"
 uv = "latest"
 pnpm = "latest"
@@ -10,14 +10,25 @@ python.uv_venv_auto = true
 
 # TASKS
 
-## prepare
+## setup
 
-[tasks."prepare:create-mise-local-toml"]
+[tasks."setup"]
+description = "Set-up repo and install dependencies"
+depends = ["setup:*", "deps:*"]
+
+[tasks."setup:mise-local-toml"]
 hide = true
 dir = "{{config_root}}"
 run = "test -f mise.local.toml || cp mise.local.toml-example mise.local.toml"
 sources = ["mise.local.toml-example"]
 outputs = { auto = true }
+
+[tasks."setup:git-hooks"]
+hide = true
+dir = "{{config_root}}"
+run = """
+printf '#!/bin/sh\nmise run git-hooks:pre-commit' >.git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+"""
 
 ## dependencies
 
@@ -34,12 +45,6 @@ dir = "{{config_root}}"
 run = "uv sync"
 sources = ["uv.lock", "pyproject.toml", "**/pyproject.toml"]
 outputs = { auto = true }
-
-## setup
-
-[tasks."setup"]
-description = "Set-up repo and install dependencies"
-depends = ["prepare:*", "deps:*"]
 
 ## build
 
@@ -104,21 +109,21 @@ run = "uv run beeai-server"
 ## publish
 
 [tasks."publish:beeai-cli"]
-description = "Publish `beeai-cli` to PyPI, but you need to configure your ~/.pypirc first."
+description = "Publish `beeai-cli` to PyPI, but you need to configure your ~/.pypirc first"
 depends = ["build:beeai-cli"]
 dir = "{{config_root}}/apps/beeai-cli"
 tools = { "pipx" = "latest", "pipx:twine" = "latest" }
 run = "twine upload --skip-existing --non-interactive dist/*"
 
 [tasks."publish:beeai-server"]
-description = "Publish `beeai-server` to PyPI, but you need to configure your ~/.pypirc first."
+description = "Publish `beeai-server` to PyPI, but you need to configure your ~/.pypirc first"
 depends = ["build:beeai-server"]
 dir = "{{config_root}}/apps/beeai-server"
 tools = { "pipx" = "latest", "pipx:twine" = "latest" }
 run = "twine upload --skip-existing --non-interactive dist/*"
 
 [tasks."publish:beeai-sdk"]
-description = "Publish `beeai-sdk` to PyPI, but you need to configure your ~/.pypirc first."
+description = "Publish `beeai-sdk` to PyPI, but you need to configure your ~/.pypirc first"
 depends = ["build:beeai-sdk"]
 dir = "{{config_root}}/packages/beeai-sdk"
 tools = { "pipx" = "latest", "pipx:twine" = "latest" }
@@ -140,3 +145,39 @@ run = "rm -rf ./dist"
 description = "Clean the build artifacts for `beeai-server`"
 dir = "{{config_root}}/apps/beeai-server"
 run = "rm -rf ./dist"
+
+## check
+
+[tasks."check"]
+depends = ["check:*"]
+
+[tasks."check:py"]
+description = "Check Python files using Ruff"
+depends = ["deps:py"]
+run = "uvx ruff check && uvx ruff format --check"
+
+[tasks."check:js"]
+description = "Check JS, TS and related files"
+depends = ["deps:js"]
+run = "pnpm -r check"
+
+## fix
+
+[tasks."fix"]
+depends = ["fix:*"]
+
+[tasks."fix:py"]
+description = "Fix Python files using Ruff"
+depends = ["deps:py"]
+run = "uvx ruff check --fix && uvx ruff format"
+
+[tasks."fix:js"]
+description = "Fix JS, TS and related files"
+depends = ["deps:js"]
+run = "pnpm -r fix"
+
+## git hooks
+
+[tasks."git-hooks:pre-commit"]
+hide = true
+depends = ["check"]
