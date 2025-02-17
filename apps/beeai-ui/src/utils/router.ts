@@ -1,4 +1,4 @@
-export const routesDefinition = {
+export const routesDefinitions = {
   home: () => '/' as const,
   notFound: () => '/not-found' as const,
   agentDetail: () => '/agents/:agentName' as const,
@@ -6,7 +6,7 @@ export const routesDefinition = {
 };
 
 export const routes = {
-  ...routesDefinition,
-  agentDetail: (agentName: string) => `/agents/${agentName}`,
-  agentRun: (agentName: string) => `/run/${agentName}`,
+  ...routesDefinitions,
+  agentDetail: ({ name }: { name: string }) => `/agents/${name}`,
+  agentRun: ({ name }: { name: string }) => `/run/${name}`,
 };

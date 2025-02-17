@@ -5,22 +5,22 @@
 }
 
 .root {
-  :global(.#{$prefix}--modal-header) {
+  :global(.cds--modal-header) {
     padding: $spacing-05 $spacing-05 0;
   }
 
-  :global(.#{$prefix}--modal-content) {
+  :global(.cds--modal-content) {
     margin: 0;
     padding: $spacing-03 $spacing-05 $spacing-07;
     min-block-size: rem(100px);
   }
 
-  :global(.#{$prefix}--modal-footer) {
-    :global(.#{$prefix}--btn--ghost) {
+  :global(.cds--modal-footer) {
+    :global(.cds--btn--ghost) {
       color: currentColor;
     }
 
-    :global(.#{$prefix}--btn--danger) {
+    :global(.cds--btn--danger) {
       column-gap: $spacing-05;
       padding-inline-end: $spacing-05;
       svg {

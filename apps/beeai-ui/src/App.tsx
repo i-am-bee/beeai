@@ -7,7 +7,7 @@ import { AppLayout } from './components/layouts/AppLayout';
 import { MCPClientProvider } from './contexts/MCPClient/MCPClientProvider';
 import { Home } from './pages/Home';
 import { NotFound } from './pages/NotFound';
-import { routesDefinition } from './utils/router';
+import { routesDefinitions } from './utils/router';
 import { Agent } from './pages/agents/Agent';
 import { ModalProvider } from './contexts/Modal/ModalProvider';
 import { AgentRunPage } from './pages/run/AgentRunPage';
@@ -25,9 +25,9 @@ export function App() {
               <BrowserRouter>
                 <Routes>
                   <Route element={<AppLayout />}>
-                    <Route path={routesDefinition.home()} element={<Home />} />
-                    <Route path={routesDefinition.agentDetail()} element={<Agent />} />
-                    <Route path={routesDefinition.agentRun()} element={<AgentRunPage />} />
+                    <Route path={routesDefinitions.home()} element={<Home />} />
+                    <Route path={routesDefinitions.agentDetail()} element={<Agent />} />
+                    <Route path={routesDefinitions.agentRun()} element={<AgentRunPage />} />
 
                     <Route path="*" element={<NotFound />} />
                   </Route>

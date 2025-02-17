@@ -1,7 +1,8 @@
 import { useMCPClient } from '@/contexts/MCPClient';
 import { useMutation } from '@tanstack/react-query';
 import { Agent, AgentRunProgressNotificationSchema } from '@agentcommunicationprotocol/sdk/types.js';
-// import { promptOutputSchema } from 'beeai-sdk/src/beeai_sdk/schemas/prompt.js';
+import { promptOutputSchema } from '@i-am-bee/beeai-sdk/schemas/prompt';
+import z from 'zod';
 
 interface Props {
   onMessageDelta?: (delta: string) => void;
@@ -15,9 +16,7 @@ export function useSendMessage({ onMessageDelta }: Props = {}) {
       const progressToken = crypto.randomUUID();
 
       client.setNotificationHandler(
-        AgentRunProgressNotificationSchema,
-        // TODO: extend with promptOutputSchema
-        // AgentRunProgressNotificationSchema.extend({ params: z.object({ delta: promptOutputSchema }) }),
+        AgentRunProgressNotificationSchema.extend({ params: z.object({ delta: promptOutputSchema }) }),
         (notification) => {
           onMessageDelta?.(String(notification.params.delta.text));
         },
@@ -30,7 +29,7 @@ export function useSendMessage({ onMessageDelta }: Props = {}) {
           input: { prompt: input },
         },
         // TODO: abort
-        {timeout: 10 * 60 * 1000}, // 10 minutes
+        { timeout: 10 * 60 * 1000 }, // 10 minutes
       );
     },
   });

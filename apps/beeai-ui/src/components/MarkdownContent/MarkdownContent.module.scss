@@ -18,7 +18,7 @@
     margin-block: $spacing-03;
   }
   ul {
-    > :global(.#{$prefix}--list__item)::before {
+    > :global(.cds--list__item)::before {
       content: '';
       block-size: rem(4px);
       inline-size: rem(4px);

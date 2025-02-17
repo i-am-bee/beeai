@@ -64,7 +64,7 @@
     gap: $spacing-03;
   }
   .runAgent {
-    :global(.#{$prefix}--skeleton) {
+    :global(.cds--skeleton) {
       block-size: rem(48px);
       overflow: hidden;
       &:first-child {

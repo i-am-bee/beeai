@@ -1,16 +1,18 @@
-import { PropsWithChildren, useCallback, useMemo } from 'react';
+import { PropsWithChildren, useCallback, useMemo, useRef } from 'react';
 import { AgentMessage, ChatContext, ChatMessage, ChatMessagesContext } from './ChatContext';
-import { useImmerWithGetter } from '@/hooks/useImmerWithGetter';
 import { Agent } from '@/modules/agents/api/types';
 import { v4 as uuid } from 'uuid';
 import { useSendMessage } from '../chat/api/mutations/useSendMessage';
+import { useImmerWithGetter } from '@/hooks/useImmerWithGetter';
 
 interface Props {
   agent: Agent;
 }
 
 export function ChatProvider({ agent, children }: PropsWithChildren<Props>) {
-  const [getMessages, setMessages] = useImmerWithGetter<ChatMessage[]>([]);
+  const [messages, getMessages, setMessages] = useImmerWithGetter<ChatMessage[]>([]);
+
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const updateLastAgentMessage = useCallback(
     (updater: (message: AgentMessage) => void) => {
@@ -49,6 +51,9 @@ export function ChatProvider({ agent, children }: PropsWithChildren<Props>) {
       });
 
       try {
+        const abortController = new AbortController();
+        abortControllerRef.current = abortController;
+
         const response = await mutateSendMessage({ input, agent });
 
         updateLastAgentMessage((message) => {
@@ -83,7 +88,7 @@ export function ChatProvider({ agent, children }: PropsWithChildren<Props>) {
 
   return (
     <ChatContext.Provider value={contextValue}>
-      <ChatMessagesContext.Provider value={getMessages()}>{children}</ChatMessagesContext.Provider>
+      <ChatMessagesContext.Provider value={messages}>{children}</ChatMessagesContext.Provider>
     </ChatContext.Provider>
   );
 }
