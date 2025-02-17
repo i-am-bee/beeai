@@ -1,5 +1,11 @@
 # BeeAI
 
+##
+> [!WARNING]
+> [PRE-Alpha] This repository contains the beeai platform which is still under a rapid development. Please treat it as
+> highly experimental and expect breaking changes often. Reach out on discord if you'd like to contribute or get 
+> involved in the discussions: [join discord](https://discord.gg/AZFrp3UF5k)
+
 ## Installation
 
 The BeeAI CLI can be installed through Homebrew (on both Mac and Linux), and also from PyPI.
