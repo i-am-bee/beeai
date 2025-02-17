@@ -1,4 +1,8 @@
-import { EventSource, type ErrorEvent, type EventSourceInit } from "eventsource";
+import {
+  EventSource,
+  type ErrorEvent,
+  type EventSourceInit,
+} from "eventsource";
 import { Transport } from "../shared/transport.js";
 import { JSONRPCMessage, JSONRPCMessageSchema } from "../types.js";
 

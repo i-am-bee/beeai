@@ -100,7 +100,7 @@ export class StdioClientTransport implements Transport {
   async start(): Promise<void> {
     if (this._process) {
       throw new Error(
-        "StdioClientTransport already started! If using Client class, note that connect() calls start() automatically."
+        "StdioClientTransport already started! If using Client class, note that connect() calls start() automatically.",
       );
     }
 
@@ -114,7 +114,7 @@ export class StdioClientTransport implements Transport {
           shell: false,
           signal: this._abortController.signal,
           windowsHide: process.platform === "win32" && isElectron(),
-        }
+        },
       );
 
       this._process.on("error", (error) => {

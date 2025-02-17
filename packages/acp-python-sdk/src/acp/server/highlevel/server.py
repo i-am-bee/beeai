@@ -467,7 +467,7 @@ class Server:
         config: Type[BaseModel],
         input: Type[BaseModel],
         output: Type[BaseModel],
-        **kwargs
+        **kwargs,
     ) -> Callable:
         """Decorator to register an agent template.
 
@@ -494,7 +494,7 @@ class Server:
                 input=input,
                 output=output,
                 create_fn=func,
-                **kwargs
+                **kwargs,
             )
             self.add_agent_template(template)
             return func
@@ -513,7 +513,7 @@ class Server:
                     configSchema=template.config.model_json_schema(),
                     inputSchema=template.input.model_json_schema(),
                     outputSchema=template.output.model_json_schema(),
-                    **(template.model_extra if template.model_extra else {})
+                    **(template.model_extra if template.model_extra else {}),
                 )
                 for template in templates
             ]
@@ -529,7 +529,7 @@ class Server:
         description: str,
         input: Type[BaseModel],
         output: Type[BaseModel],
-        **kwargs
+        **kwargs,
     ) -> Callable:
         """Decorator to register an agent.
 
@@ -554,7 +554,7 @@ class Server:
                 output=output,
                 run_fn=func,
                 destroy_fn=None,
-                **kwargs
+                **kwargs,
             )
             self.add_agent(agent=agent)
             return func
@@ -570,7 +570,7 @@ class Server:
                     description=agent.description,
                     inputSchema=agent.input.model_json_schema(),
                     outputSchema=agent.output.model_json_schema(),
-                    **(agent.model_extra if agent.model_extra else {})
+                    **(agent.model_extra if agent.model_extra else {}),
                 )
                 for agent in agents
             ]

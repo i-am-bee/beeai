@@ -5,7 +5,9 @@ describe("UriTemplate", () => {
     it("should return true for strings containing template expressions", () => {
       expect(UriTemplate.isTemplate("{foo}")).toBe(true);
       expect(UriTemplate.isTemplate("/users/{id}")).toBe(true);
-      expect(UriTemplate.isTemplate("http://example.com/{path}/{file}")).toBe(true);
+      expect(UriTemplate.isTemplate("http://example.com/{path}/{file}")).toBe(
+        true,
+      );
       expect(UriTemplate.isTemplate("/search{?q,limit}")).toBe(true);
     });
 
@@ -121,34 +123,40 @@ describe("UriTemplate", () => {
 
     it("should handle special characters in variable names", () => {
       const template = new UriTemplate("{$var_name}");
-      expect(template.expand({ "$var_name": "value" })).toBe("value");
+      expect(template.expand({ $var_name: "value" })).toBe("value");
     });
   });
 
   describe("complex patterns", () => {
     it("should handle nested path segments", () => {
       const template = new UriTemplate("/api/{version}/{resource}/{id}");
-      expect(template.expand({
-        version: "v1",
-        resource: "users",
-        id: "123"
-      })).toBe("/api/v1/users/123");
+      expect(
+        template.expand({
+          version: "v1",
+          resource: "users",
+          id: "123",
+        }),
+      ).toBe("/api/v1/users/123");
     });
 
     it("should handle query parameters with arrays", () => {
       const template = new UriTemplate("/search{?tags*}");
-      expect(template.expand({
-        tags: ["nodejs", "typescript", "testing"]
-      })).toBe("/search?tags=nodejs,typescript,testing");
+      expect(
+        template.expand({
+          tags: ["nodejs", "typescript", "testing"],
+        }),
+      ).toBe("/search?tags=nodejs,typescript,testing");
     });
 
     it("should handle multiple query parameters", () => {
       const template = new UriTemplate("/search{?q,page,limit}");
-      expect(template.expand({
-        q: "test",
-        page: "1",
-        limit: "10"
-      })).toBe("/search?q=test&page=1&limit=10");
+      expect(
+        template.expand({
+          q: "test",
+          page: "1",
+          limit: "10",
+        }),
+      ).toBe("/search?q=test&page=1&limit=10");
     });
   });
 
@@ -159,7 +167,7 @@ describe("UriTemplate", () => {
       expect(match).toEqual({
         version: "v1",
         resource: "users",
-        id: "123"
+        id: "123",
       });
     });
 
@@ -187,15 +195,29 @@ describe("UriTemplate", () => {
       const longString = "x".repeat(100000);
       const template = new UriTemplate(`/api/{param}`);
       expect(template.expand({ param: longString })).toBe(`/api/${longString}`);
-      expect(template.match(`/api/${longString}`)).toEqual({ param: longString });
+      expect(template.match(`/api/${longString}`)).toEqual({
+        param: longString,
+      });
     });
 
     it("should handle deeply nested template expressions", () => {
-      const template = new UriTemplate("{a}{b}{c}{d}{e}{f}{g}{h}{i}{j}".repeat(1000));
-      expect(() => template.expand({
-        a: "1", b: "2", c: "3", d: "4", e: "5",
-        f: "6", g: "7", h: "8", i: "9", j: "0"
-      })).not.toThrow();
+      const template = new UriTemplate(
+        "{a}{b}{c}{d}{e}{f}{g}{h}{i}{j}".repeat(1000),
+      );
+      expect(() =>
+        template.expand({
+          a: "1",
+          b: "2",
+          c: "3",
+          d: "4",
+          e: "5",
+          f: "6",
+          g: "7",
+          h: "8",
+          i: "9",
+          j: "0",
+        }),
+      ).not.toThrow();
     });
 
     it("should handle malformed template expressions", () => {

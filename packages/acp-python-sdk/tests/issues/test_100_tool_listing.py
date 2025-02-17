@@ -30,6 +30,6 @@ async def test_list_tools_returns_all_tools():
     # Verify each tool is unique and has the correct name
     tool_names = [tool.name for tool in tools]
     expected_names = [f"tool_{i}" for i in range(num_tools)]
-    assert sorted(tool_names) == sorted(
-        expected_names
-    ), "Tool names don't match expected names"
+    assert sorted(tool_names) == sorted(expected_names), (
+        "Tool names don't match expected names"
+    )

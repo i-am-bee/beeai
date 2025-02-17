@@ -6,16 +6,16 @@ from acp.server.highlevel import Context, Server
 class Input(BaseModel):
     prompt: str
 
+
 class Output(BaseModel):
     text: str
 
+
 acp_server = Server()
 
+
 @acp_server.agent(
-    name="Echoagent",
-    description="Echoing agent",
-    input=Input,
-    output=Output
+    name="Echoagent", description="Echoing agent", input=Input, output=Output
 )
 async def run_agent(input: Input, ctx: Context) -> Output:
     agent = "Echoagent"

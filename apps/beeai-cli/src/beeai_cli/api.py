@@ -76,8 +76,8 @@ async def send_request_with_notifications(
                     except ValueError:
                         typer.echo(f"Unable to parse message from server: {message}")
 
-            notif_task = task_group.start_soon(read_notifications)
-            request_task = task_group.start_soon(request_task)
+            task_group.start_soon(read_notifications)
+            task_group.start_soon(request_task)
 
             async for message in message_reader:
                 yield message

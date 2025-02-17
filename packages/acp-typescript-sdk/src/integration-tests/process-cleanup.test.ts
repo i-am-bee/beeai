@@ -12,7 +12,7 @@ describe("Process cleanup", () => {
       },
       {
         capabilities: {},
-      }
+      },
     );
 
     const transport = new StdioServerTransport();
