@@ -1,8 +1,19 @@
+import logging
+import pathlib
 import re
+import shutil
+from os import PathLike
+from tarfile import ExtractError
 from typing import Any
 
+import anyio
+import anyio.to_thread
+import tarfile
 import httpx
+from anyio import Path
 from pydantic import model_validator, AnyUrl, ModelWrapValidatorHandler, RootModel
+
+logger = logging.getLogger(__name__)
 
 
 class GithubUrl(RootModel):
@@ -22,12 +33,17 @@ class GithubUrl(RootModel):
         return self._repo
 
     @property
-    def version(self) -> str:
+    def version(self) -> str | None:
         return self._version
 
     @property
-    def path(self) -> str:
+    def path(self) -> str | None:
         return self._path
+
+    @path.setter
+    def path(self, value: str):
+        self._path = value
+        self.root = str(self)
 
     @model_validator(mode="wrap")
     @classmethod
@@ -69,9 +85,21 @@ class GithubUrl(RootModel):
                 self._version = re.search("/blob/([^/]*)", resp.headers["location"]).group(1)
                 self.root = str(self)  # normalize url
 
-    def get_raw_url(self, path: str) -> AnyUrl:
+    def get_tgz_link(self) -> AnyUrl:
         if not self.version:
             raise ValueError("Version must be resolved before rendering raw url. Call resolve_version() first.")
+        return AnyUrl.build(
+            scheme="https",
+            host="github.com",
+            path=f"{self.org}/{self.repo}/archive/refs/heads/{self.version}.tar.gz",
+        )
+
+    def get_raw_url(self, path: str | None = None) -> AnyUrl:
+        if not self.version:
+            raise ValueError("Version must be resolved before rendering raw url. Call resolve_version() first.")
+        if not path and "." not in (self.path or ""):
+            raise ValueError("Path is not specified or it is not a file")
+        path = path or self.path
         return AnyUrl.build(
             scheme="https",
             host="raw.githubusercontent.com",
@@ -82,3 +110,57 @@ class GithubUrl(RootModel):
         version = f"@{self.version}" if self.version else ""
         path = f"#path={self.path}" if self.path else ""
         return f"git+https://github.com/{self.org}/{self.repo}{version}{path}"
+
+
+def _is_unsafe_file(member: tarfile.TarInfo) -> bool:
+    filename = member.name
+    if (
+        filename.startswith("/")
+        or ".." in filename
+        or not pathlib.Path(filename).absolute().is_relative_to(pathlib.Path(".").resolve())
+    ):
+        return True
+    return False
+
+
+def extract_targz_safe(tar_path: PathLike | Path, extract_path: PathLike | Path):
+    with tarfile.open(tar_path, "r:gz") as tar:
+        members = []
+        for member in tar.getmembers():
+            if member.linkpath or member.linkname:
+                logger.warning(f"Cannot extract member: {member.name}, symlinks are forbidden")
+                continue
+            if _is_unsafe_file(member):
+                raise ExtractError(f"Unsafe file: {member.name} (unix file links are forbidden)")
+            members.append(member)
+        tar.extractall(path=extract_path, members=members, filter="data")
+
+
+async def download_repo(directory: Path | pathlib.Path, github_url: GithubUrl) -> Path:
+    repo_path = Path(directory) / f"{github_url.org}_{github_url.repo}_{github_url.version}"
+    if await repo_path.is_dir():
+        return repo_path
+    try:
+        tmp_path = repo_path.parent / f"{repo_path.name}_tmp"
+        if await tmp_path.is_dir():
+            await anyio.to_thread.run_sync(shutil.rmtree, str(tmp_path))
+        await tmp_path.mkdir(parents=True)
+        download_link = str(github_url.get_tgz_link())
+        tar_path = tmp_path / "repo.tar.gz"
+        await github_url.resolve_version()
+        async with httpx.AsyncClient(follow_redirects=True) as client:
+            async with client.stream("GET", download_link) as response:
+                response.raise_for_status()
+                async with await anyio.open_file(tar_path, "wb") as f:
+                    async for chunk in response.aiter_bytes():
+                        await f.write(chunk)
+
+        await anyio.to_thread.run_sync(extract_targz_safe, tar_path, tmp_path)
+        await tar_path.unlink()
+        [extracted_dir] = [d async for d in tmp_path.iterdir()]
+        await anyio.to_thread.run_sync(shutil.move, str(extracted_dir), repo_path)
+        await tmp_path.rmdir()
+        return repo_path
+    except Exception as exc:
+        logger.error(f"Failed to download repo: {github_url}: {exc!r}")
+        raise

@@ -1,12 +1,15 @@
+import asyncio
+import contextlib
 import logging
 import pathlib
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, APIRouter
 from fastapi import HTTPException
 from fastapi.exception_handlers import http_exception_handler
 from fastapi.responses import ORJSONResponse
 from fastapi.staticfiles import StaticFiles
-from kink import di
+from kink import inject, di
 from starlette.responses import FileResponse
 from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 
@@ -16,6 +19,7 @@ from beeai_server.exceptions import ManifestLoadError
 from beeai_server.routes.mcp_sse import create_mcp_sse_app
 from beeai_server.routes.provider import router as provider_router
 from beeai_server.services.mcp_proxy.provider import ProviderContainer
+from beeai_server.utils.periodic import CRON_REGISTRY, run_all_crons
 
 logger = logging.getLogger(__name__)
 
@@ -56,6 +60,22 @@ def mount_routes(app: FastAPI):
     app.mount("/", ui_app)
 
 
+@asynccontextmanager
+@inject
+async def lifespan(_app: FastAPI, provider_container: ProviderContainer):
+    async with provider_container, run_all_crons():
+        yield
+
+
+@contextlib.asynccontextmanager
+async def _run_all_crons():
+    try:
+        await asyncio.gather(*(cron.start() for cron in CRON_REGISTRY.values()))
+        yield
+    finally:
+        await asyncio.gather(*(cron.stop() for cron in CRON_REGISTRY.values()))
+
+
 def app() -> FastAPI:
     """Entrypoint for API application, called by Uvicorn"""
 
@@ -64,7 +84,7 @@ def app() -> FastAPI:
     configuration = di[Configuration]
 
     app = FastAPI(
-        lifespan=lambda _: di[ProviderContainer],
+        lifespan=lifespan,
         default_response_class=ORJSONResponse,  # better performance then default + handle NaN floats
         docs_url="/api/v1/docs",
         openapi_url="/api/v1/openapi.json",

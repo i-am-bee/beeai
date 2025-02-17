@@ -3,18 +3,21 @@ from contextlib import asynccontextmanager
 from enum import StrEnum
 from typing import Literal
 
+import anyio
 import httpx
 import yaml
 from anyio import Path
+from kink import inject
 from acp import stdio_client, StdioServerParameters
 from acp.client.sse import sse_client
 from packaging import version
 from pydantic import BaseModel, Field, FileUrl, RootModel, field_validator
 from pydantic_core.core_schema import ValidationInfo
 
+from beeai_server.configuration import Configuration
 from beeai_server.custom_types import McpClient, ID
 from beeai_server.domain.constants import DEFAULT_MANIFEST_PATH
-from beeai_server.utils.github import GithubUrl
+from beeai_server.utils.github import GithubUrl, download_repo
 from beeai_server.utils.managed_server_client import managed_sse_client, ManagedServerParameters
 
 
@@ -99,19 +102,26 @@ class NodeJsProvider(ManagedProvider):
     @field_validator("package", mode="after")
     @classmethod
     def _validate_package(cls, value: str, info: ValidationInfo) -> str:
-        base_file_path = info.data["base_file_path"]
+        base_file_path = info.data.get("base_file_path", None)
         if value.startswith((".", "/")) and base_file_path:
             package_path = Path(value)
             base_file_path = Path(base_file_path)
-            if base_file_path.name.endswith(".yaml"):
-                base_file_path = base_file_path.parent
             if not package_path.is_absolute():
                 return f"{base_file_path / package_path}"
         return value
 
     @asynccontextmanager
-    async def mcp_client(self) -> McpClient:  # noqa: F821
-        async with super()._get_mcp_client(command=["npx", "-y", self.package, *self.command]) as client:
+    @inject
+    async def mcp_client(self, configuration: Configuration) -> McpClient:  # noqa: F821
+        try:
+            github_url = GithubUrl.model_validate(self.package)
+            repo_path = await download_repo(configuration.cache_dir / "github_npm", github_url)
+            package_path = repo_path / (github_url.path or "")
+            await anyio.run_process(["npm", "install"], cwd=package_path)
+            package = str(package_path)
+        except ValueError:
+            package = self.package
+        async with super()._get_mcp_client(command=["npx", "-y", package, *self.command]) as client:
             yield client
 
 
@@ -135,14 +145,11 @@ class PythonProvider(ManagedProvider):
     @field_validator("package", mode="after")
     @classmethod
     def _validate_package(cls, value: str, info: ValidationInfo) -> str:
-        base_file_path = info.data["base_file_path"]
+        base_file_path = info.data.get("base_file_path", None)
         if value.startswith("file://") and base_file_path:
             package_path = Path(value.replace("file://", ""))
-            base_file_path = Path(base_file_path)
-            if base_file_path.name.endswith(".yaml"):
-                base_file_path = base_file_path.parent
             if not package_path.is_absolute():
-                return f"file://{base_file_path / package_path}"
+                return f"file://{Path(base_file_path) / package_path}"
         return value
 
     @asynccontextmanager
@@ -172,6 +179,7 @@ ProviderManifest = UnmanagedProvider | NodeJsProvider | PythonProvider | Contain
 class Provider(BaseModel):
     manifest: ProviderManifest
     id: ID
+    registry: GithubUrl | None = None
 
 
 class LoadedProviderStatus(StrEnum):
@@ -187,13 +195,19 @@ class ProviderWithStatus(Provider):
 
 class GitHubManifestLocation(RootModel):
     root: GithubUrl
+    _resolved = False
 
     @property
     def provider_id(self) -> str:
+        if not self._resolved:
+            raise ValueError("Provider path not fully resolved")
         return str(self.root)
 
     async def resolve(self):
+        if not (self.root.path or "").endswith(".yaml"):
+            self.root.path = f"{self.root.path or ''}/{DEFAULT_MANIFEST_PATH}"
         await self.root.resolve_version()
+        self._resolved = True
 
     async def load(self) -> Provider:
         await self.resolve()
@@ -210,23 +224,32 @@ class GitHubManifestLocation(RootModel):
 
 class LocalFileManifestLocation(RootModel):
     root: FileUrl
+    _resolved = False
 
     @property
     def provider_id(self) -> str:
+        if not self._resolved:
+            raise ValueError("Provider path not fully resolved")
         return str(self.root)
 
-    async def resolve(self): ...
-
-    async def load(self) -> Provider:
+    async def resolve(self):
         path = Path(self.root.path)
         if not path.is_absolute():
             raise ValueError("Cannot resolve relative file path.")
-        if not (await path.is_file()):
+        if not await path.is_file() and not self.root.path.endswith(".yaml"):
             path = path / DEFAULT_MANIFEST_PATH
+        if not (await path.is_file()):
+            raise ValueError(f"File not found: {path}")
+        self.root = FileUrl.build(scheme=self.root.scheme, host="", path=str(path))
+        self._resolved = True
+
+    async def load(self) -> Provider:
+        await self.resolve()
+        path = Path(self.root.path)
         content = await path.read_text()
         return Provider.model_validate(
             {
-                "manifest": {**yaml.safe_load(content), "base_file_path": str(self.root.path)},
+                "manifest": {**yaml.safe_load(content), "base_file_path": str(path.parent)},
                 "id": self.provider_id,
             }
         )

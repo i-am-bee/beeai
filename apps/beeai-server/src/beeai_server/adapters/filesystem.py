@@ -8,26 +8,26 @@ from anyio import Path as AsyncPath
 from pydantic import BaseModel, ValidationError
 
 from beeai_server.adapters.interface import IProviderRepository
-from beeai_server.domain.model import ProviderManifest, Provider
+from beeai_server.domain.model import Provider
 
 
 class ProviderConfigFile(BaseModel):
-    providers: dict[str, ProviderManifest]
+    providers: list[Provider]
 
 
 class FilesystemProviderRepository(IProviderRepository):
     def __init__(self, provider_config_path: Path):
         self._config_path = AsyncPath(provider_config_path)
 
-    async def _write_config(self, providers: dict[str, ProviderManifest]) -> None:
+    async def _write_config(self, providers: list[Provider]) -> None:
         # Ensure that path exists
         await self._config_path.parent.mkdir(parents=True, exist_ok=True)
         config = yaml.dump(ProviderConfigFile(providers=providers).model_dump(mode="json"), indent=2)
         await self._config_path.write_text(config)
 
-    async def _read_config(self) -> dict[str, ProviderManifest]:
+    async def _read_config(self) -> list[Provider]:
         if not await self._config_path.exists():
-            return {}
+            return []
 
         config = await self._config_path.read_text()
         try:
@@ -36,22 +36,23 @@ class FilesystemProviderRepository(IProviderRepository):
             backup = self._config_path.parent / f"{self._config_path.name}.bak.{uuid4().hex[:6]}"
             logging.error(f"Invalid config file, renaming to {backup}. {ex!r}")
             await self._config_path.rename(backup)
-            return {}
+            return []
 
     async def list(self) -> AsyncIterator[Provider]:
-        for provider_id, provider in (await self._read_config()).items():
-            yield Provider(id=provider_id, manifest=provider)
+        for provider in await self._read_config():
+            yield provider
 
     async def create(self, *, provider: Provider) -> None:
-        providers = await self._read_config()
-        if provider.id in providers:
+        repository_providers = await self._read_config()
+        if provider.id in {p.id for p in repository_providers}:
             raise ValueError(f"Provider with ID {provider.id} already exists")
-        providers[provider.id] = provider.manifest
-        await self._write_config(providers)
+        repository_providers.append(provider)
+        await self._write_config(repository_providers)
 
     async def delete(self, *, provider_id: str) -> None:
         repository_providers = await self._read_config()
-        if repository_providers.pop(provider_id, None):
-            await self._write_config(repository_providers)
+        new_providers = [p for p in repository_providers if p.id != provider_id]
+        if len(new_providers) < len(repository_providers):
+            await self._write_config(new_providers)
             return
         raise ValueError(f"Provider with ID {provider_id} not found")
