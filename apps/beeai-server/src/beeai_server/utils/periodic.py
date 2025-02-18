@@ -2,17 +2,22 @@ from __future__ import annotations
 
 import asyncio
 import functools
+import importlib
 import inspect
 import logging
+import pkgutil
 import time
 from asyncio import Event, Task
+from contextlib import asynccontextmanager
 from datetime import timedelta
 from functools import cached_property
 from inspect import isfunction
-from typing import Any, Callable, Generic, TypeVar
+from types import ModuleType
+from typing import Any, Callable, Generic, TypeVar, Final
 
 from asgiref.sync import sync_to_async
-from pydantic import ConfigDict, validate_call
+
+import beeai_server.crons
 
 logger = logging.getLogger(__name__)
 
@@ -20,6 +25,7 @@ logger = logging.getLogger(__name__)
 AnyCallableT = TypeVar("AnyCallableT", bound=Callable[..., Any])
 
 CRON_REGISTRY: dict[str, Periodic] = {}
+CRON_PACKAGE: Final[ModuleType] = beeai_server.crons
 
 
 def periodic(*, period: timedelta, name: str | None = None) -> Callable[[AnyCallableT], Periodic]:
@@ -74,9 +80,6 @@ class Periodic(Generic[AnyCallableT]):
         return type(self._callable).__name__
 
     async def _executor(self):
-        config = ConfigDict(arbitrary_types_allowed=True, validate_default=True)
-
-        @validate_call(config=config)  # for resolution of pydantic_di dependencies
         @functools.wraps(self._orig_executor)
         async def _executor(*args, **kwargs):
             async_executor = self._orig_executor
@@ -128,7 +131,7 @@ class Periodic(Generic[AnyCallableT]):
     async def start(self) -> None:
         self._stopping = False
         logger.info(f"Starting periodic worker: {self.name}")
-        self._task = asyncio.create_task(self._loop())
+        self._task = asyncio.create_task(self._loop(), name=self._name)
         logger.info(f"Periodic worker started successfully: {self.name}")
 
     async def stop(self):
@@ -144,3 +147,18 @@ class Periodic(Generic[AnyCallableT]):
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         await self.stop()
+
+
+def register_all_crons():
+    # Register all flows in FLOW_PACKAGE by importing them
+    for _, name, _ in pkgutil.walk_packages(CRON_PACKAGE.__path__):
+        importlib.import_module(CRON_PACKAGE.__name__ + "." + name)
+
+
+@asynccontextmanager
+async def run_all_crons():
+    try:
+        await asyncio.gather(*(cron.start() for cron in CRON_REGISTRY.values()))
+        yield
+    finally:
+        await asyncio.gather(*(cron.stop() for cron in CRON_REGISTRY.values()))

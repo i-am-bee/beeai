@@ -6,21 +6,19 @@ from enum import StrEnum
 from typing import Self, Literal, Final
 
 import anyio
-from anyio.abc import TaskGroup
-from anyio.streams.memory import MemoryObjectReceiveStream
-from kink import inject
-from structlog.contextvars import bind_contextvars, unbind_contextvars
-
-from beeai_server.adapters.interface import IProviderRepository
-from beeai_server.domain.model import Provider, LoadedProviderStatus
-from beeai_server.services.mcp_proxy.constants import NotificationStreamType
-from beeai_server.services.mcp_proxy.notification_hub import NotificationHub
-from beeai_server.utils.periodic import Periodic
 from acp import ClientSession, Tool, Resource, InitializeResult, types, ServerSession
 from acp.shared.context import RequestContext
 from acp.shared.session import RequestResponder, ReceiveRequestT, SendResultT, ReceiveNotificationT
 from acp.types import AgentTemplate, Prompt, Agent
+from anyio import create_task_group
+from anyio.abc import TaskGroup
+from anyio.streams.memory import MemoryObjectReceiveStream
+from structlog.contextvars import bind_contextvars, unbind_contextvars
 
+from beeai_server.domain.model import Provider, LoadedProviderStatus
+from beeai_server.services.mcp_proxy.constants import NotificationStreamType
+from beeai_server.services.mcp_proxy.notification_hub import NotificationHub
+from beeai_server.utils.periodic import Periodic
 from beeai_server.utils.utils import extract_messages
 
 logger = logging.getLogger(__name__)
@@ -195,7 +193,6 @@ class LoadedProvider:
         logger.info("Removing provider")
 
 
-@inject
 class ProviderContainer:
     """
     Manage group of LoadedProvider instances:
@@ -205,19 +202,13 @@ class ProviderContainer:
 
     RELOAD_PERIOD: Final = timedelta(minutes=1)
 
-    def __init__(self, repository: IProviderRepository):
-        self._periodic_reload: Periodic = Periodic(
-            executor=self._reload,
-            period=self.RELOAD_PERIOD,
-            name="reload providers",
-        )
+    def __init__(self, providers: list[Provider] | None = None):
+        self._desired_providers = providers or []
         self.loaded_providers: list[LoadedProvider] = []
-        self._repository = repository
         self._notification_hub = NotificationHub()
+        self._provider_change_task_group: TaskGroup | None = None
 
         # Cleanup
-        self._stopping = False
-        self._stopped = asyncio.Event()
         self._exit_stack = AsyncExitStack()
 
     @property
@@ -266,29 +257,20 @@ class ProviderContainer:
             session=session, streams=streams, request_context=request_context
         )
 
-    async def _reload(self):
+    async def _handle_providers_change(self) -> None:
         """
         Handle updates to providers repository.
 
         This function must enters various anyio CancelScopes internally. Hence all operations must be called from
-        the same asyncio task to prevent stack corruption, for example by handling all operations through
-        Periodic:
+        the same asyncio task group to prevent stack corruption:
         https://anyio.readthedocs.io/en/stable/cancellation.html#avoiding-cancel-scope-stack-corruption
         """
-        if self._stopping:
-            for provider in self.loaded_providers:
-                await provider.close()
-            self.loaded_providers = []
-            self._stopped.set()
-            return
+        desired_provider_ids = {provider.id for provider in self._desired_providers}
 
-        repository_providers = [provider async for provider in self._repository.list()]
-        repository_provider_ids = {provider.id for provider in repository_providers}
-
-        added_providers = repository_provider_ids - {p.id for p in self.loaded_providers}
-        added_providers = [LoadedProvider(p) for p in repository_providers if p.id in added_providers]
-        removed_providers = [p for p in self.loaded_providers if p.id not in repository_provider_ids]
-        unaffected_providers = [p for p in self.loaded_providers if p.id in repository_provider_ids]
+        added_providers = desired_provider_ids - {p.id for p in self.loaded_providers}
+        added_providers = [LoadedProvider(p) for p in self._desired_providers if p.id in added_providers]
+        removed_providers = [p for p in self.loaded_providers if p.id not in desired_provider_ids]
+        unaffected_providers = [p for p in self.loaded_providers if p.id in desired_provider_ids]
 
         removed_providers and logger.info(f"Removing {len(removed_providers)} old providers")
         added_providers and logger.info(f"Discovered {len(added_providers)} new providers")
@@ -301,17 +283,17 @@ class ProviderContainer:
             await self._notification_hub.register(provider)
         self.loaded_providers = unaffected_providers + added_providers
 
-    def handle_providers_change(self):
-        self._periodic_reload.poke()
+    def handle_providers_change(self, updated_providers: list[Provider]) -> None:
+        self._desired_providers = updated_providers
+        self._provider_change_task_group.start_soon(self._handle_providers_change)
 
     async def __aenter__(self):
-        self._stopping = False
-        self._stopped.clear()
         await self._exit_stack.enter_async_context(self._notification_hub)
-        await self._exit_stack.enter_async_context(self._periodic_reload)
+        self._provider_change_task_group = await self._exit_stack.enter_async_context(create_task_group())
+        self._provider_change_task_group.start_soon(self._handle_providers_change)
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
-        self._stopping = True
-        self._periodic_reload.poke()
-        await self._stopped.wait()
+        for provider in self.loaded_providers:
+            await provider.close()
+        self.loaded_providers = []
         await self._exit_stack.aclose()
