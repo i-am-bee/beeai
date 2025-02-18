@@ -14,9 +14,7 @@ class Agent(BaseModel):
     input: Type[BaseModel] = Field(description="Model for input")
     output: Type[BaseModel] = Field(description="Model for output")
 
-    run_fn: Callable[[BaseModel, "Context"], Awaitable[BaseModel]] = Field(
-        exclude=True
-    )
+    run_fn: Callable[[BaseModel, "Context"], Awaitable[BaseModel]] = Field(exclude=True)
     destroy_fn: Callable[["Context"], Awaitable[None]] | None = Field(exclude=True)
 
     model_config = ConfigDict(extra="allow")

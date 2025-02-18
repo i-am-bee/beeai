@@ -2,11 +2,9 @@ import logging
 import os
 
 from opentelemetry import trace
-from opentelemetry.sdk.resources import Resource, SERVICE_NAME, SERVICE_VERSION
+from opentelemetry.sdk.resources import Resource, SERVICE_NAME
 from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import (
-    BatchSpanProcessor, SpanExportResult
-)
+from opentelemetry.sdk.trace.export import BatchSpanProcessor, SpanExportResult
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
 from mcp.server.fastmcp import FastMCP
 
@@ -24,13 +22,11 @@ async def run_agent_provider(server: FastMCP):
     server.settings.port = int(os.getenv("PORT", "8000"))
     trace.set_tracer_provider(
         tracer_provider=TracerProvider(
-            resource=Resource(attributes={
-                SERVICE_NAME: server.name
-            }),
-            active_span_processor=BatchSpanProcessor(SilentOTLPSpanExporter())
+            resource=Resource(attributes={SERVICE_NAME: server.name}),
+            active_span_processor=BatchSpanProcessor(SilentOTLPSpanExporter()),
         )
     )
-    with trace.get_tracer('beeai-sdk').start_as_current_span("agent-provider"):
+    with trace.get_tracer("beeai-sdk").start_as_current_span("agent-provider"):
         try:
             await server.run_sse_async()
         except KeyboardInterrupt:

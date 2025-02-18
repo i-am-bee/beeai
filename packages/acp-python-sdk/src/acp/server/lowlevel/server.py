@@ -182,7 +182,7 @@ class Server:
         if types.ListAgentsRequest in self.request_handlers:
             agents_capability = types.AgentsCapability(
                 templates=types.ListAgentTemplatesRequest in self.request_handlers,
-                listChanged=notification_options.agents_changed
+                listChanged=notification_options.agents_changed,
             )
 
         # Set logging capabilities if handler exists
@@ -614,14 +614,12 @@ class Server:
             assert type(notify) in self.notification_handlers
 
             handler = self.notification_handlers[type(notify)]
-            logger.debug(
-                f"Dispatching notification of type " f"{type(notify).__name__}"
-            )
+            logger.debug(f"Dispatching notification of type {type(notify).__name__}")
 
             try:
                 await handler(notify)
             except Exception as err:
-                logger.error(f"Uncaught exception in notification handler: " f"{err}")
+                logger.error(f"Uncaught exception in notification handler: {err}")
 
 
 async def _ping_handler(request: types.PingRequest) -> types.ServerResult:

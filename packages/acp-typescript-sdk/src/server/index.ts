@@ -89,7 +89,10 @@ export class Server<
   /**
    * Initializes this server with the given name and version information.
    */
-  constructor(private _serverInfo: Implementation, options?: ServerOptions) {
+  constructor(
+    private _serverInfo: Implementation,
+    options?: ServerOptions,
+  ) {
     super(options);
     this._capabilities = options?.capabilities ?? {};
     this._instructions = options?.instructions;

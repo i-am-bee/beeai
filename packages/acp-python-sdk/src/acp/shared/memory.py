@@ -20,9 +20,9 @@ MessageStream = tuple[
 
 
 @asynccontextmanager
-async def create_client_server_memory_streams() -> (
-    AsyncGenerator[tuple[MessageStream, MessageStream], None]
-):
+async def create_client_server_memory_streams() -> AsyncGenerator[
+    tuple[MessageStream, MessageStream], None
+]:
     """
     Creates a pair of bidirectional memory streams for client-server communication.
 

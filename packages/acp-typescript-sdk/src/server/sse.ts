@@ -83,10 +83,12 @@ export class SSEServerTransport implements Transport {
         throw new Error(`Unsupported content-type: ${ct}`);
       }
 
-      body = parsedBody ?? await getRawBody(req, {
-        limit: MAXIMUM_MESSAGE_SIZE,
-        encoding: ct.parameters.charset ?? "utf-8",
-      });
+      body =
+        parsedBody ??
+        (await getRawBody(req, {
+          limit: MAXIMUM_MESSAGE_SIZE,
+          encoding: ct.parameters.charset ?? "utf-8",
+        }));
     } catch (error) {
       res.writeHead(400).end(String(error));
       this.onerror?.(error as Error);
@@ -94,7 +96,9 @@ export class SSEServerTransport implements Transport {
     }
 
     try {
-      await this.handleMessage(typeof body === 'string' ? JSON.parse(body) : body);
+      await this.handleMessage(
+        typeof body === "string" ? JSON.parse(body) : body,
+      );
     } catch {
       res.writeHead(400).end(`Invalid message: ${body}`);
       return;

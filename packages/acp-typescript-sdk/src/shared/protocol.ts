@@ -148,7 +148,7 @@ export abstract class Protocol<
     this.setRequestHandler(
       PingRequestSchema,
       // Automatic pong by default.
-      (_request) => ({} as SendResultT),
+      (_request) => ({}) as SendResultT,
     );
   }
 

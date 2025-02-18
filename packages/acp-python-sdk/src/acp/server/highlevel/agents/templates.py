@@ -16,8 +16,6 @@ class AgentTemplate(BaseModel):
     input: Type[BaseModel] = Field(description="Model for run input")
     output: Type[BaseModel] = Field(description="Model for run output")
 
-    create_fn: Callable[[BaseModel, "Context"], Awaitable[Agent]] = Field(
-        exclude=True
-    )
+    create_fn: Callable[[BaseModel, "Context"], Awaitable[Agent]] = Field(exclude=True)
 
     model_config = ConfigDict(extra="allow")

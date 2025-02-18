@@ -10,8 +10,9 @@ import {
 
 export async function runAgentProvider(
   server: McpServer,
-  opentelemetrySdk?: NodeSDK
+  opentelemetrySdk?: NodeSDK,
 ): Promise<void> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { name, version } = (server.server as any)
     ._serverInfo as Implementation;
   const sdk =

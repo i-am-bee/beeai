@@ -3,8 +3,14 @@ packages:
   - docs
   - agents/official/bee-agent-framework
   - packages/beeai-sdk
+  - packages/acp-typescript-sdk
 
 catalog:
-  typescript: "^5.7.3"
-  typescript-eslint: "^8.23.0"
+  "@eslint/js": "^9.20.0"
   eslint: "^9.17.0"
+  eslint-plugin-react-hooks: "^5.0.0"
+  eslint-plugin-react-refresh: "^0.4.16"
+  globals: "^15.14.0"
+  prettier: "^3.4.2"
+  typescript-eslint: "^8.23.0"
+  typescript: "^5.7.3"

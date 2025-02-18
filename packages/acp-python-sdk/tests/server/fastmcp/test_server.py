@@ -520,7 +520,6 @@ class TestContextInjection:
     async def test_context_logging(self):
         from unittest.mock import patch
 
-
         """Test that context logging methods work."""
         mcp = Server()
 

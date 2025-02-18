@@ -6,7 +6,7 @@ readme = "README.md"
 authors = [
     { name = "Radek Ježek", email = "radek.jezek@ibm.com" }
 ]
-requires-python = ">=3.13"
+requires-python = ">=3.11,<4.0"
 dependencies = [
     "agentcommunicationprotocol>=0.0.4",
     "aiohttp>=3.11.11",
