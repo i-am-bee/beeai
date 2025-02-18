@@ -46,7 +46,7 @@ async def api_request(method: str, path: str, json: dict | None = None) -> dict 
 
 async def send_request_with_notifications(
     req: types.Request, result_type: type[ReceiveResultT]
-) -> AsyncGenerator[ReceiveResultT | ServerNotification | None]:
+) -> AsyncGenerator[ReceiveResultT | ServerNotification | None, None]:
     resp: ReceiveResultT | None = None
     async with mcp_client() as session:
         await session.initialize()
