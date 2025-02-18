@@ -2,55 +2,76 @@
 
 import { AcpServer } from "@i-am-bee/acp-sdk/server/acp.js";
 
-import { StreamlitAgent } from "bee-agent-framework/agents/experimental/streamlit/agent";
-import { OllamaChatLLM } from "bee-agent-framework/adapters/ollama/chat";
+import { BeeAgent } from "bee-agent-framework/agents/bee/agent";
+import { OllamaChatModel } from "bee-agent-framework/adapters/ollama/backend/chat";
 import { UnconstrainedMemory } from "bee-agent-framework/memory/unconstrainedMemory";
 import { Version } from "bee-agent-framework";
 import { runAgentProvider } from "@i-am-bee/beeai-sdk/providers/agent";
+import { promptInputSchema } from "@i-am-bee/beeai-sdk/schemas/prompt";
 import {
-  promptInputSchema,
-  promptOutputSchema,
-  PromptOutput,
-} from "@i-am-bee/beeai-sdk/schemas/prompt";
+  messageInputSchema,
+  messageOutputSchema,
+  MessageOutput,
+} from "@i-am-bee/beeai-sdk/schemas/message";
 import { Metadata } from "@i-am-bee/beeai-sdk/schemas/metadata";
+import { WikipediaTool } from "bee-agent-framework/tools/search/wikipedia";
+import { OpenMeteoTool } from "bee-agent-framework/tools/weather/openMeteo";
+import { DuckDuckGoSearchTool } from "bee-agent-framework/tools/search/duckDuckGoSearch";
+import { Message } from "bee-agent-framework/backend/message";
+import { BaseMemory } from "bee-agent-framework/memory/base";
+
+function createBeeAgent(memory?: BaseMemory) {
+  return new BeeAgent({
+    llm: new OllamaChatModel("llama3.1"),
+    memory: memory ?? new UnconstrainedMemory(),
+    tools: [
+      new DuckDuckGoSearchTool(),
+      new WikipediaTool(),
+      new OpenMeteoTool(),
+    ],
+  });
+}
 
 async function registerAgents(server: AcpServer) {
-  const streamlitMeta = new StreamlitAgent({
-    llm: new OllamaChatLLM(),
-    memory: new UnconstrainedMemory(),
-  }).meta;
+  // Create dummy agent for metadata
+  const agent = createBeeAgent();
+
+  // Register agent
   server.agent(
-    streamlitMeta.name,
-    streamlitMeta.description,
-    promptInputSchema,
-    promptOutputSchema,
+    "bee",
+    agent.meta.description,
+    messageInputSchema,
+    messageOutputSchema,
     async ({
       params: {
-        input: { prompt },
+        input: { messages },
         _meta,
       },
     }) => {
-      const output = await new StreamlitAgent({
-        llm: new OllamaChatLLM(),
-        memory: new UnconstrainedMemory(),
-      })
-        .run({ prompt })
+      const memory = new UnconstrainedMemory();
+      memory.addMany(
+        messages.map(({ role, content }) => Message.of({ role, text: content }))
+      );
+      const output = await createBeeAgent(memory)
+        .run({ prompt: null })
         .observe((emitter) => {
-          emitter.on("newToken", async ({ delta }) => {
-            if (_meta?.progressToken) {
+          emitter.on("partialUpdate", async ({ update }) => {
+            if (_meta?.progressToken && update.key === "final_answer") {
               await server.server.sendAgentRunProgress({
                 progressToken: _meta.progressToken,
-                delta: { text: delta } as PromptOutput,
+                delta: {
+                  messages: [{ role: "assistant", content: update.value }],
+                } as MessageOutput,
               });
             }
           });
         });
       return {
-        text: output.result.raw,
-      };
+        messages: [{ role: "assistant", content: output.result.text }],
+      } as MessageOutput;
     },
     {
-      title: "Streamlit Agent",
+      title: "Bee Agent",
       framework: "BeeAI",
       licence: "Apache 2.0",
       fullDescription: `This is an example AI agent.
@@ -63,12 +84,23 @@ async function registerAgents(server: AcpServer) {
       ui: "chat",
     } as const satisfies Metadata
   );
+
+  // Register agent as a tool
+  server.tool(
+    "bee",
+    agent.meta.description,
+    promptInputSchema.shape,
+    async (args, { signal }) => {
+      const output = await createBeeAgent().run(args, { signal });
+      return { content: [{ type: "text", text: output.result.text }] };
+    }
+  );
 }
 
 export async function createServer() {
   const server = new AcpServer(
     {
-      name: "Bee Agent Framework",
+      name: "bee-agent-framework",
       version: Version,
     },
     {
