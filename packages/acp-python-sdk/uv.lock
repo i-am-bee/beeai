@@ -1,5 +1,5 @@
 version = 1
-requires-python = ">=3.10"
+requires-python = ">=3.10, <4.0"
 
 [options]
 resolution-mode = "lowest-direct"
@@ -14,7 +14,7 @@ members = [
 
 [[package]]
 name = "acp-sdk"
-version = "0.0.5"
+version = "0.0.1"
 source = { editable = "." }
 dependencies = [
     { name = "anyio" },

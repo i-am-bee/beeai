@@ -1,6 +1,6 @@
+import acp.types as types
 import anyio
 import click
-import acp.types as types
 from acp.server.lowlevel import Server
 
 

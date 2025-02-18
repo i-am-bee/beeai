@@ -3,6 +3,7 @@ import functools
 import pydantic
 import pydantic_settings
 
+
 @functools.cache
 class Configuration(pydantic_settings.BaseSettings):
     model_config = pydantic_settings.SettingsConfigDict(

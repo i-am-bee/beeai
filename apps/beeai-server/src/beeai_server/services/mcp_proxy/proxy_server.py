@@ -8,7 +8,7 @@ from anyio.streams.memory import MemoryObjectReceiveStream, MemoryObjectSendStre
 from kink import inject
 
 from beeai_server.services.mcp_proxy.constants import NotificationStreamType
-from mcp import (
+from acp import (
     ClientSession,
     CreateAgentRequest,
     CreateAgentResult,
@@ -16,11 +16,11 @@ from mcp import (
     ListAgentsResult,
     ListAgentTemplatesResult,
 )
-from mcp import ServerSession, types
-from mcp.server import Server
-from mcp.server.models import InitializationOptions
-from mcp.shared.session import RequestResponder, ReceiveResultT
-from mcp.types import (
+from acp import ServerSession, types
+from acp.server import Server
+from acp.server.models import InitializationOptions
+from acp.shared.session import RequestResponder, ReceiveResultT
+from acp.types import (
     CallToolRequestParams,
     ClientRequest,
     CallToolRequest,

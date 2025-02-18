@@ -7,11 +7,11 @@ from typing import Callable, Coroutine, TYPE_CHECKING
 import anyio
 from anyio.abc import TaskGroup
 from anyio.streams.memory import MemoryObjectReceiveStream, MemoryObjectSendStream
-from mcp.types import AgentRunProgressNotification
+from acp.types import AgentRunProgressNotification
 
 from beeai_server.services.mcp_proxy.constants import NotificationStreamType
-from mcp import ServerNotification, ServerSession, ProgressNotification
-from mcp.shared.context import RequestContext
+from acp import ServerNotification, ServerSession, ProgressNotification
+from acp.shared.context import RequestContext
 
 if TYPE_CHECKING:
     # Prevent circular import

@@ -3,7 +3,7 @@ import { ChatContext, ChatMessagesContext } from './chat-context';
 import { Agent } from '@/modules/agents/api/types';
 import { v4 as uuid } from 'uuid';
 import { useImmerWithGetter } from '@/hooks/useImmerWithGetter';
-import { AgentRunProgressNotificationSchema } from '@agentcommunicationprotocol/sdk/types.js';
+import { AgentRunProgressNotificationSchema } from '@i-am-bee/acp-sdk/types.js';
 import { z } from 'zod';
 import { promptOutputSchema, PromptInput } from '@i-am-bee/beeai-sdk/schemas/prompt';
 import { useRunAgent } from '../api/mutations/useRunAgent';

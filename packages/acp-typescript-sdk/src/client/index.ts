@@ -100,7 +100,10 @@ export class Client<
   /**
    * Initializes this client with the given name and version information.
    */
-  constructor(private _clientInfo: Implementation, options?: ClientOptions) {
+  constructor(
+    private _clientInfo: Implementation,
+    options?: ClientOptions,
+  ) {
     super(options);
     this._capabilities = options?.capabilities ?? {};
   }

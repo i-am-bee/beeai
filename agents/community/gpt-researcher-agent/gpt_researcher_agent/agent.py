@@ -3,7 +3,7 @@ import asyncio
 
 from pydantic import BaseModel, Field
 from gpt_researcher import GPTResearcher
-from mcp.server.fastmcp import FastMCP
+from acp.server.highlevel import Server
 from beeai_sdk.schemas.prompt import PromptInput, PromptOutput
 from beeai_sdk.providers.agent import run_agent_provider
 from beeai_sdk.schemas.metadata import Metadata
@@ -26,7 +26,7 @@ class Output(PromptOutput):
 
 
 async def register_agent() -> int:
-    server = FastMCP("researcher-agent")
+    server = Server("researcher-agent")
 
     @server.agent(
         "GPT-researcher",
