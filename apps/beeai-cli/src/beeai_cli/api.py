@@ -8,10 +8,10 @@ import anyio
 import httpx
 import typer
 from httpx import HTTPStatusError
-from mcp import ClientSession, types, ServerNotification
-from mcp.client.sse import sse_client
-from mcp.shared.session import ReceiveResultT
-from mcp.types import RequestParams
+from acp import ClientSession, types, ServerNotification
+from acp.client.sse import sse_client
+from acp.shared.session import ReceiveResultT
+from acp.types import RequestParams
 
 from beeai_cli.configuration import Configuration
 
@@ -46,7 +46,7 @@ async def api_request(method: str, path: str, json: dict | None = None) -> dict 
 
 async def send_request_with_notifications(
     req: types.Request, result_type: type[ReceiveResultT]
-) -> AsyncGenerator[ReceiveResultT | ServerNotification | None]:
+) -> AsyncGenerator[ReceiveResultT | ServerNotification | None, None]:
     resp: ReceiveResultT | None = None
     async with mcp_client() as session:
         await session.initialize()

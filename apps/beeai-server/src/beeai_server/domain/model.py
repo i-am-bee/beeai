@@ -6,8 +6,8 @@ from typing import Literal
 import httpx
 import yaml
 from anyio import Path
-from mcp import stdio_client, StdioServerParameters
-from mcp.client.sse import sse_client
+from acp import stdio_client, StdioServerParameters
+from acp.client.sse import sse_client
 from packaging import version
 from pydantic import BaseModel, Field, FileUrl, RootModel, field_validator
 from pydantic_core.core_schema import ValidationInfo

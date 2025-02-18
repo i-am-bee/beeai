@@ -1,6 +1,6 @@
-import { ListAgentsRequest } from '@agentcommunicationprotocol/sdk/types.js';
+import { ListAgentsRequest } from '@i-am-bee/acp-sdk/types.js';
 
-import { Agent as SdkAgent } from '@agentcommunicationprotocol/sdk/types.js';
+import { Agent as SdkAgent } from '@i-am-bee/acp-sdk/types.js';
 
 export type Agent = SdkAgent & {
   title?: string;

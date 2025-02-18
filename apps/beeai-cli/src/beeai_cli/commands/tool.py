@@ -9,7 +9,7 @@ from beeai_cli.async_typer import AsyncTyper, console
 from beeai_cli.api import send_request, send_request_with_notifications
 from beeai_cli.utils import format_model
 
-from mcp import types
+from acp import types
 
 app = AsyncTyper()
 

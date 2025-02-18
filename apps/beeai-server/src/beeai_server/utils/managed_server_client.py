@@ -7,8 +7,8 @@ import anyio
 import anyio.abc
 from anyio import create_task_group
 from httpx import ConnectError
-from mcp.client.sse import sse_client
-from mcp.client.stdio import get_default_environment
+from acp.client.sse import sse_client
+from acp.client.stdio import get_default_environment
 from pydantic import BaseModel, Field
 
 from beeai_server.custom_types import McpClient

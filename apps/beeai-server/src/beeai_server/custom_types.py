@@ -1,10 +1,10 @@
-from typing import AsyncGenerator
+from typing import AsyncGenerator, TypeAlias
 
 from anyio.streams.memory import MemoryObjectReceiveStream, MemoryObjectSendStream
-from mcp.types import JSONRPCMessage
+from acp.types import JSONRPCMessage
 
-type ID = str
+ID: TypeAlias = str
 
-type McpClient = AsyncGenerator[
-    tuple[MemoryObjectReceiveStream[JSONRPCMessage | Exception], MemoryObjectSendStream[JSONRPCMessage]]
+McpClient: TypeAlias = AsyncGenerator[
+    tuple[MemoryObjectReceiveStream[JSONRPCMessage | Exception], MemoryObjectSendStream[JSONRPCMessage]], None
 ]

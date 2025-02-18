@@ -1,6 +1,6 @@
 import { useMCPClient } from '@/contexts/MCPClient';
 import { useMutation } from '@tanstack/react-query';
-import { Agent, AgentRunProgressNotificationSchema } from '@agentcommunicationprotocol/sdk/types.js';
+import { Agent, AgentRunProgressNotificationSchema } from '@i-am-bee/acp-sdk/types.js';
 // import { promptOutputSchema } from 'beeai-sdk/src/beeai_sdk/schemas/prompt.js';
 
 interface Props {

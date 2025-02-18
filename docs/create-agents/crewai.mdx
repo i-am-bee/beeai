@@ -14,7 +14,7 @@ from beeai_sdk.providers.agent import run_agent_provider
 from beeai_sdk.schemas.metadata import Metadata
 from beeai_sdk.schemas.prompt import PromptInput, PromptOutput
 from crewai.crew import CrewOutput
-from mcp.server.fastmcp import FastMCP, Context
+from acp.server.highlevel import Server, Context
 from pydantic import BaseModel, Field
 
 from crewai_agent.crew import CrewaiAgent
@@ -33,7 +33,7 @@ class Output(PromptOutput):
 
 
 async def register_agent() -> int:
-    server = FastMCP("researcher-agent")
+    server = Server("researcher-agent")
 
     @server.agent(
         "crewai-example",

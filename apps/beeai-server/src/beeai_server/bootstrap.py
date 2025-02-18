@@ -1,5 +1,5 @@
 from kink import di
-from mcp.server.sse import SseServerTransport
+from acp.server.sse import SseServerTransport
 
 from beeai_server.adapters.filesystem import FilesystemProviderRepository
 from beeai_server.adapters.interface import IProviderRepository

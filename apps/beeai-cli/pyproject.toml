@@ -8,7 +8,7 @@ authors = [
 ]
 requires-python = ">=3.11,<4.0"
 dependencies = [
-    "agentcommunicationprotocol>=0.0.4",
+    "acp-sdk>=0.0.1",
     "anyio>=4.8.0",
     "pydantic>=2.10.6",
     "pydantic-settings>=2.7.1",

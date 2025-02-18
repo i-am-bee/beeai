@@ -5,7 +5,7 @@ from fastapi import Depends
 from kink import di
 
 from beeai_server.services.provider import ProviderService
-from mcp.server.sse import SseServerTransport
+from acp.server.sse import SseServerTransport
 
 ProviderServiceDependency = Annotated[ProviderService, Depends(lambda: di[ProviderService])]
 SSEServerTransportDependency = Annotated[SseServerTransport, Depends(lambda: di[SseServerTransport])]

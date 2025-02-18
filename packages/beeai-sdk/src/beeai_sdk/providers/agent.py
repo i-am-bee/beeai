@@ -6,7 +6,7 @@ from opentelemetry.sdk.resources import Resource, SERVICE_NAME
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor, SpanExportResult
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
-from mcp.server.fastmcp import FastMCP
+from acp.server.highlevel import Server
 
 
 class SilentOTLPSpanExporter(OTLPSpanExporter):
@@ -18,7 +18,7 @@ class SilentOTLPSpanExporter(OTLPSpanExporter):
             return SpanExportResult.FAILURE
 
 
-async def run_agent_provider(server: FastMCP):
+async def run_agent_provider(server: Server):
     server.settings.port = int(os.getenv("PORT", "8000"))
     trace.set_tracer_provider(
         tracer_provider=TracerProvider(
