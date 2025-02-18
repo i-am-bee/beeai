@@ -16,10 +16,10 @@ from beeai_server.domain.model import Provider, LoadedProviderStatus
 from beeai_server.services.mcp_proxy.constants import NotificationStreamType
 from beeai_server.services.mcp_proxy.notification_hub import NotificationHub
 from beeai_server.utils.periodic import Periodic
-from mcp import ClientSession, Tool, Resource, InitializeResult, types, ServerSession
-from mcp.shared.context import RequestContext
-from mcp.shared.session import RequestResponder, ReceiveRequestT, SendResultT, ReceiveNotificationT
-from mcp.types import AgentTemplate, Prompt, Agent
+from acp import ClientSession, Tool, Resource, InitializeResult, types, ServerSession
+from acp.shared.context import RequestContext
+from acp.shared.session import RequestResponder, ReceiveRequestT, SendResultT, ReceiveNotificationT
+from acp.types import AgentTemplate, Prompt, Agent
 
 from beeai_server.utils.utils import extract_messages
 

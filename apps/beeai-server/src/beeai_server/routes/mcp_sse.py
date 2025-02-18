@@ -5,7 +5,7 @@ import anyio
 from anyio.abc import TaskGroup
 from fastapi import FastAPI, HTTPException
 from kink import inject
-from mcp.server.sse import SseServerTransport
+from acp.server.sse import SseServerTransport
 from starlette.requests import Request
 from starlette.responses import Response
 from starlette.routing import Mount, Route

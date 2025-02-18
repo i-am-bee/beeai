@@ -1,7 +1,7 @@
 import express from "express";
-import { McpServer } from "@agentcommunicationprotocol/sdk/server/mcp.js";
-import { SSEServerTransport } from "@agentcommunicationprotocol/sdk/server/sse.js";
-import { Implementation } from "@agentcommunicationprotocol/sdk/types.js";
+import { AcpServer } from "@i-am-bee/acp-sdk/server/acp.js";
+import { SSEServerTransport } from "@i-am-bee/acp-sdk/server/sse.js";
+import { Implementation } from "@i-am-bee/acp-sdk/types.js";
 import { NodeSDK, resources } from "@opentelemetry/sdk-node";
 import {
   ATTR_SERVICE_NAME,
@@ -9,8 +9,8 @@ import {
 } from "@opentelemetry/semantic-conventions";
 
 export async function runAgentProvider(
-  server: McpServer,
-  opentelemetrySdk?: NodeSDK,
+  server: AcpServer,
+  opentelemetrySdk?: NodeSDK
 ): Promise<void> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { name, version } = (server.server as any)
@@ -71,5 +71,3 @@ export async function runAgentProvider(
     await sdk.shutdown().catch(() => {});
   }
 }
-
-await runAgentProvider(new McpServer({ name: "foo", version: "bar" }, {}));

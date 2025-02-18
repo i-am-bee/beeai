@@ -8,10 +8,10 @@ import anyio
 import httpx
 import typer
 from httpx import HTTPStatusError
-from mcp import ClientSession, types, ServerNotification
-from mcp.client.sse import sse_client
-from mcp.shared.session import ReceiveResultT
-from mcp.types import RequestParams
+from acp import ClientSession, types, ServerNotification
+from acp.client.sse import sse_client
+from acp.shared.session import ReceiveResultT
+from acp.types import RequestParams
 
 from beeai_cli.configuration import Configuration
 

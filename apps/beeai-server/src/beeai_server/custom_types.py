@@ -1,7 +1,7 @@
 from typing import AsyncGenerator
 
 from anyio.streams.memory import MemoryObjectReceiveStream, MemoryObjectSendStream
-from mcp.types import JSONRPCMessage
+from acp.types import JSONRPCMessage
 
 type ID = str
 

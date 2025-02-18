@@ -1,3 +1,3 @@
-import { ListToolsRequest } from '@agentcommunicationprotocol/sdk/types.js';
+import { ListToolsRequest } from '@i-am-bee/acp-sdk/types.js';
 
 export type ListToolsParams = ListToolsRequest['params'];

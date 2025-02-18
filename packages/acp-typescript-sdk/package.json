@@ -15,7 +15,6 @@
     "node": ">=18"
   },
   "keywords": [
-    "agentcommunicationprotocol",
     "acp"
   ],
   "exports": {

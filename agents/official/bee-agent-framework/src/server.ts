@@ -1,6 +1,6 @@
 #!/usr/bin/env npx -y tsx
 
-import { McpServer } from "@agentcommunicationprotocol/sdk/server/mcp.js";
+import { AcpServer } from "@i-am-bee/acp-sdk/server/acp.js";
 
 import { StreamlitAgent } from "bee-agent-framework/agents/experimental/streamlit/agent";
 import { OllamaChatLLM } from "bee-agent-framework/adapters/ollama/chat";
@@ -14,7 +14,7 @@ import {
 } from "@i-am-bee/beeai-sdk/schemas/prompt";
 import { Metadata } from "@i-am-bee/beeai-sdk/schemas/metadata";
 
-async function registerAgents(server: McpServer) {
+async function registerAgents(server: AcpServer) {
   const streamlitMeta = new StreamlitAgent({
     llm: new OllamaChatLLM(),
     memory: new UnconstrainedMemory(),
@@ -66,7 +66,7 @@ async function registerAgents(server: McpServer) {
 }
 
 export async function createServer() {
-  const server = new McpServer(
+  const server = new AcpServer(
     {
       name: "Bee Agent Framework",
       version: Version,

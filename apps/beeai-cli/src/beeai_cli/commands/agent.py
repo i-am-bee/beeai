@@ -1,8 +1,8 @@
 import sys
 
 import typer
-from mcp import types, ServerNotification, RunAgentResult
-from mcp.types import AgentRunProgressNotification, AgentRunProgressNotificationParams
+from acp import types, ServerNotification, RunAgentResult
+from acp.types import AgentRunProgressNotification, AgentRunProgressNotificationParams
 from rich.table import Table
 
 from beeai_cli.api import send_request, send_request_with_notifications

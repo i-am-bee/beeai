@@ -9,8 +9,8 @@ members = [
 ]
 
 [[package]]
-name = "agentcommunicationprotocol"
-version = "0.0.5"
+name = "acp-sdk"
+version = "0.0.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "anyio" },
@@ -24,9 +24,9 @@ dependencies = [
     { name = "starlette" },
     { name = "uvicorn" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ef/66/b2be9dcbb3d84c3024e0005facb058740250f5a32b60f04c98c598e249cc/agentcommunicationprotocol-0.0.5.tar.gz", hash = "sha256:bad4b46fbe35d9f13e32392c3389f6712a2203f3a4aa8330bc722bad23346afc", size = 141589 }
+sdist = { url = "https://files.pythonhosted.org/packages/d0/cc/bd9f47ecc180d43e4a6a992a3643bcb981517b120f709286f5dd3cdc3372/acp_sdk-0.0.1.tar.gz", hash = "sha256:5e31aa386fa57d148000029a0e38b7bd97df59de7dc8a85a4d0e3fc45c464d10", size = 141753 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/70/12/0fe53558170b7ca1b1f7567faec5e2676f05aa0b9876e4acb4b33c141a28/agentcommunicationprotocol-0.0.5-py3-none-any.whl", hash = "sha256:b0456dcfadab3cd6b25b4709a1f4a8bce60d34142bfe05af5cf719547f0a0d42", size = 69559 },
+    { url = "https://files.pythonhosted.org/packages/9e/3e/8587a3dad62509b9dabd4cffc3469f46991b025ca9be6ef3a27861222460/acp_sdk-0.0.1-py3-none-any.whl", hash = "sha256:d59b353d8c0730621e8751fabdeb255d39fdd662ffcc9908cfd7b286a5cdaa26", size = 69667 },
 ]
 
 [[package]]
@@ -161,7 +161,7 @@ name = "beeai-cli"
 version = "0.0.2"
 source = { editable = "apps/beeai-cli" }
 dependencies = [
-    { name = "agentcommunicationprotocol" },
+    { name = "acp-sdk" },
     { name = "anyio" },
     { name = "beeai-server" },
     { name = "pydantic" },
@@ -171,7 +171,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "agentcommunicationprotocol", specifier = ">=0.0.4" },
+    { name = "acp-sdk", specifier = ">=0.0.1" },
     { name = "anyio", specifier = ">=4.8.0" },
     { name = "beeai-server", editable = "apps/beeai-server" },
     { name = "pydantic", specifier = ">=2.10.6" },
@@ -181,10 +181,10 @@ requires-dist = [
 
 [[package]]
 name = "beeai-sdk"
-version = "0.0.1"
+version = "0.0.2"
 source = { virtual = "packages/beeai-sdk" }
 dependencies = [
-    { name = "agentcommunicationprotocol" },
+    { name = "acp-sdk" },
     { name = "opentelemetry-exporter-otlp-proto-http" },
     { name = "opentelemetry-sdk" },
     { name = "pydantic" },
@@ -192,7 +192,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "agentcommunicationprotocol", specifier = ">=0.0.5" },
+    { name = "acp-sdk", specifier = ">=0.0.1" },
     { name = "opentelemetry-exporter-otlp-proto-http", specifier = ">=1.30.0" },
     { name = "opentelemetry-sdk", specifier = ">=1.30.0" },
     { name = "pydantic", specifier = ">=2.10.6" },
@@ -203,7 +203,7 @@ name = "beeai-server"
 version = "0.0.1"
 source = { editable = "apps/beeai-server" }
 dependencies = [
-    { name = "agentcommunicationprotocol" },
+    { name = "acp-sdk" },
     { name = "aiohttp" },
     { name = "anyio" },
     { name = "asgiref" },
@@ -226,7 +226,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "agentcommunicationprotocol", specifier = ">=0.0.4" },
+    { name = "acp-sdk", specifier = ">=0.0.1" },
     { name = "aiohttp", specifier = ">=3.11.11" },
     { name = "anyio", specifier = ">=4.8.0" },
     { name = "asgiref", specifier = ">=3.8.1" },

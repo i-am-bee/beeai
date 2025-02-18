@@ -9,7 +9,7 @@ In general a new agent can be created simply by creating an agent server, here i
 ```python
 import asyncio
 from pydantic import Field
-from mcp.server.fastmcp import FastMCP
+from acp.server.highlevel import Server
 from beeai_sdk.schemas.prompt import PromptInput, PromptOutput
 from beeai_sdk.providers.agent import run_agent_provider
 
@@ -17,7 +17,7 @@ class Output(PromptOutput):
     text: str = Field(default_factory=str)
 
 async def register_agent() -> int:
-    server = FastMCP("researcher-agent")
+    server = Server("researcher-agent")
     @server.agent("My Agent", "Description...", input=PromptInput, output=Output)
     async def run_agent(input: PromptInput, ctx) -> Output:
         ...

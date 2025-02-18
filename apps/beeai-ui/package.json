@@ -12,7 +12,7 @@
     "clean": "rm -rf node_modules && rm -rf dist"
   },
   "dependencies": {
-    "@agentcommunicationprotocol/sdk": "^0.0.2",
+    "@i-am-bee/acp-sdk": "^0.0.1",
     "@carbon/colors": "^11.29.0",
     "@carbon/grid": "^11.31.0",
     "@carbon/icons-react": "^11.54.0",
