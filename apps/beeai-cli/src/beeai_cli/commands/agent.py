@@ -1,3 +1,4 @@
+import json
 import sys
 
 import typer
@@ -15,13 +16,19 @@ app = AsyncTyper()
 @app.command("run")
 async def run(
     name: str = typer.Argument(help="Name of the tool to call"),
-    prompt: str = typer.Argument(help="Agent prompt"),
+    input: str = typer.Argument(help="Agent input as JSON"),
 ) -> None:
     """Call a tool with given input."""
+    try:
+        parsed_input = json.loads(input)
+    except json.JSONDecodeError:
+        typer.echo("Input must be valid JSON")
+        return
+
     text_streamed = False
     async for message in send_request_with_notifications(
         types.RunAgentRequest(
-            method="agents/run", params=types.RunAgentRequestParams(name=name, input=dict(prompt=prompt))
+            method="agents/run", params=types.RunAgentRequestParams(name=name, input=parsed_input)
         ),
         types.RunAgentResult,
     ):
