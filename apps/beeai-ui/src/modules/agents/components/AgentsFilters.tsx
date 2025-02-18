@@ -4,7 +4,7 @@ import { useId, useMemo } from 'react';
 import { Search } from '@carbon/icons-react';
 import { useAgents } from '../contexts';
 import { useFormContext } from 'react-hook-form';
-import { FilterFormValues } from '../contexts/AgentsContext';
+import { FilterFormValues } from '../contexts/agents-context';
 import clsx from 'clsx';
 import { isNotNull } from '@/utils/helpers';
 

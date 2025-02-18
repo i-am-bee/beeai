@@ -1,15 +1,9 @@
-import { useCreateMCPClient } from '@/hooks/useCreateMCPClient';
-import { PropsWithChildren, ReactNode } from 'react';
-import { MCPClientContext } from './MCPClientContext';
+import { PropsWithChildren } from 'react';
+import { MCPClientContext } from './mcp-client-context';
+import { useMCPClient } from '@/api/mcp-client/useMCPClient';
 
-export function MCPClientProvider({ fallback, children }: PropsWithChildren<{ fallback: ReactNode }>) {
-  const mcpClient = useCreateMCPClient({
-    serverUrl: new URL('/mcp/sse', location.href).href,
-  });
+export function MCPClientProvider({ children }: PropsWithChildren) {
+  const client = useMCPClient();
 
-  if (mcpClient === null) {
-    return fallback;
-  }
-
-  return <MCPClientContext.Provider value={mcpClient}>{children}</MCPClientContext.Provider>;
+  return <MCPClientContext.Provider value={client}>{children}</MCPClientContext.Provider>;
 }

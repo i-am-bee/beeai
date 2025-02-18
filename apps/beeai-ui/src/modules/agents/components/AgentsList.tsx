@@ -3,7 +3,7 @@ import { useAgents } from '../contexts';
 import { AgentCard } from './AgentCard';
 import classes from './AgentsList.module.scss';
 import { useFormContext } from 'react-hook-form';
-import { FilterFormValues } from '../contexts/AgentsContext';
+import { FilterFormValues } from '../contexts/agents-context';
 import { ErrorMessage } from '@/components/ErrorMessage/ErrorMessage';
 
 export function AgentsList() {
@@ -51,7 +51,7 @@ export function AgentsList() {
                 <AgentCard agent={agent} />
               </li>
             ))
-          : Array.from({ length: 8 }, (_, i) => <AgentCard.Skeleton key={i} />)}
+          : Array.from({ length: 3 }, (_, i) => <AgentCard.Skeleton key={i} />)}
         <li></li>
       </ul>
     </div>

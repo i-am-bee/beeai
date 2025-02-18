@@ -1,4 +1,4 @@
-import { useMCPClient } from '@/contexts/MCPClient';
+import { useMCPClientContext } from '@/contexts/MCPClient';
 import { useQuery } from '@tanstack/react-query';
 import { toolKeys } from '../keys';
 import { ListToolsParams } from '../types';
@@ -8,11 +8,12 @@ interface Props {
 }
 
 export function useListTools({ params }: Props = {}) {
-  const client = useMCPClient();
+  const client = useMCPClientContext();
 
   const query = useQuery({
     queryKey: toolKeys.list(params),
-    queryFn: () => client.listTools(params),
+    queryFn: () => client!.listTools(params),
+    enabled: Boolean(client),
   });
 
   return query;

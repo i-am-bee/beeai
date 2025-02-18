@@ -29,3 +29,7 @@ $avatar-padding-left: $spacing-04 + rem(32px);
   font-size: rem(16px);
   line-height: math.div(26, 16);
 }
+
+.empty {
+  color: $text-disabled;
+}

@@ -1,6 +1,6 @@
 import { Button, Layer, ModalBody, ModalHeader } from '@carbon/react';
 import { Agent } from '../api/types';
-import { ModalProps } from '@/contexts/Modal/ModalContext';
+import { ModalProps } from '@/contexts/Modal/modal-context';
 import { Modal } from '@/components/Modal/Modal';
 import { AgentMetadata } from './AgentMetadata';
 import { AgentTags } from './AgentTags';

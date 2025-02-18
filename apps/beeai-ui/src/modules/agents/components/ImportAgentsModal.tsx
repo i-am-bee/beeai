@@ -1,5 +1,5 @@
 import { Button, InlineLoading, ModalBody, ModalFooter, ModalHeader, TextInput } from '@carbon/react';
-import { ModalProps } from '@/contexts/Modal/ModalContext';
+import { ModalProps } from '@/contexts/Modal/modal-context';
 import { Modal } from '@/components/Modal/Modal';
 import classes from './AgentModal.module.scss';
 import { useImportProvider } from '../api/mutations/useImportAgents';

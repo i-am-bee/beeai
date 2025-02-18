@@ -2,7 +2,7 @@ import { ToastNotification, usePrefix } from '@carbon/react';
 import { PropsWithChildren, useCallback, useMemo, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 import classes from './ToastProvider.module.scss';
-import { Toast, ToastContext, ToastWithKey } from './ToastContext';
+import { Toast, ToastContext, ToastWithKey } from './toast-context';
 
 export function ToastProvider({ children }: PropsWithChildren) {
   const [toasts, setToasts] = useState<ToastWithKey[]>([]);
