@@ -38,7 +38,10 @@ export function useRunAgent<
           name: agent.name,
           input,
         },
-        { timeout: 10 * 60 * 1000, signal: abortController?.signal }, // 10 minutes
+        {
+          timeout: 10 * 60 * 1000, // 10 minutes
+          signal: abortController?.signal,
+        },
       );
     },
   });

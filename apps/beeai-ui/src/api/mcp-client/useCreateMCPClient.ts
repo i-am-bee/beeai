@@ -1,21 +1,19 @@
 import { Client as MCPClient } from '@i-am-bee/acp-sdk/client/index.js';
 import { SSEClientTransport } from '@i-am-bee/acp-sdk/client/sse.js';
-import { useCallback, useEffect, useState } from 'react';
-import { MCP_EXAMPLE_AGENT_CONFIG, MCP_EXAMPLE_AGENT_PARAMS, MCP_SERVER_URL } from '.';
+import { useCallback, useEffect, useRef } from 'react';
 
 /**
  * Provides a function to create MCP client on demand
  * and it manages closing previous connections
  */
 export function useCreateMCPClient() {
-  const [client, setClient] = useState<MCPClient | null>(null);
+  const clientRef = useRef<MCPClient | null>(null);
 
   useEffect(() => {
     return () => {
       // close on hook unmount
-      client?.close();
+      clientRef.current?.close();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const createClient = useCallback(async () => {
@@ -25,14 +23,8 @@ export function useCreateMCPClient() {
     try {
       await client.connect(transport);
 
-      setClient((current) => {
-        if (current) {
-          // close previous connection
-          current.close();
-        }
-
-        return client;
-      });
+      clientRef.current?.close();
+      clientRef.current = client;
     } catch (error) {
       console.error('Error connecting client:', error);
       return null;
@@ -43,3 +35,16 @@ export function useCreateMCPClient() {
 
   return createClient;
 }
+
+const MCP_SERVER_URL = new URL('/mcp/sse', location.href);
+const MCP_EXAMPLE_AGENT_CONFIG = {
+  name: 'example-client',
+  version: '1.0.0',
+};
+const MCP_EXAMPLE_AGENT_PARAMS = {
+  capabilities: {
+    prompts: {},
+    resources: {},
+    tools: {},
+  },
+};

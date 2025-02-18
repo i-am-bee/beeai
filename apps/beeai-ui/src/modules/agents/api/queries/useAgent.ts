@@ -1,4 +1,4 @@
-import { useMCPClientContext } from '@/contexts/MCPClient';
+import { useMCPClient } from '@/contexts/MCPClient';
 import { useQuery } from '@tanstack/react-query';
 import { agentKeys } from '../keys';
 import { Agent } from '../types';
@@ -8,7 +8,7 @@ interface Props {
 }
 
 export function useAgent({ name }: Props) {
-  const client = useMCPClientContext();
+  const client = useMCPClient();
 
   return useQuery({
     queryKey: agentKeys.list(),
