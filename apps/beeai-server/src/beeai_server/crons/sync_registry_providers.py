@@ -27,10 +27,10 @@ async def check_official_registry(configuration: Configuration, provider_service
         headers={"Cache-Control": "no-cache, no-store, must-revalidate", "Pragma": "no-cache", "Expires": "0"}
     ) as client:
         resp = await client.get(str(registry.get_raw_url()))
-        resp = set(yaml.safe_load(resp.content)["providers"])
+        resp = yaml.safe_load(resp.content)["providers"]
         for provider in resp:
             try:
-                provider_manifest = CreateProviderRequest(location=provider).location
+                provider_manifest = CreateProviderRequest(location=provider["url"]).location
                 await provider_manifest.resolve()
                 desired_providers.add(provider_manifest.provider_id)
             except ValueError as e:
