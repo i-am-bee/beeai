@@ -1,0 +1,6 @@
+## run
+
+["docs:run"]
+depends = ["setup:pnpm"]
+dir = "{{config_root}}/docs"
+run = "pnpm dev"

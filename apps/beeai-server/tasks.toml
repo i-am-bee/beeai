@@ -1,0 +1,72 @@
+# check
+
+["beeai-server:check"]
+depends = ["beeai-server:check:*"]
+
+["beeai-server:check:ruff-check"]
+depends = ["setup:uv"]
+dir = "{{config_root}}/apps/beeai-server"
+run = "uv run ruff check --quiet"
+sources = ["src/**/*.py"]
+outputs = { auto = true }
+
+["beeai-server:check:ruff-format"]
+depends = ["setup:uv"]
+dir = "{{config_root}}/apps/beeai-server"
+run = "uv run ruff format --quiet --check"
+sources = ["src/**/*.py"]
+outputs = { auto = true }
+
+# TODO: Enable and fix issues in separate PR
+# ["beeai-server:check:pyright"]
+# depends = ["setup:uv"]
+# dir = "{{config_root}}/apps/beeai-server"
+# run = "uv run pyright"
+# sources = ["src/**/*.py"]
+# outputs = { auto = true }
+
+# fix
+
+["beeai-server:fix"]
+depends = ["beeai-server:fix:*"]
+
+["beeai-server:fix:ruff-check"]
+depends = ["setup:uv"]
+dir = "{{config_root}}/apps/beeai-server"
+run = "uv run ruff check --quiet --fix"
+
+["beeai-server:fix:ruff-format"]
+depends = ["setup:uv"]
+dir = "{{config_root}}/apps/beeai-server"
+run = "uv run ruff format --quiet"
+
+# run
+
+["beeai-server:run"]
+depends = ["setup:uv", "beeai-ui:build"]
+dir = "{{cwd}}"
+run = "uv run beeai-server"
+
+# build
+
+["beeai-server:build"]
+depends = ["setup:uv", "beeai-ui:build"]
+dir = "{{config_root}}/apps/beeai-server"
+run = "rm -rf ./dist && uv build --out-dir dist"
+sources = ["src/**/*.py"]
+outputs = { auto = true }
+
+# publish
+
+["beeai-server:publish"]
+description = "NOTE: You need to configure your ~/.pypirc first"
+depends = ["beeai-server:build"]
+dir = "{{config_root}}/apps/beeai-server"
+tools = { "pipx" = "latest", "pipx:twine" = "latest" }
+run = "twine upload --skip-existing --non-interactive dist/*"
+
+# clean
+
+["beeai-server:clean"]
+dir = "{{config_root}}/apps/beeai-server"
+run = "rm -rf ./dist"

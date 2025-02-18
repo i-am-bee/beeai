@@ -20,6 +20,7 @@ jobs:
     env:
       UV_FROZEN: true
       UV_PYTHON_PREFERENCE: only-system
+      MISE_NODE_GPG_VERIFY: "False" # gpg is present on GitHub CI runners, but somewhat broken
     steps:
       - uses: actions/checkout@v4
       - uses: jdx/mise-action@5083fe46898c414b2475087cc79da59e7da859e8

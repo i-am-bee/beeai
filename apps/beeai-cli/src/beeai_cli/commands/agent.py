@@ -27,9 +27,7 @@ async def run(
 
     text_streamed = False
     async for message in send_request_with_notifications(
-        types.RunAgentRequest(
-            method="agents/run", params=types.RunAgentRequestParams(name=name, input=parsed_input)
-        ),
+        types.RunAgentRequest(method="agents/run", params=types.RunAgentRequestParams(name=name, input=parsed_input)),
         types.RunAgentResult,
     ):
         match message:
