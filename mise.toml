@@ -9,7 +9,15 @@ experimental = true # for python.uv_venv_auto
 python.uv_venv_auto = true
 raw = true
 
+[hooks]
+postinstall = "mise setup"
+
 # TASKS
+
+[task_config]
+includes = [
+    "packages/acp-python-sdk/tasks.toml"
+]
 
 ## setup
 
@@ -43,7 +51,7 @@ outputs = { auto = true }
 [tasks."deps:py"]
 hide = true
 dir = "{{config_root}}"
-run = "uv sync"
+run = "uv sync --all-extras"
 sources = ["uv.lock", "pyproject.toml", "**/pyproject.toml"]
 outputs = { auto = true }
 
@@ -150,7 +158,7 @@ run = "rm -rf ./dist"
 ## check
 
 [tasks."check"]
-depends = ["check:*"]
+depends = ["check:*", "*:check"]
 
 [tasks."check:py"]
 description = "Check Python files using Ruff"
