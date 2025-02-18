@@ -64,7 +64,7 @@ Clone this project, then run these setup steps:
 ```sh
 brew install mise  # more ways to install: https://mise.jdx.dev/installing-mise.html
 mise trust
-mise setup
+mise install
 ```
 
 After setup, you can use:

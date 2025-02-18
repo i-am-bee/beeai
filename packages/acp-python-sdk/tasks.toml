@@ -1,0 +1,55 @@
+# check
+
+["acp-python-sdk:check"]
+depends = ["acp-python-sdk:check:*"]
+
+["acp-python-sdk:check:ruff-check"]
+dir = "{{config_root}}/packages/acp-python-sdk"
+run = "uv run ruff check"
+
+["acp-python-sdk:check:ruff-format"]
+dir = "{{config_root}}/packages/acp-python-sdk"
+run = "uv run ruff format --check"
+
+["acp-python-sdk:check:pyright"]
+dir = "{{config_root}}/packages/acp-python-sdk"
+run = "uv run pyright"
+
+# fix
+
+["acp-python-sdk:fix"]
+depends = ["acp-python-sdk:fix:*"]
+
+["acp-python-sdk:fix:ruff-fix"]
+dir = "{{config_root}}/packages/acp-python-sdk"
+run = "uv run ruff check --fix"
+
+["acp-python-sdk:fix:ruff-format"]
+dir = "{{config_root}}/packages/acp-python-sdk"
+run = "uv run ruff format"
+
+# test
+
+["acp-python-sdk:test"]
+dir = "{{config_root}}/packages/acp-python-sdk"
+run = "uv run pytest"
+
+# build
+
+["acp-python-sdk:build"]
+dir = "{{config_root}}/packages/acp-python-sdk"
+run = "uv build --out-dir dist"
+
+# clean
+
+["acp-python-sdk:clean"]
+dir = "{{config_root}}/packages/acp-python-sdk"
+run = "rm -rf dist"
+
+# ci
+
+["acp-python-sdk:ci:check"]
+depends = ["acp-python-sdk:check", "acp-python-sdk:test"]
+
+["acp-python-sdk:ci:build"]
+depends = ["acp-python-sdk:build"]

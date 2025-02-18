@@ -31,16 +31,8 @@ dependencies = [
     "setuptools==75.8.0",
 ]
 
-[project.optional-dependencies]
-rich = ["rich>=13.9.4"]
-cli = ["typer>=0.12.4", "python-dotenv>=1.0.0"]
-
-[project.scripts]
-acp = "acp.cli:app [cli]"
-
-[tool.uv]
-resolution = "lowest-direct"
-dev-dependencies = [
+[dependency-groups]
+dev = [
     "pyright>=1.1.391",
     "pytest>=8.3.4",
     "ruff>=0.8.5",
@@ -48,6 +40,13 @@ dev-dependencies = [
     "pytest-flakefinder>=1.1.0",
     "pytest-xdist>=3.6.1",
 ]
+
+[project.optional-dependencies]
+rich = ["rich>=13.9.4"]
+cli = ["typer>=0.12.4", "python-dotenv>=1.0.0"]
+
+[project.scripts]
+acp = "acp.cli:app [cli]"
 
 [build-system]
 requires = ["hatchling"]
@@ -63,8 +62,6 @@ packages = ["src/acp"]
 
 [tool.pyright]
 include = ["src/acp"]
-venvPath = "."
-venv = ".venv"
 
 [tool.ruff.lint]
 select = ["E", "F", "I"]
@@ -77,10 +74,3 @@ target-version = "py310"
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
 "tests/server/fastmcp/test_func_metadata.py" = ["E501"]
-
-
-[tool.uv.workspace]
-members = ["examples/servers/*"]
-
-[tool.uv.sources]
-acp = { workspace = true }

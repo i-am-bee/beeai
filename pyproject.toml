@@ -3,6 +3,7 @@ members = [
   "apps/beeai-cli",
   "apps/beeai-server",
   "packages/beeai-sdk",
+  "packages/acp-python-sdk",
 ]
 
 [tool.ruff]
