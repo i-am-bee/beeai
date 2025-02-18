@@ -38,7 +38,7 @@ async function registerAgents(server: AcpServer) {
 
   // Register agent
   server.agent(
-    agent.meta.name,
+    "bee",
     agent.meta.description,
     messageInputSchema,
     messageOutputSchema,
@@ -87,7 +87,7 @@ async function registerAgents(server: AcpServer) {
 
   // Register agent as a tool
   server.tool(
-    agent.meta.name,
+    "bee",
     agent.meta.description,
     promptInputSchema.shape,
     async (args, { signal }) => {
@@ -100,7 +100,7 @@ async function registerAgents(server: AcpServer) {
 export async function createServer() {
   const server = new AcpServer(
     {
-      name: "Bee Agent Framework",
+      name: "bee-agent-framework",
       version: Version,
     },
     {
