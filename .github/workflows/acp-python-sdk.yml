@@ -23,6 +23,16 @@ jobs:
       MISE_NODE_GPG_VERIFY: "False" # gpg is present on GitHub CI runners, but somewhat broken
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: .venv
+          key: uv-venv-v1-${{ runner.os }}-${{ hashFiles('uv.lock') }}
+          restore-keys: uv-venv-v1-${{ runner.os }}-
+      - uses: actions/cache@v4
+        with:
+          path: ~/.local/share/pnpm/store
+          key: pnpm-store-v1-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: pnpm-store-v1-${{ runner.os }}-
       - uses: jdx/mise-action@5083fe46898c414b2475087cc79da59e7da859e8
       - run: mise acp-python-sdk:ci:check
       - if: startsWith(github.ref, 'refs/tags/acp')
