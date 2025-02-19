@@ -1,9 +1,9 @@
 import logging
 import uuid
-import warnings
 from contextlib import asynccontextmanager
 from functools import cached_property
 
+import anyio
 from anyio.streams.memory import MemoryObjectReceiveStream, MemoryObjectSendStream
 from kink import inject
 
@@ -19,7 +19,7 @@ from acp import (
 from acp import ServerSession, types
 from acp.server import Server
 from acp.server.models import InitializationOptions
-from acp.shared.session import RequestResponder, ReceiveResultT
+from acp.shared.session import ReceiveResultT
 from acp.types import (
     CallToolRequestParams,
     ClientRequest,
@@ -133,18 +133,9 @@ class MCPProxyServer:
         HACK: Modified server.run method that subscribes and forwards messages
         The default method sets Request ContextVar only for client requests, not notifications.
         """
-        with warnings.catch_warnings(record=True) as w:
-            async with ServerSession(read_stream, write_stream, initialization_options) as session:
-                async with self._provider_container.forward_notifications(session):
+        async with ServerSession(read_stream, write_stream, initialization_options) as session:
+            async with self._provider_container.forward_notifications(session):
+                async with anyio.create_task_group() as tg:
                     async for message in session.incoming_messages:
                         logger.debug(f"Received message: {message}")
-
-                        match message:
-                            case RequestResponder(request=types.ClientRequest(root=req)) as responder:
-                                with responder:
-                                    await self.app._handle_request(message, req, session, raise_exceptions)
-                            case types.ClientNotification(root=notify):
-                                await self.app._handle_notification(notify)
-
-                        for warning in w:
-                            logger.info(f"Warning: {warning.category.__name__}: {warning.message}")
+                        tg.start_soon(self.app._handle_message, message, session, raise_exceptions)

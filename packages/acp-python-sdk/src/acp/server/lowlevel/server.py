@@ -68,8 +68,10 @@ import contextvars
 import logging
 import warnings
 from collections.abc import Awaitable, Callable
+from contextlib import AsyncExitStack
 from typing import Any, Sequence
 
+import anyio
 from anyio.streams.memory import MemoryObjectReceiveStream, MemoryObjectSendStream
 from pydantic import AnyUrl
 
@@ -538,30 +540,41 @@ class Server:
         # in-process servers.
         raise_exceptions: bool = False,
     ):
-        with warnings.catch_warnings(record=True) as w:
-            async with ServerSession(
-                read_stream, write_stream, initialization_options
-            ) as session:
+        async with AsyncExitStack() as stack:
+            session = await stack.enter_async_context(
+                ServerSession(read_stream, write_stream, initialization_options)
+            )
+
+            async with anyio.create_task_group() as tg:
                 async for message in session.incoming_messages:
                     logger.debug(f"Received message: {message}")
 
-                    match message:
-                        case (
-                            RequestResponder(
-                                request=types.ClientRequest(root=req)
-                            ) as responder
-                        ):
-                            with responder:
-                                await self._handle_request(
-                                    message, req, session, raise_exceptions
-                                )
-                        case types.ClientNotification(root=notify):
-                            await self._handle_notification(notify)
+                    tg.start_soon(
+                        self._handle_message, message, session, raise_exceptions
+                    )
 
-                    for warning in w:
-                        logger.info(
-                            f"Warning: {warning.category.__name__}: {warning.message}"
+    async def _handle_message(
+        self,
+        message: RequestResponder[types.ClientRequest, types.ServerResult]
+        | types.ClientNotification
+        | Exception,
+        session: ServerSession,
+        raise_exceptions: bool = False,
+    ):
+        with warnings.catch_warnings(record=True) as w:
+            match message:
+                case (
+                    RequestResponder(request=types.ClientRequest(root=req)) as responder
+                ):
+                    with responder:
+                        await self._handle_request(
+                            message, req, session, raise_exceptions
                         )
+                case types.ClientNotification(root=notify):
+                    await self._handle_notification(notify)
+
+            for warning in w:
+                logger.info(f"Warning: {warning.category.__name__}: {warning.message}")
 
     async def _handle_request(
         self,
