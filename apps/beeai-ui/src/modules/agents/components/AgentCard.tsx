@@ -8,6 +8,7 @@ import { getAgentTitle } from '../utils';
 import classes from './AgentCard.module.scss';
 import { AgentMetadata } from './AgentMetadata';
 import { AgentTags } from './AgentTags';
+import { useViewTransition } from '@/hooks/useViewTransition';
 
 interface Props {
   agent: Agent;

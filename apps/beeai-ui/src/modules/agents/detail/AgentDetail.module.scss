@@ -1,3 +1,21 @@
+::view-transition-new(header) {
+  animation-duration: 1s;
+  animation-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+::view-transition-new(header) {
+  transform: translate(0, 100px);
+}
+::view-transition-new(header).view-transition-entering {
+  transform: translate(0, 200px);
+}
+
+::view-transition-new(description) {
+  animation-duration: $duration-fast-02;
+}
+::view-transition-new(content) {
+  animation-duration: $duration-moderate-01;
+}
+
 .root {
   padding-block-start: $spacing-05;
 
