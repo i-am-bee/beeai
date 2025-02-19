@@ -1,5 +1,5 @@
 import { Container } from '@/components/layouts/Container';
-import { ViewStack } from '@/components/ViewStack';
+import { ViewStack } from '@/components/ViewStack/ViewStack';
 import { routes } from '@/utils/router';
 import { Button } from '@carbon/react';
 import { Link } from 'react-router';

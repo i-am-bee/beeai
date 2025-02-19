@@ -1,19 +1,22 @@
-import { routes } from '@/utils/router';
-import { NavLink } from 'react-router';
-import { MainNav } from '../MainNav';
+import clsx from 'clsx';
+import { CommunityNav } from '../CommunityNav/CommunityNav';
+import { MainNav } from '../MainNav/MainNav';
 import classes from './AppHeader.module.scss';
 import { Container } from './Container';
 
-export function AppHeader() {
+interface Props {
+  showCommunityNav?: boolean;
+  className?: string;
+}
+
+export function AppHeader({ showCommunityNav, className }: Props) {
   return (
-    <header className={classes.root}>
+    <header className={clsx(classes.root, className)}>
       <Container size="xlg">
         <div className={classes.holder}>
-          <NavLink to={routes.home()} className={classes.link}>
-            {__APP_NAME__}
-          </NavLink>
-
           <MainNav />
+
+          {showCommunityNav && <CommunityNav />}
         </div>
       </Container>
     </header>

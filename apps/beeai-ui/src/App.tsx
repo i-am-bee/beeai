@@ -5,13 +5,14 @@ import { ErrorFallback } from './components/fallbacks/ErrorFallback';
 import { MCPFallback } from './components/fallbacks/MCPFallback';
 import { AppLayout } from './components/layouts/AppLayout';
 import { MCPClientProvider } from './contexts/MCPClient/MCPClientProvider';
+import { ModalProvider } from './contexts/Modal/ModalProvider';
+import { ToastProvider } from './contexts/Toast/ToastProvider';
+import { Agents } from './pages/Agents';
+import { Agent } from './pages/agents/Agent';
 import { Home } from './pages/Home';
 import { NotFound } from './pages/NotFound';
-import { routesDefinition } from './utils/router';
-import { Agent } from './pages/agents/Agent';
-import { ModalProvider } from './contexts/Modal/ModalProvider';
 import { AgentRunPage } from './pages/run/AgentRunPage';
-import { ToastProvider } from './contexts/Toast/ToastProvider';
+import { routeDefinitions } from './utils/router';
 
 const queryClient = new QueryClient();
 
@@ -25,9 +26,10 @@ export function App() {
               <BrowserRouter>
                 <Routes>
                   <Route element={<AppLayout />}>
-                    <Route path={routesDefinition.home()} element={<Home />} />
-                    <Route path={routesDefinition.agentDetail()} element={<Agent />} />
-                    <Route path={routesDefinition.agentRun()} element={<AgentRunPage />} />
+                    <Route path={routeDefinitions.home()} element={<Home />} />
+                    <Route path={routeDefinitions.agents()} element={<Agents />} />
+                    <Route path={routeDefinitions.agentDetail()} element={<Agent />} />
+                    <Route path={routeDefinitions.agentRun()} element={<AgentRunPage />} />
 
                     <Route path="*" element={<NotFound />} />
                   </Route>

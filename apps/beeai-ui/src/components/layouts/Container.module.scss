@@ -4,6 +4,9 @@
   margin-inline: auto;
   padding-inline: $grid-margin;
   inline-size: 100%;
+  &.sm {
+    max-inline-size: calc(rem(504px) + 2 * $grid-margin);
+  }
   &.md {
     max-inline-size: calc(rem(768px) + 2 * $grid-margin);
   }

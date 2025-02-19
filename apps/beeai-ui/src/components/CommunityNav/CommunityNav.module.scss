@@ -1,0 +1,18 @@
+.list {
+  display: flex;
+  gap: $spacing-04;
+}
+
+.item {
+  flex-shrink: 0;
+}
+
+.link {
+  @include link-mask(-$spacing-02);
+  display: flex;
+  color: inherit;
+  position: relative;
+  &:hover {
+    color: $background-inverse;
+  }
+}

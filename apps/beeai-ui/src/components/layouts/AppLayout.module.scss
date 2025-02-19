@@ -1,12 +1,24 @@
 .root {
   display: grid;
   block-size: 100dvh;
-  grid-template-rows: 1fr;
-  padding-block-start: rem(48px);
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas:
+    'header'
+    'main'
+    'footer';
+}
+
+.header {
+  grid-area: header;
 }
 
 .main {
   padding-block: $spacing-09;
   overflow: auto;
   scrollbar-gutter: stable;
+  grid-area: main;
+}
+
+.footer {
+  grid-area: footer;
 }

@@ -1,12 +1,12 @@
-import { Button, Layer, ModalBody, ModalHeader } from '@carbon/react';
-import { Agent } from '../api/types';
-import { ModalProps } from '@/contexts/Modal/ModalContext';
+import { CopySnippet } from '@/components/CopySnippet/CopySnippet';
 import { Modal } from '@/components/Modal/Modal';
-import { AgentMetadata } from './AgentMetadata';
-import { AgentTags } from './AgentTags';
-import classes from './AgentModal.module.scss';
+import { ModalProps } from '@/contexts/Modal/ModalContext';
 import { ArrowUpRight } from '@carbon/icons-react';
-import { TextWithCopyButton } from '@/components/TextWithCopyButton/TextWithCopyButton';
+import { Button, ModalBody, ModalHeader } from '@carbon/react';
+import { Agent } from '../api/types';
+import { AgentMetadata } from './AgentMetadata';
+import classes from './AgentModal.module.scss';
+import { AgentTags } from './AgentTags';
 
 interface Props extends ModalProps {
   agent: Agent;
@@ -29,11 +29,8 @@ export function AgentModal({ agent, onRequestClose, ...modalProps }: Props) {
           <AgentTags agent={agent} />
         </div>
         <div className={classes.runAgent}>
-          <Layer level={1}>
-            <TextWithCopyButton text={runCommand} isCode>
-              {runCommand}
-            </TextWithCopyButton>
-          </Layer>
+          <CopySnippet snippet={runCommand} />
+
           <Button kind="primary" renderIcon={ArrowUpRight} size="md">
             Try this agent
           </Button>

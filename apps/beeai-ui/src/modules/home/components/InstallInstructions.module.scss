@@ -1,0 +1,18 @@
+@use '@carbon/styles/scss/utilities/button-reset';
+
+.root {
+  display: flex;
+  flex-direction: column;
+  row-gap: $spacing-04;
+  flex-grow: 1;
+}
+
+.button {
+  @include button-reset.reset();
+  @include type-style(label-01);
+  max-inline-size: max-content;
+  color: $text-secondary;
+  &:hover {
+    color: $text-primary;
+  }
+}

@@ -1,17 +1,17 @@
+import { CopySnippet } from '@/components/CopySnippet/CopySnippet';
+import { ErrorMessage } from '@/components/ErrorMessage/ErrorMessage';
 import { Container } from '@/components/layouts/Container';
-import { ViewStack } from '@/components/ViewStack';
-import classes from './AgentDetail.module.scss';
+import { MarkdownContent } from '@/components/MarkdownContent/MarkdownContent';
+import { TagsList } from '@/components/TagsList/TagsList';
+import { ViewStack } from '@/components/ViewStack/ViewStack';
+import { routes } from '@/utils/router';
+import { isStringTerminalParameterSafe } from '@/utils/strings';
+import { ArrowUpRight } from '@carbon/icons-react';
+import { Button, ButtonSkeleton, SkeletonPlaceholder, SkeletonText } from '@carbon/react';
+import { useAgent } from '../api/queries/useAgent';
 import { AgentMetadata } from '../components/AgentMetadata';
 import { AgentTags } from '../components/AgentTags';
-import { Button, ButtonSkeleton, Layer, SkeletonPlaceholder, SkeletonText } from '@carbon/react';
-import { TextWithCopyButton } from '@/components/TextWithCopyButton/TextWithCopyButton';
-import { ArrowUpRight } from '@carbon/icons-react';
-import { TagsList } from '@/components/TagsList';
-import { isStringTerminalParameterSafe } from '@/utils/strings';
-import { MarkdownContent } from '@/components/MarkdownContent/MarkdownContent';
-import { useAgent } from '../api/queries/useAgent';
-import { ErrorMessage } from '@/components/ErrorMessage/ErrorMessage';
-import { routes } from '@/utils/router';
+import classes from './AgentDetail.module.scss';
 
 interface Props {
   name: string;
@@ -39,11 +39,8 @@ export function AgentDetail({ name }: Props) {
               <MarkdownContent className={classes.description}>{agent.description}</MarkdownContent>
 
               <div className={classes.runAgent}>
-                <Layer level={1}>
-                  <TextWithCopyButton text={runCommand} isCode className={classes.runCommandInput}>
-                    {runCommand}
-                  </TextWithCopyButton>
-                </Layer>
+                <CopySnippet snippet={runCommand} className={classes.runCommandInput} />
+
                 <Button kind="primary" renderIcon={ArrowUpRight} size="md" href={routes.agentRun(name)}>
                   Try this agent
                 </Button>
