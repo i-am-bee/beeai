@@ -104,7 +104,7 @@ async function registerAgents(server: AcpServer) {
       { signal }
     ) => {
       const memory = new UnconstrainedMemory();
-      memory.addMany(
+      await memory.addMany(
         messages.map(({ role, content }) => Message.of({ role, text: content }))
       );
       const output = await createBeeAgent(memory, config?.tools)
