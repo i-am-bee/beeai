@@ -4,59 +4,21 @@ on:
   push:
     tags:
       - "acp*"
-    branches:
-      - main
-  pull_request:
-    paths:
-      - "packages/acp-typescript-sdk/**"
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
-defaults:
-  run:
-    working-directory: ./packages/acp-typescript-sdk
+permissions:
+  contents: read
+  id-token: write
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 18
-          cache: npm
-          cache-dependency-path: ./packages/acp-typescript-sdk/package-lock.json
-
-      - run: npm ci
-      - run: npm run build
-      - run: npm test
-      - run: npm run check
-
   publish:
+    name: Publish
+    if: github.event.base_ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/acp')
     environment: release
-    needs: build
-
-    permissions:
-      contents: read
-      id-token: write
-
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 18
-          cache: npm
-          cache-dependency-path: ./packages/acp-typescript-sdk/package-lock.json
-          registry-url: "https://registry.npmjs.org"
-
-      - run: npm ci
-
-      # TODO: Add --provenance once the repo is public
-      - run: npm publish --access public
+      - uses: ./.github/actions/setup
+      - run: mise acp-typescript-sdk:publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_PROVENANCE: true # https://github.com/pnpm/pnpm/issues/6435#issuecomment-1518397267

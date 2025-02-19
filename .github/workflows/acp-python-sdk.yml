@@ -5,13 +5,16 @@ on:
     tags:
       - "acp*"
 
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
-  pypi-publish:
+  publish:
+    name: Publish
     if: github.event.base_ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment: release
-    permissions:
-      id-token: write # IMPORTANT: this permission is mandatory for trusted publishing
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
