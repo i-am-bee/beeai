@@ -1,13 +1,17 @@
-name: PR
+name: Common
 
 permissions:
   contents: read
 
 on:
   pull_request:
+  push:
+    branches:
+      - main
 
 jobs:
   check:
+    name: Check & test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

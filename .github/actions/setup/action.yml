@@ -1,5 +1,5 @@
 name: 'Setup environment'
-description: 'Sets up mise tools, .venv and node_modules'
+description: 'Set up mise tools (Python, Node.js, ...) and install project dependencies'
 
 runs:
   using: "composite"
