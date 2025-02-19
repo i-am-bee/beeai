@@ -1,5 +1,6 @@
 packages:
   - apps/beeai-ui
+  - apps/beeai-web
   - docs
   - agents/official/bee-agent-framework
   - packages/beeai-sdk
