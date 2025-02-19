@@ -136,9 +136,7 @@ class LoadedProvider:
     async def _initialize_session(self):
         logger.info("Initializing session")
         await self._close_session()
-        read_stream, write_stream = await self._session_exit_stack.enter_async_context(
-            self.provider.manifest.mcp_client()
-        )
+        read_stream, write_stream = await self._session_exit_stack.enter_async_context(self.provider.mcp_client())
         session = await self._session_exit_stack.enter_async_context(ClientSession(read_stream, write_stream))
         with anyio.fail_after(self.INITIALIZE_TIMEOUT.total_seconds()):
             self._initialize_result = await session.initialize()

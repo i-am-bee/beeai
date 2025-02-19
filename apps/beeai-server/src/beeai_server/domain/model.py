@@ -1,4 +1,5 @@
 import abc
+import uuid
 from contextlib import asynccontextmanager
 from enum import StrEnum
 from typing import Literal
@@ -7,14 +8,15 @@ import anyio
 import anyio.to_thread
 import httpx
 import yaml
-from anyio import Path
+from anyio import Path, CancelScope
 from kink import inject
 from acp import stdio_client, StdioServerParameters
 from acp.client.sse import sse_client
 from packaging import version
-from pydantic import BaseModel, Field, FileUrl, RootModel, field_validator
+from pydantic import BaseModel, Field, FileUrl, RootModel, field_validator, model_validator
 from pydantic_core.core_schema import ValidationInfo
 
+from acp.client.stdio import get_default_environment
 from beeai_server.configuration import Configuration
 from beeai_server.custom_types import McpClient, ID
 from beeai_server.domain.constants import DEFAULT_MANIFEST_PATH
@@ -52,6 +54,7 @@ class BaseProvider(BaseModel, abc.ABC):
     mcpTransport: McpTransport = Field(default=McpTransport.sse, description="Valid for serverType http")
     mcpEndpoint: str = Field(default="/sse", description="Valid for serverType http")
     ui: list[str] = Field(default_factory=list)
+    env: list[EnvVar] = Field(default_factory=list, description="For configuration -- passed to the process")
 
     base_file_path: str | None = None
 
@@ -59,18 +62,19 @@ class BaseProvider(BaseModel, abc.ABC):
         pass
 
     @abc.abstractmethod
-    def mcp_client(self) -> McpClient: ...
+    def mcp_client(self, *, env: dict[str, str] | None = None) -> McpClient: ...
 
 
 class UnmanagedProvider(BaseProvider):
     driver: Literal[ProviderDriver.unmanaged] = ProviderDriver.unmanaged
     serverType: Literal[ServerType.http] = ServerType.http
+    env: list[EnvVar] = Field(default_factory=list, description="Not supported for unmanaged provider", max_length=0)
 
     async def check(self) -> None:
         return
 
     @asynccontextmanager
-    async def mcp_client(self) -> McpClient:
+    async def mcp_client(self, *, env: dict[str, str] | None = None) -> McpClient:
         match (self.serverType, self.mcpTransport):
             case (ServerType.http, McpTransport.sse):
                 async with sse_client(str(self.mcpEndpoint)) as client:
@@ -82,19 +86,24 @@ class UnmanagedProvider(BaseProvider):
 class ManagedProvider(BaseProvider, abc.ABC):
     serverType: ServerType = ServerType.stdio
     command: list[str] = Field(description="Command with arguments to run")
-    env: list[EnvVar] = Field(default_factory=list, description="For configuration -- passed to the process")
 
     @asynccontextmanager
-    async def _get_mcp_client(self, command: list[str]) -> McpClient:
+    async def _get_mcp_client(self, *, command: list[str], env: dict[str, str] | None = None) -> McpClient:
+        env = env or {}
         command, args = command[0], command[1:]
         match (self.serverType, self.mcpTransport):
             case (ServerType.stdio, _):
-                async with stdio_client(StdioServerParameters(command=command, args=args)) as client:
+                params = StdioServerParameters(command=command, args=args, env={**env, **get_default_environment()})
+                async with stdio_client(params) as client:
                     yield client
             case (ServerType.http, McpTransport.sse):
-                async with managed_sse_client(
-                    ManagedServerParameters(command=command, args=args, endpoint=self.mcpEndpoint)
-                ) as client:
+                params = ManagedServerParameters(
+                    command=command,
+                    args=args,
+                    endpoint=self.mcpEndpoint,
+                    env={**env, **get_default_environment()},
+                )
+                async with managed_sse_client(params) as client:
                     yield client
             case _:
                 raise NotImplementedError(f"Transport {self.mcpTransport} not implemented")
@@ -125,7 +134,7 @@ class NodeJsProvider(ManagedProvider):
 
     @asynccontextmanager
     @inject
-    async def mcp_client(self, configuration: Configuration) -> McpClient:  # noqa: F821
+    async def mcp_client(self, *, env: dict[str, str] | None = None, configuration: Configuration) -> McpClient:  # noqa: F821
         await self.check()
         try:
             github_url = GithubUrl.model_validate(self.package)
@@ -135,7 +144,7 @@ class NodeJsProvider(ManagedProvider):
             package = str(package_path)
         except ValueError:
             package = self.package
-        async with super()._get_mcp_client(command=["npx", "-y", package, *self.command]) as client:
+        async with super()._get_mcp_client(command=["npx", "-y", package, *self.command], env=env) as client:
             yield client
 
 
@@ -173,11 +182,12 @@ class PythonProvider(ManagedProvider):
         return value
 
     @asynccontextmanager
-    async def mcp_client(self) -> McpClient:  # noqa: F821
+    async def mcp_client(self, *, env: dict[str, str] | None = None) -> McpClient:  # noqa: F821
         await self.check()
         python = [] if not self.pythonVersion else ["--python", self.pythonVersion]
         async with super()._get_mcp_client(
-            command=["uvx", *python, "--from", self.package, "--reinstall", *self.command]
+            command=["uvx", *python, "--from", self.package, "--reinstall", *self.command],
+            env=env,
         ) as client:
             yield client
 
@@ -198,12 +208,29 @@ class ContainerProvider(ManagedProvider):
         raise UnsupportedProviderError("docker is not installed, see https://docs.docker.com/get-started/get-docker/")
 
     @asynccontextmanager
-    async def mcp_client(self) -> McpClient:  # noqa: F821
+    async def mcp_client(self, *, env: dict[str, str] | None = None) -> McpClient:  # noqa: F821
         await self.check()
-        async with super()._get_mcp_client(
-            command=[self._runtime, "run", "--rm", "-i", "-e=PORT", "--network=host", self.image, *self.command]
-        ) as client:
-            yield client
+        env_args = [f"-e={var}" for var in list((env or {})) + ["PORT"]]
+        name = uuid.uuid4().hex
+        try:
+            async with super()._get_mcp_client(
+                command=[
+                    self._runtime,
+                    "run",
+                    "--rm",
+                    "-i",
+                    *env_args,
+                    "--network=host",
+                    f"--name={name}",
+                    self.image,
+                    *self.command,
+                ],
+                env=env,
+            ) as client:
+                yield client
+        finally:
+            with CancelScope(shield=True):
+                await anyio.run_process(command=[self._runtime, "kill", name], check=False)
 
 
 ProviderManifest = UnmanagedProvider | NodeJsProvider | PythonProvider | ContainerProvider
@@ -213,6 +240,19 @@ class Provider(BaseModel):
     manifest: ProviderManifest
     id: ID
     registry: GithubUrl | None = None
+    env: dict[str, str] | None = None
+
+    @asynccontextmanager
+    async def mcp_client(self) -> McpClient:
+        async with self.manifest.mcp_client(env=self.env) as client:
+            yield client
+
+    @model_validator(mode="after")
+    def level_uvicorn_validator(self):
+        required_vars = set(var.name for var in self.manifest.env if var.required)
+        if missing_vars := required_vars - (self.env or {}).keys():
+            raise ValueError(f"The following required variables are missing : {missing_vars}")
+        return self
 
 
 class LoadedProviderStatus(StrEnum):
@@ -243,14 +283,14 @@ class GitHubManifestLocation(RootModel):
         await self.root.resolve_version()
         self._resolved = True
 
-    async def load(self) -> Provider:
+    async def load(self) -> ProviderManifest:
         await self.resolve()
         async with httpx.AsyncClient(
             headers={"Cache-Control": "no-cache, no-store, must-revalidate", "Pragma": "no-cache", "Expires": "0"}
         ) as client:
             resp = await client.get(str(self.root.get_raw_url(self.root.path or DEFAULT_MANIFEST_PATH)))
             resp.raise_for_status()
-        return Provider.model_validate({"manifest": yaml.safe_load(resp.text), "id": self.provider_id})
+        return RootModel[ProviderManifest].model_validate(yaml.safe_load(resp.text)).root
 
     def __str__(self):
         return str(self.root)
@@ -277,15 +317,14 @@ class LocalFileManifestLocation(RootModel):
         self.root = FileUrl.build(scheme=self.root.scheme, host="", path=str(path))
         self._resolved = True
 
-    async def load(self) -> Provider:
+    async def load(self) -> ProviderManifest:
         await self.resolve()
         path = Path(self.root.path)
         content = await path.read_text()
-        return Provider.model_validate(
-            {
-                "manifest": {**yaml.safe_load(content), "base_file_path": str(path.parent)},
-                "id": self.provider_id,
-            }
+        return (
+            RootModel[ProviderManifest]
+            .model_validate({**yaml.safe_load(content), "base_file_path": str(path.parent)})
+            .root
         )
 
     def __str__(self):

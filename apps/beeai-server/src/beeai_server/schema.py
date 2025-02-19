@@ -13,6 +13,7 @@ class PaginatedResponse(BaseModel, Generic[BaseModelT]):
 
 class CreateProviderRequest(BaseModel):
     location: ManifestLocation
+    env: dict[str, str] | None = None
 
 
 DeleteProviderRequest = CreateProviderRequest

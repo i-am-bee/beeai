@@ -15,3 +15,11 @@ def extract_messages(exc):
         return [(exc_type, msg) for e in exc.exceptions for exc_type, msg in extract_messages(e)]
     else:
         return [(type(exc).__name__, str(exc))]
+
+
+def parse_env_var(env_var: str) -> tuple[str, str]:
+    """Parse environment variable string in format NAME=VALUE."""
+    if "=" not in env_var:
+        raise ValueError(f"Environment variable {env_var} is invalid, use format --env NAME=VALUE")
+    key, value = env_var.split("=", 1)
+    return key.strip(), value.strip()

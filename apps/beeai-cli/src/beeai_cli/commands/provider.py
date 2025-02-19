@@ -6,6 +6,7 @@ from rich.table import Table
 
 from beeai_cli.api import api_request
 from beeai_cli.async_typer import AsyncTyper, console
+from beeai_cli.utils import parse_env_var
 
 app = AsyncTyper()
 
@@ -32,10 +33,25 @@ async def add(
             "git+https://github.com/my-org/my-repo.git@2.0.0#path=/path/to/beeai-manifest.yaml ..."
         ),
     ),
+    env: list[str] = typer.Option(
+        [],
+        "--env",
+        help="Environment variables to pass to provider",
+        show_default=False,
+    ),
 ) -> None:
     """Call a tool with given input."""
+    env_vars = [parse_env_var(var) for var in env]
+    env_vars = {name: value for name, value in env_vars}
     location = _get_abs_location(location)
-    await api_request("post", "provider", json={"location": location})
+    await api_request(
+        "post",
+        "provider",
+        json={
+            "location": location,
+            **({"env": env_vars} if env_vars else {}),
+        },
+    )
     typer.echo(f"Added provider: {location}")
 
 

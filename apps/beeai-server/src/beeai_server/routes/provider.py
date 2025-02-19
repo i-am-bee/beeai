@@ -8,7 +8,7 @@ router = fastapi.APIRouter()
 
 @router.post("")
 async def create_provider(request: CreateProviderRequest, provider_service: ProviderServiceDependency):
-    await provider_service.add_provider(request.location)
+    await provider_service.add_provider(location=request.location, env=request.env)
     return fastapi.Response(status_code=fastapi.status.HTTP_201_CREATED)
 
 
@@ -20,7 +20,7 @@ async def list_providers(provider_service: ProviderServiceDependency):
 
 @router.post("/delete")
 async def delete_provider(request: DeleteProviderRequest, provider_service: ProviderServiceDependency):
-    await provider_service.delete_provider(request.location)
+    await provider_service.delete_provider(location=request.location)
     return fastapi.Response(status_code=fastapi.status.HTTP_204_NO_CONTENT)
 
 
