@@ -11,8 +11,4 @@ line-length = 120
 target-version = "py311"
 
 [tool.uv]
-dev-dependencies = [
-    "pyright>=1.1.391",
-    "pytest>=8.3.4",
-    "ruff>=0.8.5",
-]
+dev-dependencies = ["pyright>=1.1.391", "pytest>=8.3.4", "ruff>=0.8.5"]

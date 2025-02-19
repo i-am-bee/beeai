@@ -1,0 +1,7 @@
+manifestVersion: 1
+driver: python
+package: "git+https://github.com/i-am-bee/beeai.git@main#subdirectory=agents/community/crewai-agents"
+serverType: http
+mcpTransport: sse
+mcpEndpoint: /sse
+command: [ "crewai-agents" ]
