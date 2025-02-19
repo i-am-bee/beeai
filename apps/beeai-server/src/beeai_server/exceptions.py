@@ -12,3 +12,6 @@ class ManifestLoadError(Exception):
 
 
 class LoadFeaturesError(Exception): ...
+
+
+class UnsupportedProviderError(FileNotFoundError): ...

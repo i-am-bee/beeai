@@ -1,5 +1,8 @@
+import functools
+import shutil
 from typing import TypeVar, Iterable
 
+import anyio.to_thread
 
 T = TypeVar("T")
 V = TypeVar("V")
@@ -24,3 +27,12 @@ def extract_messages(exc):
         return [(exc_type, msg) for e in exc.exceptions for exc_type, msg in extract_messages(e)]
     else:
         return [(type(exc).__name__, str(exc))]
+
+
+@functools.cache
+def _which_sync(command: str):
+    return shutil.which(command)
+
+
+async def which(command: str):
+    return await anyio.to_thread.run_sync(_which_sync, command)
