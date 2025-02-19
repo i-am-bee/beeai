@@ -17,11 +17,7 @@ export function useAgent({ name }: Props) {
     select: (data) => {
       const agent = data?.agents.find((item) => name === item.name);
 
-      if (!agent) {
-        throw new Error('Agent not found.');
-      }
-
-      return agent as Agent;
+      return agent ? (agent as Agent) : null;
     },
   });
 }

@@ -12,14 +12,13 @@ import { MarkdownContent } from '@/components/MarkdownContent/MarkdownContent';
 import { useAgent } from '../api/queries/useAgent';
 import { ErrorMessage } from '@/components/ErrorMessage/ErrorMessage';
 import { routes } from '@/utils/router';
-import { useNavigate } from 'react-router';
+import { Link } from 'react-router';
 
 interface Props {
   name: string;
 }
 
 export function AgentDetail({ name }: Props) {
-  const navigate = useNavigate();
   const { data: agent, isPending, error, refetch, isRefetching } = useAgent({ name });
 
   const runCommand = `beeai run ${isStringTerminalParameterSafe(name) ? name : `'${name}'`}`;
@@ -46,16 +45,7 @@ export function AgentDetail({ name }: Props) {
                     {runCommand}
                   </TextWithCopyButton>
                 </Layer>
-                <Button
-                  kind="primary"
-                  renderIcon={ArrowUpRight}
-                  size="md"
-                  href={routes.agentRun({ name })}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    navigate(routes.agentRun({ name }));
-                  }}
-                >
+                <Button kind="primary" renderIcon={ArrowUpRight} size="md" to={routes.agentRun({ name })} as={Link}>
                   Try this agent
                 </Button>
               </div>
