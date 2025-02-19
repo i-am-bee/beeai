@@ -10,8 +10,8 @@ permissions:
   id-token: write
 
 jobs:
-  publish:
-    name: Publish
+  publish-pypi:
+    name: Publish on PyPI
     if: github.event.base_ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment: release
