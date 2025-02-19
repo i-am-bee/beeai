@@ -55,11 +55,3 @@ run = "uv build --out-dir dist"
 ["acp-python-sdk:clean"]
 dir = "{{config_root}}/packages/acp-python-sdk"
 run = "rm -rf dist"
-
-# ci
-
-["acp-python-sdk:ci:check"]
-depends = ["acp-python-sdk:check", "acp-python-sdk:test"]
-
-["acp-python-sdk:ci:build"]
-depends = ["acp-python-sdk:build"]

@@ -4,8 +4,6 @@ description: 'Sets up mise tools, .venv and node_modules'
 runs:
   using: "composite"
   steps:
-    - uses: actions/checkout@v4
-
     - uses: actions/cache@v4
       with:
         path: .venv
