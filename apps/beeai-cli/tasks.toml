@@ -58,7 +58,7 @@ depends = ["setup:uv"]
 dir = "{{config_root}}/apps/beeai-cli"
 run = "rm -rf ./dist && uv build --out-dir dist"
 sources = ["src/**/*.py"]
-outputs = { auto = true }
+outputs = ["dist/**/*"]
 
 # clean
 
