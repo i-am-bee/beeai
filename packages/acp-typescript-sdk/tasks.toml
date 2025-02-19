@@ -59,15 +59,7 @@ depends = ["setup:pnpm"]
 dir = "{{config_root}}/packages/acp-typescript-sdk"
 run = "pnpm build"
 sources = ["src/**/*.js", "src/**/*.ts"]
-outputs = { auto = true }
-
-# publish
-
-["acp-typescript-sdk:publish"]
-description = "NOTE: You need to set NODE_AUTH_TOKEN"
-depends = ["acp-typescript-sdk:build"]
-dir = "{{config_root}}/packages/acp-typescript-sdk"
-run = "pnpm publish --access public"
+outputs = ["dist/**/*"]
 
 # clean
 

@@ -21,7 +21,7 @@ jobs:
       - run: mise beeai-sdk:build:py
       - uses: pypa/gh-action-pypi-publish@76f52bc884231f62b9a034ebfe128415bbaabdfc
         with:
-          packages-dir: packages/beeai-sdk/dist
+          packages-dir: packages/beeai-sdk/dist-py
 
   publish-npm:
     name: Publish on NPM

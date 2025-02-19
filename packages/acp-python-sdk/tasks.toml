@@ -57,6 +57,8 @@ outputs = { auto = true }
 ["acp-python-sdk:build"]
 dir = "{{config_root}}/packages/acp-python-sdk"
 run = "uv build --out-dir dist"
+sources = ["src/**/*.py"]
+outputs = ["dist/**/*"]
 
 # clean
 
