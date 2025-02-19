@@ -280,13 +280,21 @@ class ProviderContainer:
         removed_providers and logger.info(f"Removing {len(removed_providers)} old providers")
         added_providers and logger.info(f"Discovered {len(added_providers)} new providers")
 
-        for provider in removed_providers:
-            await provider.close()
-            await self._notification_hub.remove(provider)
-        for provider in added_providers:
-            await provider.init()
-            await self._notification_hub.register(provider)
+        async with anyio.create_task_group() as tg:
+            for provider in removed_providers:
+                tg.start_soon(self._close_provider, provider)
+            for provider in added_providers:
+                tg.start_soon(self._init_provider, provider)
+
         self.loaded_providers = unaffected_providers + added_providers
+
+    async def _init_provider(self, provider: LoadedProvider):
+        await provider.init()
+        await self._notification_hub.register(provider)
+
+    async def _close_provider(self, provider: LoadedProvider):
+        await provider.close()
+        await self._notification_hub.remove(provider)
 
     def handle_providers_change(self, updated_providers: list[Provider]) -> None:
         self._desired_providers = updated_providers
@@ -298,7 +306,8 @@ class ProviderContainer:
         self._provider_change_task_group.start_soon(self._handle_providers_change)
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
-        for provider in self.loaded_providers:
-            await provider.close()
+        async with anyio.create_task_group() as tg:
+            for provider in self.loaded_providers:
+                tg.start_soon(self._close_provider, provider)
         self.loaded_providers = []
         await self._exit_stack.aclose()
