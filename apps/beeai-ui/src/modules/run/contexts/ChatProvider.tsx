@@ -3,11 +3,10 @@ import { ChatContext, ChatMessagesContext } from './chat-context';
 import { Agent } from '@/modules/agents/api/types';
 import { v4 as uuid } from 'uuid';
 import { useImmerWithGetter } from '@/hooks/useImmerWithGetter';
-import { AgentRunProgressNotificationSchema } from '@i-am-bee/acp-sdk/types.js';
-import { z } from 'zod';
-import { promptOutputSchema, PromptInput } from '@i-am-bee/beeai-sdk/schemas/prompt';
+import { MessageInput } from '@i-am-bee/beeai-sdk/schemas/message';
 import { useRunAgent } from '../api/mutations/useRunAgent';
 import { AgentMessage, ChatMessage } from '../chat/types';
+import { MessagesNotifications, messagesNotificationsSchema, MessagesResult } from '../chat/types';
 
 interface Props {
   agent: Agent;
@@ -22,7 +21,7 @@ export function ChatProvider({ agent, children }: PropsWithChildren<Props>) {
     (updater: (message: AgentMessage) => void) => {
       setMessages((messages) => {
         const lastMessage = messages.at(-1);
-        if (lastMessage?.role === 'agent') {
+        if (lastMessage?.role === 'assistant') {
           updater(lastMessage);
         }
       });
@@ -30,18 +29,24 @@ export function ChatProvider({ agent, children }: PropsWithChildren<Props>) {
     [setMessages],
   );
 
-  const { runAgent, isPending } = useRunAgent<PromptInput, ChatNotifications>({
+  const { runAgent, isPending } = useRunAgent<MessageInput, MessagesNotifications>({
     agent,
     notifications: {
-      schema: chatNotificationsSchema,
+      schema: messagesNotificationsSchema,
       handler: (notification) => {
-        const text = String(notification.params.delta.text);
+        const text = String(notification.params.delta.messages.at(-1)?.content);
         updateLastAgentMessage((message) => {
           message.content += text;
         });
       },
     },
   });
+
+  const getInputMessages = useCallback(() => {
+    return getMessages()
+      .slice(0, -1)
+      .map(({ role, content }) => ({ role, content }));
+  }, [getMessages]);
 
   const sendMessage = useCallback(
     async (input: string) => {
@@ -53,7 +58,7 @@ export function ChatProvider({ agent, children }: PropsWithChildren<Props>) {
         });
         messages.push({
           key: uuid(),
-          role: 'agent',
+          role: 'assistant',
           content: '',
           status: 'pending',
         });
@@ -63,10 +68,15 @@ export function ChatProvider({ agent, children }: PropsWithChildren<Props>) {
         const abortController = new AbortController();
         abortControllerRef.current = abortController;
 
-        const response = await runAgent({ input: { prompt: input }, abortController });
+        const response = (await runAgent({
+          input: {
+            messages: getInputMessages(),
+          },
+          abortController,
+        })) as MessagesResult;
 
         updateLastAgentMessage((message) => {
-          message.content = String(response.output.text);
+          message.content = String(response.output.messages.at(-1)?.content);
           message.status = 'success';
         });
       } catch (error) {
@@ -78,7 +88,7 @@ export function ChatProvider({ agent, children }: PropsWithChildren<Props>) {
         });
       }
     },
-    [runAgent, setMessages, updateLastAgentMessage],
+    [getInputMessages, runAgent, setMessages, updateLastAgentMessage],
   );
 
   const handleCancel = useCallback(() => {
@@ -109,8 +119,3 @@ export function ChatProvider({ agent, children }: PropsWithChildren<Props>) {
     </ChatContext.Provider>
   );
 }
-
-const chatNotificationsSchema = AgentRunProgressNotificationSchema.extend({
-  params: z.object({ delta: promptOutputSchema }),
-});
-type ChatNotifications = typeof chatNotificationsSchema;
