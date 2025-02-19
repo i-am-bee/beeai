@@ -19,17 +19,58 @@ import { OpenMeteoTool } from "bee-agent-framework/tools/weather/openMeteo";
 import { DuckDuckGoSearchTool } from "bee-agent-framework/tools/search/duckDuckGoSearch";
 import { Message } from "bee-agent-framework/backend/message";
 import { BaseMemory } from "bee-agent-framework/memory/base";
+import { z, ZodRawShape } from "zod";
 
-function createBeeAgent(memory?: BaseMemory) {
+// Definitions
+
+const SupportedTool = {
+  Search: "search",
+  Wikipedia: "wikipedia",
+  Weather: "weather",
+} as const;
+export type SupportedTools = (typeof SupportedTool)[keyof typeof SupportedTool];
+
+const agentConfigSchema = z
+  .object({ tools: z.array(z.nativeEnum(SupportedTool)).optional() })
+  .passthrough()
+  .optional();
+
+// Factories
+
+function createTool(tool: SupportedTools) {
+  switch (tool) {
+    case SupportedTool.Search:
+      return new DuckDuckGoSearchTool();
+    case SupportedTool.Wikipedia:
+      return new WikipediaTool();
+    case SupportedTool.Weather:
+      return new OpenMeteoTool();
+  }
+}
+
+function createBeeAgent(memory?: BaseMemory, tools?: SupportedTools[]) {
   return new BeeAgent({
     llm: new OllamaChatModel("llama3.1"),
     memory: memory ?? new UnconstrainedMemory(),
-    tools: [
-      new DuckDuckGoSearchTool(),
-      new WikipediaTool(),
-      new OpenMeteoTool(),
-    ],
+    tools: tools?.map(createTool) ?? [],
   });
+}
+
+// Registrations
+
+async function registerTools(server: AcpServer) {
+  for (const toolName of Object.values(SupportedTool)) {
+    const tool = createTool(toolName);
+    server.tool(
+      toolName,
+      tool.description,
+      (await tool.inputSchema().shape) as ZodRawShape,
+      async (args, { signal }) => {
+        const result = await createTool(toolName).run(args as any, { signal });
+        return { content: [{ type: "text", text: result.toString() }] };
+      }
+    );
+  }
 }
 
 async function registerAgents(server: AcpServer) {
@@ -40,11 +81,11 @@ async function registerAgents(server: AcpServer) {
   server.agent(
     "bee",
     agent.meta.description,
-    messageInputSchema,
+    messageInputSchema.extend({ config: agentConfigSchema }),
     messageOutputSchema,
     async ({
       params: {
-        input: { messages },
+        input: { messages, config },
         _meta,
       },
     }) => {
@@ -52,7 +93,7 @@ async function registerAgents(server: AcpServer) {
       memory.addMany(
         messages.map(({ role, content }) => Message.of({ role, text: content }))
       );
-      const output = await createBeeAgent(memory)
+      const output = await createBeeAgent(memory, config?.tools)
         .run({ prompt: null })
         .observe((emitter) => {
           emitter.on("partialUpdate", async ({ update }) => {
@@ -89,13 +130,17 @@ async function registerAgents(server: AcpServer) {
   server.tool(
     "bee",
     agent.meta.description,
-    promptInputSchema.shape,
-    async (args, { signal }) => {
-      const output = await createBeeAgent().run(args, { signal });
+    promptInputSchema.extend({ config: agentConfigSchema }).shape,
+    async ({ config, ...input }, { signal }) => {
+      const output = await createBeeAgent(undefined, config?.tools).run(input, {
+        signal,
+      });
       return { content: [{ type: "text", text: output.result.text }] };
     }
   );
 }
+
+// Server
 
 export async function createServer() {
   const server = new AcpServer(
@@ -105,10 +150,12 @@ export async function createServer() {
     },
     {
       capabilities: {
+        tools: {},
         agents: {},
       },
     }
   );
+  await registerTools(server);
   await registerAgents(server);
   return server;
 }
