@@ -2,7 +2,7 @@ from kink import inject
 from starlette.status import HTTP_400_BAD_REQUEST
 
 from beeai_server.adapters.interface import IProviderRepository
-from beeai_server.domain.model import ManifestLocation, ProviderWithStatus, LoadedProviderStatus
+from beeai_server.domain.model import ManifestLocation, ProviderWithStatus, LoadedProviderStatus, Provider
 from beeai_server.exceptions import ManifestLoadError
 from beeai_server.services.mcp_proxy.provider import ProviderContainer
 from beeai_server.utils.github import GithubUrl
@@ -14,10 +14,16 @@ class ProviderService:
         self._repository = provider_repository
         self._loaded_provider_container = loaded_provider_container
 
-    async def add_provider(self, location: ManifestLocation, registry: GithubUrl | None = None):
+    async def add_provider(
+        self,
+        *,
+        location: ManifestLocation,
+        registry: GithubUrl | None = None,
+        env: dict[str, str] | None = None,
+    ):
         try:
-            provider = await location.load()
-            provider.registry = registry
+            manifest = await location.load()
+            provider = Provider(manifest=manifest, registry=registry, env=env, id=location.provider_id)
             await self._repository.create(provider=provider)
         except ValueError as ex:
             raise ManifestLoadError(location=location, message=str(ex), status_code=HTTP_400_BAD_REQUEST) from ex
@@ -25,7 +31,7 @@ class ProviderService:
             raise ManifestLoadError(location=location, message=str(ex)) from ex
         await self.sync()
 
-    async def delete_provider(self, location: ManifestLocation):
+    async def delete_provider(self, *, location: ManifestLocation):
         await location.resolve()
         await self._repository.delete(provider_id=str(location))
         await self.sync()

@@ -30,7 +30,10 @@ async def check_official_registry(configuration: Configuration, provider_service
         resp = yaml.safe_load(resp.content)["providers"]
         for provider in resp:
             try:
-                provider_manifest = CreateProviderRequest(location=provider["url"]).location
+                provider_manifest = CreateProviderRequest(
+                    location=provider["url"],
+                    env=provider.get("env", None),
+                ).location
                 await provider_manifest.resolve()
                 desired_providers.add(provider_manifest.provider_id)
             except ValueError as e:
@@ -41,7 +44,7 @@ async def check_official_registry(configuration: Configuration, provider_service
     for provider in new_providers:
         try:
             location = CreateProviderRequest(location=provider).location
-            await provider_service.add_provider(location, registry)
+            await provider_service.add_provider(location=location, registry=registry)
             logger.info(f"Added provider {provider}")
         except Exception as ex:
             errors.append(ex)
@@ -49,7 +52,7 @@ async def check_official_registry(configuration: Configuration, provider_service
     for provider in old_providers:
         try:
             location = DeleteProviderRequest(location=provider).location
-            await provider_service.delete_provider(location)
+            await provider_service.delete_provider(location=location)
             logger.info(f"Removed provider {provider}")
         except Exception as ex:
             errors.append(ex)
