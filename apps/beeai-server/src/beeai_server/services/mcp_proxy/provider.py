@@ -16,6 +16,7 @@ from anyio.streams.memory import MemoryObjectReceiveStream
 from structlog.contextvars import bind_contextvars, unbind_contextvars
 
 from beeai_server.domain.model import Provider, LoadedProviderStatus
+from beeai_server.exceptions import UnsupportedProviderError
 from beeai_server.services.mcp_proxy.constants import NotificationStreamType
 from beeai_server.services.mcp_proxy.notification_hub import NotificationHub
 from beeai_server.utils.periodic import Periodic
@@ -167,9 +168,13 @@ class LoadedProvider:
                 with anyio.fail_after(self.PING_TIMEOUT.total_seconds()):
                     await self.session.send_ping()
                 return
+            await self.provider.manifest.check()
             await self._initialize_session()
         except TimeoutError:
             logger.warning("The server did not respond in time, we assume it is processing a request.")
+        except UnsupportedProviderError as ex:
+            self.last_error = str(ex)
+            self.status = LoadedProviderStatus.unsupported
         except Exception as ex:  # TODO narrow exception scope
             self.session = None
             logger.warning(f"Error connecting to provider: {ex!r}")

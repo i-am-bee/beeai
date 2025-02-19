@@ -55,7 +55,15 @@ async def list():
     ):
         table.add_row(
             item["id"],
-            render_enum(item["status"], {"ready": "green", "initializing": "yellow", "error": "red"}),
+            render_enum(
+                item["status"],
+                {
+                    "ready": "green",
+                    "initializing": "yellow",
+                    "error": "red",
+                    "unsupported": "orange1",
+                },
+            ),
             item["last_error"] if item["status"] != "ready" else "",
         )
     console.print(table)

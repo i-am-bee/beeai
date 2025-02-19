@@ -4,6 +4,7 @@ from enum import StrEnum
 from typing import Literal
 
 import anyio
+import anyio.to_thread
 import httpx
 import yaml
 from anyio import Path
@@ -17,8 +18,10 @@ from pydantic_core.core_schema import ValidationInfo
 from beeai_server.configuration import Configuration
 from beeai_server.custom_types import McpClient, ID
 from beeai_server.domain.constants import DEFAULT_MANIFEST_PATH
+from beeai_server.exceptions import UnsupportedProviderError
 from beeai_server.utils.github import GithubUrl, download_repo
 from beeai_server.utils.managed_server_client import managed_sse_client, ManagedServerParameters
+from beeai_server.utils.utils import which
 
 
 class ProviderDriver(StrEnum):
@@ -52,6 +55,9 @@ class BaseProvider(BaseModel, abc.ABC):
 
     base_file_path: str | None = None
 
+    async def check(self) -> None:
+        pass
+
     @abc.abstractmethod
     def mcp_client(self) -> McpClient: ...
 
@@ -59,6 +65,9 @@ class BaseProvider(BaseModel, abc.ABC):
 class UnmanagedProvider(BaseProvider):
     driver: Literal[ProviderDriver.unmanaged] = ProviderDriver.unmanaged
     serverType: Literal[ServerType.http] = ServerType.http
+
+    async def check(self) -> None:
+        return
 
     @asynccontextmanager
     async def mcp_client(self) -> McpClient:
@@ -99,6 +108,10 @@ class NodeJsProvider(ManagedProvider):
         description='NPM package or "git+https://..." URL, or "file://..." URL (not allowed in remote manifests)',
     )
 
+    async def check(self):
+        if not await which("npm"):
+            raise UnsupportedProviderError("npm is not installed, see https://nodejs.org/en/download")
+
     @field_validator("package", mode="after")
     @classmethod
     def _validate_package(cls, value: str, info: ValidationInfo) -> str:
@@ -113,6 +126,7 @@ class NodeJsProvider(ManagedProvider):
     @asynccontextmanager
     @inject
     async def mcp_client(self, configuration: Configuration) -> McpClient:  # noqa: F821
+        await self.check()
         try:
             github_url = GithubUrl.model_validate(self.package)
             repo_path = await download_repo(configuration.cache_dir / "github_npm", github_url)
@@ -132,6 +146,12 @@ class PythonProvider(ManagedProvider):
         default=None,
         description='PyPI package or "git+https://..." URL, or "file://..." URL (not allowed in remote manifests)',
     )
+
+    async def check(self) -> None:
+        if not await which("uvx"):
+            raise UnsupportedProviderError(
+                "uv is not installed, see https://docs.astral.sh/uv/getting-started/installation/"
+            )
 
     @field_validator("pythonVersion", mode="after")
     @classmethod
@@ -154,6 +174,7 @@ class PythonProvider(ManagedProvider):
 
     @asynccontextmanager
     async def mcp_client(self) -> McpClient:  # noqa: F821
+        await self.check()
         python = [] if not self.pythonVersion else ["--python", self.pythonVersion]
         async with super()._get_mcp_client(
             command=["uvx", *python, "--from", self.package, "--reinstall", *self.command]
@@ -163,12 +184,24 @@ class PythonProvider(ManagedProvider):
 
 class ContainerProvider(ManagedProvider):
     driver: Literal[ProviderDriver.container] = ProviderDriver.container
+    command: list[str] = Field(default_factory=list, description="Command with arguments to run")
     image: str = Field(description="Container image identifier, e.g. 'docker.io/something/here:latest'")
+
+    _runtime = "docker"
+
+    async def check(self) -> None:
+        if await which("docker"):
+            return
+        if await which("podman"):
+            self._runtime = "podman"
+            return
+        raise UnsupportedProviderError("docker is not installed, see https://docs.docker.com/get-started/get-docker/")
 
     @asynccontextmanager
     async def mcp_client(self) -> McpClient:  # noqa: F821
+        await self.check()
         async with super()._get_mcp_client(
-            command=["docker", "run", "--rm", "-it", self.image, *self.command]
+            command=[self._runtime, "run", "--rm", "-i", "-e=PORT", "--network=host", self.image, *self.command]
         ) as client:
             yield client
 
@@ -186,6 +219,7 @@ class LoadedProviderStatus(StrEnum):
     initializing = "initializing"
     ready = "ready"
     error = "error"
+    unsupported = "unsupported"
 
 
 class ProviderWithStatus(Provider):
