@@ -10,16 +10,17 @@ permissions:
   id-token: write
 
 jobs:
-  publish:
-    name: Publish
+  publish-npm:
+    name: Publish on NPM
     if: github.event.base_ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment: release
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
+      - run: mise acp-typescript-sdk:build
       - run: pnpm publish --access public
-        working-directory: packages/mcp-typescript-sdk
+        working-directory: packages/acp-typescript-sdk
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: true # https://github.com/pnpm/pnpm/issues/6435#issuecomment-1518397267
