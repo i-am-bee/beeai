@@ -11,11 +11,11 @@
     margin-inline-end: $spacing-03;
   }
 
-  :global(.#{$prefix}--toast-notification) {
+  :global(.cds--toast-notification) {
     inline-size: rem(360px);
     max-inline-size: 100%;
   }
-  :global(.#{$prefix}--toast-notification__details) {
+  :global(.cds--toast-notification__details) {
     flex-grow: 1;
     margin-inline-end: 0;
   }

@@ -1,15 +1,16 @@
-import { useCreateMCPClient } from '@/hooks/useCreateMCPClient';
-import { PropsWithChildren, ReactNode } from 'react';
-import { MCPClientContext } from './MCPClientContext';
+import { PropsWithChildren, useEffect, useState } from 'react';
+import { MCPClientContext } from './mcp-client-context';
+import { useCreateMCPClient } from '@/api/mcp-client/useCreateMCPClient';
+import { Client as MCPClient } from '@i-am-bee/acp-sdk/client/index.js';
 
-export function MCPClientProvider({ fallback, children }: PropsWithChildren<{ fallback: ReactNode }>) {
-  const mcpClient = useCreateMCPClient({
-    serverUrl: new URL('/mcp/sse', location.href).href,
-  });
+export function MCPClientProvider({ children }: PropsWithChildren) {
+  const [client, setClient] = useState<MCPClient | null>(null);
 
-  if (mcpClient === null) {
-    return fallback;
-  }
+  const createClient = useCreateMCPClient();
 
-  return <MCPClientContext.Provider value={mcpClient}>{children}</MCPClientContext.Provider>;
+  useEffect(() => {
+    createClient().then((client) => setClient(client));
+  }, [createClient]);
+
+  return <MCPClientContext.Provider value={client}>{children}</MCPClientContext.Provider>;
 }

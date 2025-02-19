@@ -12,7 +12,7 @@ interface Props {
 }
 
 export function AgentRun({ name }: Props) {
-  const { agent, isPending, refetch, isRefetching, error } = useAgent({ name });
+  const { data: agent, isPending, refetch, isRefetching, error } = useAgent({ name });
 
   return !isPending ? (
     agent ? (

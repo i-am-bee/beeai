@@ -1,12 +1,6 @@
 import { use } from 'react';
-import { MCPClientContext } from './MCPClientContext';
+import { MCPClientContext } from './mcp-client-context';
 
 export function useMCPClient() {
-  const context = use(MCPClientContext);
-
-  if (!context) {
-    throw new Error('MCPClient is not connected.');
-  }
-
-  return context;
+  return use(MCPClientContext);
 }

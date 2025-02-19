@@ -18,7 +18,7 @@ interface Props {
 }
 
 export function AgentDetail({ name }: Props) {
-  const { agent, isPending, error, refetch, isRefetching } = useAgent({ name });
+  const { data: agent, isPending, error, refetch, isRefetching } = useAgent({ name });
 
   const runCommand = `beeai run ${isStringTerminalParameterSafe(name) ? name : `'${name}'`}`;
 
@@ -41,7 +41,7 @@ export function AgentDetail({ name }: Props) {
               <div className={classes.runAgent}>
                 <CopySnippet snippet={runCommand} className={classes.runCommandInput} />
 
-                <Button kind="primary" renderIcon={ArrowUpRight} size="md" href={routes.agentRun(name)}>
+                <Button kind="primary" renderIcon={ArrowUpRight} size="md" href={routes.agentRun({ name })}>
                   Try this agent
                 </Button>
               </div>

@@ -16,7 +16,7 @@ export function AgentCard({ agent }: Props) {
   const { name, title, description } = agent;
   // const { openModal } = useModal();
 
-  const route = routes.agentDetail(agent.name);
+  const route = routes.agentDetail({ name });
 
   return (
     <article

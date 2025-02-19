@@ -1,25 +1,17 @@
-import { useMemo } from 'react';
-import { Draft, produce, freeze } from 'immer';
-import { useStateWithGetter } from './useStateWithGetter';
+import { useEffect, useMemo, useRef } from 'react';
+import { Draft } from 'immer';
+import { useImmer } from 'use-immer';
 
 export type DraftFunction<S> = (draft: Draft<S>) => void;
 export type Updater<S> = (arg: S | DraftFunction<S>) => void;
 
-export function useImmerWithGetter<S>(initialValue: S): [() => S, Updater<S>] {
-  const [get, set] = useStateWithGetter(freeze(initialValue));
+export function useImmerWithGetter<S>(initialValue: S): [S, () => S, Updater<S>] {
+  const [value, setValue] = useImmer<S>(initialValue);
+  const valueRef = useRef(value);
 
-  return useMemo(
-    () => [
-      get,
-      (updater: S | DraftFunction<S>) => {
-        if (typeof updater === 'function') {
-          set(produce(updater as DraftFunction<S>));
-        } else {
-          set(freeze(updater));
-        }
-      },
-    ],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
-  );
+  useEffect(() => {
+    valueRef.current = value;
+  }, [value]);
+
+  return useMemo(() => [value, () => valueRef.current, setValue], [setValue, value]);
 }

@@ -12,7 +12,8 @@ export function useListTools({ params }: Props = {}) {
 
   const query = useQuery({
     queryKey: toolKeys.list(params),
-    queryFn: () => client.listTools(params),
+    queryFn: () => client!.listTools(params),
+    enabled: Boolean(client),
   });
 
   return query;

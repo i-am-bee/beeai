@@ -1,16 +1,22 @@
-import { PropsWithChildren, useCallback, useMemo } from 'react';
-import { AgentMessage, ChatContext, ChatMessage, ChatMessagesContext } from './ChatContext';
-import { useImmerWithGetter } from '@/hooks/useImmerWithGetter';
+import { PropsWithChildren, useCallback, useMemo, useRef } from 'react';
+import { ChatContext, ChatMessagesContext } from './chat-context';
 import { Agent } from '@/modules/agents/api/types';
 import { v4 as uuid } from 'uuid';
-import { useSendMessage } from '../chat/api/mutations/useSendMessage';
+import { useImmerWithGetter } from '@/hooks/useImmerWithGetter';
+import { AgentRunProgressNotificationSchema } from '@i-am-bee/acp-sdk/types.js';
+import { z } from 'zod';
+import { promptOutputSchema, PromptInput } from '@i-am-bee/beeai-sdk/schemas/prompt';
+import { useRunAgent } from '../api/mutations/useRunAgent';
+import { AgentMessage, ChatMessage } from '../chat/types';
 
 interface Props {
   agent: Agent;
 }
 
 export function ChatProvider({ agent, children }: PropsWithChildren<Props>) {
-  const [getMessages, setMessages] = useImmerWithGetter<ChatMessage[]>([]);
+  const [messages, getMessages, setMessages] = useImmerWithGetter<ChatMessage[]>([]);
+
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const updateLastAgentMessage = useCallback(
     (updater: (message: AgentMessage) => void) => {
@@ -24,11 +30,16 @@ export function ChatProvider({ agent, children }: PropsWithChildren<Props>) {
     [setMessages],
   );
 
-  const { mutateAsync: mutateSendMessage, isPending } = useSendMessage({
-    onMessageDelta: (delta: string) => {
-      updateLastAgentMessage((message) => {
-        message.content += delta;
-      });
+  const { runAgent, isPending } = useRunAgent<PromptInput, ChatNotifications>({
+    agent,
+    notifications: {
+      schema: chatNotificationsSchema,
+      handler: (notification) => {
+        const text = String(notification.params.delta.text);
+        updateLastAgentMessage((message) => {
+          message.content += text;
+        });
+      },
     },
   });
 
@@ -44,46 +55,62 @@ export function ChatProvider({ agent, children }: PropsWithChildren<Props>) {
           key: uuid(),
           role: 'agent',
           content: '',
-          isPending: true,
+          status: 'pending',
         });
       });
 
       try {
-        const response = await mutateSendMessage({ input, agent });
+        const abortController = new AbortController();
+        abortControllerRef.current = abortController;
+
+        const response = await runAgent({ input: { prompt: input }, abortController });
 
         updateLastAgentMessage((message) => {
           message.content = String(response.output.text);
+          message.status = 'success';
         });
       } catch (error) {
         console.error(error);
 
         updateLastAgentMessage((message) => {
           message.error = error as Error;
-        });
-      } finally {
-        updateLastAgentMessage((message) => {
-          message.isPending = false;
+          message.status = abortControllerRef.current?.signal.aborted ? 'aborted' : 'error';
         });
       }
     },
-    [agent, mutateSendMessage, setMessages, updateLastAgentMessage],
+    [runAgent, setMessages, updateLastAgentMessage],
   );
+
+  const handleCancel = useCallback(() => {
+    abortControllerRef.current?.abort();
+  }, []);
+
+  const handleClear = useCallback(() => {
+    setMessages([]);
+    handleCancel();
+  }, [handleCancel, setMessages]);
 
   const contextValue = useMemo(
     () => ({
       agent,
       isPending,
+      onCancel: handleCancel,
       getMessages,
       setMessages,
-      onClear: () => setMessages([]),
+      onClear: handleClear,
       sendMessage,
     }),
-    [agent, getMessages, isPending, sendMessage, setMessages],
+    [agent, getMessages, handleCancel, handleClear, isPending, sendMessage, setMessages],
   );
 
   return (
     <ChatContext.Provider value={contextValue}>
-      <ChatMessagesContext.Provider value={getMessages()}>{children}</ChatMessagesContext.Provider>
+      <ChatMessagesContext.Provider value={messages}>{children}</ChatMessagesContext.Provider>
     </ChatContext.Provider>
   );
 }
+
+const chatNotificationsSchema = AgentRunProgressNotificationSchema.extend({
+  params: z.object({ delta: promptOutputSchema }),
+});
+type ChatNotifications = typeof chatNotificationsSchema;

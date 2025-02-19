@@ -1,20 +1,23 @@
-import { useMemo } from 'react';
-import { useListAgents } from './useListAgents';
+import { useMCPClient } from '@/contexts/MCPClient';
+import { useQuery } from '@tanstack/react-query';
+import { agentKeys } from '../keys';
+import { Agent } from '../types';
 
 interface Props {
   name: string;
 }
 
 export function useAgent({ name }: Props) {
-  const { data, isPending, error, refetch, isRefetching } = useListAgents();
+  const client = useMCPClient();
 
-  const agent = useMemo(() => data?.find((item) => name === item.name), [data, name]);
+  return useQuery({
+    queryKey: agentKeys.list(),
+    queryFn: () => client!.listAgents(),
+    enabled: Boolean(client),
+    select: (data) => {
+      const agent = data?.agents.find((item) => name === item.name);
 
-  return {
-    agent,
-    isPending,
-    refetch,
-    isRefetching,
-    error: error ?? (data && !agent ? new Error('Agent not found.') : undefined),
-  };
+      return agent ? (agent as Agent) : null;
+    },
+  });
 }

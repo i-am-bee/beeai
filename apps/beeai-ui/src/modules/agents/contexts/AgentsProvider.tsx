@@ -1,5 +1,5 @@
 import { PropsWithChildren } from 'react';
-import { AgentsContext, FilterFormValues } from './AgentsContext';
+import { AgentsContext, FilterFormValues } from './agents-context';
 import { useListAgents } from '../api/queries/useListAgents';
 import { FormProvider, useForm } from 'react-hook-form';
 

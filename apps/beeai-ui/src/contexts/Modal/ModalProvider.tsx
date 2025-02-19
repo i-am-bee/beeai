@@ -1,7 +1,7 @@
 import { memo, PropsWithChildren, useCallback, useLayoutEffect, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { v4 as uuid } from 'uuid';
-import { ModalContext, ModalState, OpenModalFn } from './ModalContext';
+import { ModalContext, ModalState, OpenModalFn } from './modal-context';
 import { FallbackModal } from '@/components/fallbacks/ModalFallback';
 
 export function ModalProvider({ children }: PropsWithChildren) {

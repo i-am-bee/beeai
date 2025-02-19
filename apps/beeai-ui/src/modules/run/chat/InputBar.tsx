@@ -1,10 +1,10 @@
 import { dispatchInputEventOnFormTextarea, submitFormOnEnter } from '@/utils/formUtils';
-import { memo, useCallback, useRef } from 'react';
+import { memo, MouseEvent, useCallback, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import classes from './InputBar.module.scss';
 import { TextAreaAutoHeight } from '@/components/TextAreaAutoHeight/TextAreaAutoHeight';
 import { mergeRefs } from 'react-merge-refs';
-import { Send } from '@carbon/icons-react';
+import { Send, StopOutlineFilled } from '@carbon/icons-react';
 import { Button } from '@carbon/react';
 import { useChat } from '../contexts';
 
@@ -16,9 +16,7 @@ export const InputBar = memo(function InputBar({ onMessageSubmit }: Props) {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
-  const { sendMessage } = useChat();
-
-  // const { mutate } = useSendMessage();
+  const { sendMessage, onCancel } = useChat();
 
   const {
     register,
@@ -87,28 +85,29 @@ export const InputBar = memo(function InputBar({ onMessageSubmit }: Props) {
           />
           <div className={classes.actionBar}>
             <div className={classes.submitBtnContainer}>
-              <Button
-                type="submit"
-                renderIcon={Send}
-                kind="ghost"
-                size="sm"
-                hasIconOnly
-                iconDescription="Send"
-                disabled={isSubmitDisabled}
-              />
-
-              {/* <Button
+              {!isPending ? (
+                <Button
+                  type="submit"
+                  renderIcon={Send}
+                  kind="ghost"
+                  size="sm"
+                  hasIconOnly
+                  iconDescription="Send"
+                  disabled={isSubmitDisabled}
+                />
+              ) : (
+                <Button
                   renderIcon={StopOutlineFilled}
                   kind="ghost"
                   size="sm"
                   hasIconOnly
                   iconDescription="Cancel"
-                  disabled={status === 'waiting' || status === 'aborting'}
                   onClick={(e: MouseEvent) => {
-                    // TODO: cancel();
+                    onCancel();
                     e.preventDefault();
                   }}
-                /> */}
+                />
+              )}
             </div>
           </div>
         </div>

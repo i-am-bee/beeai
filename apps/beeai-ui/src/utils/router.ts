@@ -8,6 +8,6 @@ export const routeDefinitions = {
 
 export const routes = {
   ...routeDefinitions,
-  agentDetail: (agentName: string) => `/agents/${agentName}`,
-  agentRun: (agentName: string) => `/run/${agentName}`,
+  agentDetail: ({ name }: { name: string }) => `/agents/${name}`,
+  agentRun: ({ name }: { name: string }) => `/run/${name}`,
 };

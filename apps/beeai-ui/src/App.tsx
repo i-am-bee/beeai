@@ -2,7 +2,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ErrorBoundary } from 'react-error-boundary';
 import { BrowserRouter, Route, Routes } from 'react-router';
 import { ErrorFallback } from './components/fallbacks/ErrorFallback';
-import { MCPFallback } from './components/fallbacks/MCPFallback';
 import { AppLayout } from './components/layouts/AppLayout';
 import { MCPClientProvider } from './contexts/MCPClient/MCPClientProvider';
 import { ModalProvider } from './contexts/Modal/ModalProvider';
@@ -20,7 +19,7 @@ export function App() {
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <QueryClientProvider client={queryClient}>
-        <MCPClientProvider fallback={<MCPFallback />}>
+        <MCPClientProvider>
           <ToastProvider>
             <ModalProvider>
               <BrowserRouter>
