@@ -17,6 +17,10 @@ def serve():
     config = get_configuration()
     host = "0.0.0.0"
 
+    if sys.platform == "win32":
+        logger.error("Native windows is not supported, use WSL")
+        return
+
     with socket.socket(socket.AF_INET) as sock:
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         try:
