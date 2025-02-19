@@ -10,7 +10,7 @@ python.uv_venv_auto = true
 raw = true
 
 [hooks]
-postinstall = "mise setup"
+postinstall = "{{ mise_bin }} setup"
 
 # TASKS
 
@@ -41,7 +41,7 @@ outputs = { auto = true }
 hide = true
 dir = "{{config_root}}"
 run = """
-printf '#!/bin/sh\nmise run git-hooks:pre-commit' >.git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+printf '#!/bin/sh\n{{ mise_bin }} run git-hooks:pre-commit' >.git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
 """
 sources = [".git/hooks/pre-commit"]
 outputs = { auto = true }
