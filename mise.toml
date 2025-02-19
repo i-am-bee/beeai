@@ -24,11 +24,24 @@ includes = [
     "packages/beeai-sdk/tasks.toml",
 ]
 
-## setup
+## grouped tasks
 
 [tasks."setup"]
-description = "Set-up repo and install dependencies"
 depends = ["setup:*"]
+
+[tasks."check"]
+depends = ["*:check"]
+
+[tasks."test"]
+depends = ["*:test"]
+
+## git hooks
+
+[tasks."git-hooks:pre-commit"]
+hide = true
+depends = ["check"]
+
+## repo setup
 
 [tasks."setup:mise-local-toml"]
 hide = true
@@ -59,9 +72,3 @@ dir = "{{config_root}}"
 run = "uv sync --all-extras"
 sources = ["uv.lock", "pyproject.toml", "apps/*/pyproject.toml", "packages/*/pyproject.toml"]
 outputs = { auto = true }
-
-## git hooks
-
-[tasks."git-hooks:pre-commit"]
-hide = true
-depends = ["*:check"]
