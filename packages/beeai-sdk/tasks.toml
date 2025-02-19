@@ -79,14 +79,14 @@ outputs = { auto = true }
 # build
 
 ["beeai-sdk:build:py"]
-depends = ["beeai-sdk:clean", "setup:uv"]
+depends = ["setup:uv"]
 dir = "{{config_root}}/packages/beeai-sdk"
 run = "rm -rf ./dist && uv build --out-dir dist"
 sources = ["src/**/*.py"]
 outputs = { auto = true }
 
 ["beeai-sdk:build:js"]
-depends = ["beeai-sdk:clean", "setup:pnpm"]
+depends = ["setup:pnpm"]
 dir = "{{config_root}}/packages/beeai-sdk"
 run = "pnpm build"
 sources = ["**/*.ts"]

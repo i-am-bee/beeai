@@ -1,0 +1,76 @@
+# check
+
+["acp-typescript-sdk:check"]
+depends = ["acp-typescript-sdk:check:*"]
+
+["acp-typescript-sdk:check:prettier"]
+depends = ["setup:pnpm"]
+dir = "{{config_root}}/packages/acp-typescript-sdk"
+run = "pnpm prettier --log-level silent --check src"
+sources = ["src/**/*.js", "src/**/*.ts"]
+outputs = { auto = true }
+
+["acp-typescript-sdk:check:eslint"]
+depends = ["setup:pnpm"]
+dir = "{{config_root}}/packages/acp-typescript-sdk"
+run = "pnpm eslint src"
+sources = ["src/**/*.js", "src/**/*.ts"]
+outputs = { auto = true }
+
+["acp-typescript-sdk:check:tsc"]
+depends = ["setup:pnpm"]
+dir = "{{config_root}}/packages/acp-typescript-sdk"
+run = "pnpm tsc --noEmit"
+sources = ["src/**/*.ts"]
+outputs = { auto = true }
+
+# fix
+
+["acp-typescript-sdk:fix"]
+depends = ["acp-typescript-sdk:fix:*"]
+
+["acp-typescript-sdk:fix:prettier"]
+depends = ["setup:pnpm"]
+dir = "{{config_root}}/packages/acp-typescript-sdk"
+run = "pnpm prettier --log-level silent --write src"
+sources = ["src/**/*.js", "src/**/*.ts"]
+outputs = { auto = true }
+
+["acp-typescript-sdk:fix:eslint"]
+depends = ["setup:pnpm"]
+dir = "{{config_root}}/packages/acp-typescript-sdk"
+run = "pnpm eslint --fix src"
+sources = ["src/**/*.js", "src/**/*.ts"]
+outputs = { auto = true }
+
+# test
+
+["acp-typescript-sdk:test"]
+depends = ["setup:pnpm"]
+dir = "{{config_root}}/packages/acp-typescript-sdk"
+run = "pnpm test"
+sources = ["src/**/*.js", "src/**/*.ts"]
+outputs = { auto = true }
+
+# build
+
+["acp-typescript-sdk:build"]
+depends = ["setup:pnpm"]
+dir = "{{config_root}}/packages/acp-typescript-sdk"
+run = "pnpm build"
+sources = ["src/**/*.js", "src/**/*.ts"]
+outputs = { auto = true }
+
+# publish
+
+["acp-typescript-sdk:publish"]
+description = "NOTE: You need to set NODE_AUTH_TOKEN"
+depends = ["acp-typescript-sdk:build"]
+dir = "{{config_root}}/packages/acp-typescript-sdk"
+run = "pnpm publish --access public"
+
+# clean
+
+["acp-typescript-sdk:clean"]
+dir = "{{config_root}}/packages/acp-typescript-sdk"
+run = "rm -rf ./dist"
