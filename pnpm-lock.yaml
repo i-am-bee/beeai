@@ -152,7 +152,7 @@ importers:
         version: 11.0.5
       zod:
         specifier: ^3.24.1
-        version: 3.24.1
+        version: 3.24.2
     devDependencies:
       '@eslint/js':
         specifier: ^9.17.0
