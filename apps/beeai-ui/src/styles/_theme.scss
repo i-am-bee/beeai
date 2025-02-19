@@ -7,6 +7,7 @@
 $light: map.merge(
   themes.$white,
   (
+    background-inverse: $cool-gray-80,
     background-hover: $cool-gray-10,
     background-hover-50: rgba($cool-gray-10, 0.5),
     layer-01: $white,
@@ -35,6 +36,7 @@ $light: map.merge(
 $dark: map.merge(
   themes.$g100,
   (
+    background-inverse: $cool-gray-10,
     background-hover: $cool-gray-80,
     background-hover-50: rgba($cool-gray-80, 0.5),
     layer-hover-01: $cool-gray-80,
@@ -54,17 +56,17 @@ $dark: map.merge(
     ),
   ),
   $button-primary-hover: (
-    fallback: $background-inverse-hover,
+    fallback: $background-inverse,
     values: (
-      (theme: $light, value: $background-inverse-hover),
-      (theme: $dark, value: $background-inverse-hover),
+      (theme: $light, value: $background-inverse),
+      (theme: $dark, value: $background-inverse),
     ),
   ),
   $button-primary-active: (
-    fallback: $background-inverse-hover,
+    fallback: $background-inverse,
     values: (
-      (theme: $light, value: $background-inverse-hover),
-      (theme: $dark, value: $background-inverse-hover),
+      (theme: $light, value: $background-inverse),
+      (theme: $dark, value: $background-inverse),
     ),
   ),
   $button-tertiary: (

@@ -1,12 +1,12 @@
-import { TagsList } from '@/components/TagsList';
+import { MarkdownContent } from '@/components/MarkdownContent/MarkdownContent';
+import { TagsList } from '@/components/TagsList/TagsList';
+import { routes } from '@/utils/router';
 import { SkeletonText } from '@carbon/react';
 import { Link } from 'react-router';
 import { Agent } from '../api/types';
 import classes from './AgentCard.module.scss';
 import { AgentMetadata } from './AgentMetadata';
 import { AgentTags } from './AgentTags';
-import { routes } from '@/utils/router';
-import { MarkdownContent } from '@/components/MarkdownContent/MarkdownContent';
 
 interface Props {
   agent: Agent;

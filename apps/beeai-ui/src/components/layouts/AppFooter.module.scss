@@ -1,0 +1,10 @@
+.root {
+  padding-block: $spacing-05;
+}
+
+.holder {
+  display: flex;
+  column-gap: $gap;
+  justify-content: space-between;
+  align-items: center;
+}

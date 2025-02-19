@@ -10,10 +10,10 @@
   }
 }
 
-@mixin link-mask() {
+@mixin link-mask($inset: 0) {
   &::before {
     content: '';
     position: absolute;
-    inset: 0;
+    inset: $inset;
   }
 }

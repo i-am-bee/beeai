@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "check": "prettier --check src && eslint src && tsc --noEmit && stylelint src/styles",
-    "fix": "prettier --write src && eslint --fix src && stylelint --fix=lax src/styles",
+    "check": "prettier --log-level silent --check src && eslint src && tsc --noEmit && stylelint src/styles",
+    "fix": "prettier --log-level silent --write src && eslint --fix src && stylelint --fix=lax src/styles",
     "preview": "vite preview",
     "clean": "rm -rf node_modules && rm -rf dist"
   },
@@ -29,6 +29,7 @@
     "lodash": "^4.17.21",
     "lottie-react": "^2.4.1",
     "mdast-util-to-hast": "^13.1.0",
+    "millify": "^6.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-error-boundary": "^5.0.0",

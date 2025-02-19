@@ -1,0 +1,14 @@
+.list {
+  display: flex;
+  column-gap: $spacing-06;
+}
+
+.link {
+  @include type-style(label-01);
+  display: block;
+  color: $text-secondary;
+  text-decoration: none;
+  &:hover {
+    color: $text-primary;
+  }
+}

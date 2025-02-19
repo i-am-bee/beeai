@@ -1,4 +1,6 @@
 import { z } from "zod";
 
-export const configSchema = z.record(z.string());
+export const configSchema = z
+  .object({ tools: z.array(z.string()).optional() })
+  .passthrough();
 export type Config = z.input<typeof configSchema>;

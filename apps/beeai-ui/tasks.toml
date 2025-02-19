@@ -1,0 +1,75 @@
+# check
+
+["beeai-ui:check"]
+depends = ["beeai-ui:check:*"]
+
+["beeai-ui:check:prettier"]
+depends = ["setup:pnpm"]
+dir = "{{config_root}}/apps/beeai-ui"
+run = "pnpm prettier --log-level silent --check src"
+sources = ["src/**/*.js", "src/**/*.jsx", "src/**/*.ts", "src/**/*.tsx", "src/**/*.html", "src/**/*.css", "src/**/*.scss"]
+outputs = { auto = true }
+
+["beeai-ui:check:eslint"]
+depends = ["setup:pnpm"]
+dir = "{{config_root}}/apps/beeai-ui"
+run = "pnpm eslint src"
+sources = ["src/**/*.js", "src/**/*.jsx", "src/**/*.ts", "src/**/*.tsx"]
+outputs = { auto = true }
+
+["beeai-ui:check:tsc"]
+depends = ["setup:pnpm"]
+dir = "{{config_root}}/apps/beeai-ui"
+run = "pnpm tsc --noEmit"
+sources = ["src/**/*.ts", "src/**/*.tsx"]
+outputs = { auto = true }
+
+["beeai-ui:check:stylelint"]
+depends = ["setup:pnpm"]
+dir = "{{config_root}}/apps/beeai-ui"
+run = "pnpm stylelint src/styles"
+sources = ["src/styles/**/*.css", "src/styles/**/*.scss"]
+outputs = { auto = true }
+
+# fix
+
+["beeai-ui:fix"]
+depends = ["beeai-ui:fix:*"]
+
+["beeai-ui:fix:prettier"]
+depends = ["setup:pnpm"]
+dir = "{{config_root}}/apps/beeai-ui"
+run = "pnpm prettier --log-level silent --write src"
+
+["beeai-ui:fix:eslint"]
+depends = ["setup:pnpm"]
+dir = "{{config_root}}/apps/beeai-ui"
+run = "pnpm eslint --fix src"
+
+["beeai-ui:fix:stylelint"]
+depends = ["setup:pnpm"]
+dir = "{{config_root}}/apps/beeai-ui"
+run = "pnpm stylelint --fix=lax src/styles"
+
+# run
+
+["beeai-ui:run"]
+description = "NOTE: You also need to have `beeai-server` running for the backend"
+depends = ["setup:pnpm"]
+dir = "{{config_root}}/apps/beeai-ui"
+run = "pnpm dev"
+
+# build
+
+["beeai-ui:build"]
+depends = ["setup:pnpm"]
+dir = "{{config_root}}/apps/beeai-ui"
+run = "pnpm build"
+sources = ["*.json", "*.js", "index.html", "src/**/*.tsx", "src/**/*.ts"]
+outputs = { auto = true }
+
+# clean
+
+["beeai-ui:clean"]
+dir = "{{config_root}}/apps/beeai-ui"
+run = "rm -rf ./dist"

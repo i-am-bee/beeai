@@ -55,7 +55,15 @@ async def list():
     ):
         table.add_row(
             item["id"],
-            render_enum(item["status"], {"ready": "green", "initializing": "yellow", "error": "red"}),
+            render_enum(
+                item["status"],
+                {
+                    "ready": "green",
+                    "initializing": "yellow",
+                    "error": "red",
+                    "unsupported": "orange1",
+                },
+            ),
             item["last_error"] if item["status"] != "ready" else "",
         )
     console.print(table)
@@ -69,3 +77,9 @@ async def remove(
     location = _get_abs_location(location)
     await api_request("post", "provider/delete", json={"location": location})
     console.print(f"Removed provider: {location}")
+
+
+@app.command("sync")
+async def sync(help="Sync external changes to provider registry (if you modified ~/.beeai/providers.yaml manually)"):
+    await api_request("put", "provider/sync")
+    console.print("Providers updated")

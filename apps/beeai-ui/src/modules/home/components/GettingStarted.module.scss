@@ -1,0 +1,24 @@
+.root {
+  min-block-size: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.holder {
+  display: flex;
+  flex-direction: column;
+  row-gap: $spacing-08;
+  max-inline-size: rem(400px);
+}
+
+.description {
+  font-size: rem(24px);
+  line-height: math.div(32, 24);
+  color: $text-dark;
+}
+
+.cta {
+  display: flex;
+  align-items: flex-start;
+  column-gap: $spacing-05;
+}

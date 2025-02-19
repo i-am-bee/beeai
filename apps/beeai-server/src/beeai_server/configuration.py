@@ -5,6 +5,8 @@ from pathlib import Path
 from pydantic import BaseModel, field_validator, ValidationError, Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from beeai_server.utils.github import GithubUrl
+
 
 class LoggingConfiguration(BaseModel):
     level: int = logging.INFO
@@ -26,7 +28,9 @@ class Configuration(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", env_nested_delimiter="__")
     logging: LoggingConfiguration = LoggingConfiguration()
     provider_config_path: Path = Path.home() / ".beeai" / "providers.yaml"
+    cache_dir: Path = Path.home() / ".beeai" / "cache"
     port: int = 8333
+    provider_registry_location: GithubUrl = "https://github.com/i-am-bee/beeai@main#path=provider-registry.yaml"
 
 
 @cache

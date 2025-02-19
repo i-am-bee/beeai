@@ -17,6 +17,10 @@
 //   }
 // }
 
+body {
+  overflow: hidden;
+}
+
 a {
   &:focus-visible {
     @include focus-outline('outline');

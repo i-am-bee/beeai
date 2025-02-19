@@ -1,8 +1,8 @@
-import { TagsList } from '@/components/TagsList';
-import { Agent } from '../api/types';
-import { Tag } from '@carbon/react';
+import { TagsList } from '@/components/TagsList/TagsList';
 import Bee from '@/svgs/Bee.svg';
 import { isNotNull } from '@/utils/helpers';
+import { Tag } from '@carbon/react';
+import { Agent } from '../api/types';
 
 export function AgentTags({ agent }: { agent: Agent }) {
   const { framework } = agent;

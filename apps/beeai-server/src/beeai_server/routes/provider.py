@@ -22,3 +22,9 @@ async def list_providers(provider_service: ProviderServiceDependency):
 async def delete_provider(request: DeleteProviderRequest, provider_service: ProviderServiceDependency):
     await provider_service.delete_provider(request.location)
     return fastapi.Response(status_code=fastapi.status.HTTP_204_NO_CONTENT)
+
+
+@router.put("/sync")
+async def sync_provider_repository(provider_service: ProviderServiceDependency):
+    """Sync external changes to a provider repository."""
+    await provider_service.sync()

@@ -10,3 +10,6 @@ dependencies = [
     "opentelemetry-sdk>=1.30.0",
     "pydantic>=2.10.6",
 ]
+
+[tool.uv.sources]
+acp-sdk = { workspace = true }
