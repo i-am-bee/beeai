@@ -40,16 +40,22 @@ depends = ["beeai-ui:fix:*"]
 depends = ["setup:pnpm"]
 dir = "{{config_root}}/apps/beeai-ui"
 run = "pnpm prettier --log-level silent --write src"
+sources = ["src/**/*.js", "src/**/*.jsx", "src/**/*.ts", "src/**/*.tsx", "src/**/*.html", "src/**/*.css", "src/**/*.scss"]
+outputs = { auto = true }
 
 ["beeai-ui:fix:eslint"]
 depends = ["setup:pnpm"]
 dir = "{{config_root}}/apps/beeai-ui"
 run = "pnpm eslint --fix src"
+sources = ["src/**/*.js", "src/**/*.jsx", "src/**/*.ts", "src/**/*.tsx"]
+outputs = { auto = true }
 
 ["beeai-ui:fix:stylelint"]
 depends = ["setup:pnpm"]
 dir = "{{config_root}}/apps/beeai-ui"
 run = "pnpm stylelint --fix=lax src/styles"
+sources = ["src/styles/**/*.css", "src/styles/**/*.scss"]
+outputs = { auto = true }
 
 # run
 

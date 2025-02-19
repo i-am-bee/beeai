@@ -4,52 +4,18 @@ on:
   push:
     tags:
       - "acp*"
-    branches:
-      - main
-  pull_request:
-    paths:
-      - "packages/acp-python-sdk/**"
-
-defaults:
-  run:
-    working-directory: ./packages/acp-python-sdk
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    env:
-      UV_FROZEN: true
-      UV_PYTHON_PREFERENCE: only-system
-      MISE_NODE_GPG_VERIFY: "False" # gpg is present on GitHub CI runners, but somewhat broken
-    steps:
-      - uses: actions/checkout@v4
-      - uses: jdx/mise-action@5083fe46898c414b2475087cc79da59e7da859e8
-      - run: mise acp-python-sdk:ci:check
-      - if: startsWith(github.ref, 'refs/tags/acp')
-        run: mise acp-python-sdk:ci:build
-      - if: startsWith(github.ref, 'refs/tags/acp')
-        uses: actions/upload-artifact@v4
-        with:
-          name: release-dists
-          path: packages/acp-python-sdk/dist/
-
   pypi-publish:
-    name: Upload release to PyPI
+    if: github.event.base_ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/acp')
     environment: release
-    needs: ["build"]
     permissions:
       id-token: write # IMPORTANT: this permission is mandatory for trusted publishing
-
     steps:
-      - name: Retrieve release distributions
-        uses: actions/download-artifact@v4
-        with:
-          name: release-dists
-          path: packages/acp-python-sdk/dist/
-
-      - name: Publish package distributions to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: mise acp-python-sdk:build
+      - uses: pypa/gh-action-pypi-publish@76f52bc884231f62b9a034ebfe128415bbaabdfc
         with:
           packages-dir: packages/acp-python-sdk/dist

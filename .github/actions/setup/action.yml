@@ -1,0 +1,28 @@
+name: 'Setup environment'
+description: 'Set up mise tools (Python, Node.js, ...) and install project dependencies'
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/cache@v4
+      with:
+        path: .venv
+        key: uv-venv-v1-${{ runner.os }}-${{ hashFiles('uv.lock') }}
+        restore-keys: uv-venv-v1-${{ runner.os }}-
+    
+    - uses: actions/cache@v4
+      with:
+        path: ~/.local/share/pnpm/store
+        key: pnpm-store-v1-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+        restore-keys: pnpm-store-v1-${{ runner.os }}-
+    
+    - name: Set environment variables
+      shell: bash
+      run: |
+        echo "UV_FROZEN=true" >> $GITHUB_ENV
+        echo "UV_PYTHON_PREFERENCE=only-system" >> $GITHUB_ENV
+        echo "MISE_NODE_GPG_VERIFY=false" >> $GITHUB_ENV
+    
+    - uses: jdx/mise-action@5083fe46898c414b2475087cc79da59e7da859e8
+      with:
+        version: 2025.2.6

@@ -10,7 +10,7 @@ python.uv_venv_auto = true
 raw = true
 
 [hooks]
-postinstall = "mise setup"
+postinstall = "{{ mise_bin }} setup"
 
 # TASKS
 
@@ -24,11 +24,27 @@ includes = [
     "packages/beeai-sdk/tasks.toml",
 ]
 
-## setup
+## grouped tasks
 
 [tasks."setup"]
-description = "Set-up repo and install dependencies"
 depends = ["setup:*"]
+
+[tasks."check"]
+depends = ["*:check"]
+
+[tasks."fix"]
+depends = ["*:fix"]
+
+[tasks."test"]
+depends = ["*:test"]
+
+## git hooks
+
+[tasks."git-hooks:pre-commit"]
+hide = true
+depends = ["check"]
+
+## repo setup
 
 [tasks."setup:mise-local-toml"]
 hide = true
@@ -41,7 +57,7 @@ outputs = { auto = true }
 hide = true
 dir = "{{config_root}}"
 run = """
-printf '#!/bin/sh\nmise run git-hooks:pre-commit' >.git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+printf '#!/bin/sh\n{{ mise_bin }} run git-hooks:pre-commit' >.git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
 """
 sources = [".git/hooks/pre-commit"]
 outputs = { auto = true }
@@ -59,9 +75,3 @@ dir = "{{config_root}}"
 run = "uv sync --all-extras"
 sources = ["uv.lock", "pyproject.toml", "apps/*/pyproject.toml", "packages/*/pyproject.toml"]
 outputs = { auto = true }
-
-## git hooks
-
-[tasks."git-hooks:pre-commit"]
-hide = true
-depends = ["*:check"]
