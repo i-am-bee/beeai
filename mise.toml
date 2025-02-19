@@ -16,14 +16,19 @@ postinstall = "mise setup"
 
 [task_config]
 includes = [
-    "packages/acp-python-sdk/tasks.toml"
+    "apps/beeai-cli/tasks.toml",
+    "apps/beeai-server/tasks.toml",
+    "apps/beeai-ui/tasks.toml",
+    "docs/tasks.toml",
+    "packages/acp-python-sdk/tasks.toml",
+    "packages/beeai-sdk/tasks.toml",
 ]
 
 ## setup
 
 [tasks."setup"]
 description = "Set-up repo and install dependencies"
-depends = ["setup:*", "deps:*"]
+depends = ["setup:*"]
 
 [tasks."setup:mise-local-toml"]
 hide = true
@@ -38,155 +43,25 @@ dir = "{{config_root}}"
 run = """
 printf '#!/bin/sh\nmise run git-hooks:pre-commit' >.git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
 """
+sources = [".git/hooks/pre-commit"]
+outputs = { auto = true }
 
-## dependencies
-
-[tasks."deps:js"]
+[tasks."setup:pnpm"]
 hide = true
 dir = "{{config_root}}"
 run = "pnpm install"
-sources = ["pnpm-lock.yaml", "pnpm-workspace.yaml", "**/package.json"]
+sources = ["pnpm-lock.yaml", "pnpm-workspace.yaml", "apps/*/package.json", "packages/*/package.json", "docs/package.json"]
 outputs = { auto = true }
 
-[tasks."deps:py"]
+[tasks."setup:uv"]
 hide = true
 dir = "{{config_root}}"
 run = "uv sync --all-extras"
-sources = ["uv.lock", "pyproject.toml", "**/pyproject.toml"]
+sources = ["uv.lock", "pyproject.toml", "apps/*/pyproject.toml", "packages/*/pyproject.toml"]
 outputs = { auto = true }
-
-## build
-
-[tasks."build:beeai-ui"]
-description = "Build the static files for `beeai-ui`"
-depends = ["deps:js"]
-dir = "{{config_root}}/apps/beeai-ui"
-run = "pnpm build"
-sources = ["*.json", "*.js", "index.html", "src/**/*.tsx", "src/**/*.ts"]
-outputs = { auto = true }
-
-[tasks."build:beeai-cli"]
-description = "Build the Python wheel for `beeai-cli`"
-depends = ["deps:py"]
-dir = "{{config_root}}/apps/beeai-cli"
-run = "uv build . --out-dir dist"
-sources = ["**/*.py"]
-outputs = { auto = true }
-
-[tasks."build:beeai-server"]
-description = "Build the Python wheel for `beeai-server`"
-depends = ["deps:py", "build:beeai-ui"]
-dir = "{{config_root}}/apps/beeai-server"
-run = "uv build . --out-dir dist"
-sources = ["**/*.py"]
-outputs = { auto = true }
-
-[tasks."build:beeai-sdk"]
-description = "Build the Python wheel for `beeai-sdk`"
-depends = ["deps:py"]
-dir = "{{config_root}}/packages/beeai-sdk"
-run = "uv build . --out-dir dist"
-sources = ["**/*.py"]
-outputs = { auto = true }
-
-## run
-
-[tasks."run:beeai-ui"]
-description = "Run the Vite development server for `beeai-ui` -- NOTE: you also need to have `beeai-server` running for the backend"
-depends = ["deps:js"]
-dir = "{{cwd}}"
-run = "pnpm --filter=@beeai/ui dev"
-
-[tasks."run:docs"]
-description = "Show the mintlify documentation in docs/"
-depends = ["deps:js"]
-dir = "{{cwd}}"
-run = "pnpm --filter=@beeai/docs dev"
-
-[tasks."run:beeai-cli"]
-description = "Run the `beeai-cli`, use double dash to pass extra args, like `mise run:beeai-cli -- provider list`"
-depends = ["deps:py", "build:beeai-ui"]
-dir = "{{cwd}}"
-run = "uv run beeai"
-
-[tasks."run:beeai-server"]
-description = "Run the `beeai-server`, including the UI in static mode"
-depends = ["deps:py", "build:beeai-ui"]
-dir = "{{cwd}}"
-run = "uv run beeai-server"
-
-## publish
-
-[tasks."publish:beeai-cli"]
-description = "Publish `beeai-cli` to PyPI, but you need to configure your ~/.pypirc first"
-depends = ["build:beeai-cli"]
-dir = "{{config_root}}/apps/beeai-cli"
-tools = { "pipx" = "latest", "pipx:twine" = "latest" }
-run = "twine upload --skip-existing --non-interactive dist/*"
-
-[tasks."publish:beeai-server"]
-description = "Publish `beeai-server` to PyPI, but you need to configure your ~/.pypirc first"
-depends = ["build:beeai-server"]
-dir = "{{config_root}}/apps/beeai-server"
-tools = { "pipx" = "latest", "pipx:twine" = "latest" }
-run = "twine upload --skip-existing --non-interactive dist/*"
-
-[tasks."publish:beeai-sdk"]
-description = "Publish `beeai-sdk` to PyPI, but you need to configure your ~/.pypirc first"
-depends = ["build:beeai-sdk"]
-dir = "{{config_root}}/packages/beeai-sdk"
-tools = { "pipx" = "latest", "pipx:twine" = "latest" }
-run = "twine upload --skip-existing --non-interactive dist/*"
-
-## clean
-
-[tasks."clean:beeai-ui"]
-description = "Clean the build artifacts for `beeai-ui`"
-dir = "{{config_root}}/apps/beeai-ui"
-run = "rm -rf ./dist"
-
-[tasks."clean:beeai-cli"]
-description = "Clean the build artifacts for `beeai-cli`"
-dir = "{{config_root}}/apps/beeai-cli"
-run = "rm -rf ./dist"
-
-[tasks."clean:beeai-server"]
-description = "Clean the build artifacts for `beeai-server`"
-dir = "{{config_root}}/apps/beeai-server"
-run = "rm -rf ./dist"
-
-## check
-
-[tasks."check"]
-depends = ["check:*", "*:check"]
-
-[tasks."check:py"]
-description = "Check Python files using Ruff"
-depends = ["deps:py"]
-run = "uvx ruff check && uvx ruff format --check"
-
-[tasks."check:js"]
-description = "Check JS, TS and related files"
-depends = ["deps:js"]
-run = "pnpm -r check"
-
-## fix
-
-[tasks."fix"]
-depends = ["fix:*"]
-
-[tasks."fix:py"]
-description = "Fix Python files using Ruff"
-depends = ["deps:py"]
-run = "uvx ruff check --fix && uvx ruff format"
-
-[tasks."fix:js"]
-description = "Fix JS, TS and related files"
-depends = ["deps:js"]
-run = "pnpm -r fix"
 
 ## git hooks
 
 [tasks."git-hooks:pre-commit"]
 hide = true
-depends = ["check"]
+depends = ["*:check"]

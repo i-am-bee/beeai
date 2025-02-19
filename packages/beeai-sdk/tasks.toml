@@ -1,0 +1,100 @@
+# check
+
+["beeai-sdk:check"]
+depends = ["beeai-sdk:check:*"]
+
+["beeai-sdk:check:ruff-check"]
+depends = ["setup:uv"]
+dir = "{{config_root}}/packages/beeai-sdk"
+run = "uv run ruff check --quiet"
+sources = ["src/**/*.py"]
+outputs = { auto = true }
+
+["beeai-sdk:check:ruff-format"]
+depends = ["setup:uv"]
+dir = "{{config_root}}/packages/beeai-sdk"
+run = "uv run ruff format --quiet --check"
+sources = ["src/**/*.py"]
+outputs = { auto = true }
+
+# TODO: Enable and fix issues in separate PR
+# ["beeai-sdk:check:pyright"]
+# dir = "{{config_root}}/packages/beeai-sdk"
+# run = "uv run pyright"
+
+["beeai-sdk:check:prettier"]
+depends = ["setup:pnpm"]
+dir = "{{config_root}}/packages/beeai-sdk"
+run = "pnpm prettier --log-level silent --check src"
+sources = ["src/**/*.js", "src/**/*.ts"]
+outputs = { auto = true }
+
+["beeai-sdk:check:eslint"]
+depends = ["setup:pnpm"]
+dir = "{{config_root}}/packages/beeai-sdk"
+run = "pnpm eslint src"
+sources = ["src/**/*.js", "src/**/*.ts"]
+outputs = { auto = true }
+
+["beeai-sdk:check:tsc"]
+depends = ["setup:pnpm"]
+dir = "{{config_root}}/packages/beeai-sdk"
+run = "pnpm tsc --noEmit"
+sources = ["src/**/*.ts"]
+outputs = { auto = true }
+
+# fix
+
+["beeai-sdk:fix"]
+depends = ["beeai-sdk:fix:*"]
+
+["beeai-sdk:fix:ruff-check"]
+depends = ["setup:uv"]
+dir = "{{config_root}}/packages/beeai-sdk"
+run = "uv run ruff check --quiet --fix"
+
+["beeai-sdk:fix:ruff-format"]
+depends = ["setup:uv"]
+dir = "{{config_root}}/packages/beeai-sdk"
+run = "uv run ruff format --quiet"
+
+["beeai-sdk:fix:prettier"]
+depends = ["setup:pnpm"]
+dir = "{{config_root}}/packages/beeai-sdk"
+run = "pnpm prettier --log-level silent --write src"
+
+["beeai-sdk:fix:eslint"]
+depends = ["setup:pnpm"]
+dir = "{{config_root}}/packages/beeai-sdk"
+run = "pnpm eslint --fix src"
+
+# build
+
+["beeai-sdk:build:py"]
+depends = ["beeai-sdk:clean", "setup:uv"]
+dir = "{{config_root}}/packages/beeai-sdk"
+run = "rm -rf ./dist && uv build --out-dir dist"
+sources = ["src/**/*.py"]
+outputs = { auto = true }
+
+["beeai-sdk:build:js"]
+depends = ["beeai-sdk:clean", "setup:pnpm"]
+dir = "{{config_root}}/packages/beeai-sdk"
+run = "pnpm build"
+sources = ["**/*.ts"]
+outputs = { auto = true }
+
+# publish
+
+["beeai-sdk:publish:py"]
+description = "NOTE: You need to configure your ~/.pypirc first"
+depends = ["beeai-sdk:build"]
+dir = "{{config_root}}/packages/beeai-sdk"
+tools = { "pipx" = "latest", "pipx:twine" = "latest" }
+run = "twine upload --skip-existing --non-interactive dist/*"
+
+# clean
+
+["beeai-sdk:clean"]
+dir = "{{config_root}}/packages/beeai-sdk"
+run = "rm -rf ./dist"

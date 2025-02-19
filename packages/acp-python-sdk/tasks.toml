@@ -5,15 +5,21 @@ depends = ["acp-python-sdk:check:*"]
 
 ["acp-python-sdk:check:ruff-check"]
 dir = "{{config_root}}/packages/acp-python-sdk"
-run = "uv run ruff check"
+run = "uv run ruff check --quiet"
+sources = ["src/**/*.py"]
+outputs = { auto = true }
 
 ["acp-python-sdk:check:ruff-format"]
 dir = "{{config_root}}/packages/acp-python-sdk"
-run = "uv run ruff format --check"
+run = "uv run ruff format --quiet --check"
+sources = ["src/**/*.py"]
+outputs = { auto = true }
 
 ["acp-python-sdk:check:pyright"]
 dir = "{{config_root}}/packages/acp-python-sdk"
 run = "uv run pyright"
+sources = ["src/**/*.py"]
+outputs = { auto = true }
 
 # fix
 
@@ -22,11 +28,11 @@ depends = ["acp-python-sdk:fix:*"]
 
 ["acp-python-sdk:fix:ruff-fix"]
 dir = "{{config_root}}/packages/acp-python-sdk"
-run = "uv run ruff check --fix"
+run = "uv run ruff check --quiet --fix"
 
 ["acp-python-sdk:fix:ruff-format"]
 dir = "{{config_root}}/packages/acp-python-sdk"
-run = "uv run ruff format"
+run = "uv run ruff format --quiet"
 
 # test
 

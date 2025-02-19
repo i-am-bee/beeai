@@ -94,7 +94,7 @@ To run BeeAI components in development mode (ensuring proper rebuilding), use th
 rm -f ~/.beeai/providers.yaml
 
 # API
-mise run:beeai-server
+mise beeai-server:run
 # (keep it running, open another terminal for next steps)
 ```
 
@@ -102,25 +102,25 @@ mise run:beeai-server
 
 ```sh
 # add official framework provider 
-mise run:beeai-cli -- provider add file://agents/official/bee-agent-framework/beeai-provider.yaml
+mise beeai-cli:run -- provider add file://agents/official/bee-agent-framework/beeai-provider.yaml
 
 # tools
-mise run:beeai-cli -- tool list
-mise run:beeai-cli -- tool call fetch '{"url": "http://iambee.ai"}'
+mise beeai-cli:run -- tool list
+mise beeai-cli:run -- tool call fetch '{"url": "http://iambee.ai"}'
 
 # agents
-mise run:beeai-cli -- agent list
-mise run:beeai-cli -- agent run website_summarizer "summarize iambee.ai"
+mise beeai-cli:run -- agent list
+mise beeai-cli:run -- agent run website_summarizer "summarize iambee.ai"
 ```
 
 #### UI
 
 ```sh
 # run the UI development server:
-mise run:beeai-ui
+mise beeai-ui:run
 
 # UI is also available from beeai-server (in static mode):
-mise run:beeai-server
+mise beeai-server:run
 ```
 
 ---

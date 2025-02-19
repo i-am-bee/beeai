@@ -32,8 +32,8 @@
   "scripts": {
     "clean": "rimraf dist",
     "build": "pnpm clean && tsc --noEmit && tsup",
-    "check": "prettier --check src && eslint src && tsc --noEmit",
-    "fix": "prettier --write src && eslint --fix src"
+    "check": "prettier --log-level silent --check src && eslint src && tsc --noEmit",
+    "fix": "prettier --log-level silent --write src && eslint --fix src"
   },
   "keywords": [],
   "author": "",
