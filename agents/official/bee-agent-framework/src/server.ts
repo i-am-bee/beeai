@@ -71,30 +71,44 @@ async function registerTools(server: AcpServer) {
       }
     );
   }
+
+  // Register agent as a tool
+  const agent = createBeeAgent();
+  server.tool(
+    "bee",
+    agent.meta.description,
+    promptInputSchema.extend({ config: agentConfigSchema }).shape,
+    async ({ config, ...input }, { signal }) => {
+      const output = await createBeeAgent(undefined, config?.tools).run(input, {
+        signal,
+      });
+      return { content: [{ type: "text", text: output.result.text }] };
+    }
+  );
 }
 
 async function registerAgents(server: AcpServer) {
-  // Create dummy agent for metadata
   const agent = createBeeAgent();
-
-  // Register agent
   server.agent(
     "bee",
     agent.meta.description,
     messageInputSchema.extend({ config: agentConfigSchema }),
     messageOutputSchema,
-    async ({
-      params: {
-        input: { messages, config },
-        _meta,
+    async (
+      {
+        params: {
+          input: { messages, config },
+          _meta,
+        },
       },
-    }) => {
+      { signal }
+    ) => {
       const memory = new UnconstrainedMemory();
       memory.addMany(
         messages.map(({ role, content }) => Message.of({ role, text: content }))
       );
       const output = await createBeeAgent(memory, config?.tools)
-        .run({ prompt: null })
+        .run({ prompt: null }, { signal })
         .observe((emitter) => {
           emitter.on("partialUpdate", async ({ update }) => {
             if (_meta?.progressToken && update.key === "final_answer") {
@@ -124,19 +138,6 @@ async function registerAgents(server: AcpServer) {
       avgRunTokens: 48,
       ui: "chat",
     } as const satisfies Metadata
-  );
-
-  // Register agent as a tool
-  server.tool(
-    "bee",
-    agent.meta.description,
-    promptInputSchema.extend({ config: agentConfigSchema }).shape,
-    async ({ config, ...input }, { signal }) => {
-      const output = await createBeeAgent(undefined, config?.tools).run(input, {
-        signal,
-      });
-      return { content: [{ type: "text", text: output.result.text }] };
-    }
   );
 }
 
