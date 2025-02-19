@@ -34,11 +34,15 @@ depends = ["beeai-server:fix:*"]
 depends = ["setup:uv"]
 dir = "{{config_root}}/apps/beeai-server"
 run = "uv run ruff check --quiet --fix"
+sources = ["src/**/*.py"]
+outputs = { auto = true }
 
 ["beeai-server:fix:ruff-format"]
 depends = ["setup:uv"]
 dir = "{{config_root}}/apps/beeai-server"
 run = "uv run ruff format --quiet"
+sources = ["src/**/*.py"]
+outputs = { auto = true }
 
 # run
 

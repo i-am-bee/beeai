@@ -32,6 +32,9 @@ depends = ["setup:*"]
 [tasks."check"]
 depends = ["*:check"]
 
+[tasks."fix"]
+depends = ["*:fix"]
+
 [tasks."test"]
 depends = ["*:test"]
 

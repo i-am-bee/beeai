@@ -26,13 +26,17 @@ outputs = { auto = true }
 ["acp-python-sdk:fix"]
 depends = ["acp-python-sdk:fix:*"]
 
-["acp-python-sdk:fix:ruff-fix"]
+["acp-python-sdk:fix:ruff-check"]
 dir = "{{config_root}}/packages/acp-python-sdk"
 run = "uv run ruff check --quiet --fix"
+sources = ["src/**/*.py"]
+outputs = { auto = true }
 
 ["acp-python-sdk:fix:ruff-format"]
 dir = "{{config_root}}/packages/acp-python-sdk"
 run = "uv run ruff format --quiet"
+sources = ["src/**/*.py"]
+outputs = { auto = true }
 
 # test
 

@@ -52,21 +52,29 @@ depends = ["beeai-sdk:fix:*"]
 depends = ["setup:uv"]
 dir = "{{config_root}}/packages/beeai-sdk"
 run = "uv run ruff check --quiet --fix"
+sources = ["src/**/*.py"]
+outputs = { auto = true }
 
 ["beeai-sdk:fix:ruff-format"]
 depends = ["setup:uv"]
 dir = "{{config_root}}/packages/beeai-sdk"
 run = "uv run ruff format --quiet"
+sources = ["src/**/*.py"]
+outputs = { auto = true }
 
 ["beeai-sdk:fix:prettier"]
 depends = ["setup:pnpm"]
 dir = "{{config_root}}/packages/beeai-sdk"
 run = "pnpm prettier --log-level silent --write src"
+sources = ["src/**/*.js", "src/**/*.ts"]
+outputs = { auto = true }
 
 ["beeai-sdk:fix:eslint"]
 depends = ["setup:pnpm"]
 dir = "{{config_root}}/packages/beeai-sdk"
 run = "pnpm eslint --fix src"
+sources = ["src/**/*.js", "src/**/*.ts"]
+outputs = { auto = true }
 
 # build
 
