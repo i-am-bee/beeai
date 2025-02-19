@@ -1,9 +1,9 @@
-name: ACP Python SDK
+name: BeeAI Server
 
 on:
   push:
     tags:
-      - "acp-v*"
+      - "beeai-server-v*"
 
 permissions:
   contents: read
@@ -18,7 +18,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
-      - run: mise acp-python-sdk:build
+      - run: mise beeai-server:build
       - uses: pypa/gh-action-pypi-publish@76f52bc884231f62b9a034ebfe128415bbaabdfc
         with:
-          packages-dir: packages/acp-python-sdk/dist
+          packages-dir: apps/beeai-server/dist

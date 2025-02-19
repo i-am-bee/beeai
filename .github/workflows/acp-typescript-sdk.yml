@@ -3,7 +3,7 @@ name: ACP Typescript SDK
 on:
   push:
     tags:
-      - "acp*"
+      - "acp-v*"
 
 permissions:
   contents: read
@@ -18,7 +18,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
-      - run: mise acp-typescript-sdk:publish
+      - run: pnpm publish --access public
+        working-directory: packages/mcp-typescript-sdk
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: true # https://github.com/pnpm/pnpm/issues/6435#issuecomment-1518397267
