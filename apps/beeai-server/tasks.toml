@@ -60,15 +60,6 @@ run = "rm -rf ./dist && uv build --out-dir dist"
 sources = ["src/**/*.py"]
 outputs = { auto = true }
 
-# publish
-
-["beeai-server:publish"]
-description = "NOTE: You need to configure your ~/.pypirc first"
-depends = ["beeai-server:build"]
-dir = "{{config_root}}/apps/beeai-server"
-tools = { "pipx" = "latest", "pipx:twine" = "latest" }
-run = "twine upload --skip-existing --non-interactive dist/*"
-
 # clean
 
 ["beeai-server:clean"]

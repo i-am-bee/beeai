@@ -1,9 +1,9 @@
-name: ACP Python SDK
+name: BeeAI SDK
 
 on:
   push:
     tags:
-      - "acp-v*"
+      - "beeai-sdk-v*"
 
 permissions:
   contents: read
@@ -11,14 +11,14 @@ permissions:
 
 jobs:
   publish:
-    name: Publish
+    name: Publish on PyPI
     if: github.event.base_ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment: release
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
-      - run: mise acp-python-sdk:build
+      - run: mise beeai-sdk:build
       - uses: pypa/gh-action-pypi-publish@76f52bc884231f62b9a034ebfe128415bbaabdfc
         with:
-          packages-dir: packages/acp-python-sdk/dist
+          packages-dir: packages/beeai-sdk/dist

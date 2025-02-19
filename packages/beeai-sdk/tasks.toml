@@ -92,15 +92,6 @@ run = "pnpm build"
 sources = ["**/*.ts"]
 outputs = { auto = true }
 
-# publish
-
-["beeai-sdk:publish:py"]
-description = "NOTE: You need to configure your ~/.pypirc first"
-depends = ["beeai-sdk:build"]
-dir = "{{config_root}}/packages/beeai-sdk"
-tools = { "pipx" = "latest", "pipx:twine" = "latest" }
-run = "twine upload --skip-existing --non-interactive dist/*"
-
 # clean
 
 ["beeai-sdk:clean"]
