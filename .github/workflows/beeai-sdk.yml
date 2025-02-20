@@ -33,7 +33,7 @@ jobs:
       - uses: ./.github/actions/setup
       - run: mise beeai-sdk:build:js
       - run: pnpm publish --access public
-        working-directory: packages/mcp-typescript-sdk
+        working-directory: packages/acp-typescript-sdk
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: true # https://github.com/pnpm/pnpm/issues/6435#issuecomment-1518397267
