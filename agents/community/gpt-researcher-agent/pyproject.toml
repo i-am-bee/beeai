@@ -2,7 +2,7 @@
 name = "gpt-researcher-agent"
 version = "0.1.0"
 description = ""
-authors = [{ name = "Lukáš Janeček", email = "xjacka@gmail.com" }]
+authors = [{ name = "IBM Corp." }]
 readme = "README.md"
 requires-python = ">=3.11,<4.0"
 dependencies = [

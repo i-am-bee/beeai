@@ -3,6 +3,7 @@ python = "3.11"
 nodejs = "22"
 uv = "latest"
 pnpm = "latest"
+"ubi:B1NARY-GR0UP/nwa" = "latest"
 
 [settings]
 experimental = true # for python.uv_venv_auto
@@ -76,4 +77,33 @@ hide = true
 dir = "{{config_root}}"
 run = "uv sync --all-extras"
 sources = ["uv.lock", "pyproject.toml", "apps/*/pyproject.toml", "packages/*/pyproject.toml"]
+outputs = { auto = true }
+
+## common tasks
+
+### check
+
+[tasks."common:check"]
+depends = ["common:check:*"]
+
+[tasks."common:check:nwa"]
+dir = "{{config_root}}"
+run = "nwa check -l apache -c 'IBM Corp.' --skip 'packages/acp-*-sdk/**/*' '{apps,packages}/*/src/**/*.{py,js,jsx,ts,tsx,html,css,scss}'"
+# sources don't support {a,b} -- https://github.com/jdx/mise/discussions/4469
+sources = ["apps/*/src/**/*.py", "packages/*/src/**/*.py", "apps/*/src/**/*.js", "packages/*/src/**/*.js", "apps/*/src/**/*.js*", "packages/*/src/**/*.js*", "apps/*/src/**/*.ts", "packages/*/src/**/*.ts", "apps/*/src/**/*.ts*", "packages/*/src/**/*.ts*", "apps/*/src/**/*.html", "packages/*/src/**/*.html", "apps/*/src/**/*.css", "packages/*/src/**/*.css", "apps/*/src/**/*.scss", "packages/*/src/**/*.scss"]
+outputs = { auto = true }
+
+### fix
+
+[tasks."common:fix"]
+depends = ["common:fix:*"]
+
+[tasks."common:fix:nwa"]
+dir = "{{config_root}}"
+run = """
+nwa update -l apache -c 'IBM Corp.' --skip 'packages/acp-*-sdk/**/*' '{apps,packages}/*/src/**/*.{py,js,jsx,ts,tsx,html,css,scss}' --mute || true
+nwa add    -l apache -c 'IBM Corp.' --skip 'packages/acp-*-sdk/**/*' '{apps,packages}/*/src/**/*.{py,js,jsx,ts,tsx,html,css,scss}' --mute || true
+"""
+# sources don't support {a,b} -- https://github.com/jdx/mise/discussions/4469
+sources = ["apps/*/src/**/*.py", "packages/*/src/**/*.py", "apps/*/src/**/*.js", "packages/*/src/**/*.js", "apps/*/src/**/*.js*", "packages/*/src/**/*.js*", "apps/*/src/**/*.ts", "packages/*/src/**/*.ts", "apps/*/src/**/*.ts*", "packages/*/src/**/*.ts*", "apps/*/src/**/*.html", "packages/*/src/**/*.html", "apps/*/src/**/*.css", "packages/*/src/**/*.css", "apps/*/src/**/*.scss", "packages/*/src/**/*.scss"]
 outputs = { auto = true }
