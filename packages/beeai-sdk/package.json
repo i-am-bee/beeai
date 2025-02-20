@@ -6,6 +6,10 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "sideEffects": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/i-am-bee/beeai"
+  },
   "exports": {
     "./package.json": "./package.json",
     ".": {
