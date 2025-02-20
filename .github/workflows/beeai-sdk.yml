@@ -32,8 +32,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
       - run: mise beeai-sdk:build:js
-      - run: pnpm publish --access public --no-git-checks
+      - run: |
+          echo "//registry.npmjs.org/:_authToken=${{secrets.NPM_TOKEN}}" > ~/.npmrc
+          pnpm publish --access public --no-git-checks
         working-directory: packages/acp-typescript-sdk
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: true # https://github.com/pnpm/pnpm/issues/6435#issuecomment-1518397267
