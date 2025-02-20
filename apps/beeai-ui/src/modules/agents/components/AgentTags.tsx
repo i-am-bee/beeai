@@ -4,10 +4,15 @@ import { isNotNull } from '@/utils/helpers';
 import { Tag } from '@carbon/react';
 import { Agent } from '../api/types';
 
-export function AgentTags({ agent }: { agent: Agent }) {
+interface Props {
+  agent: Agent;
+  className?: string;
+}
+
+export function AgentTags({ agent, className }: Props) {
   const { framework } = agent;
 
-  return <TagsList tags={[framework ? <AgentTag name={framework} /> : null].filter(isNotNull)} />;
+  return <TagsList tags={[framework ? <AgentTag name={framework} /> : null].filter(isNotNull)} className={className} />;
 }
 
 function AgentTag({ name }: { name: string }) {

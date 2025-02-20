@@ -1,12 +1,12 @@
-import clsx from 'clsx';
-import classes from './Message.module.scss';
-import { useChat } from '../contexts';
-import { getAgentTitle } from '@/modules/agents/utils';
-import { AgentIcon } from './AgentIcon';
-import { UserIcon } from './UserIcon';
-import { Spinner } from '@/components/Spinner/Spinner';
 import { ErrorMessage } from '@/components/ErrorMessage/ErrorMessage';
+import { Spinner } from '@/components/Spinner/Spinner';
+import { getAgentTitle } from '@/modules/agents/utils';
+import clsx from 'clsx';
+import { useChat } from '../contexts';
+import { AgentIcon } from './AgentIcon';
+import classes from './Message.module.scss';
 import { ChatMessage } from './types';
+import { UserIcon } from './UserIcon';
 
 interface Props {
   message: ChatMessage;

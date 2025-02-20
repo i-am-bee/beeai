@@ -27,7 +27,9 @@ $light: map.merge(
     layer-accent-03: $cool-gray-30,
 
     border-subtle-00: $cool-gray-20,
+
     text-dark: $black,
+    text-placeholder: $cool-gray-40,
     box-shadow-color: rgba(193, 199, 205, 0.45),
     modal-background: rgba($cool-gray-60, 0.5),
   )
@@ -40,8 +42,11 @@ $dark: map.merge(
     background-hover: $cool-gray-80,
     background-hover-50: rgba($cool-gray-80, 0.5),
     layer-hover-01: $cool-gray-80,
+
     border-subtle-00: $cool-gray-80,
+
     text-dark: $white,
+    text-placeholder: $cool-gray-60,
     box-shadow-color: rgba($cool-gray-70, 0.45),
     modal-background: rgba($cool-gray-100, 0.75),
   )

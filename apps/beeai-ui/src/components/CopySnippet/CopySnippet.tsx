@@ -1,5 +1,7 @@
-import { CopyButton } from '@carbon/react';
+import { Checkmark, Copy } from '@carbon/icons-react';
+import { IconButton } from '@carbon/react';
 import clsx from 'clsx';
+import { useState } from 'react';
 import classes from './CopySnippet.module.scss';
 
 interface Props {
@@ -8,18 +10,26 @@ interface Props {
 }
 
 export function CopySnippet({ snippet, className }: Props) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyClick = () => {
+    navigator.clipboard.writeText(snippet);
+
+    setCopied(true);
+
+    setTimeout(() => {
+      setCopied(false);
+    }, 2000);
+  };
+
   return (
     <div className={clsx(classes.root, className)}>
       <code className={classes.content}>{snippet}</code>
 
       <div className={classes.button}>
-        <CopyButton
-          iconDescription="Copy"
-          kind="ghost"
-          onClick={() => {
-            navigator.clipboard.writeText(snippet);
-          }}
-        />
+        <IconButton label="Copy" kind="ghost" size="md" onClick={handleCopyClick} disabled={copied}>
+          {copied ? <Checkmark /> : <Copy />}
+        </IconButton>
       </div>
     </div>
   );

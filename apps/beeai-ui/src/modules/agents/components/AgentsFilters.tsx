@@ -1,19 +1,19 @@
-import classes from './AgentsFilters.module.scss';
-import { DismissibleTag, OperationalTag, Tag, TextInput } from '@carbon/react';
-import { useId, useMemo } from 'react';
-import { Search } from '@carbon/icons-react';
-import { useAgents } from '../contexts';
-import { useFormContext } from 'react-hook-form';
-import { FilterFormValues } from '../contexts/agents-context';
-import clsx from 'clsx';
 import { isNotNull } from '@/utils/helpers';
+import { Search } from '@carbon/icons-react';
+import { OperationalTag, TextInput } from '@carbon/react';
+import clsx from 'clsx';
+import { useId, useMemo } from 'react';
+import { useFormContext } from 'react-hook-form';
+import { useAgents } from '../contexts';
+import { AgentsFiltersParams } from '../contexts/agents-context';
+import classes from './AgentsFilters.module.scss';
 
 export function AgentsFilters() {
   const id = useId();
   const {
     agentsQuery: { data },
   } = useAgents();
-  const { watch, setValue, getValues } = useFormContext<FilterFormValues>();
+  const { watch, setValue } = useFormContext<AgentsFiltersParams>();
 
   const frameworks = useMemo(() => {
     if (!data) return [];
@@ -21,54 +21,40 @@ export function AgentsFilters() {
     return [...new Set(data.map(({ framework }) => framework))].filter(isNotNull);
   }, [data]);
 
-  const handleToggleFramework = (framework: string) => {
-    const value = getValues('frameworks');
-    setValue(
-      'frameworks',
-      value.includes(framework) ? value.filter((item) => item !== framework) : [...value, framework],
-    );
+  const selectFramework = (framework: string | null) => {
+    setValue('framework', framework);
   };
 
-  const selectedFrameworks = watch('frameworks');
+  const selectedFramework = watch('framework');
 
   return (
     <div className={classes.root}>
       <div className={classes.searchBar}>
         <Search />
-        {selectedFrameworks.length ? (
-          <div className={classes.activeFilters}>
-            <DismissibleTag
-              type="high-contrast"
-              text={String(selectedFrameworks.length)}
-              onClose={() => setValue('frameworks', [])}
-            />
-          </div>
-        ) : null}
+
         <TextInput
           id={`${id}:search`}
-          labelText={undefined}
-          placeholder="What are you looking for"
+          labelText="Search"
+          placeholder="Search the agent catalog"
           onChange={(event) => setValue('search', event.target.value)}
+          hideLabel
         />
       </div>
 
-      <div className={classes.authors}>
+      <div className={classes.frameworks}>
         <OperationalTag
-          type="cool-gray"
+          onClick={() => selectFramework(null)}
           text="All"
-          className={classes.authorAll}
-          onClick={() => setValue('frameworks', [])}
+          className={clsx(classes.frameworkAll, { selected: !isNotNull(selectedFramework) })}
         />
 
-        {frameworks?.map((author) => (
-          <Tag
-            key={author}
-            type="outline"
-            className={clsx({ [classes.selected]: selectedFrameworks.includes(author) })}
-            onClick={() => handleToggleFramework(author)}
-          >
-            {author}
-          </Tag>
+        {frameworks?.map((framework) => (
+          <OperationalTag
+            key={framework}
+            onClick={() => selectFramework(framework)}
+            text={framework}
+            className={clsx({ selected: selectedFramework === framework })}
+          />
         ))}
       </div>
     </div>

@@ -1,8 +1,7 @@
-import Markdown from 'react-markdown';
-import classes from './MarkdownContent.module.scss';
 import clsx from 'clsx';
-import { rehypeCarbonLists } from './plugins/rehypeCarbonLists';
+import Markdown from 'react-markdown';
 import { PluggableList } from 'unified';
+import classes from './MarkdownContent.module.scss';
 
 interface Props {
   children?: string;
@@ -17,4 +16,4 @@ export function MarkdownContent({ className, children }: Props) {
   );
 }
 
-const REHYPE_PLUGINS = [rehypeCarbonLists] satisfies PluggableList;
+const REHYPE_PLUGINS = [] satisfies PluggableList;

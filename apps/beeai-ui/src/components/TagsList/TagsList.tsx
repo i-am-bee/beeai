@@ -1,14 +1,16 @@
 import { TagSkeleton } from '@carbon/react';
+import clsx from 'clsx';
 import { ReactElement } from 'react';
 import classes from './TagsList.module.scss';
 
 interface Props {
   tags: ReactElement[];
+  className?: string;
 }
 
-export function TagsList({ tags }: Props) {
+export function TagsList({ tags, className }: Props) {
   return (
-    <ul className={classes.root}>
+    <ul className={clsx(classes.root, className)}>
       {tags.map((tag, idx) => (
         <li key={idx}>{tag}</li>
       ))}
@@ -18,11 +20,12 @@ export function TagsList({ tags }: Props) {
 
 interface SkeletonProps {
   length?: number;
+  className?: string;
 }
 
-TagsList.Skeleton = function TagsListSkeleton({ length = 1 }: SkeletonProps) {
+TagsList.Skeleton = function TagsListSkeleton({ length = 1, className }: SkeletonProps) {
   return (
-    <div className={classes.root}>
+    <div className={clsx(classes.root, className)}>
       {Array.from({ length }).map((_, idx) => (
         <TagSkeleton key={idx} />
       ))}

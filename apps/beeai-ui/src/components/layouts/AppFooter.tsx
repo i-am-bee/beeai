@@ -1,6 +1,4 @@
-import clsx from 'clsx';
 import { CommunityNav } from '../CommunityNav/CommunityNav';
-import { SideNav } from '../SideNav/SideNav';
 import classes from './AppFooter.module.scss';
 import { Container } from './Container';
 
@@ -10,11 +8,9 @@ interface Props {
 
 export function AppFooter({ className }: Props) {
   return (
-    <footer className={clsx(classes.root, className)}>
-      <Container size="xlg">
+    <footer className={className}>
+      <Container size="lg">
         <div className={classes.holder}>
-          <SideNav />
-
           <CommunityNav />
         </div>
       </Container>

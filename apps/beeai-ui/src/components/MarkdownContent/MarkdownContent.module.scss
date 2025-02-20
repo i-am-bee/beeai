@@ -1,35 +1,66 @@
 .root {
-  > :first-child {
-    margin-block-start: 0;
+  @include type-style(body-01);
+
+  > * + * {
+    margin-block-start: rem(20px);
+  }
+
+  p {
+    font-size: inherit;
+    line-height: inherit;
+    letter-spacing: inherit;
+  }
+
+  ul {
+    list-style: disc;
+    padding-inline-start: $spacing-05;
+  }
+
+  ol {
+    list-style: decimal;
+    padding-inline-start: $spacing-05;
+  }
+
+  ol ul {
+    list-style: lower-latin;
+  }
+
+  ol ul ul {
+    list-style: disc;
+  }
+
+  ol ul ul ol {
+    counter-reset: list;
+    padding-inline-start: rem(20px);
+    li {
+      counter-increment: list;
+      &::marker {
+        content: '(' counter(list, decimal) ') ';
+      }
+    }
   }
 
   h2 {
-    font-size: rem(20px);
-    margin-block: $spacing-06 $spacing-04;
+    @include type-style(heading-03);
   }
-  code {
-    background-color: $layer-02;
-    font-size: 0.9em;
-    padding-inline: $spacing-02;
-    border-radius: rem(2px);
+
+  h3,
+  h4 {
+    @include type-style(heading-01);
   }
-  ol {
-    margin-inline-start: rem(20px);
-    margin-block: $spacing-03;
-  }
-  ul {
-    > :global(.cds--list__item)::before {
-      content: '';
-      block-size: rem(4px);
-      inline-size: rem(4px);
-      background-color: $text-primary;
-      border-radius: rem(2px);
-      inset-block-start: 0.6em;
-      inset-inline-start: -$spacing-04;
+
+  h5,
+  h6 {
+    @include type-style(body-01);
+    + * {
+      margin-block-start: 0;
     }
   }
-  p {
-    font-size: rem(14px);
-    margin-block: $spacing-05;
+
+  code {
+    background-color: $layer-02;
+    font-size: math.div(16em, 18);
+    padding-inline: $spacing-02;
+    border-radius: $spacing-02;
   }
 }

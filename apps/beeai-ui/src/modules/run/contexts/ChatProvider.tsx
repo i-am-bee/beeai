@@ -1,12 +1,17 @@
-import { PropsWithChildren, useCallback, useMemo, useRef } from 'react';
-import { ChatContext, ChatMessagesContext } from './chat-context';
-import { Agent } from '@/modules/agents/api/types';
-import { v4 as uuid } from 'uuid';
 import { useImmerWithGetter } from '@/hooks/useImmerWithGetter';
+import { Agent } from '@/modules/agents/api/types';
 import { MessageInput } from '@i-am-bee/beeai-sdk/schemas/message';
+import { PropsWithChildren, useCallback, useMemo, useRef } from 'react';
+import { v4 as uuid } from 'uuid';
 import { useRunAgent } from '../api/mutations/useRunAgent';
-import { AgentMessage, ChatMessage } from '../chat/types';
-import { MessagesNotifications, messagesNotificationsSchema, MessagesResult } from '../chat/types';
+import {
+  AgentMessage,
+  ChatMessage,
+  MessagesNotifications,
+  messagesNotificationsSchema,
+  MessagesResult,
+} from '../chat/types';
+import { ChatContext, ChatMessagesContext } from './chat-context';
 
 interface Props {
   agent: Agent;

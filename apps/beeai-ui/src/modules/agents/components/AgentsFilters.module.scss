@@ -1,61 +1,33 @@
 .root {
   display: flex;
   flex-direction: column;
+  row-gap: $spacing-05;
+}
 
-  .searchBar {
-    display: flex;
-    align-items: center;
-    padding-inline-start: $spacing-05;
-    border: 1px solid $border-subtle-00;
-    block-size: rem(40px);
-    border-radius: $border-radius;
-    gap: $spacing-03;
+.searchBar {
+  position: relative;
 
-    &:focus-within {
-      outline: 2px solid $background-inverse;
-    }
-
-    > :first-child {
-      margin-inline-end: $spacing-03;
-    }
-
-    :global(.cds--text-input) {
-      border: none;
-      padding-inline-start: 0;
-      &:active,
-      &:focus {
-        outline: none;
-      }
-    }
+  > svg {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: $spacing-05;
+    transform: translateY(-50%);
   }
 
-  .filterBtn {
-    border-radius: 0 $border-radius $border-radius 0;
+  :global(.#{$prefix}--text-input) {
+    padding-inline-start: rem(47px);
   }
+}
 
-  .authors {
-    display: flex;
-    gap: $spacing-03;
-    margin-block-start: $spacing-05;
+.frameworks {
+  display: flex;
+  gap: $spacing-03;
+}
 
-    .authorAll {
-      background-color: $layer-02;
-      border-color: $layer-02;
-      &:hover {
-        background-color: $layer-hover-02;
-      }
-    }
-
-    :global(.cds--tag--outline:not(.cds--tag--operational):not(span):not([disabled])) {
-      border: 1px solid $border-subtle;
-      outline: none;
-      &:hover {
-        background-color: $layer-hover-01;
-      }
-      &.selected {
-        background-color: $background-inverse;
-        color: $text-inverse;
-      }
-    }
+.frameworkAll {
+  &:global(.cds--tag.cds--tag--operational.selected) {
+    background-color: $layer-02;
+    border-color: $layer-02;
+    color: $text-dark;
   }
 }

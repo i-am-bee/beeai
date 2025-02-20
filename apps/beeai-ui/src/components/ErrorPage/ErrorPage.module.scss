@@ -1,0 +1,28 @@
+.root {
+  min-block-size: 100%;
+  display: flex;
+  align-items: center;
+  color: $text-dark;
+}
+
+.image {
+  max-inline-size: 100%;
+  block-size: auto;
+  margin-block-end: $spacing-06;
+}
+
+.heading {
+  line-height: math.div(50, 42);
+}
+
+.description {
+  font-size: rem(20px);
+  line-height: math.div(26, 20);
+  margin-block-start: $spacing-03;
+}
+
+.button {
+  &:global(.cds--btn) {
+    margin-block-start: $spacing-06;
+  }
+}

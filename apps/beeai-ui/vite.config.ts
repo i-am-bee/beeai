@@ -1,8 +1,9 @@
 import react from '@vitejs/plugin-react-swc';
+import { resolve } from 'path';
+import { fileURLToPath, URL } from 'url';
 import { defineConfig } from 'vite';
 import svgr from 'vite-plugin-svgr';
 import tsconfigPaths from 'vite-tsconfig-paths';
-import { fileURLToPath, URL } from 'url';
 
 export default defineConfig({
   plugins: [
@@ -23,6 +24,11 @@ export default defineConfig({
       '/api': {
         target: 'http://localhost:8333',
       },
+    },
+  },
+  resolve: {
+    alias: {
+      '~@ibm': resolve(__dirname, './node_modules/@ibm'),
     },
   },
   css: {

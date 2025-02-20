@@ -1,49 +1,19 @@
 .root {
+  block-size: 100%;
+  display: flex;
+}
+
+.holder {
   display: grid;
-  block-size: 100%;
   grid-template-rows: max-content 1fr max-content;
+  row-gap: $spacing-06;
 }
 
-.content {
-  flex: 1;
-  min-block-size: 0;
-  max-block-size: 100%;
-  block-size: 100%;
-  position: relative;
-  display: flex;
-  flex-direction: column-reverse;
-  padding-block-end: $spacing-04;
-  padding-inline-end: $spacing-03;
-
-  overflow-y: auto;
-  scroll-behavior: smooth;
-  scrollbar-gutter: stable;
-
-  > ol {
-    display: flex;
-    flex-direction: column;
-    gap: $spacing-08;
-  }
-}
-
-.contentContainer {
-  block-size: 100%;
-  padding-block: $spacing-06;
-  display: flex;
-  flex-direction: column;
-  block-size: 100%;
-  overflow: hidden;
-}
-
-.scrollRef {
-  position: absolute;
-  inset-block-end: $spacing-06;
-  inset-inline-start: 0;
-}
-
-.head {
+.header {
+  padding-block: $spacing-03;
   display: flex;
   justify-content: space-between;
+  background-color: $layer;
 
   h1 {
     font-size: rem(16px);
@@ -54,14 +24,31 @@
   }
 }
 
-.bottom {
+.content {
   position: relative;
+  display: flex;
+  flex-direction: column-reverse;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  scrollbar-gutter: stable;
+  padding-block: $spacing-06;
+
+  > ol {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-09;
+  }
 }
 
-.bottomHolder {
-  padding-block-start: $spacing-03;
-  overflow-y: auto;
-  scrollbar-gutter: stable;
+.scrollRef {
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline-start: 0;
+}
+
+.bottom {
+  position: relative;
+  min-inline-size: 0;
 }
 
 .toBottomButton {

@@ -3,14 +3,15 @@ import { ErrorMessage } from '@/components/ErrorMessage/ErrorMessage';
 import { Container } from '@/components/layouts/Container';
 import { MarkdownContent } from '@/components/MarkdownContent/MarkdownContent';
 import { TagsList } from '@/components/TagsList/TagsList';
-import { ViewStack } from '@/components/ViewStack/ViewStack';
 import { routes } from '@/utils/router';
 import { isStringTerminalParameterSafe } from '@/utils/strings';
 import { ArrowUpRight } from '@carbon/icons-react';
-import { Button, ButtonSkeleton, SkeletonPlaceholder, SkeletonText } from '@carbon/react';
+import { Button, ButtonSkeleton, SkeletonText } from '@carbon/react';
+import clsx from 'clsx';
 import { useAgent } from '../api/queries/useAgent';
 import { AgentMetadata } from '../components/AgentMetadata';
 import { AgentTags } from '../components/AgentTags';
+import { getAgentTitle } from '../utils';
 import classes from './AgentDetail.module.scss';
 
 interface Props {
@@ -24,74 +25,79 @@ export function AgentDetail({ name }: Props) {
 
   return (
     <Container>
-      <ViewStack>
-        {!isPending ? (
-          agent ? (
-            <div className={classes.root}>
-              <header className={classes.header}>
-                <div className={classes.metadata}>
-                  <AgentMetadata agent={agent} />
-                  <AgentTags agent={agent} />
-                </div>
-                <h1>{agent?.title ?? agent.name}</h1>
-              </header>
+      {!isPending ? (
+        agent ? (
+          <div className={classes.root}>
+            <h1 className={classes.name}>{getAgentTitle(agent)}</h1>
 
+            <AgentMetadata agent={agent} className={classes.metadata} />
+
+            {agent.description && (
               <MarkdownContent className={classes.description}>{agent.description}</MarkdownContent>
+            )}
 
-              <div className={classes.runAgent}>
-                <CopySnippet snippet={runCommand} className={classes.runCommandInput} />
+            <AgentTags agent={agent} className={classes.tags} />
 
-                <Button kind="primary" renderIcon={ArrowUpRight} size="md" href={routes.agentRun({ name })}>
+            <div className={classes.buttons}>
+              {agent.ui === 'chat' && (
+                <Button
+                  kind="primary"
+                  renderIcon={ArrowUpRight}
+                  size="md"
+                  href={routes.agentRun({ name })}
+                  className={classes.tryButton}
+                >
                   Try this agent
                 </Button>
-              </div>
-
-              {agent.fullDescription && (
-                <>
-                  <hr />
-                  <div className={classes.body}>
-                    <MarkdownContent>{agent.fullDescription}</MarkdownContent>
-                  </div>
-                </>
               )}
+
+              <CopySnippet snippet={runCommand} className={classes.copySnippet} />
             </div>
-          ) : (
-            <ErrorMessage
-              title="Failed to load the agent."
-              onRetry={refetch}
-              isRefetching={isRefetching}
-              subtitle={error?.message}
-            />
-          )
+
+            {agent.fullDescription && (
+              <>
+                <hr className={classes.divider} />
+
+                <MarkdownContent>{agent.fullDescription}</MarkdownContent>
+              </>
+            )}
+          </div>
         ) : (
-          <AgentCardSkeleton />
-        )}
-      </ViewStack>
+          <ErrorMessage
+            title="Failed to load the agent."
+            onRetry={refetch}
+            isRefetching={isRefetching}
+            subtitle={error?.message}
+          />
+        )
+      ) : (
+        <AgentDetailSkeleton />
+      )}
     </Container>
   );
 }
 
-function AgentCardSkeleton() {
+function AgentDetailSkeleton() {
   return (
-    <div className={classes.skeleton}>
-      <header className={classes.header}>
-        <div className={classes.metadata}>
-          <SkeletonText width="20%" />
-          <TagsList.Skeleton length={2} />
-        </div>
-        <h1>
-          <SkeletonPlaceholder className={classes.name} />
-        </h1>
-      </header>
+    <div className={classes.root}>
+      <SkeletonText className={classes.name} width="50%" />
 
-      <div className={classes.body}>
-        <SkeletonText className={classes.description} paragraph lineCount={6} />
+      <AgentMetadata.Skeleton className={classes.metadata} />
+
+      <SkeletonText className={classes.description} paragraph lineCount={3} />
+
+      <TagsList.Skeleton length={2} className={classes.tags} />
+
+      <div className={classes.buttons}>
+        {/* .cds--layout--size-md fixes Carbon bug where button size prop is not respected */}
+        <ButtonSkeleton size="md" className={clsx('cds--layout--size-md', classes.tryButton)} />
+
+        <ButtonSkeleton size="md" className={clsx('cds--layout--size-md', classes.copySnippet)} />
       </div>
 
-      <div className={classes.runAgent}>
-        <ButtonSkeleton />
-        <ButtonSkeleton />
-      </div>
+      <hr className={classes.divider} />
+
+      <SkeletonText paragraph lineCount={6} />
     </div>
   );
 }

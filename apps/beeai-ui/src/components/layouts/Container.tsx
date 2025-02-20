@@ -3,7 +3,7 @@ import { PropsWithChildren } from 'react';
 import classes from './Container.module.scss';
 
 interface Props {
-  size?: 'sm' | 'md' | 'xlg';
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xlg';
   className?: string;
 }
 

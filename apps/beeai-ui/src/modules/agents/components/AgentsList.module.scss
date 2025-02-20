@@ -1,5 +1,19 @@
-.root {
+.header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  column-gap: $gap;
+}
+
+.count {
+  font-size: rem(14px);
+  line-height: math.div(20, 14);
+  color: $text-secondary;
+  margin-inline-end: auto;
+}
+
+.list {
   display: flex;
   flex-direction: column;
-  row-gap: $gap;
+  row-gap: $spacing-05;
 }

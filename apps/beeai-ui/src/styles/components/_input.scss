@@ -2,12 +2,15 @@
 
 .cds--text-area,
 .cds--text-input {
-  border: 1px solid $border-subtle-00;
+  border: 1px solid $border-subtle;
   border-radius: $spacing-03;
   background-color: $layer;
   &,
   .cds--modal & {
     background-color: transparent;
+  }
+  &:focus-within {
+    outline: 2px solid $background-inverse;
   }
 }
 

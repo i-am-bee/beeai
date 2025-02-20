@@ -1,11 +1,11 @@
-import { Container } from '@/components/layouts/Container';
-import { useAgent } from '../agents/api/queries/useAgent';
-import classes from './AgentRun.module.scss';
-import { Loading } from '@carbon/react';
 import { ErrorMessage } from '@/components/ErrorMessage/ErrorMessage';
+import { Container } from '@/components/layouts/Container';
+import { Loading } from '@carbon/react';
+import { useAgent } from '../agents/api/queries/useAgent';
+import { getAgentTitle } from '../agents/utils';
+import classes from './AgentRun.module.scss';
 import { Chat } from './chat/Chat';
 import { ChatProvider } from './contexts/ChatProvider';
-import { getAgentTitle } from '../agents/utils';
 
 interface Props {
   name: string;
@@ -21,7 +21,7 @@ export function AgentRun({ name }: Props) {
           <Chat />
         </ChatProvider>
       ) : (
-        <Container>
+        <Container size="sm">
           <h1>{getAgentTitle(agent)}</h1>
           <div className={classes.uiNotAvailable}>
             {agent.ui
@@ -31,7 +31,7 @@ export function AgentRun({ name }: Props) {
         </Container>
       )
     ) : (
-      <Container>
+      <Container size="sm">
         <ErrorMessage
           title="Failed to load the agent."
           onRetry={refetch}

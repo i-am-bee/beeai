@@ -7,7 +7,7 @@ interface AgentsContextValue {
   agentsQuery: ReturnType<typeof useListAgents>;
 }
 
-export interface FilterFormValues {
+export interface AgentsFiltersParams {
   search?: string;
-  frameworks: string[];
+  framework?: string | null;
 }

@@ -1,10 +1,8 @@
-.root {
-  padding-block: $spacing-05;
-}
-
 .holder {
   display: flex;
   column-gap: $gap;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
+  padding-block: $spacing-07;
+  border-block-start: 1px solid $border-subtle;
 }

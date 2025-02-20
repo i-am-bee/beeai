@@ -1,75 +1,46 @@
 .root {
-  display: contents;
+  padding-block-start: $spacing-05;
 
-  hr {
+  .name {
+    font-size: rem(50px);
+    line-height: math.div(65, 50);
+    margin-block-end: $spacing-05;
+  }
+
+  .metadata {
+    margin-block-end: $spacing-03;
+  }
+
+  .description {
+    max-inline-size: 80%;
+    font-size: rem(18px);
+    line-height: math.div(24, 18);
+    color: $text-secondary;
+  }
+
+  .tags {
+    margin-block-start: $spacing-05;
+  }
+
+  .buttons {
+    display: flex;
+    align-items: flex-start;
+    gap: $spacing-05;
+    margin-block-start: $spacing-06;
+  }
+
+  .tryButton {
+    min-inline-size: rem(208px);
+  }
+
+  .copySnippet {
+    min-inline-size: rem(288px);
+  }
+
+  .divider {
     inline-size: 100%;
     border: none;
     border-block-start: 1px solid $border-subtle;
-    margin-block: $spacing-07;
-  }
-}
-
-.header {
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-03;
-
-  h1 {
-    font-size: rem(40px);
-    line-height: math.div(52, 40);
-    font-weight: 400;
-  }
-}
-
-.metadata {
-  display: flex;
-  justify-content: space-between;
-}
-
-.description p {
-  font-size: rem(18px);
-  line-height: math.div(23.4, 18);
-}
-
-.runAgent {
-  display: flex;
-  gap: $spacing-04;
-
-  .runCommandInput {
-    min-inline-size: rem(290px);
-  }
-}
-
-.body {
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-05;
-  font-size: rem(14px);
-
-  h2 {
-    font-size: rem(14px);
-    font-weight: 700;
-  }
-}
-
-.skeleton {
-  display: contents;
-  h1 > div {
-    inline-size: 40%;
-    block-size: rem(34px);
-  }
-  .body > div {
-    display: flex;
-    flex-direction: column;
-    gap: $spacing-03;
-  }
-  .runAgent {
-    :global(.cds--skeleton) {
-      block-size: rem(48px);
-      overflow: hidden;
-      &:first-child {
-        inline-size: 40%;
-      }
-    }
+    margin-block: $spacing-09;
   }
 }

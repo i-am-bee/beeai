@@ -15,6 +15,20 @@
       color: $text-inverse;
     }
   }
+
+  &.cds--tag--operational {
+    border-color: $border-subtle;
+    background-color: $layer;
+    &:hover {
+      background-color: $layer-hover-01;
+    }
+
+    &.selected {
+      background-color: $background-inverse;
+      border-color: $background-inverse;
+      color: $text-inverse;
+    }
+  }
 }
 
 .cds--tag:has(.cds--tag__custom-icon + .cds--tag__label:empty) {

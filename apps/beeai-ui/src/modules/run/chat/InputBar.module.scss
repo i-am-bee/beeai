@@ -1,38 +1,18 @@
 @use '@carbon/styles/scss/utilities/visually-hidden' as *;
 
 .root {
-  display: grid;
-  row-gap: $spacing-02;
+  position: relative;
 }
 
-.container {
-  position: relative;
+.textarea {
+  max-block-size: rem(192px);
+  overflow-y: auto;
   border: 1px solid $border-subtle;
   border-radius: $spacing-03;
-  background-color: $background;
-}
-
-.inputContainer {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-}
-
-.actionBar {
-  display: flex;
-  justify-content: flex-end;
-  padding: $spacing-02;
-}
-
-.files {
-  padding: $spacing-04 $spacing-04 0;
-}
-
-.root .textarea {
   &::after,
   > textarea {
-    padding-inline: $spacing-04;
-    padding-block: rem(10px);
+    padding: $spacing-04;
+    padding-inline-end: rem(56px);
     border-radius: $spacing-03;
   }
   > textarea {
@@ -49,4 +29,10 @@
       }
     }
   }
+}
+
+.buttonContainer {
+  position: absolute;
+  inset-inline-end: $spacing-04;
+  inset-block-end: $spacing-04;
 }

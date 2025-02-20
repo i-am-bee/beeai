@@ -3,6 +3,9 @@
 .cds--btn {
   border-radius: $border-radius;
   padding-inline-end: rem(49px);
+  &.cds--skeleton {
+    overflow: hidden;
+  }
 }
 
 .cds--btn--icon-only {
@@ -20,7 +23,7 @@
 }
 
 .cds--btn--tertiary {
-  border-color: $border-subtle-00;
+  border-color: $border-subtle;
   &:hover,
   &:active,
   &:focus {
@@ -34,7 +37,7 @@
   &:active {
     background-color: $background-active;
     &:not(:focus) {
-      border-color: $border-subtle-00;
+      border-color: $border-subtle;
     }
   }
 }
