@@ -1,6 +1,6 @@
 import { routes } from '@/utils/router';
-import { NavLink } from 'react-router';
 import classes from './MainNav.module.scss';
+import { TransitionLink } from '../TransitionLink/TransitionLink';
 
 export function MainNav() {
   return (
@@ -8,9 +8,9 @@ export function MainNav() {
       <ul className={classes.list}>
         {NAV_ITEMS.map(({ label, to }, idx) => (
           <li key={idx}>
-            <NavLink to={to} className={classes.link}>
+            <TransitionLink to={to} className={classes.link}>
               {label}
-            </NavLink>
+            </TransitionLink>
           </li>
         ))}
       </ul>
