@@ -1,0 +1,24 @@
+[tools.node]
+version = "22.14.0"
+backend = "core:node"
+
+[tools.node.checksums]
+"node-v22.14.0-darwin-arm64.tar.gz" = "sha256:e9404633bc02a5162c5c573b1e2490f5fb44648345d64a958b17e325729a5e42"
+
+[tools.pnpm]
+version = "10.4.1"
+backend = "aqua:pnpm/pnpm"
+
+[tools.pnpm.checksums]
+pnpm-macos-arm64 = "sha256:0b396d48e9697588bfd4f3d40ed0d10d043432ecf1fe30dcdcad0f87b6d4140a"
+
+[tools.python]
+version = "3.11.11"
+backend = "core:python"
+
+[tools.uv]
+version = "0.6.2"
+backend = "aqua:astral-sh/uv"
+
+[tools.uv.checksums]
+"uv-aarch64-apple-darwin.tar.gz" = "sha256:4af802a1216053650dd82eee85ea4241994f432937d41c8b0bc90f2639e6ae14"
