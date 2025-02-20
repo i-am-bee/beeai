@@ -35,6 +35,6 @@ jobs:
       - run: |
           echo "//registry.npmjs.org/:_authToken=${{secrets.NPM_TOKEN}}" > ~/.npmrc
           pnpm publish --access public --no-git-checks
-        working-directory: packages/acp-typescript-sdk
+        working-directory: packages/beeai-sdk
         env:
           NPM_CONFIG_PROVENANCE: true # https://github.com/pnpm/pnpm/issues/6435#issuecomment-1518397267
