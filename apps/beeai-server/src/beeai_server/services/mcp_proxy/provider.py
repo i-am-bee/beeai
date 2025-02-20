@@ -1,3 +1,17 @@
+# Copyright 2025 IBM Corp.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import asyncio
 import logging
 from contextlib import AsyncExitStack
@@ -136,9 +150,7 @@ class LoadedProvider:
     async def _initialize_session(self):
         logger.info("Initializing session")
         await self._close_session()
-        read_stream, write_stream = await self._session_exit_stack.enter_async_context(
-            self.provider.manifest.mcp_client()
-        )
+        read_stream, write_stream = await self._session_exit_stack.enter_async_context(self.provider.mcp_client())
         session = await self._session_exit_stack.enter_async_context(ClientSession(read_stream, write_stream))
         with anyio.fail_after(self.INITIALIZE_TIMEOUT.total_seconds()):
             self._initialize_result = await session.initialize()

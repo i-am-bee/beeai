@@ -1,11 +1,27 @@
-import { Container } from '@/components/layouts/Container';
-import { useAgent } from '../agents/api/queries/useAgent';
-import classes from './AgentRun.module.scss';
-import { Loading } from '@carbon/react';
+/**
+ * Copyright 2025 IBM Corp.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { ErrorMessage } from '@/components/ErrorMessage/ErrorMessage';
+import { Container } from '@/components/layouts/Container';
+import { Loading } from '@carbon/react';
+import { useAgent } from '../agents/api/queries/useAgent';
+import { getAgentTitle } from '../agents/utils';
+import classes from './AgentRun.module.scss';
 import { Chat } from './chat/Chat';
 import { ChatProvider } from './contexts/ChatProvider';
-import { getAgentTitle } from '../agents/utils';
 
 interface Props {
   name: string;
@@ -21,7 +37,7 @@ export function AgentRun({ name }: Props) {
           <Chat />
         </ChatProvider>
       ) : (
-        <Container>
+        <Container size="sm">
           <h1>{getAgentTitle(agent)}</h1>
           <div className={classes.uiNotAvailable}>
             {agent.ui
@@ -31,7 +47,7 @@ export function AgentRun({ name }: Props) {
         </Container>
       )
     ) : (
-      <Container>
+      <Container size="sm">
         <ErrorMessage
           title="Failed to load the agent."
           onRetry={refetch}

@@ -21,7 +21,7 @@ jobs:
       - run: mise beeai-sdk:build:py
       - uses: pypa/gh-action-pypi-publish@76f52bc884231f62b9a034ebfe128415bbaabdfc
         with:
-          packages-dir: packages/beeai-sdk/dist
+          packages-dir: packages/beeai-sdk/dist-py
 
   publish-npm:
     name: Publish on NPM
@@ -32,8 +32,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
       - run: mise beeai-sdk:build:js
-      - run: pnpm publish --access public
-        working-directory: packages/mcp-typescript-sdk
+      - run: |
+          echo "//registry.npmjs.org/:_authToken=${{secrets.NPM_TOKEN}}" > ~/.npmrc
+          pnpm publish --access public --no-git-checks
+        working-directory: packages/beeai-sdk
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: true # https://github.com/pnpm/pnpm/issues/6435#issuecomment-1518397267

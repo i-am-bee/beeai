@@ -1,3 +1,17 @@
+# Copyright 2025 IBM Corp.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import logging
 from datetime import timedelta
 
@@ -30,7 +44,10 @@ async def check_official_registry(configuration: Configuration, provider_service
         resp = yaml.safe_load(resp.content)["providers"]
         for provider in resp:
             try:
-                provider_manifest = CreateProviderRequest(location=provider["url"]).location
+                provider_manifest = CreateProviderRequest(
+                    location=provider["url"],
+                    env=provider.get("env", None),
+                ).location
                 await provider_manifest.resolve()
                 desired_providers.add(provider_manifest.provider_id)
             except ValueError as e:
@@ -41,7 +58,7 @@ async def check_official_registry(configuration: Configuration, provider_service
     for provider in new_providers:
         try:
             location = CreateProviderRequest(location=provider).location
-            await provider_service.add_provider(location, registry)
+            await provider_service.add_provider(location=location, registry=registry)
             logger.info(f"Added provider {provider}")
         except Exception as ex:
             errors.append(ex)
@@ -49,7 +66,7 @@ async def check_official_registry(configuration: Configuration, provider_service
     for provider in old_providers:
         try:
             location = DeleteProviderRequest(location=provider).location
-            await provider_service.delete_provider(location)
+            await provider_service.delete_provider(location=location)
             logger.info(f"Removed provider {provider}")
         except Exception as ex:
             errors.append(ex)

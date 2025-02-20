@@ -1,3 +1,19 @@
+/**
+ * Copyright 2025 IBM Corp.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 .root {
   min-block-size: 100%;
   display: flex;
@@ -5,9 +21,6 @@
 }
 
 .holder {
-  display: flex;
-  flex-direction: column;
-  row-gap: $spacing-08;
   max-inline-size: rem(400px);
 }
 
@@ -15,10 +28,38 @@
   font-size: rem(24px);
   line-height: math.div(32, 24);
   color: $text-dark;
+  margin-block-start: $spacing-08;
 }
 
-.cta {
+.bottom {
   display: flex;
   align-items: flex-start;
   column-gap: $spacing-05;
+  margin-block-start: $spacing-06;
+}
+
+.buttons {
+  display: flex;
+  flex-direction: column;
+  row-gap: $spacing-03;
+  flex-grow: 1;
+}
+
+.button {
+  &:global(.cds--btn) {
+    inline-size: 100%;
+    border-color: $text-dark;
+  }
+}
+
+.link {
+  font-size: rem(12px);
+  line-height: math.div(18, 12);
+  letter-spacing: rem(0.16px);
+  max-inline-size: max-content;
+  text-decoration: none;
+  color: $text-secondary;
+  &:hover {
+    color: $text-primary;
+  }
 }

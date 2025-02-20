@@ -1,21 +1,21 @@
-import { Container } from '@/components/layouts/Container';
-import { ViewStack } from '@/components/ViewStack/ViewStack';
-import { routes } from '@/utils/router';
-import { Button } from '@carbon/react';
-import { Link } from 'react-router';
+/**
+ * Copyright 2025 IBM Corp.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { ErrorPage } from '@/components/ErrorPage/ErrorPage';
 
 export function NotFound() {
-  return (
-    <Container>
-      <ViewStack>
-        <h1>Oh no! You've wandered out of the hive!</h1>
-
-        <p>This page is un-BEE-lievable&hellip; because it doesn’t exist!</p>
-
-        <Button as={Link} to={routes.home()}>
-          Buzz back to safety!
-        </Button>
-      </ViewStack>
-    </Container>
-  );
+  return <ErrorPage />;
 }

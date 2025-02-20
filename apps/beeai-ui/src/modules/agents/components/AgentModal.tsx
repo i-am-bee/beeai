@@ -1,12 +1,28 @@
-import { Agent } from '../api/types';
+/**
+ * Copyright 2025 IBM Corp.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { CopySnippet } from '@/components/CopySnippet/CopySnippet';
 import { Modal } from '@/components/Modal/Modal';
+import { ModalProps } from '@/contexts/Modal/modal-context';
 import { ArrowUpRight } from '@carbon/icons-react';
 import { Button, ModalBody, ModalHeader } from '@carbon/react';
+import { Agent } from '../api/types';
 import { AgentMetadata } from './AgentMetadata';
 import classes from './AgentModal.module.scss';
 import { AgentTags } from './AgentTags';
-import { CopySnippet } from '@/components/CopySnippet/CopySnippet';
-import { ModalProps } from '@/contexts/Modal/modal-context';
 
 interface Props extends ModalProps {
   agent: Agent;
