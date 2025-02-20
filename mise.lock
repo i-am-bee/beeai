@@ -16,6 +16,13 @@ pnpm-macos-arm64 = "sha256:0b396d48e9697588bfd4f3d40ed0d10d043432ecf1fe30dcdcad0
 version = "3.11.11"
 backend = "core:python"
 
+[tools."ubi:B1NARY-GR0UP/nwa"]
+version = "0.5.2"
+backend = "ubi:B1NARY-GR0UP/nwa"
+
+[tools."ubi:B1NARY-GR0UP/nwa".checksums]
+nwa-macos-aarch64 = "sha256:128c6bbae86b8725381355d04132d4d8e71d54a01313cea0d0c20a294d058c9f"
+
 [tools.uv]
 version = "0.6.2"
 backend = "aqua:astral-sh/uv"

@@ -3,9 +3,7 @@ name = "beeai-cli"
 version = "0.0.2"
 description = "Add your description here"
 readme = "README.md"
-authors = [
-    { name = "Radek Ježek", email = "radek.jezek@ibm.com" }
-]
+authors = [{ name = "IBM Corp." }]
 requires-python = ">=3.11,<4.0"
 dependencies = [
     "acp-sdk>=0.0.1",
