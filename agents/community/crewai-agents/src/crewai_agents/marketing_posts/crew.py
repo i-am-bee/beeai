@@ -100,12 +100,13 @@ class MarketingPostsCrew():
 		)
 
 	@crew
-	def crew(self) -> Crew:
+	def crew(self, step_callback) -> Crew:
 		"""Creates the MarketingPosts crew"""
 		return Crew(
 			agents=self.agents, # Automatically created by the @agent decorator
 			tasks=self.tasks, # Automatically created by the @task decorator
 			process=Process.sequential,
-			verbose=True
+			verbose=True,
+			step_callback=step_callback
 			# process=Process.hierarchical, # In case you wanna use that instead https://docs.crewai.com/how-to/Hierarchical/
 		)
