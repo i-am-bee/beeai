@@ -15,6 +15,8 @@
 from typing import Annotated, Literal, Union
 from pydantic import BaseModel, Discriminator
 
+from beeai_sdk.schemas.base import Input, Output
+
 
 class UserMessage(BaseModel):
     role: Literal["user"]
@@ -29,9 +31,9 @@ class AssistantMessage(BaseModel):
 Message = Annotated[Union[UserMessage, AssistantMessage], Discriminator("role")]
 
 
-class MessageInput(BaseModel):
+class MessageInput(Input):
     messages: list[Message]
 
 
-class MessageOutput(BaseModel):
+class MessageOutput(Output):
     messages: list[Message]

@@ -12,12 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pydantic import BaseModel
+from beeai_sdk.schemas.base import Input, Output
 
 
-class PromptInput(BaseModel):
+class PromptInput(Input):
     prompt: str
 
 
-class PromptOutput(BaseModel):
+class PromptOutput(Output):
     text: str
