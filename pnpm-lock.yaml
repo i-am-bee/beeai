@@ -39,8 +39,8 @@ importers:
         specifier: ^0.0.1
         version: 0.0.1
       '@i-am-bee/beeai-sdk':
-        specifier: ^0.0.2
-        version: 0.0.2
+        specifier: ^0.0.4
+        version: 0.0.4
       bee-agent-framework:
         specifier: ^0.1.2
         version: 0.1.2(@aws-sdk/client-bedrock-runtime@3.751.0)(ollama-ai-provider@1.2.0(zod@3.24.2))(react@19.0.0)(yaml@2.7.0)
@@ -1157,8 +1157,8 @@ packages:
     resolution: {integrity: sha512-NkXiKS66YDb1lefj2hN9o0I4l0xQLf4gZruve3a//dWOWQ42qL7cUWFkS5FTJ9Hg15fobAfdFqOi1ifsNzm/tQ==}
     engines: {node: '>=18'}
 
-  '@i-am-bee/beeai-sdk@0.0.2':
-    resolution: {integrity: sha512-Ezfku/PUwlPos26YSG47aybsWagBzCnirN0sSrH2XP6NiHXNFCmPBXLrWiSJKm4JHOiEbg6zrfrKYhRoo4yinQ==}
+  '@i-am-bee/beeai-sdk@0.0.4':
+    resolution: {integrity: sha512-ixvX8BNt09CFH1YlVqPRT+PvzDnDKStGuVAFIStLNsKjxDUBeMyRBF2R7ayd9BSLq63lg5TwkAxzI7TB4CIK+Q==}
 
   '@ibm/plex-mono@0.0.3-alpha.0':
     resolution: {integrity: sha512-xSa/c1vrzGmMR5xQr/aWP/q62jUD41mKwm2w4kFsvIVyT9fxC3wq81UYMSGBxQZ6+P1AROMSefF22aLXkv6uqw==}
@@ -7761,13 +7761,15 @@ snapshots:
       zod: 3.24.2
       zod-to-json-schema: 3.24.1(zod@3.24.2)
 
-  '@i-am-bee/beeai-sdk@0.0.2':
+  '@i-am-bee/beeai-sdk@0.0.4':
     dependencies:
       '@i-am-bee/acp-sdk': 0.0.1
       '@opentelemetry/api': 1.9.0
       '@opentelemetry/sdk-node': 0.57.2(@opentelemetry/api@1.9.0)
       '@opentelemetry/semantic-conventions': 1.30.0
+      '@types/stoppable': 1.1.3
       express: 4.21.2
+      stoppable: 1.1.0
       zod: 3.24.2
     transitivePeerDependencies:
       - supports-color
