@@ -16,18 +16,21 @@
 
 .root {
   padding-block-start: $spacing-05;
+  display: flex;
+  flex-direction: column;
 
   .name {
     font-size: rem(50px);
     line-height: math.div(65, 50);
-    margin-block-end: $spacing-05;
+    margin-block-end: 0;
   }
 
   .metadata {
-    margin-block-end: $spacing-03;
+    margin-block-start: $spacing-05;
   }
 
   .description {
+    margin-block-start: $spacing-03;
     max-inline-size: 80%;
     font-size: rem(18px);
     line-height: math.div(24, 18);

@@ -36,8 +36,28 @@
   scrollbar-gutter: stable;
   grid-area: main;
   scroll-behavior: smooth;
+  view-transition-name: main;
 }
 
 .footer {
   grid-area: footer;
+}
+
+::view-transition-old(main),
+::view-transition-new(main) {
+  animation-duration: $duration-moderate-01;
+}
+
+::view-transition-old(main) {
+  opacity: 1;
+}
+::view-transition-old(main).view-transition-leaving {
+  opacity: 0;
+}
+
+::view-transition-new(main) {
+  opacity: 0;
+}
+::view-transition-new(main).view-transition-entering {
+  opacity: 1;
 }
