@@ -32,7 +32,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
       - run: mise beeai-sdk:build:js
-      - run: pnpm publish --access public
+      - run: pnpm publish --access public --no-git-checks
         working-directory: packages/acp-typescript-sdk
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
