@@ -69,7 +69,7 @@ outputs = { auto = true }
 hide = true
 dir = "{{config_root}}"
 run = "pnpm install"
-sources = ["pnpm-lock.yaml", "pnpm-workspace.yaml", "apps/*/package.json", "packages/*/package.json", "docs/package.json"]
+sources = ["pnpm-lock.yaml", "pnpm-workspace.yaml", "apps/*/package.json", "packages/*/package.json", "docs/package.json", "agents/*/*/package.json"]
 outputs = { auto = true }
 
 [tasks."setup:uv"]
