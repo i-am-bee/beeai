@@ -12,10 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class Config(BaseModel):
-    """Base class for configuration models"""
-
     tools: list[str] | None = None
+
+
+class Input(BaseModel):
+    config: Config | None = None
+
+
+class Output(BaseModel):
+    model_config = ConfigDict(extra="allow")
