@@ -200,7 +200,7 @@ class PythonProvider(ManagedProvider):
         await self.check()
         python = [] if not self.pythonVersion else ["--python", self.pythonVersion]
         async with super()._get_mcp_client(
-            command=["uvx", *python, "--from", self.package, "--reinstall", *self.command],
+            command=["uvx", *python, "--from", self.package, *self.command],
             env=env,
         ) as client:
             yield client
