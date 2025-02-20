@@ -37,7 +37,7 @@ interface Props {
 export function AgentDetail({ name }: Props) {
   const { data: agent, isPending, error, refetch, isRefetching } = useAgent({ name });
 
-  const runCommand = `beeai run ${isStringTerminalParameterSafe(name) ? name : `'${name}'`}`;
+  const runCommand = `beeai agent run ${isStringTerminalParameterSafe(name) ? name : `'${name}'`}`;
 
   return (
     <Container>
