@@ -18,6 +18,6 @@
   .root {
     inset-block-end: $spacing-06;
     inset-inline-end: 50%;
-    transform: translateX(get-value($grid-breakpoints, 'xlg.width') / 2);
+    transform: translateX(math.div(get-value($grid-breakpoints, 'xlg.width'), 2));
   }
 }
