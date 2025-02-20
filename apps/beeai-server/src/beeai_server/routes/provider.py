@@ -22,8 +22,7 @@ router = fastapi.APIRouter()
 
 @router.post("")
 async def create_provider(request: CreateProviderRequest, provider_service: ProviderServiceDependency):
-    await provider_service.add_provider(location=request.location, env=request.env)
-    return fastapi.Response(status_code=fastapi.status.HTTP_201_CREATED)
+    return await provider_service.add_provider(location=request.location)
 
 
 @router.get("")

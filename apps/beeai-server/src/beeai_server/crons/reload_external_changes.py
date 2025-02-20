@@ -17,6 +17,7 @@ from datetime import timedelta
 
 from kink import inject
 
+from beeai_server.services.env import EnvService
 from beeai_server.services.provider import ProviderService
 from beeai_server.utils.periodic import periodic
 
@@ -25,11 +26,11 @@ logger = logging.getLogger(__name__)
 
 @periodic(period=timedelta(minutes=1))
 @inject
-async def reload_providers(provider_service: ProviderService):
+async def reload_providers(provider_service: ProviderService, env_service: EnvService):
     """
-    Periodically reload providers from provider repository.
+    Periodically external changes to providers and environment variables.
 
-    Runs at server start to initialize the providers and then every minute to sync any modifications to the provider
-    registry (by default a configuration file at ~/.beeai/providers.yaml).
+    Useful when ~/.beeai/.env or ~/.beeai/providers.yaml is modified manually
     """
+    await env_service.sync()
     await provider_service.sync()

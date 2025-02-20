@@ -51,7 +51,8 @@ async def run(
 
 
 @app.command("list")
-async def list():
+async def list_tools():
+    """List available tools"""
     result = await send_request(types.ListToolsRequest(method="tools/list"), types.ListToolsResult)
     table = Table("Name", "Description", "Input Schema", expand=True)
     for tool in result.tools:

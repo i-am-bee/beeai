@@ -17,20 +17,28 @@ import logging
 from contextlib import AsyncExitStack
 from datetime import timedelta
 from enum import StrEnum
-from typing import Self, Literal, Final
+from typing import Self, Literal, Final, TypeVar
 
 import anyio
+from anyio import create_task_group
+from anyio.abc import TaskGroup
+from anyio.streams.memory import MemoryObjectReceiveStream
+from kink import inject
+from pydantic import BaseModel
+from structlog.contextvars import bind_contextvars, unbind_contextvars
+
 from acp import ClientSession, Tool, Resource, InitializeResult, types, ServerSession
 from acp.shared.context import RequestContext
 from acp.shared.session import RequestResponder, ReceiveRequestT, SendResultT, ReceiveNotificationT
 from acp.types import AgentTemplate, Prompt, Agent
-from anyio import create_task_group
-from anyio.abc import TaskGroup
-from anyio.streams.memory import MemoryObjectReceiveStream
-from structlog.contextvars import bind_contextvars, unbind_contextvars
-
-from beeai_server.domain.model import Provider, LoadedProviderStatus
-from beeai_server.exceptions import UnsupportedProviderError
+from beeai_server.adapters.interface import IEnvVariableRepository
+from beeai_server.domain.model import (
+    Provider,
+    LoadedProviderStatus,
+    LoadProviderErrorMessage,
+    EnvVar,
+)
+from beeai_server.exceptions import UnsupportedProviderError, LoadFeaturesError
 from beeai_server.services.mcp_proxy.constants import NotificationStreamType
 from beeai_server.services.mcp_proxy.notification_hub import NotificationHub
 from beeai_server.utils.periodic import Periodic
@@ -38,7 +46,10 @@ from beeai_server.utils.utils import extract_messages
 
 logger = logging.getLogger(__name__)
 
+BaseModelT = TypeVar("BaseModelT", bound=BaseModel)
 
+
+@inject
 class LoadedProvider:
     """
     Manage a single provider connection:
@@ -57,7 +68,7 @@ class LoadedProvider:
         RequestResponder[ReceiveRequestT, SendResultT] | ReceiveNotificationT | Exception
     ]
     status: LoadedProviderStatus = LoadedProviderStatus.initializing
-    last_error: str | None = None
+    last_error: LoadProviderErrorMessage | None = None
     provider: Provider
     id: str
     agent_templates: list[AgentTemplate] = []
@@ -65,8 +76,9 @@ class LoadedProvider:
     tools: list[Tool] = []
     resources: list[Resource] = []
     prompts: list[Prompt] = []
+    missing_configuration: list[EnvVar] = []
 
-    def __init__(self, provider: Provider):
+    def __init__(self, provider: Provider, env_repository: IEnvVariableRepository):
         self.provider = provider
         self.id = provider.id
         self._open = False
@@ -76,18 +88,22 @@ class LoadedProvider:
             name=f"Ensure session for provider: {provider.id}",
         )
         self._session_exit_stack = AsyncExitStack()
-        self._writers_exit_stack = AsyncExitStack()
+        self._writer_exit_stack = AsyncExitStack()
         self._write_messages, self.incoming_messages = anyio.create_memory_object_stream()
         self._stopping = False
         self._stopped = asyncio.Event()
         self._supports_agents = True
         self._initialize_result: InitializeResult | None = None
+        self._env_repository = env_repository
 
     async def init(self):
         return await self.__aenter__()
 
     async def close(self):
         return await self.__aexit__(None, None, None)
+
+    def handle_reload_on_env_update(self):
+        self._ensure_session_periodic.poke()
 
     class _LoadFeature(StrEnum):
         agent_templates = "agent_templates"
@@ -99,6 +115,11 @@ class LoadedProvider:
         @classmethod
         def all(cls) -> list[Self]:
             return [member.value for member in cls]
+
+    def _with_id(self, objects: list[BaseModelT]) -> list[BaseModelT]:
+        for obj in objects:
+            obj.provider = self.id
+        return objects
 
     async def _load_features(self, features: set[_LoadFeature] | Literal["all"] = "all"):
         """
@@ -113,26 +134,23 @@ class LoadedProvider:
                     and self._initialize_result.capabilities.agents.templates
                     and self._LoadFeature.agent_templates in features
                 ):
-                    self.agent_templates = (await self.session.list_agent_templates()).agentTemplates
+                    self.agent_templates = self._with_id((await self.session.list_agent_templates()).agentTemplates)
                     logger.info(f"Loaded {len(self.agent_templates)} agent templates")
                 if self._initialize_result.capabilities.agents and self._LoadFeature.agents in features:
-                    self.agents = (await self.session.list_agents()).agents
+                    self.agents = self._with_id((await self.session.list_agents()).agents)
                     logger.info(f"Loaded {len(self.agents)} agents")
                 if self._initialize_result.capabilities.tools and self._LoadFeature.tools in features:
-                    self.tools = (await self.session.list_tools()).tools
+                    self.tools = self._with_id((await self.session.list_tools()).tools)
                     logger.info(f"Loaded {len(self.tools)} tools")
                 if self._initialize_result.capabilities.resources and self._LoadFeature.resources in features:
-                    self.resources = (await self.session.list_resources()).resources
+                    self.resources = self._with_id((await self.session.list_resources()).resources)
                     logger.info(f"Loaded {len(self.resources)} resources")
                 if self._initialize_result.capabilities.prompts and self._LoadFeature.prompts in features:
-                    self.prompts = (await self.session.list_prompts()).prompts
+                    self.prompts = self._with_id((await self.session.list_prompts()).prompts)
                     logger.info(f"Loaded {len(self.prompts)} prompts")
         except Exception as ex:
-            logger.error(f"Failed to load features: {ex!r}")
-            self.session = None  # Mark session as broken - reinitialize connection in next period
-            self.last_error = f"Failed to load features: {extract_messages(ex)}"
-            self.status = LoadedProviderStatus.error
-        self.status = LoadedProviderStatus.ready
+            logger.warning(f"Unable to load features from provider: {ex!r}")
+            raise LoadFeaturesError(extract_messages(ex)) from ex
 
     async def _stream_notifications(self, task_group: TaskGroup):
         async for message in self.session.incoming_messages:
@@ -150,7 +168,8 @@ class LoadedProvider:
     async def _initialize_session(self):
         logger.info("Initializing session")
         await self._close_session()
-        read_stream, write_stream = await self._session_exit_stack.enter_async_context(self.provider.mcp_client())
+        mcp_client = self.provider.mcp_client(env=await self._env_repository.get_all())
+        read_stream, write_stream = await self._session_exit_stack.enter_async_context(mcp_client)
         session = await self._session_exit_stack.enter_async_context(ClientSession(read_stream, write_stream))
         with anyio.fail_after(self.INITIALIZE_TIMEOUT.total_seconds()):
             self._initialize_result = await session.initialize()
@@ -159,7 +178,7 @@ class LoadedProvider:
 
         self.session = session
         tg.start_soon(self._stream_notifications, tg)
-        tg.start_soon(self._load_features)
+        await self._load_features()
 
     async def _close_session(self):
         try:
@@ -176,33 +195,44 @@ class LoadedProvider:
             unbind_contextvars("provider")
             return
         try:
-            if self.session:
+            await self.provider.manifest.check_compatibility()
+
+            env = await self._env_repository.get_all()
+            new_missing_configuration = self.provider.manifest.check_env(env=env, raise_error=False)
+            if self.session and self.missing_configuration == new_missing_configuration:
                 with anyio.fail_after(self.PING_TIMEOUT.total_seconds()):
                     await self.session.send_ping()
                 return
-            await self.provider.manifest.check()
+
+            self.missing_configuration = new_missing_configuration
+            self.status = LoadedProviderStatus.initializing
             await self._initialize_session()
+            self.status = LoadedProviderStatus.ready
+        except UnsupportedProviderError as ex:
+            self.last_error = LoadProviderErrorMessage(message=extract_messages(ex))
+            self.status = LoadedProviderStatus.unsupported
+        except LoadFeaturesError as ex:
+            self.last_error = LoadProviderErrorMessage(message=extract_messages(ex))
+            self.status = LoadedProviderStatus.error
         except TimeoutError:
             logger.warning("The server did not respond in time, we assume it is processing a request.")
-        except UnsupportedProviderError as ex:
-            self.last_error = str(ex)
-            self.status = LoadedProviderStatus.unsupported
         except Exception as ex:  # TODO narrow exception scope
-            self.session = None
-            logger.warning(f"Error connecting to provider: {ex!r}")
-            self.last_error = f"Error connecting to provider: {extract_messages(ex)}"
+            self.last_error = LoadProviderErrorMessage(message=f"Error connecting to provider: {extract_messages(ex)}")
             self.status = LoadedProviderStatus.error
         finally:
+            if self.status in {LoadedProviderStatus.error, LoadedProviderStatus.unsupported}:
+                logger.warning(f"Error connecting to provider: {self.last_error}")
+                self.session = None  # Mark session as broken - reinitialize connection in next period
             unbind_contextvars("provider")
 
     async def __aenter__(self):
         self._stopping = False
         logger.info("Loading provider")
-        await self._writers_exit_stack.enter_async_context(self._write_messages)
+        await self._writer_exit_stack.enter_async_context(self._write_messages)
         await self._ensure_session_periodic.start()
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
-        await self._writers_exit_stack.aclose()
+        await self._writer_exit_stack.aclose()
         self._stopping = True
         self._ensure_session_periodic.poke()
         await self._stopped.wait()
@@ -311,6 +341,10 @@ class ProviderContainer:
     def handle_providers_change(self, updated_providers: list[Provider]) -> None:
         self._desired_providers = updated_providers
         self._provider_change_task_group.start_soon(self._handle_providers_change)
+
+    def handle_reload_on_env_update(self):
+        for provider in self.loaded_providers:
+            provider.handle_reload_on_env_update()
 
     async def __aenter__(self):
         await self._exit_stack.enter_async_context(self._notification_hub)
