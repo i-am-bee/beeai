@@ -7,14 +7,14 @@ import { AgentsProvider } from '@/modules/agents/contexts/AgentsProvider';
 
 export function Agents() {
   return (
-      <Container>
-        <ViewStack>
-          <AgentsProvider>
-            <AgentsFilters />
+    <Container>
+      <ViewStack>
+        <AgentsProvider>
+          <AgentsFilters />
 
-            <AgentsList />
-          </AgentsProvider>
-        </ViewStack>
-      </Container>
+          <AgentsList />
+        </AgentsProvider>
+      </ViewStack>
+    </Container>
   );
 }
