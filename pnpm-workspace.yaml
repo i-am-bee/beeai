@@ -2,6 +2,7 @@ packages:
   - apps/beeai-ui
   - docs
   - agents/official/bee-agent-framework
+  - agents/official/bee-supervisor
   - packages/beeai-sdk
   - packages/acp-typescript-sdk
 

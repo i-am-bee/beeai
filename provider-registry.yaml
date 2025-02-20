@@ -1,3 +1,4 @@
 providers:
 - url: git+https://github.com/i-am-bee/beeai@main#path=/agents/community/gpt-researcher-agent
 - url: git+https://github.com/i-am-bee/beeai@main#path=/agents/official/bee-agent-framework
+- url: git+https://github.com/i-am-bee/beeai@main#path=/agents/official/bee-supervisor
