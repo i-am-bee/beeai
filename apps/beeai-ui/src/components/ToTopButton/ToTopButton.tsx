@@ -9,7 +9,7 @@ interface Props {
 export function ToTopButton({ onClick }: Props) {
   return (
     <div className={classes.root}>
-      <IconButton label="To top" kind="tertiary" onClick={onClick}>
+      <IconButton label="To top" kind="tertiary" size="md" onClick={onClick}>
         <ArrowUp />
       </IconButton>
     </div>
