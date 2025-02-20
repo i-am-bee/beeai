@@ -257,7 +257,7 @@ wheels = [
 
 [[package]]
 name = "beeai-sdk"
-version = "0.0.2"
+version = "0.0.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "acp-sdk" },
@@ -265,9 +265,9 @@ dependencies = [
     { name = "opentelemetry-sdk" },
     { name = "pydantic" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/6f/12/96be0ae97c51935fa8f2bf90503040c400f4c898fdba56cca2a0c48654fe/beeai_sdk-0.0.2.tar.gz", hash = "sha256:a98905c2e55f0aa330bdeeb0df1b26e73f160bfa8c7f150b8c10612c60b2f2a6", size = 2437 }
+sdist = { url = "https://files.pythonhosted.org/packages/db/b2/fa8478942ec1d80916fc1f4cea464ca5435eae8c337ef2898bad43002bbc/beeai_sdk-0.0.3.tar.gz", hash = "sha256:400f1e5e07169bb12486921a9ddcbbdc791b5f52b0040caf0fbc7b39174be3e8", size = 2584 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/03/49/42c56893b7e83227c8f8361e6a6d291688ed83e7143f16a557c0f279ce77/beeai_sdk-0.0.2-py3-none-any.whl", hash = "sha256:ae042b86cc4609cc42e79f2985c3cf4a7767f7f7380d10e4be8f8b4f063f802d", size = 3426 },
+    { url = "https://files.pythonhosted.org/packages/0b/3f/8f05511c821310a93c0239512ebcdfb21b3d19fd1aef3fc4c5822afd51a8/beeai_sdk-0.0.3-py3-none-any.whl", hash = "sha256:f3b84aa78b8f3d7e0838d524e9512b3a74b531686e1b5b5ddf1b7a35497e3c91", size = 5369 },
 ]
 
 [[package]]
@@ -566,7 +566,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "beeai-sdk", specifier = ">=0.0.2" },
+    { name = "beeai-sdk", specifier = ">=0.0.3" },
     { name = "crewai", extras = ["tools"], specifier = ">=0.102.0,<1.0.0" },
 ]
 
