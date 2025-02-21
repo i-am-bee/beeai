@@ -20,6 +20,7 @@ import { DuckDuckGoSearchTool } from "bee-agent-framework/tools/search/duckDuckG
 import { Message } from "bee-agent-framework/backend/message";
 import { BaseMemory } from "bee-agent-framework/memory/base";
 import { z, ZodRawShape } from "zod";
+import { agent as documentJudge } from "./document-judge.js";
 
 // Definitions
 
@@ -138,6 +139,15 @@ async function registerAgents(server: AcpServer) {
       avgRunTokens: 48,
       ui: "chat",
     } as const satisfies Metadata
+  );
+
+  server.agent(
+    documentJudge.name,
+    documentJudge.description,
+    documentJudge.inputSchema,
+    documentJudge.outputSchema,
+    documentJudge.run,
+    documentJudge.metadata
   );
 }
 
