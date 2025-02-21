@@ -32,7 +32,7 @@ class ProviderConfigFile(BaseModel):
 class FilesystemProviderRepository(IProviderRepository):
     def __init__(self, provider_config_path: Path):
         self._config_path = AsyncPath(provider_config_path)
-        self._repository_providers: list[Provider] | None = []
+        self._repository_providers: list[Provider] | None = None
 
     async def _write_config(self, providers: list[Provider]) -> None:
         # Ensure that path exists
