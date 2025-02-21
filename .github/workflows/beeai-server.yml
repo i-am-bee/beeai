@@ -59,10 +59,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Install kubectl
-        run: |
-          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-          chmod +x kubectl
-          sudo mv kubectl /usr/local/bin/
+        uses: azure/setup-kubectl@v4
+        with:
+          version: "latest" # Or specify a version, e.g., 'v1.29.2'
       - name: Deploy to Kubernetes
         run: |
           kubectl set image deployment/beeai-server beeai-server=ghcr.io/${{ github.repository }}/beeai-server:${{ github.sha }} -n ${{ secrets.CLUSTER_NAMESPACE }}
