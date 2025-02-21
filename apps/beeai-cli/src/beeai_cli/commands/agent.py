@@ -32,7 +32,7 @@ async def run(
     name: str = typer.Argument(help="Name of the tool to call"),
     input: str = typer.Argument(help="Agent input as JSON"),
 ) -> None:
-    """Call a tool with given input."""
+    """Call an agent with a given input."""
     try:
         parsed_input = json.loads(input)
     except json.JSONDecodeError:
@@ -64,6 +64,7 @@ async def run(
 
 @app.command("list")
 async def list_agents():
+    """List available agents"""
     result = await send_request(types.ListAgentsRequest(method="agents/list"), types.ListAgentsResult)
     extra_cols = list({col for agent in result.agents for col in agent.model_extra if col != "fullDescription"})
     table = Table("Name", "Description", *extra_cols, expand=True, show_lines=True)

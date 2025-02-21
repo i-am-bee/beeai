@@ -27,14 +27,14 @@ from kink import inject
 from acp import stdio_client, StdioServerParameters
 from acp.client.sse import sse_client
 from packaging import version
-from pydantic import BaseModel, Field, FileUrl, RootModel, field_validator, model_validator
+from pydantic import BaseModel, Field, FileUrl, RootModel, field_validator
 from pydantic_core.core_schema import ValidationInfo
 
 from acp.client.stdio import get_default_environment
 from beeai_server.configuration import Configuration
 from beeai_server.custom_types import McpClient, ID
 from beeai_server.domain.constants import DEFAULT_MANIFEST_PATH
-from beeai_server.exceptions import UnsupportedProviderError
+from beeai_server.exceptions import UnsupportedProviderError, MissingConfigurationError
 from beeai_server.utils.github import GithubUrl, download_repo
 from beeai_server.utils.managed_server_client import managed_sse_client, ManagedServerParameters
 from beeai_server.utils.utils import which
@@ -72,11 +72,22 @@ class BaseProvider(BaseModel, abc.ABC):
 
     base_file_path: str | None = None
 
-    async def check(self) -> None:
+    def check_env(self, env: dict[str, str] | None = None, raise_error: bool = True) -> list[EnvVar]:
+        required_env = {var.name for var in self.env if var.required}
+        missing_env = [var for var in self.env if var.name in required_env - env.keys()]
+        if missing_env and raise_error:
+            raise MissingConfigurationError(missing_env=missing_env)
+        return missing_env
+
+    async def check_compatibility(self) -> None:
         pass
 
     @abc.abstractmethod
-    def mcp_client(self, *, env: dict[str, str] | None = None) -> McpClient: ...
+    async def mcp_client(self, *, env: dict[str, str] | None = None, with_dummy_env: bool = True) -> McpClient:
+        """
+        :param env: environment values passed to the process
+        :param with_dummy_env: substitute all unfilled required variables from manifest by "dummy" value
+        """
 
 
 class UnmanagedProvider(BaseProvider):
@@ -84,11 +95,8 @@ class UnmanagedProvider(BaseProvider):
     serverType: Literal[ServerType.http] = ServerType.http
     env: list[EnvVar] = Field(default_factory=list, description="Not supported for unmanaged provider", max_length=0)
 
-    async def check(self) -> None:
-        return
-
     @asynccontextmanager
-    async def mcp_client(self, *, env: dict[str, str] | None = None) -> McpClient:
+    async def mcp_client(self, *, env: dict[str, str] | None = None, with_dummy_env: bool = True) -> McpClient:
         match (self.serverType, self.mcpTransport):
             case (ServerType.http, McpTransport.sse):
                 async with sse_client(str(self.mcpEndpoint)) as client:
@@ -102,8 +110,15 @@ class ManagedProvider(BaseProvider, abc.ABC):
     command: list[str] = Field(description="Command with arguments to run")
 
     @asynccontextmanager
-    async def _get_mcp_client(self, *, command: list[str], env: dict[str, str] | None = None) -> McpClient:
-        env = env or {}
+    async def _get_mcp_client(
+        self, *, command: list[str], env: dict[str, str] | None = None, with_dummy_env: bool = True
+    ) -> McpClient:
+        declared_env_vars = {var.name for var in self.env}
+        required_env_vars = {var.name for var in self.env if var.required}
+        env = {
+            **({var: "dummy" for var in required_env_vars} if with_dummy_env else {}),
+            **({var: env[var] for var in env if var in declared_env_vars}),
+        }
         command, args = command[0], command[1:]
         match (self.serverType, self.mcpTransport):
             case (ServerType.stdio, _):
@@ -131,9 +146,10 @@ class NodeJsProvider(ManagedProvider):
         description='NPM package or "git+https://..." URL, or "file://..." URL (not allowed in remote manifests)',
     )
 
-    async def check(self):
+    async def check_compatibility(self) -> None:
         if not await which("npm"):
             raise UnsupportedProviderError("npm is not installed, see https://nodejs.org/en/download")
+        await super().check_compatibility()
 
     @field_validator("package", mode="after")
     @classmethod
@@ -148,8 +164,17 @@ class NodeJsProvider(ManagedProvider):
 
     @asynccontextmanager
     @inject
-    async def mcp_client(self, *, env: dict[str, str] | None = None, configuration: Configuration) -> McpClient:  # noqa: F821
-        await self.check()
+    async def mcp_client(
+        self,
+        *,
+        env: dict[str, str] | None = None,
+        with_dummy_env: bool = True,
+        configuration: Configuration,
+    ) -> McpClient:  # noqa: F821
+        await self.check_compatibility()
+        if not with_dummy_env:
+            await self.check_env(env)
+
         try:
             github_url = GithubUrl.model_validate(self.package)
             repo_path = await download_repo(configuration.cache_dir / "github_npm", github_url)
@@ -158,7 +183,9 @@ class NodeJsProvider(ManagedProvider):
             package = str(package_path)
         except ValueError:
             package = self.package
-        async with super()._get_mcp_client(command=["npx", "-y", package, *self.command], env=env) as client:
+        async with super()._get_mcp_client(
+            command=["npx", "-y", package, *self.command], env=env, with_dummy_env=with_dummy_env
+        ) as client:
             yield client
 
 
@@ -170,11 +197,12 @@ class PythonProvider(ManagedProvider):
         description='PyPI package or "git+https://..." URL, or "file://..." URL (not allowed in remote manifests)',
     )
 
-    async def check(self) -> None:
+    async def check_compatibility(self) -> None:
         if not await which("uvx"):
             raise UnsupportedProviderError(
                 "uv is not installed, see https://docs.astral.sh/uv/getting-started/installation/"
             )
+        await super().check_compatibility()
 
     @field_validator("pythonVersion", mode="after")
     @classmethod
@@ -196,12 +224,16 @@ class PythonProvider(ManagedProvider):
         return value
 
     @asynccontextmanager
-    async def mcp_client(self, *, env: dict[str, str] | None = None) -> McpClient:  # noqa: F821
-        await self.check()
+    async def mcp_client(self, *, env: dict[str, str] | None = None, with_dummy_env=True) -> McpClient:
+        await self.check_compatibility()
+        if not with_dummy_env:
+            await self.check_env(env)
+
         python = [] if not self.pythonVersion else ["--python", self.pythonVersion]
         async with super()._get_mcp_client(
             command=["uvx", *python, "--link-mode=hardlink", "--from", self.package, *self.command],
             env=env,
+            with_dummy_env=with_dummy_env,
         ) as client:
             yield client
 
@@ -213,18 +245,22 @@ class ContainerProvider(ManagedProvider):
 
     _runtime = "docker"
 
-    async def check(self) -> None:
+    async def check_compatibility(self) -> None:
         if await which("docker"):
-            return
-        if await which("podman"):
+            self._runtime = "docker"
+        elif await which("podman"):
             self._runtime = "podman"
-            return
-        raise UnsupportedProviderError("docker is not installed, see https://docs.docker.com/get-started/get-docker/")
+        else:
+            raise UnsupportedProviderError("docker is not installed, see https://docs.docker.com/get-started/")
+        await super().check_compatibility()
 
     @asynccontextmanager
-    async def mcp_client(self, *, env: dict[str, str] | None = None) -> McpClient:  # noqa: F821
-        await self.check()
-        env_args = [f"-e={var}" for var in list((env or {})) + ["PORT"]]
+    async def mcp_client(self, *, env: dict[str, str] | None = None, with_dummy_env: bool = True) -> McpClient:  # noqa: F821
+        await self.check_compatibility()
+        if not with_dummy_env:
+            self.check_env(env)
+
+        env_args = [f"-e={var.name}" for var in self.env] + ["-e=PORT"]
         name = uuid.uuid4().hex
         try:
             async with super()._get_mcp_client(
@@ -240,6 +276,7 @@ class ContainerProvider(ManagedProvider):
                     *self.command,
                 ],
                 env=env,
+                with_dummy_env=with_dummy_env,
             ) as client:
                 yield client
         finally:
@@ -250,23 +287,15 @@ class ContainerProvider(ManagedProvider):
 ProviderManifest = UnmanagedProvider | NodeJsProvider | PythonProvider | ContainerProvider
 
 
-class Provider(BaseModel):
+class Provider(BaseModel, extra="allow"):
     manifest: ProviderManifest
     id: ID
     registry: GithubUrl | None = None
-    env: dict[str, str] | None = None
 
     @asynccontextmanager
-    async def mcp_client(self) -> McpClient:
-        async with self.manifest.mcp_client(env=self.env) as client:
+    async def mcp_client(self, *, env: dict[str, str] | None = None, with_dummy_env: bool = True) -> McpClient:
+        async with self.manifest.mcp_client(env=env, with_dummy_env=with_dummy_env) as client:
             yield client
-
-    @model_validator(mode="after")
-    def level_uvicorn_validator(self):
-        required_vars = set(var.name for var in self.manifest.env if var.required)
-        if missing_vars := required_vars - (self.env or {}).keys():
-            raise ValueError(f"The following required variables are missing : {missing_vars}")
-        return self
 
 
 class LoadedProviderStatus(StrEnum):
@@ -276,9 +305,14 @@ class LoadedProviderStatus(StrEnum):
     unsupported = "unsupported"
 
 
+class LoadProviderErrorMessage(BaseModel):
+    message: str
+
+
 class ProviderWithStatus(Provider):
     status: LoadedProviderStatus
     last_error: str | None = None
+    missing_configuration: list[EnvVar] = Field(default_factory=list)
 
 
 class GitHubManifestLocation(RootModel):

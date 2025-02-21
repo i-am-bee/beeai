@@ -20,7 +20,6 @@ from rich.table import Table
 
 from beeai_cli.api import api_request
 from beeai_cli.async_typer import AsyncTyper, console
-from beeai_cli.utils import parse_env_var
 
 app = AsyncTyper()
 
@@ -47,25 +46,11 @@ async def add(
             "git+https://github.com/my-org/my-repo.git@2.0.0#path=/path/to/beeai-manifest.yaml ..."
         ),
     ),
-    env: list[str] = typer.Option(
-        [],
-        "--env",
-        help="Environment variables to pass to provider",
-        show_default=False,
-    ),
 ) -> None:
-    """Call a tool with given input."""
-    env_vars = [parse_env_var(var) for var in env]
-    env_vars = {name: value for name, value in env_vars}
+    """Add a new provider"""
     location = _get_abs_location(location)
-    await api_request(
-        "post",
-        "provider",
-        json={
-            "location": location,
-            **({"env": env_vars} if env_vars else {}),
-        },
-    )
+    resp = await api_request("post", "provider", json={"location": location})
+    typer.echo(resp)
     typer.echo(f"Added provider: {location}")
 
 
@@ -76,13 +61,18 @@ def render_enum(value: str, colors: dict[str, str]) -> str:
 
 
 @app.command("list")
-async def list():
-    # TODO: extract server schemas to a separate package
+async def list_providers():
+    """Remove provider"""
     resp = await api_request("get", "provider")
-    table = Table("ID", "Status", "Last Error", expand=True)
+    table = Table("ID", "Status", "Last Error", "Missing Configuration", expand=True)
+    table.columns[0].overflow = "fold"
     for item in sorted(
         sorted(resp["items"], key=lambda item: item["id"]), key=lambda item: item["status"], reverse=True
     ):
+        missing_config_table = Table.grid("name", "description", expand=True, pad_edge=False, padding=0)
+        for env in item["missing_configuration"]:
+            missing_config_table.add_row(env["name"], env["description"])
+        missing_config_table.add_row()
         table.add_row(
             item["id"],
             render_enum(
@@ -95,6 +85,7 @@ async def list():
                 },
             ),
             item["last_error"] if item["status"] != "ready" else "",
+            missing_config_table,
         )
     console.print(table)
 
@@ -103,13 +94,19 @@ async def list():
 async def remove(
     location: str = typer.Argument(..., help="URL of the provider manifest (from beeai provider list)"),
 ) -> None:
-    """Call a tool with given input."""
+    """Remove provider by ID"""
     location = _get_abs_location(location)
-    await api_request("post", "provider/delete", json={"location": location})
+    providers = (await api_request("get", "provider"))["items"]
+    remove_providers = [provider["id"] for provider in providers if location in provider["id"]]
+    if len(remove_providers) != 1:
+        remove_providers_detail = ":\n\t" + "\n\t".join(remove_providers) if remove_providers else ""
+        raise ValueError(f"{len(remove_providers)} matching providers{remove_providers_detail}")
+    await api_request("post", "provider/delete", json={"location": remove_providers[0]})
     console.print(f"Removed provider: {location}")
 
 
 @app.command("sync")
-async def sync(help="Sync external changes to provider registry (if you modified ~/.beeai/providers.yaml manually)"):
+async def sync():
+    """Sync external changes to provider registry (if you modified ~/.beeai/providers.yaml manually)"""
     await api_request("put", "provider/sync")
     console.print("Providers updated")
