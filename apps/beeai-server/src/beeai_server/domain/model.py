@@ -177,6 +177,7 @@ class NodeJsProvider(ManagedProvider):
 
         try:
             github_url = GithubUrl.model_validate(self.package)
+            await github_url.resolve_version()
             repo_path = await download_repo(configuration.cache_dir / "github_npm", github_url)
             package_path = repo_path / (github_url.path or "")
             await anyio.run_process(["npm", "install"], cwd=package_path)
@@ -311,7 +312,7 @@ class LoadProviderErrorMessage(BaseModel):
 
 class ProviderWithStatus(Provider):
     status: LoadedProviderStatus
-    last_error: str | None = None
+    last_error: LoadProviderErrorMessage | None = None
     missing_configuration: list[EnvVar] = Field(default_factory=list)
 
 

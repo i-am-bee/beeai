@@ -84,7 +84,7 @@ async def list_providers():
                     "unsupported": "orange1",
                 },
             ),
-            item["last_error"] if item["status"] != "ready" else "",
+            (item.get("last_error") or {}).get("message", None) if item["status"] != "ready" else "",
             missing_config_table,
         )
     console.print(table)
