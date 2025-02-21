@@ -16,7 +16,7 @@ import json
 import sys
 
 import typer
-from acp import types, ServerNotification, RunAgentResult
+from acp import types, ServerNotification, RunAgentResult, McpError, ErrorData
 from acp.types import AgentRunProgressNotification, AgentRunProgressNotificationParams
 from rich.table import Table
 
@@ -29,7 +29,7 @@ app = AsyncTyper()
 
 @app.command("run")
 async def run(
-    name: str = typer.Argument(help="Name of the tool to call"),
+    name: str = typer.Argument(help="Name of the agent to call"),
     input: str = typer.Argument(help="Agent input as JSON"),
 ) -> None:
     """Call an agent with a given input."""
@@ -71,3 +71,15 @@ async def list_agents():
     for agent in result.agents:
         table.add_row(agent.name, agent.description, *[str(agent.model_extra.get(col, "")) for col in extra_cols])
     console.print(table)
+
+
+@app.command("info")
+async def agent_detail(
+    name: str = typer.Argument(help="Name of agent tool to show"),
+):
+    """List available agents"""
+    result = await send_request(types.ListAgentsRequest(method="agents/list"), types.ListAgentsResult)
+    agents_by_name = {agent.name: agent for agent in result.agents}
+    if not (agent := agents_by_name.get(name, None)):
+        raise McpError(error=ErrorData(code=404, message=f"agent/{name} not found in any provider"))
+    console.print(agent)
