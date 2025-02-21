@@ -16,6 +16,7 @@ import logging
 import pathlib
 import re
 import shutil
+from enum import StrEnum
 from os import PathLike
 from tarfile import ExtractError
 from typing import Any
@@ -30,12 +31,18 @@ from pydantic import model_validator, AnyUrl, ModelWrapValidatorHandler, RootMod
 logger = logging.getLogger(__name__)
 
 
+class GithubVersionType(StrEnum):
+    head = "head"
+    tag = "tag"
+
+
 class GithubUrl(RootModel):
     root: str
 
     _org: str
     _repo: str
     _version: str | None = None
+    _version_type: GithubVersionType = GithubVersionType.head
     _path: str | None = None
 
     @property
@@ -90,22 +97,27 @@ class GithubUrl(RootModel):
         return url
 
     async def resolve_version(self):
-        if not self.version:
-            manifest_url = f"https://github.com/{self.org}/{self.repo}/blob/-/dummy"
-            async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient() as client:
+            if not self.version:
+                manifest_url = f"https://github.com/{self.org}/{self.repo}/blob/-/dummy"
                 resp = await client.head(manifest_url)
                 if not resp.headers.get("location", None):
                     raise ValueError(f"{self.path} not found in github repository.")
                 self._version = re.search("/blob/([^/]*)", resp.headers["location"]).group(1)
                 self.root = str(self)  # normalize url
 
+            tag_url = f"https://github.com/{self.org}/{self.repo}/releases/tag/{self.version}"
+            resp = await client.head(tag_url)
+            self._version_type = GithubVersionType.head if resp.is_error else GithubVersionType.tag
+
     def get_tgz_link(self) -> AnyUrl:
         if not self.version:
             raise ValueError("Version must be resolved before rendering raw url. Call resolve_version() first.")
+        version_type = "heads" if self._version_type == GithubVersionType.head else "tags"
         return AnyUrl.build(
             scheme="https",
             host="github.com",
-            path=f"{self.org}/{self.repo}/archive/refs/heads/{self.version}.tar.gz",
+            path=f"{self.org}/{self.repo}/archive/refs/{version_type}/{self.version}.tar.gz",
         )
 
     def get_raw_url(self, path: str | None = None) -> AnyUrl:
@@ -114,10 +126,11 @@ class GithubUrl(RootModel):
         if not path and "." not in (self.path or ""):
             raise ValueError("Path is not specified or it is not a file")
         path = path or self.path
+        version_type = "heads" if self._version_type == GithubVersionType.head else "tags"
         return AnyUrl.build(
             scheme="https",
             host="raw.githubusercontent.com",
-            path=f"{self.org}/{self.repo}/refs/heads/{self.version}/{path.strip('/')}",
+            path=f"{self.org}/{self.repo}/refs/{version_type}/{self.version}/{path.strip('/')}",
         )
 
     def __str__(self):
