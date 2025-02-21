@@ -88,19 +88,69 @@ const run = async ({
   };
 };
 
+const exampleInput = `{
+  "prompt": "Explain the impact of AI on modern software engineering.",
+  "documents": [
+    "Artificial Intelligence has transformed software engineering by automating code generation, improving debugging processes, and enabling intelligent software design patterns...",
+    "AI plays a role in modern development, but traditional methods remain the most reliable...",
+    "The impact of AI in software engineering is minimal, and automation is overestimated..."
+  ]
+}`;
+
+const exampleOutput = `{
+  "text": "Artificial Intelligence has transformed software engineering by automating code generation, improving debugging processes, and enabling intelligent software design patterns..."
+}`;
+
 export const agent = {
-  name: "document-judge",
-  description: "TBD Description",
+  name: "documents-judge",
+  description:
+    "Evaluates multiple documents based on correctness, depth, clarity, and relevance, selecting the highest-scoring one. It ensures optimal document quality for research, content validation, and knowledge refinement.",
   inputSchema,
   outputSchema,
   run,
   metadata: {
-    title: "Document Judge",
+    title: "Documents Judge",
+    fullDescription: `The Documents Judge agent evaluates multiple documents based on four key criteria — correctness, depth & coverage, clarity & structure, and relevance. It assigns a numerical score (0-1) to each document for each criterion, using a weighted average to determine the highest-scoring document. The agent is particularly useful for research, content validation, and knowledge refinement, ensuring that the most accurate, comprehensive, well-structured, and relevant document is selected.
+
+## Evaluation Criteria:
+
+1. **Correctness (50%)** – Assesses factual accuracy, penalizing misinformation.
+2. **Depth & Coverage (10%)** – Measures how well the document explores key aspects of the topic.
+3. **Clarity & Structure (10%)** – Evaluates logical organization and readability.
+4. **Relevance (30%)** – Determines how well the document aligns with the given research prompt.
+
+The agent uses Llama 3.1 8B model to perform structured evaluations and selects the best document based on the weighted scores.
+
+## Example usage
+
+### Input:
+\`\`\`json
+${exampleInput}
+\`\`\`
+
+### CLI:
+\`\`\`bash
+beeai agent run documents-judge '${exampleInput}'
+\`\`\`
+
+
+### Processing:\
+
+1. The agent evaluates all three documents based on the four criteria.
+2. Each document receives a score for correctness, depth, clarity, and relevance.
+3. The agent selects the document with the highest weighted score.
+
+### Output:
+
+\`\`\`json
+${exampleOutput}
+\`\`\`
+
+In this example, the first document is chosen because it is factually accurate, well-structured, and relevant to the research prompt.
+`,
     framework: "BeeAI",
     licence: "Apache 2.0",
-    fullDescription: `TBD Full Description`,
-    // avgRunTimeSeconds: 10,
-    // avgRunTokens: 48,
-    // ui: "chat",
+    avgRunTimeSeconds: 22,
+    avgRunTokens: 1229,
   } satisfies Metadata,
 };
