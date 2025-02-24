@@ -12,6 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import json
+from typing import Any
+
+import typer
 import yaml
 from pydantic import BaseModel
 
@@ -37,3 +41,10 @@ def parse_env_var(env_var: str) -> tuple[str, str]:
         raise ValueError(f"Environment variable {env_var} is invalid, use format --env NAME=VALUE")
     key, value = env_var.split("=", 1)
     return key.strip(), value.strip()
+
+
+def check_json(value: Any) -> dict[str, Any]:
+    try:
+        return json.loads(value)
+    except json.decoder.JSONDecodeError:
+        raise typer.BadParameter(f"Invalid JSON '{value}'")

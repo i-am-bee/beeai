@@ -12,12 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import typer
+import asyncio
 import functools
 import inspect
-import asyncio
+from contextlib import contextmanager
+from typing import Iterator
 
+import typer
 from rich.console import Console
+from rich.table import Table
 
 from beeai_cli.configuration import Configuration
 from beeai_cli.utils import extract_messages
@@ -26,6 +29,16 @@ DEBUG = Configuration().debug
 
 err_console = Console(stderr=True)
 console = Console()
+
+
+@contextmanager
+def create_table(*args, **kwargs) -> Iterator[Table]:
+    table = Table(*args, **kwargs, box=None, pad_edge=False, width=console.width, show_header=True)
+    yield table
+    for column in table.columns:
+        column.no_wrap = True
+        column.overflow = "ellipsis"
+        column.header = column.header.upper()
 
 
 class AsyncTyper(typer.Typer):

@@ -12,18 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import json
 
-import rich
 import typer
-from rich.table import Table
-import rich.json
+from rich.table import Column
 
-from beeai_cli.async_typer import AsyncTyper, console
+from beeai_cli.async_typer import AsyncTyper, console, create_table
 from beeai_cli.api import send_request, send_request_with_notifications
-from beeai_cli.utils import format_model
+from beeai_cli.utils import format_model, check_json
 
-from acp import types
+from acp import types, McpError, ErrorData
 
 app = AsyncTyper()
 
@@ -31,30 +28,34 @@ app = AsyncTyper()
 @app.command("call")
 async def run(
     name: str = typer.Argument(help="Name of the tool to call"),
-    input: str = typer.Argument(help="Tool input as JSON"),
+    input: str = typer.Argument(help="Tool input as JSON", callback=check_json),
 ) -> None:
     """Call a tool with given input."""
-    try:
-        parsed_input = json.loads(input)
-    except json.JSONDecodeError:
-        typer.echo("Input must be valid JSON")
-        return
-
     async for message in send_request_with_notifications(
         types.CallToolRequest(
             method="tools/call",
-            params=types.CallToolRequestParams(name=name, arguments=parsed_input),
+            params=types.CallToolRequestParams(name=name, arguments=input),
         ),
         types.CallToolResult,
     ):
-        typer.echo(format_model(message))
+        console.print(format_model(message))
 
 
 @app.command("list")
 async def list_tools():
     """List available tools"""
     result = await send_request(types.ListToolsRequest(method="tools/list"), types.ListToolsResult)
-    table = Table("Name", "Description", "Input Schema", expand=True)
-    for tool in result.tools:
-        table.add_row(tool.name, tool.description, rich.json.JSON.from_data(tool.inputSchema, indent=2))
+    with create_table(Column("name", style="yellow"), Column("description", ratio=1)) as table:
+        for tool in result.tools:
+            table.add_row(tool.name, tool.description)
     console.print(table)
+
+
+@app.command("info")
+async def info(name: str = typer.Argument(help="Name of the tool")) -> None:
+    """Show details of a tool"""
+    result = await send_request(types.ListToolsRequest(method="tools/list"), types.ListToolsResult)
+    tools_by_name = {tool.name: tool for tool in result.tools}
+    if not (tool := tools_by_name.get(name, None)):
+        raise McpError(error=ErrorData(code=404, message=f"tool/{name} not found in any provider"))
+    console.print(tool)

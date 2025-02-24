@@ -12,17 +12,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from copy import deepcopy
 from beeai_cli.async_typer import AsyncTyper
 import beeai_cli.commands.tool
 import beeai_cli.commands.env
 import beeai_cli.commands.agent
 import beeai_cli.commands.provider
 
-app = AsyncTyper()
-app.add_typer(beeai_cli.commands.tool.app, name="tool")
-app.add_typer(beeai_cli.commands.env.app, name="env")
-app.add_typer(beeai_cli.commands.agent.app, name="agent")
-app.add_typer(beeai_cli.commands.provider.app, name="provider")
+app = AsyncTyper(no_args_is_help=True)
+app.add_typer(beeai_cli.commands.tool.app, name="tool", no_args_is_help=True)
+app.add_typer(beeai_cli.commands.env.app, name="env", no_args_is_help=True)
+app.add_typer(beeai_cli.commands.provider.app, name="provider", no_args_is_help=True)
+app.add_typer(beeai_cli.commands.agent.app, name="agent", no_args_is_help=True)
+
+
+agent_alias = deepcopy(beeai_cli.commands.agent.app)
+for cmd in agent_alias.registered_commands:
+    cmd.rich_help_panel = "Agent commands"
+
+app.add_typer(agent_alias, name="", no_args_is_help=True)
 
 
 @app.command("serve")

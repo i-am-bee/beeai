@@ -35,7 +35,7 @@ async def add(
         "env",
         json={**({"env": env_vars} if env_vars else {})},
     )
-    typer.echo(f"Added env variables {list(env_vars.keys())}")
+    console.print(f"Added env variables {list(env_vars.keys())}")
 
 
 @app.command("list")
