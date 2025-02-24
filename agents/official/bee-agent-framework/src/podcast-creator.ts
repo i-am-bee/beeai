@@ -116,6 +116,7 @@ Example of response:
     ],
     maxTokens: 8126,
     temperature: 1,
+    abortSignal: signal,
   });
 
   return {
