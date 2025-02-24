@@ -108,7 +108,7 @@ const retrieveDocuments = async ({
       (result) => (result.output.text as string) || "No document"
     );
   } finally {
-    client.close();
+    await client.close();
   }
 };
 
