@@ -57,9 +57,11 @@ const calculateScore = (result: Weights) =>
 const retrieveDocuments = async ({
   prompt,
   agents,
+  signal,
 }: {
   prompt: string;
   agents: string[];
+  signal?: AbortSignal;
 }) => {
   const client = new ACPClient({
     name: "example-client",
@@ -77,7 +79,9 @@ const retrieveDocuments = async ({
     throw error;
   }
 
-  const { agents: platformAgents } = await client.listAgents();
+  const { agents: platformAgents } = await client.listAgents(undefined, {
+    signal,
+  });
   const platformAgentsName = platformAgents.map((agent) => agent.name);
 
   if (!agents.every((agent) => platformAgentsName.includes(agent))) {
@@ -104,11 +108,14 @@ const retrieveDocuments = async ({
   );
 };
 
-const run = async ({
-  params,
-}: {
-  params: { input: z.infer<typeof inputSchema> };
-}) => {
+const run = async (
+  {
+    params,
+  }: {
+    params: { input: z.infer<typeof inputSchema> };
+  },
+  { signal }: { signal?: AbortSignal }
+) => {
   const { prompt, documents, agents } = params.input;
   if (!documents?.length && !agents?.length)
     return { text: "No documents or agents provided." };
@@ -117,7 +124,7 @@ const run = async ({
   if (agents?.length) {
     finalDocuments = [
       ...finalDocuments,
-      ...(await retrieveDocuments({ prompt, agents })),
+      ...(await retrieveDocuments({ prompt, agents, signal })),
     ];
   }
 
@@ -135,6 +142,7 @@ const run = async ({
             `Research prompt: ${prompt}\n\n Document: ${document}`
           ),
         ],
+        abortSignal: signal,
       })
     )
   );
