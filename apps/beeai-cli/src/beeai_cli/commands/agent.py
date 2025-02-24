@@ -12,17 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import json
-import sys
 
 import typer
+from rich.table import Column
+
 from acp import types, ServerNotification, RunAgentResult, McpError, ErrorData
 from acp.types import AgentRunProgressNotification, AgentRunProgressNotificationParams
-from rich.table import Table
-
 from beeai_cli.api import send_request, send_request_with_notifications
-from beeai_cli.async_typer import AsyncTyper, console
-from beeai_cli.utils import format_model
+from beeai_cli.async_typer import AsyncTyper, console, err_console, create_table
+from beeai_cli.utils import check_json
 
 app = AsyncTyper()
 
@@ -30,18 +28,12 @@ app = AsyncTyper()
 @app.command("run")
 async def run(
     name: str = typer.Argument(help="Name of the agent to call"),
-    input: str = typer.Argument(help="Agent input as JSON"),
+    input: str = typer.Argument(help="Agent input as JSON", callback=check_json),
 ) -> None:
     """Call an agent with a given input."""
-    try:
-        parsed_input = json.loads(input)
-    except json.JSONDecodeError:
-        typer.echo("Input must be valid JSON")
-        return
-
     text_streamed = False
     async for message in send_request_with_notifications(
-        types.RunAgentRequest(method="agents/run", params=types.RunAgentRequestParams(name=name, input=parsed_input)),
+        types.RunAgentRequest(method="agents/run", params=types.RunAgentRequestParams(name=name, input=input)),
         types.RunAgentResult,
     ):
         match message:
@@ -50,26 +42,32 @@ async def run(
             ):
                 for log in filter(bool, delta.get("logs", [])):
                     if text := log.get("text", None):
-                        typer.echo(f"Log: {text.strip()}", file=sys.stderr)
-
+                        err_console.print(f"Log: {text.strip()}")
                 if text := delta.get("text", None):
-                    typer.echo(text, nl=False)
+                    console.print(text, end="")
                     text_streamed = True
             case RunAgentResult() as result:
                 if not text_streamed:
-                    typer.echo(format_model(result))
+                    if text := result.model_dump().get("output", {}).get("text", None):
+                        console.print(text)
+                    else:
+                        console.print(result)
                 else:
-                    typer.echo()
+                    console.print()
 
 
 @app.command("list")
 async def list_agents():
     """List available agents"""
     result = await send_request(types.ListAgentsRequest(method="agents/list"), types.ListAgentsResult)
-    extra_cols = list({col for agent in result.agents for col in agent.model_extra if col != "fullDescription"})
-    table = Table("Name", "Description", *extra_cols, expand=True, show_lines=True)
-    for agent in result.agents:
-        table.add_row(agent.name, agent.description, *[str(agent.model_extra.get(col, "")) for col in extra_cols])
+    extra_cols = ["ui"]
+    with create_table(Column("Name", style="yellow"), *extra_cols, Column("Description", ratio=1)) as table:
+        for agent in result.agents:
+            table.add_row(
+                agent.name,
+                *[str(agent.model_extra.get(col, "<none>")) for col in extra_cols],
+                agent.description,
+            )
     console.print(table)
 
 
@@ -77,7 +75,7 @@ async def list_agents():
 async def agent_detail(
     name: str = typer.Argument(help="Name of agent tool to show"),
 ):
-    """List available agents"""
+    """Show details of an agent"""
     result = await send_request(types.ListAgentsRequest(method="agents/list"), types.ListAgentsResult)
     agents_by_name = {agent.name: agent for agent in result.agents}
     if not (agent := agents_by_name.get(name, None)):
