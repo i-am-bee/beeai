@@ -1,8 +1,10 @@
-
-FROM python:3.13-slim
+FROM jdxcode/mise
 
 WORKDIR /app
 
-EXPOSE 8080
+COPY . .
+RUN mise trust && mise run beeai-server:build
 
-CMD ["python", "-m", "http.server", "8080"]
+EXPOSE 8333
+
+CMD ["mise", "run", "beeai-server:run"]

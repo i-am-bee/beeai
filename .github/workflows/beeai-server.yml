@@ -45,7 +45,8 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: apps/beeai-server
+          context: .
+          file: ./apps/beeai-server/Dockerfile
           push: true
           tags: ghcr.io/${{ github.repository }}/beeai-server:${{ github.sha }}
 
