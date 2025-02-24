@@ -23,7 +23,7 @@ import { getAgentTitle } from '../utils';
 import classes from './AgentCard.module.scss';
 import { AgentMetadata } from './AgentMetadata';
 import { AgentTags } from './AgentTags';
-import { TransitionLink } from '@/components/TransitionLink/TransitionLink';
+import { TransitionLink } from '#components/TransitionLink/TransitionLink.tsx';
 
 interface Props {
   agent: Agent;

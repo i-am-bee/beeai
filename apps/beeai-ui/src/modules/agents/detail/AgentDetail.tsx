@@ -32,8 +32,8 @@ import classes from './AgentDetail.module.scss';
 import { AnimatePresence, motion } from 'framer-motion';
 import { moderate01 } from '@carbon/motion';
 import { spacing } from '@carbon/layout';
-import { fadeProps } from '@/utils/fadeProps';
-import { TransitionLink } from '@/components/TransitionLink/TransitionLink';
+import { TransitionLink } from '#components/TransitionLink/TransitionLink.tsx';
+import { fadeProps } from '#utils/fadeProps.ts';
 
 interface Props {
   name: string;
