@@ -1,9 +1,0 @@
-manifestVersion: 1
-driver: nodejs
-package: "git+https://github.com/i-am-bee/beeai@agents-v0.0.3#path=agents/official/bee-agent-framework"
-serverType: http
-mcpTransport: sse
-mcpEndpoint: /sse
-
-
-

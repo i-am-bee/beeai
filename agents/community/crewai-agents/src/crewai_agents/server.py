@@ -22,7 +22,7 @@ async def run():
         "Perform marketing analysis over a project",
         input=PromptInput,
         output=PromptOutput,
-        **Metadata(title="Marketing Crew", framework="CrewAI", licence="Apache 2.0").model_dump(),
+        **Metadata(framework="CrewAI", licence="Apache 2.0").model_dump(),
     )
     async def run_marketing_crew(input: PromptInput, ctx: Context) -> PromptOutput:
         loop = asyncio.get_event_loop()

@@ -7,9 +7,9 @@ import {
 import {
   SystemMessage,
   UserMessage,
-} from "bee-agent-framework/backend/message";
+} from "beeai-framework/backend/message";
 import { CHAT_MODEL } from "./config.js";
-import { ChatModel } from "bee-agent-framework/backend/chat";
+import { ChatModel } from "beeai-framework/backend/chat";
 
 const inputSchema = promptInputSchema;
 const outputSchema = promptOutputSchema;
@@ -145,7 +145,6 @@ export const agent = {
   outputSchema,
   run,
   metadata: {
-    title: "Podcast Creator",
     fullDescription: `The Podcast Creator converts structured content into a dynamic, natural-sounding podcast script optimized for AI-driven text-to-speech (TTS) applications. It processes input text and transforms it into a structured dialogue between two speakers: one acting as a knowledgeable host and the other as an inquisitive co-host, ensuring a conversational and engaging discussion. The generated dialogue includes interruptions, follow-up questions, and natural reactions to enhance realism.
     
 ## How It Works

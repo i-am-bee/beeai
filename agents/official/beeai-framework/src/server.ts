@@ -2,9 +2,9 @@
 
 import { AcpServer } from "@i-am-bee/acp-sdk/server/acp.js";
 
-import { BeeAgent } from "bee-agent-framework/agents/bee/agent";
-import { UnconstrainedMemory } from "bee-agent-framework/memory/unconstrainedMemory";
-import { Version } from "bee-agent-framework";
+import { BeeAgent } from "beeai-framework/agents/bee/agent";
+import { UnconstrainedMemory } from "beeai-framework/memory/unconstrainedMemory";
+import { Version } from "beeai-framework";
 import { runAgentProvider } from "@i-am-bee/beeai-sdk/providers/agent";
 import { promptInputSchema } from "@i-am-bee/beeai-sdk/schemas/prompt";
 import {
@@ -13,15 +13,15 @@ import {
   MessageOutput,
 } from "@i-am-bee/beeai-sdk/schemas/message";
 import { Metadata } from "@i-am-bee/beeai-sdk/schemas/metadata";
-import { WikipediaTool } from "bee-agent-framework/tools/search/wikipedia";
-import { OpenMeteoTool } from "bee-agent-framework/tools/weather/openMeteo";
-import { DuckDuckGoSearchTool } from "bee-agent-framework/tools/search/duckDuckGoSearch";
-import { Message } from "bee-agent-framework/backend/message";
-import { BaseMemory } from "bee-agent-framework/memory/base";
+import { WikipediaTool } from "beeai-framework/tools/search/wikipedia";
+import { OpenMeteoTool } from "beeai-framework/tools/weather/openMeteo";
+import { DuckDuckGoSearchTool } from "beeai-framework/tools/search/duckDuckGoSearch";
+import { Message } from "beeai-framework/backend/message";
+import { BaseMemory } from "beeai-framework/memory/base";
 import { z, ZodRawShape } from "zod";
 import { agent as contentJudge } from "./content-judge.js";
 import { agent as podcastCreator } from "./podcast-creator.js";
-import { ChatModel } from "bee-agent-framework/backend/core";
+import { ChatModel } from "beeai-framework/backend/core";
 import { CHAT_MODEL } from "./config.js";
 
 // Definitions
@@ -78,7 +78,7 @@ async function registerTools(server: AcpServer) {
   // Register agent as a tool
   const agent = await createBeeAgent();
   server.tool(
-    "bee",
+    "chat",
     agent.meta.description,
     promptInputSchema.extend({ config: agentConfigSchema }).shape,
     async ({ config, ...input }, { signal }) => {
@@ -94,7 +94,7 @@ async function registerTools(server: AcpServer) {
 async function registerAgents(server: AcpServer) {
   const agent = await createBeeAgent();
   server.agent(
-    "bee",
+    "chat",
     agent.meta.description,
     messageInputSchema.extend({ config: agentConfigSchema }),
     messageOutputSchema,
@@ -131,14 +131,9 @@ async function registerAgents(server: AcpServer) {
       } as MessageOutput;
     },
     {
-      title: "Bee Agent",
       framework: "BeeAI",
       licence: "Apache 2.0",
-      fullDescription: `This is an example AI agent.
-## Features
-- Feature 1  
-- Feature 2  
-- Feature 3`,
+      fullDescription: `TBD`,
       avgRunTimeSeconds: 10,
       avgRunTokens: 48,
       ui: "chat",
@@ -169,7 +164,7 @@ async function registerAgents(server: AcpServer) {
 export async function createServer() {
   const server = new AcpServer(
     {
-      name: "bee-agent-framework",
+      name: "beeai-framework",
       version: Version,
     },
     {
