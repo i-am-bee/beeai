@@ -20,7 +20,7 @@ import { DuckDuckGoSearchTool } from "bee-agent-framework/tools/search/duckDuckG
 import { Message } from "bee-agent-framework/backend/message";
 import { BaseMemory } from "bee-agent-framework/memory/base";
 import { z, ZodRawShape } from "zod";
-import { agent as documentsJudge } from "./documents-judge.js";
+import { agent as contentJudge } from "./content-judge.js";
 import { agent as podcastCreator } from "./podcast-creator.js";
 
 // Definitions
@@ -143,12 +143,12 @@ async function registerAgents(server: AcpServer) {
   );
 
   server.agent(
-    documentsJudge.name,
-    documentsJudge.description,
-    documentsJudge.inputSchema,
-    documentsJudge.outputSchema,
-    documentsJudge.run,
-    documentsJudge.metadata
+    contentJudge.name,
+    contentJudge.description,
+    contentJudge.inputSchema,
+    contentJudge.outputSchema,
+    contentJudge.run,
+    contentJudge.metadata
   );
 
   server.agent(
