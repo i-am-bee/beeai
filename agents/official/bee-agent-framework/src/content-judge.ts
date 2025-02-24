@@ -96,8 +96,8 @@ const retrieveDocuments = async ({
           input: { prompt },
         },
         {
-          // TODO: Prefer passing signal, that gives control to the user rather than fixed timeout.
           timeout: 10 * 60 * 1000,
+          signal,
         }
       )
     )
