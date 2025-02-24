@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { Updater } from '@/hooks/useImmerWithGetter';
-import { Agent } from '@/modules/agents/api/types';
+import { Updater } from '#hooks/useImmerWithGetter.ts';
+import { Agent } from '#modules/agents/api/types.ts';
 import { createContext } from 'react';
 import { ChatMessage } from '../chat/types';
 

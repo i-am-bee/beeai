@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useViewTransition } from '@/hooks/useViewTransition';
+import { useViewTransition } from '#hooks/useViewTransition.ts';
 import { HTMLProps } from 'react';
 
 interface Props extends Omit<HTMLProps<HTMLAnchorElement>, 'href'> {

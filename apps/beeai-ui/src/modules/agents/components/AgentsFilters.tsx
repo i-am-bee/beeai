@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { isNotNull } from '@/utils/helpers';
+import { isNotNull } from '#utils/helpers.ts';
 import { Search } from '@carbon/icons-react';
 import { OperationalTag, TextInput } from '@carbon/react';
 import clsx from 'clsx';

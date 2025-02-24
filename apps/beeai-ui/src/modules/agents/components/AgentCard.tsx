@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import { MarkdownContent } from '@/components/MarkdownContent/MarkdownContent';
-import { TagsList } from '@/components/TagsList/TagsList';
-import { routes } from '@/utils/router';
+import { MarkdownContent } from '#components/MarkdownContent/MarkdownContent.tsx';
+import { TagsList } from '#components/TagsList/TagsList.tsx';
+import { routes } from '#utils/router.ts';
 import { SkeletonText } from '@carbon/react';
 import { Agent } from '../api/types';
 import { getAgentTitle } from '../utils';
 import classes from './AgentCard.module.scss';
 import { AgentMetadata } from './AgentMetadata';
 import { AgentTags } from './AgentTags';
-import { TransitionLink } from '@/components/TransitionLink/TransitionLink';
+import { TransitionLink } from '#components/TransitionLink/TransitionLink.tsx';
 
 interface Props {
   agent: Agent;

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { Container } from '@/components/layouts/Container';
-import { getAgentTitle } from '@/modules/agents/utils';
+import { Container } from '#components/layouts/Container.tsx';
+import { getAgentTitle } from '#modules/agents/utils.ts';
 import { ArrowDown } from '@carbon/icons-react';
 import { IconButton } from '@carbon/react';
 import { useCallback, useEffect, useRef, useState } from 'react';

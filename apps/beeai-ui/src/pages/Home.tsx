@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { GettingStarted } from '@/modules/home/components/GettingStarted';
+import { GettingStarted } from '#modules/home/components/GettingStarted.tsx';
 
 export function Home() {
   return <GettingStarted />;

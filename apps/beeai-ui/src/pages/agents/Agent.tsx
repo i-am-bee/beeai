@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { AgentDetail } from '@/modules/agents/detail/AgentDetail';
-import { routes } from '@/utils/router';
+import { AgentDetail } from '#modules/agents/detail/AgentDetail.tsx';
+import { routes } from '#utils/router.ts';
 import { useNavigate, useParams } from 'react-router';
 
 type Params = {

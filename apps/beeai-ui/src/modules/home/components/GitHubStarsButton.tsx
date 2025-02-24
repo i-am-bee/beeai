@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { Spinner } from '@/components/Spinner/Spinner';
-import { GITHUB_REPO } from '@/utils/constants';
+import { Spinner } from '#components/Spinner/Spinner.tsx';
+import { GITHUB_REPO } from '#utils/constants.ts';
 import { LogoGithub } from '@carbon/icons-react';
 import { Button } from '@carbon/react';
 import { millify } from 'millify';

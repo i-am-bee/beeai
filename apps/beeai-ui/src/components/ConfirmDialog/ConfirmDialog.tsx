@@ -20,7 +20,7 @@ import clsx from 'clsx';
 import { ComponentType, ReactNode } from 'react';
 import { Modal } from '../Modal/Modal';
 import classes from './ConfirmDialog.module.scss';
-import { ModalProps } from '@/contexts/Modal/modal-context';
+import { ModalProps } from '#contexts/Modal/modal-context.ts';
 
 export interface ConfirmDialogProps {
   title: string;

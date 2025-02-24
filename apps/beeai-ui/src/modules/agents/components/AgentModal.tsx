@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { CopySnippet } from '@/components/CopySnippet/CopySnippet';
-import { Modal } from '@/components/Modal/Modal';
-import { ModalProps } from '@/contexts/Modal/modal-context';
+import { CopySnippet } from '#components/CopySnippet/CopySnippet.tsx';
+import { Modal } from '#components/Modal/Modal.tsx';
+import { ModalProps } from '#contexts/Modal/modal-context.ts';
 import { ArrowUpRight } from '@carbon/icons-react';
 import { Button, ModalBody, ModalHeader } from '@carbon/react';
 import { Agent } from '../api/types';

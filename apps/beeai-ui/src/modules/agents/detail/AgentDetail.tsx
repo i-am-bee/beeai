@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { CopySnippet } from '@/components/CopySnippet/CopySnippet';
-import { ErrorMessage } from '@/components/ErrorMessage/ErrorMessage';
-import { Container } from '@/components/layouts/Container';
-import { MarkdownContent } from '@/components/MarkdownContent/MarkdownContent';
-import { TagsList } from '@/components/TagsList/TagsList';
-import { routes } from '@/utils/router';
-import { isStringTerminalParameterSafe } from '@/utils/strings';
+import { CopySnippet } from '#components/CopySnippet/CopySnippet.tsx';
+import { ErrorMessage } from '#components/ErrorMessage/ErrorMessage.tsx';
+import { Container } from '#components/layouts/Container.tsx';
+import { MarkdownContent } from '#components/MarkdownContent/MarkdownContent.tsx';
+import { TagsList } from '#components/TagsList/TagsList.tsx';
+import { routes } from '#utils/router.ts';
+import { isStringTerminalParameterSafe } from '#utils/strings.ts';
 import { ArrowUpRight } from '@carbon/icons-react';
 import { Button, ButtonSkeleton, SkeletonText } from '@carbon/react';
 import clsx from 'clsx';
@@ -32,8 +32,8 @@ import classes from './AgentDetail.module.scss';
 import { AnimatePresence, motion } from 'framer-motion';
 import { moderate01 } from '@carbon/motion';
 import { spacing } from '@carbon/layout';
-import { fadeProps } from '@/utils/fadeProps';
-import { TransitionLink } from '@/components/TransitionLink/TransitionLink';
+import { TransitionLink } from '#components/TransitionLink/TransitionLink.tsx';
+import { fadeProps } from '#utils/fadeProps.ts';
 
 interface Props {
   name: string;

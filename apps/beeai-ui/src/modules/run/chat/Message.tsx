@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { ErrorMessage } from '@/components/ErrorMessage/ErrorMessage';
-import { Spinner } from '@/components/Spinner/Spinner';
-import { getAgentTitle } from '@/modules/agents/utils';
+import { ErrorMessage } from '#components/ErrorMessage/ErrorMessage.tsx';
+import { Spinner } from '#components/Spinner/Spinner.tsx';
+import { getAgentTitle } from '#modules/agents/utils.ts';
 import clsx from 'clsx';
 import { useChat } from '../contexts';
 import { AgentIcon } from './AgentIcon';
