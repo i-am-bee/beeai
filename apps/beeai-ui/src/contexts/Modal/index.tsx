@@ -16,7 +16,7 @@
 
 import { useCallback, useContext } from 'react';
 import { ModalContext } from './modal-context';
-import { ConfirmDialogProps, ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog';
+import { ConfirmDialogProps, ConfirmDialog } from '#components/ConfirmDialog/ConfirmDialog.tsx';
 
 export function useModal() {
   const openModal = useContext(ModalContext);

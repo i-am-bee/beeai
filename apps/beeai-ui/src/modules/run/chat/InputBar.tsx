@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { TextAreaAutoHeight } from '@/components/TextAreaAutoHeight/TextAreaAutoHeight';
-import { dispatchInputEventOnFormTextarea, submitFormOnEnter } from '@/utils/formUtils';
+import { TextAreaAutoHeight } from '#components/TextAreaAutoHeight/TextAreaAutoHeight.tsx';
+import { dispatchInputEventOnFormTextarea, submitFormOnEnter } from '#utils/formUtils.ts';
 import { Send, StopOutlineFilled } from '@carbon/icons-react';
 import { Button } from '@carbon/react';
 import { memo, useCallback, useRef } from 'react';

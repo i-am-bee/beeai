@@ -15,13 +15,13 @@
  */
 
 import { Button, InlineLoading, ModalBody, ModalFooter, ModalHeader, TextInput } from '@carbon/react';
-import { ModalProps } from '@/contexts/Modal/modal-context';
-import { Modal } from '@/components/Modal/Modal';
+import { ModalProps } from '#contexts/Modal/modal-context.ts';
+import { Modal } from '#components/Modal/Modal.tsx';
 import classes from './AgentModal.module.scss';
 import { useImportProvider } from '../api/mutations/useImportAgents';
 import { useForm } from 'react-hook-form';
 import { useCallback, useId } from 'react';
-import { useToast } from '@/contexts/Toast';
+import { useToast } from '#contexts/Toast/index.ts';
 
 export function ImportAgentsModal({ onRequestClose, ...modalProps }: ModalProps) {
   const id = useId();

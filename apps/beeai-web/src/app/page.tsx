@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import { GettingStarted } from "@beeai/ui";
+
 export default function Home() {
-  return (
-    <div>Home</div>
-  );
+  return <GettingStarted />;
 }

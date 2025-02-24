@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { ErrorMessage } from '@/components/ErrorMessage/ErrorMessage';
-import { useModal } from '@/contexts/Modal';
-import { ImportAgentsModal } from '@/modules/agents/components/ImportAgentsModal';
+import { ErrorMessage } from '#components/ErrorMessage/ErrorMessage.tsx';
+import { useModal } from '#contexts/Modal/index.tsx';
+import { ImportAgentsModal } from '#modules/agents/components/ImportAgentsModal.tsx';
 import { Add } from '@carbon/icons-react';
 import { Button } from '@carbon/react';
 import pluralize from 'pluralize';

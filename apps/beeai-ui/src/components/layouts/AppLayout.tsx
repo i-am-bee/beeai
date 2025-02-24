@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { routes } from '@/utils/router';
+import { routes } from '#utils/router.js';
 import { UIEventHandler, useCallback, useRef, useState } from 'react';
 import { Outlet, useLocation } from 'react-router';
 import { ToTopButton } from '../ToTopButton/ToTopButton';

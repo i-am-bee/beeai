@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { MarkdownContent } from '@/components/MarkdownContent/MarkdownContent';
-import { TagsList } from '@/components/TagsList/TagsList';
-import { routes } from '@/utils/router';
+import { MarkdownContent } from '#components/MarkdownContent/MarkdownContent.tsx';
+import { TagsList } from '#components/TagsList/TagsList.tsx';
+import { routes } from '#utils/router.ts';
 import { SkeletonText } from '@carbon/react';
 import { Link } from 'react-router';
 import { Agent } from '../api/types';

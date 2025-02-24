@@ -14,27 +14,15 @@
  * limitations under the License.
  */
 
-import "../styles/style.scss";
-import type { Metadata } from "next";
-import AppLayout from "@/components/layouts/AppLayout";
-import Providers from "./providers";
+"use client";
 
-export const metadata: Metadata = {
-  title: 'BeeAI'
-};
+import { PropsWithChildren } from "react";
+import { getQueryClient } from "./get-query-client";
+import { QueryClientProvider } from "@tanstack/react-query";
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function Providers({ children }: PropsWithChildren) {
+  const queryClient = getQueryClient();
   return (
-    <html lang="en">
-      <body>
-        <Providers>
-          <AppLayout>{children}</AppLayout>
-        </Providers>
-      </body>
-    </html>
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
 }

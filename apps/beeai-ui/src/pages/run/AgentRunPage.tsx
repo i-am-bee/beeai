@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { AgentRun } from '@/modules/run/AgentRun';
-import { routes } from '@/utils/router';
+import { AgentRun } from '#modules/run/AgentRun.tsx';
+import { routes } from '#utils/router.ts';
 import { useNavigate, useParams } from 'react-router';
 
 type Params = {

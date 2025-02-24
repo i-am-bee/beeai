@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { noop } from '@/utils/helpers';
+import { noop } from '#utils/helpers.ts';
 import { createContext, ReactNode } from 'react';
 
 export interface ModalProps {

@@ -17,7 +17,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createProvider } from '..';
 import { agentKeys } from '../keys';
-import { useToast } from '@/contexts/Toast';
+import { useToast } from '#contexts/Toast/index.ts';
 
 interface Props {
   onSuccess?: () => void;

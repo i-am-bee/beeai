@@ -15,3 +15,5 @@
  */
 
 export * from './components/layouts/AppHeader';
+export * from './components/layouts/AppFooter';
+export * from './modules/home/components/GettingStarted';

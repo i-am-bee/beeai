@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { AppHeader } from "@beeai/ui";
+import { AppFooter, AppHeader } from "@beeai/ui";
 import { PropsWithChildren } from "react";
 import classes from "./AppLayout.module.scss";
 import { MainNav } from "../MainNav/MainNav";
@@ -26,6 +26,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
         <MainNav />
       </AppHeader>
       <main className={classes.main}>{children}</main>
+      <AppFooter className={classes.footer} />
     </div>
   );
 }
