@@ -21,6 +21,7 @@ import { Message } from "bee-agent-framework/backend/message";
 import { BaseMemory } from "bee-agent-framework/memory/base";
 import { z, ZodRawShape } from "zod";
 import { agent as contentJudge } from "./content-judge.js";
+import { agent as podcastCreator } from "./podcast-creator.js";
 
 // Definitions
 
@@ -148,6 +149,15 @@ async function registerAgents(server: AcpServer) {
     contentJudge.outputSchema,
     contentJudge.run,
     contentJudge.metadata
+  );
+
+  server.agent(
+    podcastCreator.name,
+    podcastCreator.description,
+    podcastCreator.inputSchema,
+    podcastCreator.outputSchema,
+    podcastCreator.run,
+    podcastCreator.metadata
   );
 }
 
