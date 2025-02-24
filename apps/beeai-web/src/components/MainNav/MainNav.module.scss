@@ -14,21 +14,18 @@
  * limitations under the License.
  */
 
-import clsx from 'clsx';
-import { PropsWithChildren } from 'react';
-import classes from './AppHeader.module.scss';
-import { Container } from './Container';
-
-interface Props {
-  className?: string;
+.list {
+  display: flex;
+  column-gap: $spacing-07;
 }
 
-export function AppHeader({ className, children }: PropsWithChildren<Props>) {
-  return (
-    <header className={clsx(classes.root, className)}>
-      <Container size="xlg">
-        <div className={classes.holder}>{children}</div>
-      </Container>
-    </header>
-  );
+.link {
+  display: block;
+  font-size: rem(14px);
+  line-height: math.div(18, 14);
+  color: $text-dark;
+  text-decoration: none;
+  &:hover {
+    color: $background-inverse;
+  }
 }

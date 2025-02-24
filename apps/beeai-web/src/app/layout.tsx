@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
+import '../styles/style.scss';
 import type { Metadata } from "next";
+import AppLayout from '@/components/layouts/AppLayout';
 
 export const metadata: Metadata = {};
 
@@ -26,7 +28,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        {children}
+        <AppLayout>{children}</AppLayout>
       </body>
     </html>
   );

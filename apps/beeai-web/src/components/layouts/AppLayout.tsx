@@ -14,21 +14,18 @@
  * limitations under the License.
  */
 
-import clsx from 'clsx';
-import { PropsWithChildren } from 'react';
-import classes from './AppHeader.module.scss';
-import { Container } from './Container';
+import { AppHeader } from "@beeai/ui";
+import { PropsWithChildren } from "react";
+import classes from "./AppLayout.module.scss";
+import { MainNav } from "../MainNav/MainNav";
 
-interface Props {
-  className?: string;
-}
-
-export function AppHeader({ className, children }: PropsWithChildren<Props>) {
+export default function AppLayout({ children }: PropsWithChildren) {
   return (
-    <header className={clsx(classes.root, className)}>
-      <Container size="xlg">
-        <div className={classes.holder}>{children}</div>
-      </Container>
-    </header>
+    <div className={classes.root}>
+      <AppHeader className={classes.header}>
+        <MainNav />
+      </AppHeader>
+      <main className={classes.main}>{children}</main>
+    </div>
   );
 }

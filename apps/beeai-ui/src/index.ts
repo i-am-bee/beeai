@@ -14,21 +14,4 @@
  * limitations under the License.
  */
 
-import clsx from 'clsx';
-import { PropsWithChildren } from 'react';
-import classes from './AppHeader.module.scss';
-import { Container } from './Container';
-
-interface Props {
-  className?: string;
-}
-
-export function AppHeader({ className, children }: PropsWithChildren<Props>) {
-  return (
-    <header className={clsx(classes.root, className)}>
-      <Container size="xlg">
-        <div className={classes.holder}>{children}</div>
-      </Container>
-    </header>
-  );
-}
+export * from './components/layouts/AppHeader';

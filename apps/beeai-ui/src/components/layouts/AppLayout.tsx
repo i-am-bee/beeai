@@ -21,6 +21,8 @@ import { ToTopButton } from '../ToTopButton/ToTopButton';
 import { AppFooter } from './AppFooter';
 import { AppHeader } from './AppHeader';
 import classes from './AppLayout.module.scss';
+import { MainNav } from '../MainNav/MainNav';
+import { CommunityNav } from '../CommunityNav/CommunityNav';
 
 const SCROLLED_OFFSET = 48;
 
@@ -48,7 +50,10 @@ export function AppLayout() {
 
   return (
     <div className={classes.root}>
-      <AppHeader className={classes.header} showCommunityNav={!isHomeRoute} />
+      <AppHeader className={classes.header}>
+        <MainNav />
+        {!isHomeRoute && <CommunityNav />}
+      </AppHeader>
 
       <main ref={mainRef} className={classes.main} onScroll={handleScroll}>
         <Outlet />

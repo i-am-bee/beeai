@@ -14,21 +14,28 @@
  * limitations under the License.
  */
 
-import clsx from 'clsx';
-import { PropsWithChildren } from 'react';
-import classes from './AppHeader.module.scss';
-import { Container } from './Container';
+import Link from "next/link";
+import classes from "./MainNav.module.scss";
 
-interface Props {
-  className?: string;
-}
-
-export function AppHeader({ className, children }: PropsWithChildren<Props>) {
+export function MainNav() {
   return (
-    <header className={clsx(classes.root, className)}>
-      <Container size="xlg">
-        <div className={classes.holder}>{children}</div>
-      </Container>
-    </header>
+    <nav>
+      <ul className={classes.list}>
+        {NAV_ITEMS.map(({ label, href }, idx) => (
+          <li key={idx}>
+            <Link href={href} className={classes.link}>
+              {label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </nav>
   );
 }
+
+const NAV_ITEMS = [
+  {
+    label: <strong>BeeAI</strong>,
+    href: "/",
+  },
+];

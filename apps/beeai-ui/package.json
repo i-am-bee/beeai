@@ -12,6 +12,9 @@
     "preview": "vite preview",
     "clean": "rm -rf node_modules && rm -rf dist"
   },
+  "exports": {
+    ".": "./src/index.ts"
+  },
   "dependencies": {
     "@carbon/colors": "^11.29.0",
     "@carbon/grid": "^11.31.0",
