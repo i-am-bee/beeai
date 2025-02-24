@@ -15,7 +15,7 @@
 import fastapi
 
 from beeai_server.routes.dependencies import EnvServiceDependency
-from beeai_server.schema import UpdateEnvRequest
+from beeai_server.schema import UpdateEnvRequest, ListEnvSchema
 
 router = fastapi.APIRouter()
 
@@ -28,7 +28,7 @@ async def update_env(request: UpdateEnvRequest, env_service: EnvServiceDependenc
 
 @router.get("")
 async def list_env(env_service: EnvServiceDependency):
-    return {"env": await env_service.list_env()}
+    return ListEnvSchema(env=await env_service.list_env())
 
 
 @router.put("/sync")

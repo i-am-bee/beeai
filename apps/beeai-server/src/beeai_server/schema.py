@@ -33,4 +33,8 @@ class UpdateEnvRequest(BaseModel):
     env: dict[str, str]
 
 
+class ListEnvSchema(BaseModel):
+    env: dict[str, str]
+
+
 DeleteProviderRequest = CreateProviderRequest
