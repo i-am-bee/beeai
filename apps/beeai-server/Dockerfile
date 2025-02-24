@@ -4,10 +4,12 @@ WORKDIR /app
 
 COPY . .
 
-ENV MISE_DATA_DIR=/app/.mise-state
+ENV MISE_CACHE_DIR=/app/.mise
+ENV MISE_DATA_DIR=/app/.mise
+ENV MISE_STATE_DIR=/app/.mise
 
-RUN mkdir -p /app/.mise-state && \
-    chmod -R 755 /app /app/.mise-state && \
+RUN mkdir -p /app/.mise && \
+    chmod -R 755 /app /app/.mise && \
     mise trust && \
     mise run beeai-server:build
 
