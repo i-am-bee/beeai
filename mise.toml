@@ -60,7 +60,7 @@ outputs = { auto = true }
 hide = true
 dir = "{{config_root}}"
 run = """
-printf '#!/bin/sh\n{{ mise_bin }} run git-hooks:pre-commit' >.git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+test ! -d .git || (printf '#!/bin/sh\n{{ mise_bin }} run git-hooks:pre-commit' >.git/hooks/pre-commit && chmod +x .git/hooks/pre-commit)
 """
 sources = [".git/hooks/pre-commit"]
 outputs = { auto = true }

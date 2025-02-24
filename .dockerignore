@@ -1,1 +1,26 @@
-node_modules
+*
+
+# source code
+!agents
+!apps
+!packages
+
+# mise
+!mise.toml
+!mise.lock
+!mise.local.toml-example
+
+# pnpm
+!pnpm-lock.yaml
+!pnpm-workspace.yaml
+
+# uv
+!pyproject.toml
+!uv.lock
+
+# sub-ignores
+**/node_modules
+**/.ruff-cache
+**/dist
+**/Dockerfile
+**/.dockerignore

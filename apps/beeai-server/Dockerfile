@@ -1,22 +1,30 @@
-FROM jdxcode/mise
-
+FROM jdxcode/mise AS build
 WORKDIR /app
-
 COPY . .
-
-# Set Mise directories
-ENV MISE_CACHE_DIR=/app/.mise
-ENV MISE_DATA_DIR=/app/.mise
-ENV MISE_STATE_DIR=/app/.mise
-
-# Set UV cache directory
-ENV UV_CACHE_DIR=/app/.mise/uv-cache
-
-# Prepare directories and fix permissions during build
-RUN mkdir -p /app/.mise /app/.mise/uv-cache && \
-    chmod -R 777 /app/.mise && \
-    chmod -R 755 /app && \
-    mise trust && \
+# `python.uv_venv_auto` must be `false` to avoid https://github.com/rancher-sandbox/rancher-desktop/issues/8281
+RUN mise trust &&\
+    mise settings set --local python.uv_venv_auto false &&\
+    mise install &&\
     mise run beeai-server:build
 
-CMD ["mise", "run", "beeai-server:run"]
+FROM debian:12-slim AS runtime
+WORKDIR /app
+RUN apt-get update  &&\
+    apt-get -y --no-install-recommends install \
+    build-essential \
+    git \
+    make \
+    nodejs \
+    pipx \
+    python3 \
+    python3-dev \
+    &&\
+    rm -rf /var/lib/apt/lists/*
+RUN pipx install uv
+COPY --from=build /app/apps/beeai-server/dist/*.tar.gz .
+RUN pipx install ./*.tar.gz &&\
+    pipx inject beeai-server packaging
+RUN chmod og+rx /root
+ENV PATH "/root/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+ENV HOME "/tmp"
+CMD ["beeai-server"]
