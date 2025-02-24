@@ -13,11 +13,14 @@ import {
 const inputSchema = promptInputSchema;
 const outputSchema = promptOutputSchema;
 
-const run = async ({
-  params,
-}: {
-  params: { input: z.infer<typeof inputSchema> };
-}) => {
+const run = async (
+  {
+    params,
+  }: {
+    params: { input: z.infer<typeof inputSchema> };
+  },
+  { signal }: { signal?: AbortSignal }
+) => {
   const { prompt } = params.input;
 
   const model = await ChatModel.fromName("ollama:llama3.1");
@@ -52,6 +55,7 @@ IT SHOULD STRICTLY BE THE DIALOGUES`),
     ],
     maxTokens: 8126,
     temperature: 1,
+    abortSignal: signal,
   });
 
   const podcastDialogue = podcastResponse.getTextContent();
