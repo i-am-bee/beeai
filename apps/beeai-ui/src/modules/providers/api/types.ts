@@ -14,18 +14,6 @@
  * limitations under the License.
  */
 
-.stack {
-  display: flex;
-  flex-direction: column;
-  row-gap: $spacing-05;
-}
-
-.locationInput {
-  min-block-size: rem(92px);
-}
-
-.description {
-  font-size: rem(18px);
-  line-height: math.div(20, 18);
-  color: $text-secondary;
+export interface CreateProviderBody {
+  location: string;
 }

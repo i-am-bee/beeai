@@ -28,3 +28,5 @@ export const BLUESKY_LINK = 'https://bsky.app/profile/beeaiagents.bsky.social';
 export const DOCUMENTATION_LINK = '';
 export const GET_STARTED_PYTHON_LINK = '';
 export const GET_STARTED_TYPESCRIPT_LINK = '';
+
+export const BEE_AI_FRAMEWORK_TAG = 'BeeAI';

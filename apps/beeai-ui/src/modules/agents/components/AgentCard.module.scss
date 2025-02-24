@@ -15,7 +15,7 @@
  */
 
 .root {
-  border-block-end: 1px solid $border-subtle;
+  border-block-end: 1px solid $border-subtle-00;
   padding-block: $spacing-06;
   position: relative;
   display: flex;
@@ -58,6 +58,11 @@
   display: flex;
   flex-direction: column;
   row-gap: $spacing-05;
+
+  :global(.cds--tag) {
+    position: relative;
+    z-index: 1;
+  }
 }
 
 .description {

@@ -14,21 +14,48 @@
  * limitations under the License.
  */
 
-import { Button, InlineLoading, ModalBody, ModalFooter, ModalHeader, TextInput } from '@carbon/react';
-import { ModalProps } from '@/contexts/Modal/modal-context';
 import { Modal } from '@/components/Modal/Modal';
-import classes from './AgentModal.module.scss';
-import { useImportProvider } from '../api/mutations/useImportAgents';
-import { useForm } from 'react-hook-form';
-import { useCallback, useId } from 'react';
+import { ModalProps } from '@/contexts/Modal/modal-context';
 import { useToast } from '@/contexts/Toast';
+import { useCreateProvider } from '@/modules/providers/api/mutations/useCreateProvider';
+import { CreateProviderBody } from '@/modules/providers/api/types';
+import {
+  Button,
+  InlineLoading,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  RadioButton,
+  RadioButtonGroup,
+  TextInput,
+} from '@carbon/react';
+import { useCallback, useEffect, useId, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import classes from './ImportAgentsModal.module.scss';
 
 export function ImportAgentsModal({ onRequestClose, ...modalProps }: ModalProps) {
   const id = useId();
+  const [providerSource, setProviderSource] = useState(ProviderSource.LocalPath);
   const { addToast } = useToast();
-  const { mutate, isPending } = useImportProvider({
+  // const { data, refetch } = useProvider({
+  //   id: 'file:///Users/petr/htdocs/beeai/agents/official/bee-agent-framework/beeai-provider-unmanaged.yaml',
+  // });
+
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     refetch();
+
+  //     console.log(data?.status);
+  //   }, 1000);
+  // });
+
+  const { mutate: createProvider, isPending } = useCreateProvider({
     onSuccess: () => {
-      addToast({ title: 'Provider was imported successfuly' });
+      addToast({
+        title: 'Provider was imported successfuly',
+        kind: 'info',
+      });
+
       onRequestClose();
     },
   });
@@ -36,37 +63,101 @@ export function ImportAgentsModal({ onRequestClose, ...modalProps }: ModalProps)
   const {
     register,
     handleSubmit,
+    reset,
     formState: { isValid },
-  } = useForm<FormValues>({
+  } = useForm<CreateProviderBody>({
     mode: 'onChange',
   });
 
   const onSubmit = useCallback(
-    ({ url }: FormValues) => {
-      mutate({ location: url });
+    ({ location }: CreateProviderBody) => {
+      const locationPrefix = LOCATION_PREFIXES[providerSource];
+
+      createProvider({
+        location: `${locationPrefix}${location}`,
+      });
     },
-    [mutate],
+    [createProvider, providerSource],
   );
 
+  const locationInputProps = INPUTS_PROPS[providerSource];
+
+  useEffect(() => {
+    reset({ location: '' });
+  }, [providerSource, reset]);
+
   return (
-    <Modal {...modalProps} size="md">
+    <Modal {...modalProps}>
       <ModalHeader buttonOnClick={() => onRequestClose()}>
         <h2>Import your agents</h2>
+
+        <p className={classes.description}>
+          This could take a few minutes, you will be notified once your agents have been imported successfully.
+        </p>
       </ModalHeader>
-      <ModalBody className={classes.body}>
+
+      <ModalBody>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <TextInput id={id} labelText="URL" {...register('url', { required: true })} />
+          <div className={classes.stack}>
+            <RadioButtonGroup
+              name={`${id}:provider-source`}
+              legendText="Select the source of your agent provider"
+              valueSelected={providerSource}
+              onChange={(value) => setProviderSource(value as ProviderSource)}
+            >
+              <RadioButton labelText="Local path" value={ProviderSource.LocalPath} />
+
+              <RadioButton labelText="GitHub" value={ProviderSource.GitHub} />
+            </RadioButtonGroup>
+
+            <TextInput
+              id={`${id}:location`}
+              size="lg"
+              className={classes.locationInput}
+              {...locationInputProps}
+              {...register('location', { required: true })}
+            />
+          </div>
+
+          {/* <InlineLoading description="Scraping repository&hellip;" /> */}
+
+          {/* <ErrorMessage subtitle="Error during agents import. Check the files in the URL provided" /> */}
         </form>
       </ModalBody>
+
       <ModalFooter>
-        <Button onClick={() => handleSubmit(onSubmit)()} disabled={isPending || !isValid}>
-          {isPending ? <InlineLoading description="Importing..." /> : 'Import'}
+        <Button kind="ghost" onClick={() => onRequestClose()}>
+          Cancel
         </Button>
+
+        <Button onClick={() => handleSubmit(onSubmit)()} disabled={isPending || !isValid}>
+          {isPending ? <InlineLoading description="Importing&hellip;" /> : 'Continue'}
+        </Button>
+
+        {/* <Button kind="ghost" onClick={() => onRequestClose()}>
+          Close
+        </Button> */}
       </ModalFooter>
     </Modal>
   );
 }
 
-interface FormValues {
-  url: string;
+enum ProviderSource {
+  LocalPath = 'LocalPath',
+  GitHub = 'GitHub',
 }
+
+const LOCATION_PREFIXES = {
+  [ProviderSource.LocalPath]: 'file://',
+  [ProviderSource.GitHub]: 'git+',
+};
+
+const INPUTS_PROPS = {
+  [ProviderSource.LocalPath]: {
+    labelText: 'Agent provider path',
+  },
+  [ProviderSource.GitHub]: {
+    labelText: 'GitHub repository URL',
+    helperText: 'Make sure to provide a public link',
+  },
+};

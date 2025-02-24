@@ -14,18 +14,25 @@
  * limitations under the License.
  */
 
-.stack {
-  display: flex;
-  flex-direction: column;
-  row-gap: $spacing-05;
+import { api } from '@/api';
+import { CreateProviderBody } from './types';
+
+export async function createProvider(body: CreateProviderBody) {
+  const response = await api.POST('/api/v1/provider', { body });
+
+  if (response.error) {
+    throw new Error('Failed to create provider.');
+  }
+
+  return response.data;
 }
 
-.locationInput {
-  min-block-size: rem(92px);
-}
+export async function getProviders() {
+  const response = await api.GET('/api/v1/provider');
 
-.description {
-  font-size: rem(18px);
-  line-height: math.div(20, 18);
-  color: $text-secondary;
+  if (response.error) {
+    throw new Error('Failed to get providers.');
+  }
+
+  return response.data;
 }

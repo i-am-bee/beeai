@@ -26,10 +26,12 @@ interface Props {
 export function useListAgents({ params }: Props = {}) {
   const client = useMCPClient();
 
-  return useQuery({
+  const query = useQuery({
     queryKey: agentKeys.list(params),
     queryFn: () => client!.listAgents(params),
     enabled: Boolean(client),
     select: (data) => data?.agents as Agent[],
   });
+
+  return query;
 }

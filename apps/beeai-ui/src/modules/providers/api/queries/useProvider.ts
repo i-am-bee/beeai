@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-import { api } from '@/api';
-import { CreateProviderBody } from './types';
+import { useListProviders } from './useListProviders';
 
-export async function createProvider(body: CreateProviderBody) {
-  const response = await api.post('provider', { json: body });
+interface Props {
+  id: string;
+}
 
-  if (!response.ok) {
-    throw new Error('Failed to post data');
-  }
+export function useProvider({ id }: Props) {
+  const query = useListProviders();
+  const provider = query.data?.items.find((item) => id === item.id);
 
-  return response.json(); // Return the response JSON
+  return {
+    ...query,
+    data: provider,
+  };
 }

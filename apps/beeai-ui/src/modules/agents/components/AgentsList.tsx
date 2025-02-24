@@ -18,7 +18,7 @@ import { ErrorMessage } from '@/components/ErrorMessage/ErrorMessage';
 import { useModal } from '@/contexts/Modal';
 import { ImportAgentsModal } from '@/modules/agents/components/ImportAgentsModal';
 import { Add } from '@carbon/icons-react';
-import { Button } from '@carbon/react';
+import { Button, SkeletonText } from '@carbon/react';
 import pluralize from 'pluralize';
 import { useFormContext } from 'react-hook-form';
 import { useAgents } from '../contexts';
@@ -51,11 +51,15 @@ export function AgentsList() {
   return (
     <div>
       <div className={classes.header}>
-        {totalCount > 0 && (
-          <p className={classes.count}>
-            Showing {totalCount === filteredCount ? totalCount : `${filteredCount} of ${totalCount}`}{' '}
-            {pluralize('agent', totalCount)}
-          </p>
+        {!isPending ? (
+          totalCount > 0 && (
+            <p className={classes.count}>
+              Showing {totalCount === filteredCount ? totalCount : `${filteredCount} of ${totalCount}`}{' '}
+              {pluralize('agent', totalCount)}
+            </p>
+          )
+        ) : (
+          <SkeletonText className={classes.count} width="125px" />
         )}
 
         <Button

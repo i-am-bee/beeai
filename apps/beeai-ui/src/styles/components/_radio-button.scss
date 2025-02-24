@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-.stack {
-  display: flex;
-  flex-direction: column;
-  row-gap: $spacing-05;
+@use 'styles/common' as *;
+
+.cds--radio-button__label {
+  padding-block: 1px;
+  column-gap: $spacing-03;
 }
 
-.locationInput {
-  min-block-size: rem(92px);
-}
-
-.description {
-  font-size: rem(18px);
-  line-height: math.div(20, 18);
-  color: $text-secondary;
+.cds--radio-button__appearance {
+  margin: 0 1px;
+  border-color: $text-placeholder;
 }

@@ -38,6 +38,7 @@
 }
 
 @mixin scrollbar() {
+  scroll-behavior: smooth;
   scrollbar-width: thin;
   scrollbar-color: $layer-03 transparent;
   &::-webkit-scrollbar {

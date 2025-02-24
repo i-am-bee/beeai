@@ -14,18 +14,15 @@
  * limitations under the License.
  */
 
-.stack {
-  display: flex;
-  flex-direction: column;
-  row-gap: $spacing-05;
-}
+import { useQuery } from '@tanstack/react-query';
+import { getProviders } from '..';
+import { providerKeys } from '../keys';
 
-.locationInput {
-  min-block-size: rem(92px);
-}
+export function useListProviders() {
+  const query = useQuery({
+    queryKey: providerKeys.list(),
+    queryFn: () => getProviders(),
+  });
 
-.description {
-  font-size: rem(18px);
-  line-height: math.div(20, 18);
-  color: $text-secondary;
+  return query;
 }
