@@ -29,13 +29,13 @@ async def register_agent() -> int:
     server = Server("researcher-agent")
 
     @server.agent(
-        "GPT-researcher",
+        "gpt-researcher",
         "LLM based autonomous agent that conducts deep local and web research on any topic and generates a long report with citations.",
         input=PromptInput,
         output=Output,
         **Metadata(
             title="GPT Researcher",
-            framework="GPT researcher",
+            framework="Custom",
             licence="Apache 2.0",
             avgRunTimeSeconds=2.1,
             avgRunTokens=111,

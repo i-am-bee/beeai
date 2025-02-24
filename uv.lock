@@ -231,7 +231,7 @@ requires-dist = [
 
 [[package]]
 name = "beeai-sdk"
-version = "0.0.3"
+version = "0.0.4"
 source = { virtual = "packages/beeai-sdk" }
 dependencies = [
     { name = "acp-sdk" },

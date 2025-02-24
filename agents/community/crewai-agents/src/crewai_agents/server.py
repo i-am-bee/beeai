@@ -25,6 +25,8 @@ async def run():
         **Metadata(title="Marketing Crew", framework="CrewAI", licence="Apache 2.0").model_dump(),
     )
     async def run_marketing_crew(input: PromptInput, ctx: Context) -> PromptOutput:
+        loop = asyncio.get_event_loop()
+        
         def step_callback(data, *args, **kwargs):
             delta = None
             if isinstance(data, AgentAction):
@@ -44,7 +46,7 @@ async def run():
                     }
                 })
             if delta:
-                asyncio.run_coroutine_threadsafe(ctx.report_agent_run_progress(delta=delta), asyncio.get_event_loop())
+                asyncio.run_coroutine_threadsafe(ctx.report_agent_run_progress(delta=delta), loop)
 
         try:
             crew = MarketingPostsCrew().crew(step_callback=step_callback)

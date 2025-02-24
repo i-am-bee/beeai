@@ -20,12 +20,12 @@ from typing import AsyncGenerator
 
 import anyio
 import httpx
-import typer
 from httpx import HTTPStatusError
 from acp import ClientSession, types, ServerNotification
 from acp.client.sse import sse_client
 from acp.shared.session import ReceiveResultT
 from acp.types import RequestParams
+from beeai_cli.async_typer import err_console
 
 from beeai_cli.configuration import Configuration
 
@@ -88,7 +88,7 @@ async def send_request_with_notifications(
                         notification = ServerNotification.model_validate(message)
                         await message_writer.send(notification)
                     except ValueError:
-                        typer.echo(f"Unable to parse message from server: {message}")
+                        err_console.print(f"Unable to parse message from server: {message}")
 
             task_group.start_soon(read_notifications)
             task_group.start_soon(request_task)

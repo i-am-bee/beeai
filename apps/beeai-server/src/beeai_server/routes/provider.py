@@ -14,6 +14,7 @@
 
 import fastapi
 
+from beeai_server.domain.model import ProviderWithStatus
 from beeai_server.routes.dependencies import ProviderServiceDependency
 from beeai_server.schema import PaginatedResponse, CreateProviderRequest, DeleteProviderRequest
 
@@ -21,13 +22,21 @@ router = fastapi.APIRouter()
 
 
 @router.post("")
-async def create_provider(request: CreateProviderRequest, provider_service: ProviderServiceDependency):
-    await provider_service.add_provider(location=request.location, env=request.env)
-    return fastapi.Response(status_code=fastapi.status.HTTP_201_CREATED)
+async def create_provider(
+    request: CreateProviderRequest, provider_service: ProviderServiceDependency
+) -> ProviderWithStatus:
+    return await provider_service.add_provider(location=request.location)
+
+
+@router.post("/preview")
+async def preview_provider(
+    request: CreateProviderRequest, provider_service: ProviderServiceDependency
+) -> ProviderWithStatus:
+    return await provider_service.preview_provider(location=request.location)
 
 
 @router.get("")
-async def list_providers(provider_service: ProviderServiceDependency):
+async def list_providers(provider_service: ProviderServiceDependency) -> PaginatedResponse[ProviderWithStatus]:
     providers = await provider_service.list_providers()
     return PaginatedResponse(items=providers, total_count=len(providers))
 

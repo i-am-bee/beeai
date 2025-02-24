@@ -12,15 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import runtime_checkable, Protocol, AsyncIterator
+from typing import runtime_checkable, Protocol
 
 from beeai_server.domain.model import Provider
+
+NOT_SET = object()
 
 
 @runtime_checkable
 class IProviderRepository(Protocol):
-    async def list(self) -> AsyncIterator[Provider]:
-        yield
-
+    async def sync(self) -> None: ...
+    async def list(self) -> list[Provider]: ...
     async def create(self, *, provider: Provider) -> None: ...
     async def delete(self, *, provider_id: str) -> None: ...
+
+
+class IEnvVariableRepository(Protocol):
+    async def sync(self) -> None: ...
+    async def get(self, key: str, default: str | None = NOT_SET) -> str: ...
+    async def get_all(self) -> dict[str, str]: ...
+    async def update(self, update: dict[str, str | None]) -> None: ...

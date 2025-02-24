@@ -44,10 +44,7 @@ async def check_official_registry(configuration: Configuration, provider_service
         resp = yaml.safe_load(resp.content)["providers"]
         for provider in resp:
             try:
-                provider_manifest = CreateProviderRequest(
-                    location=provider["url"],
-                    env=provider.get("env", None),
-                ).location
+                provider_manifest = CreateProviderRequest(location=provider["url"]).location
                 await provider_manifest.resolve()
                 desired_providers.add(provider_manifest.provider_id)
             except ValueError as e:

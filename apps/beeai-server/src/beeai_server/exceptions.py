@@ -12,7 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from typing import TYPE_CHECKING
+
 from starlette.status import HTTP_404_NOT_FOUND
+
+
+if TYPE_CHECKING:
+    from beeai_server.domain.model import EnvVar
 
 
 class ManifestLoadError(Exception):
@@ -29,3 +35,8 @@ class LoadFeaturesError(Exception): ...
 
 
 class UnsupportedProviderError(FileNotFoundError): ...
+
+
+class MissingConfigurationError(Exception):
+    def __init__(self, missing_env: list["EnvVar"]):
+        self.missing_env = missing_env

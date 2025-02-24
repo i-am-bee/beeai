@@ -23,13 +23,14 @@ import {
   ATTR_SERVICE_NAME,
   ATTR_SERVICE_VERSION,
 } from "@opentelemetry/semantic-conventions";
+import stoppable from "stoppable";
 
 export async function runAgentProvider(
-  server: AcpServer,
+  acpServer: AcpServer,
   opentelemetrySdk?: NodeSDK,
 ): Promise<void> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { name, version } = (server.server as any)
+  const { name, version } = (acpServer.server as any)
     ._serverInfo as Implementation;
   const sdk =
     opentelemetrySdk ??
@@ -43,24 +44,34 @@ export async function runAgentProvider(
   try {
     const app = express();
 
-    let connected = false;
+    let clientConnected = false;
+
     app.get("/sse", async (req, res) => {
-      if (connected) {
+      if (clientConnected) {
         res
           .status(400)
           .send("Multiple connections at a time are not permitted");
         return;
       }
-      connected = true;
+      clientConnected = true;
+      console.log("Client connected");
+
       res.on("close", () => {
-        connected = false;
+        clientConnected = false;
+        console.log("Client disconnected");
       });
 
       const transport = new SSEServerTransport("/messages", res);
-      app.post("/messages", async (req, res) => {
-        await transport.handlePostMessage(req, res);
-      });
-      await server.connect(transport);
+      await acpServer.connect(transport);
+    });
+
+    app.post("/messages", async (req, res) => {
+      const transport = acpServer.server.transport as SSEServerTransport;
+      if (!transport) {
+        res.status(404).send("Session not found");
+        return;
+      }
+      await transport.handlePostMessage(req, res);
     });
 
     const port = parseInt(process.env.PORT ?? "8000");
@@ -75,9 +86,10 @@ export async function runAgentProvider(
       });
 
       const shutdownHandler = () => {
-        server.close(() => {
-          process.removeListener("SIGINT", shutdownHandler);
-          resolve();
+        process.removeListener("SIGINT", shutdownHandler);
+        stoppable(server, 5_000).stop((err) => {
+          if (err) reject(err);
+          else resolve();
         });
       };
 

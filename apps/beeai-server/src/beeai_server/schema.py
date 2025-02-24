@@ -27,7 +27,14 @@ class PaginatedResponse(BaseModel, Generic[BaseModelT]):
 
 class CreateProviderRequest(BaseModel):
     location: ManifestLocation
-    env: dict[str, str] | None = None
+
+
+class UpdateEnvRequest(BaseModel):
+    env: dict[str, str]
+
+
+class ListEnvSchema(BaseModel):
+    env: dict[str, str]
 
 
 DeleteProviderRequest = CreateProviderRequest
