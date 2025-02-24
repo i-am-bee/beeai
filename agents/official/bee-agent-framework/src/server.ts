@@ -3,7 +3,6 @@
 import { AcpServer } from "@i-am-bee/acp-sdk/server/acp.js";
 
 import { BeeAgent } from "bee-agent-framework/agents/bee/agent";
-import { OllamaChatModel } from "bee-agent-framework/adapters/ollama/backend/chat";
 import { UnconstrainedMemory } from "bee-agent-framework/memory/unconstrainedMemory";
 import { Version } from "bee-agent-framework";
 import { runAgentProvider } from "@i-am-bee/beeai-sdk/providers/agent";
@@ -22,6 +21,8 @@ import { BaseMemory } from "bee-agent-framework/memory/base";
 import { z, ZodRawShape } from "zod";
 import { agent as contentJudge } from "./content-judge.js";
 import { agent as podcastCreator } from "./podcast-creator.js";
+import { ChatModel } from "bee-agent-framework/backend/core";
+import { CHAT_MODEL } from "./config.js";
 
 // Definitions
 
@@ -50,9 +51,9 @@ function createTool(tool: SupportedTools) {
   }
 }
 
-function createBeeAgent(memory?: BaseMemory, tools?: SupportedTools[]) {
+async function createBeeAgent(memory?: BaseMemory, tools?: SupportedTools[]) {
   return new BeeAgent({
-    llm: new OllamaChatModel("llama3.1"),
+    llm: await ChatModel.fromName(CHAT_MODEL),
     memory: memory ?? new UnconstrainedMemory(),
     tools: tools?.map(createTool) ?? [],
   });
@@ -75,13 +76,14 @@ async function registerTools(server: AcpServer) {
   }
 
   // Register agent as a tool
-  const agent = createBeeAgent();
+  const agent = await createBeeAgent();
   server.tool(
     "bee",
     agent.meta.description,
     promptInputSchema.extend({ config: agentConfigSchema }).shape,
     async ({ config, ...input }, { signal }) => {
-      const output = await createBeeAgent(undefined, config?.tools).run(input, {
+      const agent = await createBeeAgent(undefined, config?.tools);
+      const output = await agent.run(input, {
         signal,
       });
       return { content: [{ type: "text", text: output.result.text }] };
@@ -90,7 +92,7 @@ async function registerTools(server: AcpServer) {
 }
 
 async function registerAgents(server: AcpServer) {
-  const agent = createBeeAgent();
+  const agent = await createBeeAgent();
   server.agent(
     "bee",
     agent.meta.description,
@@ -109,7 +111,8 @@ async function registerAgents(server: AcpServer) {
       await memory.addMany(
         messages.map(({ role, content }) => Message.of({ role, text: content }))
       );
-      const output = await createBeeAgent(memory, config?.tools)
+      const agent = await createBeeAgent(memory, config?.tools);
+      const output = await agent
         .run({ prompt: null }, { signal })
         .observe((emitter) => {
           emitter.on("partialUpdate", async ({ update }) => {

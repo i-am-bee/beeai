@@ -4,37 +4,13 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-catalogs:
-  default:
-    '@eslint/js':
-      specifier: ^9.20.0
-      version: 9.20.0
-    eslint:
-      specifier: ^9.17.0
-      version: 9.20.1
-    eslint-plugin-react-hooks:
-      specifier: ^5.0.0
-      version: 5.1.0
-    eslint-plugin-react-refresh:
-      specifier: ^0.4.16
-      version: 0.4.19
-    globals:
-      specifier: ^15.14.0
-      version: 15.15.0
-    prettier:
-      specifier: ^3.4.2
-      version: 3.5.1
-    typescript:
-      specifier: ^5.7.3
-      version: 5.7.3
-    typescript-eslint:
-      specifier: ^8.23.0
-      version: 8.24.1
-
 importers:
 
   agents/official/bee-agent-framework:
     dependencies:
+      '@ai-sdk/openai':
+        specifier: ^1.1.13
+        version: 1.1.13(zod@3.24.2)
       '@i-am-bee/acp-sdk':
         specifier: ^0.0.1
         version: 0.0.1
@@ -43,10 +19,10 @@ importers:
         version: 0.0.4
       bee-agent-framework:
         specifier: ^0.1.2
-        version: 0.1.2(@aws-sdk/client-bedrock-runtime@3.751.0)(ollama-ai-provider@1.2.0(zod@3.24.2))(react@19.0.0)(yaml@2.7.0)
-      ollama:
-        specifier: ^0.5.12
-        version: 0.5.13
+        version: 0.1.2(@ai-sdk/openai@1.1.13(zod@3.24.2))(@aws-sdk/client-bedrock-runtime@3.751.0)(ollama-ai-provider@1.2.0(zod@3.24.2))(react@19.0.0)(yaml@2.7.0)
+      ollama-ai-provider:
+        specifier: ^1.2.0
+        version: 1.2.0(zod@3.24.2)
       tsx:
         specifier: ^4.19.2
         version: 4.19.3
@@ -380,6 +356,12 @@ importers:
         version: 8.24.1(eslint@9.20.1)(typescript@5.7.3)
 
 packages:
+
+  '@ai-sdk/openai@1.1.13':
+    resolution: {integrity: sha512-IdChK1pJTW3NQis02PG/hHTG0gZSyQIMOLPt7f7ES56C0xH2yaKOU1Tp2aib7pZzWGwDlzTOW2h5TtAB8+V6CQ==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      zod: ^3.0.0
 
   '@ai-sdk/provider-utils@2.1.9':
     resolution: {integrity: sha512-NerKjTuuUUs6glJGaentaXEBH52jRM0pR+cRCzc7aWke/K5jYBD6Frv1JYBpcxS7gnnCqSQZR9woiyS+6jrdjw==}
@@ -5127,9 +5109,6 @@ packages:
       zod:
         optional: true
 
-  ollama@0.5.13:
-    resolution: {integrity: sha512-qK3eE2GjMYjCiTknEJfAHjbUzUqgVtf9qtzjxWrkwBZgBG7kOB6Z4+Ov4fbvDjmKKHv+rpuTsWFg4jZvVjNBtQ==}
-
   on-exit-leak-free@2.1.2:
     resolution: {integrity: sha512-0eJJY6hXLGf1udHwfNftBqH+g73EU4B504nZeKpz1sYRKafAghwxEJunB2O7rDZkL4PGfsMVnTXZ2EjibbqcsA==}
     engines: {node: '>=14.0.0'}
@@ -6661,9 +6640,6 @@ packages:
   webidl-conversions@4.0.2:
     resolution: {integrity: sha512-YQ+BmxuTgd6UXZW3+ICGfyqRyHXVlD5GtQr5+qjiNW7bF0cqrzX500HVXPBOvgXb5YnzDd+h0zqyv61KUD7+Sg==}
 
-  whatwg-fetch@3.6.20:
-    resolution: {integrity: sha512-EqhiFU6daOA8kpjOWTL0olhVOF3i7OrFzSYiGsEMB8GcXS+RrzauAERX65xMeNWVqxA6HXH2m69Z9LaKKdisfg==}
-
   whatwg-url@5.0.0:
     resolution: {integrity: sha512-saE57nupxk6v3HY35+jzBwYa0rKSy0XR8JSxZPwgLr7ys0IBzhGviA1/TUGJLmSVqs8pb9AnvICXEuOHLprYTw==}
 
@@ -6810,6 +6786,12 @@ packages:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
 
 snapshots:
+
+  '@ai-sdk/openai@1.1.13(zod@3.24.2)':
+    dependencies:
+      '@ai-sdk/provider': 1.0.8
+      '@ai-sdk/provider-utils': 2.1.9(zod@3.24.2)
+      zod: 3.24.2
 
   '@ai-sdk/provider-utils@2.1.9(zod@3.24.2)':
     dependencies:
@@ -9847,7 +9829,7 @@ snapshots:
 
   basic-ftp@5.0.5: {}
 
-  bee-agent-framework@0.1.2(@aws-sdk/client-bedrock-runtime@3.751.0)(ollama-ai-provider@1.2.0(zod@3.24.2))(react@19.0.0)(yaml@2.7.0):
+  bee-agent-framework@0.1.2(@ai-sdk/openai@1.1.13(zod@3.24.2))(@aws-sdk/client-bedrock-runtime@3.751.0)(ollama-ai-provider@1.2.0(zod@3.24.2))(react@19.0.0)(yaml@2.7.0):
     dependencies:
       '@ai-zen/node-fetch-event-source': 2.1.4
       '@aws-sdk/client-bedrock-runtime': 3.751.0
@@ -9878,6 +9860,7 @@ snapshots:
       zod: 3.24.2
       zod-to-json-schema: 3.24.1(zod@3.24.2)
     optionalDependencies:
+      '@ai-sdk/openai': 1.1.13(zod@3.24.2)
       yaml: 2.7.0
     transitivePeerDependencies:
       - debug
@@ -12829,10 +12812,6 @@ snapshots:
     optionalDependencies:
       zod: 3.24.2
 
-  ollama@0.5.13:
-    dependencies:
-      whatwg-fetch: 3.6.20
-
   on-exit-leak-free@2.1.2: {}
 
   on-finished@2.4.1:
@@ -14662,8 +14641,6 @@ snapshots:
   webidl-conversions@3.0.1: {}
 
   webidl-conversions@4.0.2: {}
-
-  whatwg-fetch@3.6.20: {}
 
   whatwg-url@5.0.0:
     dependencies:

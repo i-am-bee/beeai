@@ -11,6 +11,7 @@ import {
 } from "@i-am-bee/beeai-sdk/schemas/prompt";
 import { Client as ACPClient } from "@i-am-bee/acp-sdk/client/index.js";
 import { SSEClientTransport } from "@i-am-bee/acp-sdk/client/sse.js";
+import { CHAT_MODEL } from "./config.js";
 
 const inputSchema = promptInputSchema.extend({
   documents: z.array(z.string()).default([]).optional(),
@@ -132,7 +133,7 @@ const run = async (
     ];
   }
 
-  const model = await ChatModel.fromName("ollama:llama3.1");
+  const model = await ChatModel.fromName(CHAT_MODEL);
 
   const results = await Promise.all(
     finalDocuments.map((document) =>
