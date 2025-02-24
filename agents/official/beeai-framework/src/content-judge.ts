@@ -1,9 +1,9 @@
 import { z } from "zod";
-import { ChatModel } from "bee-agent-framework/backend/chat";
+import { ChatModel } from "beeai-framework/backend/chat";
 import {
   SystemMessage,
   UserMessage,
-} from "bee-agent-framework/backend/message";
+} from "beeai-framework/backend/message";
 import { Metadata } from "@i-am-bee/beeai-sdk/schemas/metadata";
 import {
   promptInputSchema,
@@ -194,7 +194,6 @@ export const agent = {
   outputSchema,
   run,
   metadata: {
-    title: "Content Judge",
     fullDescription: `The Content Judge Agent evaluates multiple documents and agent-generated content based on four key criteria - correctness, depth & coverage, clarity & structure, and relevance. It assigns a numerical score (0-1) to each document for each criterion, using a weighted average to determine the highest-scoring document. This ensures that the most accurate, comprehensive, well-structured, and relevant document is selected.
 
 ## How It Works

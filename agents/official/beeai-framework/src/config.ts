@@ -1,4 +1,4 @@
-import { parseModel } from "bee-agent-framework/backend/utils";
+import { parseModel } from "beeai-framework/backend/utils";
 
 function parseChatModel(chatModel: string) {
   const { providerId, modelId } = parseModel(chatModel);
