@@ -169,7 +169,7 @@ const exampleInput1 = `{
     "Current cryptographic standards, such as RSA, rely on integer factorization, which quantum algorithms like Shor’s algorithm can efficiently break...",
     "Quantum computing will not significantly impact modern cryptography for at least another 50 years..."
   ],
-  "agents": ["gpt-researcher", "bee"]
+  "agents": ["gpt-researcher", "ollama-deep-researcher"]
 }`;
 
 const exampleOutput1 = `{
@@ -178,7 +178,7 @@ const exampleOutput1 = `{
 
 const exampleInput2 = `{
   "prompt": "Generate a concise summary of the history of artificial intelligence.",
-  "agents": ["gpt-researcher", "langgraph-researcher"]
+  "agents": ["gpt-researcher", "ollama-deep-researcher"]
 }`;
 
 const exampleOutput2 = `{

@@ -35,7 +35,7 @@ async def register_agent() -> int:
         output=Output,
         **Metadata(
             title="GPT Researcher",
-            framework="GPT researcher",
+            framework="Custom",
             licence="Apache 2.0",
             avgRunTimeSeconds=2.1,
             avgRunTokens=111,
