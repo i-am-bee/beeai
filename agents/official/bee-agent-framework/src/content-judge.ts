@@ -79,33 +79,37 @@ const retrieveDocuments = async ({
     throw error;
   }
 
-  const { agents: platformAgents } = await client.listAgents(undefined, {
-    signal,
-  });
-  const platformAgentsName = platformAgents.map((agent) => agent.name);
+  try {
+    const { agents: platformAgents } = await client.listAgents(undefined, {
+      signal,
+    });
+    const platformAgentsName = platformAgents.map((agent) => agent.name);
 
-  if (!agents.every((agent) => platformAgentsName.includes(agent))) {
-    throw new Error("One or more agents not available in the platform");
-  }
+    if (!agents.every((agent) => platformAgentsName.includes(agent))) {
+      throw new Error("One or more agents not available in the platform");
+    }
 
-  const results = await Promise.all(
-    agents.map((agent) =>
-      client.runAgent(
-        {
-          name: agent,
-          input: { prompt },
-        },
-        {
-          timeout: 10 * 60 * 1000,
-          signal,
-        }
+    const results = await Promise.all(
+      agents.map((agent) =>
+        client.runAgent(
+          {
+            name: agent,
+            input: { prompt },
+          },
+          {
+            timeout: 10 * 60 * 1000,
+            signal,
+          }
+        )
       )
-    )
-  );
+    );
 
-  return results.map(
-    (result) => (result.output.text as string) || "No document"
-  );
+    return results.map(
+      (result) => (result.output.text as string) || "No document"
+    );
+  } finally {
+    client.close();
+  }
 };
 
 const run = async (
