@@ -15,6 +15,7 @@ RUN apt-get update  &&\
     git \
     make \
     nodejs \
+    npm \
     pipx \
     python3 \
     python3-dev \
