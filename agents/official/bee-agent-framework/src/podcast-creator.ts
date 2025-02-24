@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { ChatModel } from "bee-agent-framework/backend/chat";
 import { Metadata } from "@i-am-bee/beeai-sdk/schemas/metadata";
 import {
   promptInputSchema,
@@ -9,6 +8,8 @@ import {
   SystemMessage,
   UserMessage,
 } from "bee-agent-framework/backend/message";
+import { CHAT_MODEL } from "./config.js";
+import { ChatModel } from "bee-agent-framework/backend/chat";
 
 const inputSchema = promptInputSchema;
 const outputSchema = promptOutputSchema;
@@ -23,7 +24,7 @@ const run = async (
 ) => {
   const { prompt } = params.input;
 
-  const model = await ChatModel.fromName("ollama:llama3.1");
+  const model = await ChatModel.fromName(CHAT_MODEL);
 
   const podcastResponse = await model.create({
     messages: [
