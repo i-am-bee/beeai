@@ -54,6 +54,16 @@ class ProviderService:
         await self.sync()
         return provider_with_metadata
 
+    async def preview_provider(self, location: ManifestLocation):
+        try:
+            manifest = await location.load()
+            [provider] = await self._get_providers_with_metadata([Provider(manifest=manifest, id=location.provider_id)])
+            return provider
+        except ValueError as ex:
+            raise ManifestLoadError(location=location, message=str(ex), status_code=HTTP_400_BAD_REQUEST) from ex
+        except Exception as ex:
+            raise ManifestLoadError(location=location, message=str(ex)) from ex
+
     async def delete_provider(self, *, location: ManifestLocation):
         await location.resolve()
         await self._repository.delete(provider_id=str(location))

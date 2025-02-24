@@ -25,6 +25,11 @@ async def create_provider(request: CreateProviderRequest, provider_service: Prov
     return await provider_service.add_provider(location=request.location)
 
 
+@router.post("/preview")
+async def preview_provider(request: CreateProviderRequest, provider_service: ProviderServiceDependency):
+    return await provider_service.preview_provider(location=request.location)
+
+
 @router.get("")
 async def list_providers(provider_service: ProviderServiceDependency):
     providers = await provider_service.list_providers()
