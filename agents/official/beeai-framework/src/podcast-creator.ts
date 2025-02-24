@@ -183,7 +183,7 @@ ${exampleInput}
 
 ### CLI:
 \`\`\`bash
-beeai agent run podcast-creator '${exampleInput}'
+beeai run podcast-creator '${exampleInput}'
 \`\`\`
 
 ### Processing Steps:\
