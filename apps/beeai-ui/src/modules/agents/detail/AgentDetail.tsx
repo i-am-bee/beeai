@@ -29,6 +29,11 @@ import { AgentMetadata } from '../components/AgentMetadata';
 import { AgentTags } from '../components/AgentTags';
 import { getAgentTitle } from '../utils';
 import classes from './AgentDetail.module.scss';
+import { AnimatePresence, motion } from 'framer-motion';
+import { moderate01 } from '@carbon/motion';
+import { spacing } from '@carbon/layout';
+import { fadeProps } from '@/utils/fadeProps';
+import { TransitionLink } from '@/components/TransitionLink/TransitionLink';
 
 interface Props {
   name: string;
@@ -44,39 +49,53 @@ export function AgentDetail({ name }: Props) {
       {!isPending ? (
         agent ? (
           <div className={classes.root}>
-            <h1 className={classes.name}>{getAgentTitle(agent)}</h1>
+            <AnimatePresence>
+              <motion.h1 {...fadeInPropsWithMarginShift({ start: { from: spacing[4] } })} className={classes.name}>
+                {getAgentTitle(agent)}
+              </motion.h1>
 
-            <AgentMetadata agent={agent} className={classes.metadata} />
+              <motion.div {...fadeInPropsWithMarginShift({ start: { from: spacing[3] } })}>
+                <AgentMetadata agent={agent} className={classes.metadata} />
+                {agent.description && (
+                  <MarkdownContent className={classes.description}>{agent.description}</MarkdownContent>
+                )}
+                <AgentTags agent={agent} className={classes.tags} />
+              </motion.div>
 
-            {agent.description && (
-              <MarkdownContent className={classes.description}>{agent.description}</MarkdownContent>
-            )}
+              <motion.div
+                {...fadeInPropsWithMarginShift({ start: { from: spacing[6], to: spacing[5] } })}
+                className={classes.buttons}
+              >
+                {agent.ui === 'chat' && (
+                  <Button
+                    kind="primary"
+                    renderIcon={ArrowUpRight}
+                    size="md"
+                    className={classes.tryButton}
+                    to={routes.agentRun({ name })}
+                    as={TransitionLink}
+                  >
+                    Try this agent
+                  </Button>
+                )}
 
-            <AgentTags agent={agent} className={classes.tags} />
+                <CopySnippet snippet={runCommand} className={classes.copySnippet} />
+              </motion.div>
 
-            <div className={classes.buttons}>
-              {agent.ui === 'chat' && (
-                <Button
-                  kind="primary"
-                  renderIcon={ArrowUpRight}
-                  size="md"
-                  href={routes.agentRun({ name })}
-                  className={classes.tryButton}
-                >
-                  Try this agent
-                </Button>
+              {agent.fullDescription && (
+                <>
+                  <motion.hr
+                    {...fadeInPropsWithMarginShift({
+                      start: { from: spacing[9], to: spacing[8] },
+                      end: { from: spacing[9], to: spacing[8] },
+                    })}
+                    className={classes.divider}
+                  />
+
+                  <MarkdownContent>{agent.fullDescription}</MarkdownContent>
+                </>
               )}
-
-              <CopySnippet snippet={runCommand} className={classes.copySnippet} />
-            </div>
-
-            {agent.fullDescription && (
-              <>
-                <hr className={classes.divider} />
-
-                <MarkdownContent>{agent.fullDescription}</MarkdownContent>
-              </>
-            )}
+            </AnimatePresence>
           </div>
         ) : (
           <ErrorMessage
@@ -116,4 +135,24 @@ function AgentDetailSkeleton() {
       <SkeletonText paragraph lineCount={6} />
     </div>
   );
+}
+
+function fadeInPropsWithMarginShift({
+  start,
+  end,
+}: {
+  start?: { from: string; to?: string };
+  end?: { from: string; to?: string };
+}) {
+  return fadeProps({
+    hidden: {
+      marginBlockStart: start ? start.from : undefined,
+      marginBlockEnd: end ? end.from : undefined,
+    },
+    visible: {
+      marginBlockStart: start ? start.to || 0 : undefined,
+      marginBlockEnd: end ? end.to || 0 : undefined,
+      transition: { delay: parseFloat(moderate01) / 1000 },
+    },
+  });
 }

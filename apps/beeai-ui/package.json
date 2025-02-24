@@ -16,6 +16,7 @@
     "@carbon/colors": "^11.29.0",
     "@carbon/grid": "^11.31.0",
     "@carbon/icons-react": "^11.54.0",
+    "@carbon/layout": "^11.29.0",
     "@carbon/motion": "^11.24.0",
     "@carbon/react": "^1.75.0",
     "@carbon/styles": "^1.74.0",

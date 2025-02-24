@@ -18,12 +18,12 @@ import { MarkdownContent } from '@/components/MarkdownContent/MarkdownContent';
 import { TagsList } from '@/components/TagsList/TagsList';
 import { routes } from '@/utils/router';
 import { SkeletonText } from '@carbon/react';
-import { Link } from 'react-router';
 import { Agent } from '../api/types';
 import { getAgentTitle } from '../utils';
 import classes from './AgentCard.module.scss';
 import { AgentMetadata } from './AgentMetadata';
 import { AgentTags } from './AgentTags';
+import { TransitionLink } from '@/components/TransitionLink/TransitionLink';
 
 interface Props {
   agent: Agent;
@@ -31,20 +31,14 @@ interface Props {
 
 export function AgentCard({ agent }: Props) {
   const { name, description } = agent;
-  // const { openModal } = useModal();
-
   const route = routes.agentDetail({ name });
 
   return (
-    <article
-      className={classes.root}
-      // TODO: Remove, including AgentModal file, if the modal view is not used in the final UI
-      // onClick={() => openModal((props) => <AgentModal {...props} agent={agent} />)}
-    >
+    <article className={classes.root}>
       <h2 className={classes.name}>
-        <Link to={route} className={classes.link} viewTransition>
+        <TransitionLink className={classes.link} to={route}>
           {getAgentTitle(agent)}
-        </Link>
+        </TransitionLink>
       </h2>
 
       <div className={classes.body}>
