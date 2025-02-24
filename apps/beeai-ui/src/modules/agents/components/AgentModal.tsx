@@ -31,7 +31,7 @@ interface Props extends ModalProps {
 export function AgentModal({ agent, onRequestClose, ...modalProps }: Props) {
   const { id, name, description } = agent;
 
-  const runCommand = `beeai agent run ${id}`;
+  const runCommand = `beeai run ${id}`;
 
   return (
     <Modal {...modalProps}>
