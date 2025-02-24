@@ -48,7 +48,7 @@ jobs:
           context: .
           file: ./apps/beeai-server/Dockerfile
           push: true
-          tags: ghcr.io/${{ github.repository }}/beeai-server:${{ github.sha }}
+          tags: ghcr.io/${{ github.repository }}/beeai-server:${{ github.sha }},ghcr.io/${{ github.repository }}/beeai-server:latest
 
   deploy-to-k8s:
     needs: build-and-push
