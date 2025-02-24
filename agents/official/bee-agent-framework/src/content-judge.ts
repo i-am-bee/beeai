@@ -61,19 +61,11 @@ const retrieveDocuments = async ({
   prompt: string;
   agents: string[];
 }) => {
-  const client = new ACPClient(
-    {
-      name: "example-client",
-      version: "1.0.0",
-    },
-    {
-      capabilities: {
-        prompts: {},
-        resources: {},
-        tools: {},
-      },
-    }
-  );
+  const client = new ACPClient({
+    name: "example-client",
+    version: "1.0.0",
+  });
+  // TODO: Make this env-configurable.
   const transport = new SSEClientTransport(
     new URL("/mcp/sse", "http://localhost:8333")
   );
@@ -100,6 +92,7 @@ const retrieveDocuments = async ({
           input: { prompt },
         },
         {
+          // TODO: Prefer passing signal, that gives control to the user rather than fixed timeout.
           timeout: 10 * 60 * 1000,
         }
       )
