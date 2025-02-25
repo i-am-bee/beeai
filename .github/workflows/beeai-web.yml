@@ -6,7 +6,6 @@ on:
       - main
     tags:
       - "beeai-web-v*"
-  pull_request:
 
 permissions:
   contents: read
