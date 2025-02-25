@@ -20,7 +20,17 @@ import { SSEClientTransport } from "@i-am-bee/acp-sdk/client/sse.js";
 import { ACP_SERVER_URL } from "@/constants";
 
 export async function getAcpClient() {
-  const transport = new SSEClientTransport(ACP_SSE_TRANSPORT_URL);
+  const transport = new SSEClientTransport(ACP_SSE_TRANSPORT_URL, {
+    eventSourceInit: {
+      fetch: (url, init) => {
+        // SSEClientTransport adds `cache: 'no-store'` to the fetch, that causes error during nextjs SSG
+        if (init != null && init.cache != null) {
+          delete init.cache;
+        }
+        return fetch(url, init);
+      },
+    },
+  });
   const client = new Client(ACP_EXAMPLE_AGENT_CONFIG, ACP_EXAMPLE_AGENT_PARAMS);
   await client.connect(transport);
   return client;

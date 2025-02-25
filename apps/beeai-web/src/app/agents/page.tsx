@@ -16,12 +16,11 @@
 
 import { getAcpClient } from "@/acp/client";
 import { Container, ViewStack } from "@i-am-bee/beeai-ui";
+import { unstable_cache } from "next/cache";
 import { AgentsView } from "./AgentsView";
 
 export default async function AgentsPage() {
-  const client = await getAcpClient();
-
-  const { agents } = await client.listAgents();
+  const agents = await getAgentsList();
   return (
     <Container>
       <ViewStack>
@@ -30,3 +29,18 @@ export default async function AgentsPage() {
     </Container>
   );
 }
+
+const getAgentsList = unstable_cache(
+  async () => {
+    const client = await getAcpClient();
+
+    const { agents } = await client.listAgents();
+
+    await client.close();
+
+    return agents;
+  },
+  undefined,
+  // ISR can be added like this
+  // { revalidate: 30 }
+);
