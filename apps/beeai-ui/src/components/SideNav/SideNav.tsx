@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { DOCUMENTATION_LINK } from '@/utils/constants';
+import { DOCUMENTATION_LINK } from '#utils/constants.ts';
 import classes from './SideNav.module.scss';
 
 export function SideNav() {

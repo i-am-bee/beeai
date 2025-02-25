@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { QueryMetadata } from '@/contexts/QueryProvider/types';
-import { useToast } from '@/contexts/Toast';
+import { QueryMetadata } from '#contexts/QueryProvider/types.ts';
+import { useToast } from '#contexts/Toast/index.ts';
 import { useCallback } from 'react';
 
 export function useHandleError() {

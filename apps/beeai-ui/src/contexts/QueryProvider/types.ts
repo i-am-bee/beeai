@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useHandleError } from '@/hooks/useHandleError';
+import { useHandleError } from '#hooks/useHandleError.ts';
 import { QueryKey } from '@tanstack/react-query';
 
 export interface QueryMetadata extends Record<string, unknown> {

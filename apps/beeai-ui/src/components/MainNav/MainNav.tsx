@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { routes } from '@/utils/router';
+import { routes } from '#utils/router.ts';
 import classes from './MainNav.module.scss';
 import { TransitionLink } from '../TransitionLink/TransitionLink';
 

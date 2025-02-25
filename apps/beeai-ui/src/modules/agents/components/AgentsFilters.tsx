@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { TagsList } from '@/components/TagsList/TagsList';
-import { BEE_AI_FRAMEWORK_TAG } from '@/utils/constants';
-import { isNotNull } from '@/utils/helpers';
+import { TagsList } from '#components/TagsList/TagsList.tsx';
+import { BEE_AI_FRAMEWORK_TAG } from '#utils/constants.ts';
+import { isNotNull } from '#utils/helpers.ts';
 import { Search } from '@carbon/icons-react';
 import { OperationalTag, TextInput, TextInputSkeleton } from '@carbon/react';
 import clsx from 'clsx';

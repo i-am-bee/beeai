@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import NotFound from '@/svgs/NotFound.svg';
-import { routes } from '@/utils/router';
+import NotFound from '#svgs/NotFound.svg';
+import { routes } from '#utils/router.ts';
 import { ArrowRight } from '@carbon/icons-react';
 import { Button } from '@carbon/react';
 import { Container } from '../layouts/Container';

@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import { Container } from '@/components/layouts/Container';
-import LogoBeeAI from '@/svgs/LogoBeeAI.svg';
-import { GET_STARTED_PYTHON_LINK, GET_STARTED_TYPESCRIPT_LINK } from '@/utils/constants';
+'use client';
+
+import { Container } from '#components/layouts/Container.tsx';
+import LogoBeeAI from '#svgs/LogoBeeAI.svg';
+import { GET_STARTED_PYTHON_LINK, GET_STARTED_TYPESCRIPT_LINK } from '#utils/constants.ts';
 import { ArrowUpRight } from '@carbon/icons-react';
 import { Button } from '@carbon/react';
 import classes from './GettingStarted.module.scss';

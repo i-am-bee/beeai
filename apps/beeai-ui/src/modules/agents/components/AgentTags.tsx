@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import { TagsList } from '@/components/TagsList/TagsList';
-import { Tooltip } from '@/components/Tooltip/Tooltip';
-import Bee from '@/svgs/Bee.svg';
-import { BEE_AI_FRAMEWORK_TAG } from '@/utils/constants';
-import { isNotNull } from '@/utils/helpers';
-import { Tag } from '@carbon/react';
+import { TagsList } from '#components/TagsList/TagsList.tsx';
+import Bee from '#svgs/Bee.svg';
+import { BEE_AI_FRAMEWORK_TAG } from '#utils/constants.ts';
+import { isNotNull } from '#utils/helpers.ts';
+import { Tag, Tooltip } from '@carbon/react';
 import { Agent } from '../api/types';
 
 interface Props {

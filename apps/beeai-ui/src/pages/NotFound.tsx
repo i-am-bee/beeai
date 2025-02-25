@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ErrorPage } from '@/components/ErrorPage/ErrorPage';
+import { ErrorPage } from '#components/ErrorPage/ErrorPage.tsx';
 
 export function NotFound() {
   return <ErrorPage />;

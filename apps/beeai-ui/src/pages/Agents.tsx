@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { Container } from '@/components/layouts/Container';
-import { ViewStack } from '@/components/ViewStack/ViewStack';
-import { AgentsFilters } from '@/modules/agents/components/AgentsFilters';
-import { AgentsList } from '@/modules/agents/components/AgentsList';
+import { Container } from '#components/layouts/Container.tsx';
+import { ViewStack } from '#components/ViewStack/ViewStack.tsx';
+import { AgentsFilters } from '#modules/agents/components/AgentsFilters.tsx';
+import { AgentsList } from '#modules/agents/components/AgentsList.tsx';
 
-import { AgentsProvider } from '@/modules/agents/contexts/AgentsProvider';
+import { AgentsProvider } from '#modules/agents/contexts/AgentsProvider.tsx';
 
 export function Agents() {
   return (

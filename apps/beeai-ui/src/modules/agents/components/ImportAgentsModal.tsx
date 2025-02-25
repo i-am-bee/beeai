@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { Modal } from '@/components/Modal/Modal';
-import { ModalProps } from '@/contexts/Modal/modal-context';
-import { useToast } from '@/contexts/Toast';
-import { useCreateProvider } from '@/modules/providers/api/mutations/useCreateProvider';
-import { CreateProviderBody } from '@/modules/providers/api/types';
+import { Modal } from '#components/Modal/Modal.tsx';
+import { ModalProps } from '#contexts/Modal/modal-context.ts';
+import { useToast } from '#contexts/Toast/index.ts';
+import { useCreateProvider } from '#modules/providers/api/mutations/useCreateProvider.ts';
+import { CreateProviderBody } from '#modules/providers/api/types.ts';
 import {
   Button,
   InlineLoading,

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import { agentKeys } from '#modules/agents/api/keys.ts';
 import { useMutation } from '@tanstack/react-query';
 import { createProvider } from '..';
-import { agentKeys } from '../../../agents/api/keys';
 import { providerKeys } from '../keys';
 
 interface Props {

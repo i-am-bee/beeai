@@ -102,7 +102,7 @@ mise beeai-server:run
 
 ```sh
 # add official framework provider 
-mise beeai-cli:run -- provider add file://agents/official/bee-agent-framework/beeai-provider.yaml
+mise beeai-cli:run -- provider add file://agents/official/beeai-framework/beeai-provider.yaml
 
 # tools
 mise beeai-cli:run -- tool list

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { ErrorMessage } from '@/components/ErrorMessage/ErrorMessage';
-import { Container } from '@/components/layouts/Container';
+import { ErrorMessage } from '#components/ErrorMessage/ErrorMessage.tsx';
+import { Container } from '#components/layouts/Container.tsx';
 import { Loading } from '@carbon/react';
 import { useAgent } from '../agents/api/queries/useAgent';
 import { getAgentTitle } from '../agents/utils';

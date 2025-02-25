@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useHandleError } from '@/hooks/useHandleError';
+import { useHandleError } from '#hooks/useHandleError.ts';
 import { matchQuery, MutationCache, QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { PropsWithChildren } from 'react';
 import { HandleError } from './types';

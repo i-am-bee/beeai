@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { api } from '@/api';
+import { api } from '#api/index.ts';
 import { CreateProviderBody } from './types';
 
 export async function createProvider(body: CreateProviderBody) {

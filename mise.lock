@@ -22,6 +22,7 @@ backend = "ubi:B1NARY-GR0UP/nwa"
 
 [tools."ubi:B1NARY-GR0UP/nwa".checksums]
 nwa-macos-aarch64 = "sha256:128c6bbae86b8725381355d04132d4d8e71d54a01313cea0d0c20a294d058c9f"
+nwa-macos-x86_64 = "sha256:40dd0654c34b0adf8827a89c101ac543d7af1aeafdd7b1c0812be0bd730ea82c"
 
 [tools.uv]
 version = "0.6.2"
@@ -29,3 +30,4 @@ backend = "aqua:astral-sh/uv"
 
 [tools.uv.checksums]
 "uv-aarch64-apple-darwin.tar.gz" = "sha256:4af802a1216053650dd82eee85ea4241994f432937d41c8b0bc90f2639e6ae14"
+"uv-x86_64-apple-darwin.tar.gz" = "sha256:2b9e78b2562aea93f13e42df1177cb07c59a4d4f1c8ff8907d0c31f3a5e5e8db"

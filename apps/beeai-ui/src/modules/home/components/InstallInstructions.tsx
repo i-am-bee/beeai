@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { CopySnippet } from '@/components/CopySnippet/CopySnippet';
+import { CopySnippet } from '#components/CopySnippet/CopySnippet.tsx';
 import { useCallback, useMemo, useState } from 'react';
 import classes from './InstallInstructions.module.scss';
 

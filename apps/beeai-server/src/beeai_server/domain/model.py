@@ -328,7 +328,7 @@ class GitHubManifestLocation(RootModel):
 
     async def resolve(self):
         if not (self.root.path or "").endswith(".yaml"):
-            self.root.path = f"{self.root.path or ''}/{DEFAULT_MANIFEST_PATH}"
+            self.root.path = f"{self.root.path}/{DEFAULT_MANIFEST_PATH}" if self.root.path else DEFAULT_MANIFEST_PATH
         await self.root.resolve_version()
         self._resolved = True
 
