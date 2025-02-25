@@ -32,7 +32,7 @@ RUN adduser --system --uid 1001 nextjs
 
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
-COPY --from=builder --chown=nextjs:nodejs /prod/app/.next/standalone/apps ./
+COPY --from=builder --chown=nextjs:nodejs /prod/app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /prod/app/.next/static ./.next/static
 
 USER nextjs
@@ -42,4 +42,4 @@ EXPOSE 3000
 ENV PORT=3000
 
 ENV HOSTNAME="0.0.0.0"
-CMD ["node", "beeai-web/server.js"]
+CMD ["node", "apps/beeai-web/server.js"]
