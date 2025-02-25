@@ -14,28 +14,31 @@
  * limitations under the License.
  */
 
+'use client';
+
 import { isNotNull } from '#utils/helpers.ts';
 import { Search } from '@carbon/icons-react';
 import { OperationalTag, TextInput } from '@carbon/react';
 import clsx from 'clsx';
 import { useId, useMemo } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { useAgents } from '../contexts';
-import { AgentsFiltersParams } from '../contexts/agents-context';
+import { AgentsFiltersParams } from '../types';
 import classes from './AgentsFilters.module.scss';
+import { Agent } from '../api/types';
 
-export function AgentsFilters() {
+interface Props {
+  agents: Agent[] | undefined;
+}
+
+export function AgentsFilters({ agents }: Props) {
   const id = useId();
-  const {
-    agentsQuery: { data },
-  } = useAgents();
   const { watch, setValue } = useFormContext<AgentsFiltersParams>();
 
   const frameworks = useMemo(() => {
-    if (!data) return [];
+    if (!agents) return [];
 
-    return [...new Set(data.map(({ framework }) => framework))].filter(isNotNull);
-  }, [data]);
+    return [...new Set(agents.map(({ framework }) => framework))].filter(isNotNull);
+  }, [agents]);
 
   const selectFramework = (framework: string | null) => {
     setValue('framework', framework);

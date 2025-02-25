@@ -16,7 +16,7 @@
 
 import { useMemo } from 'react';
 import { Agent } from '../api/types';
-import { AgentsFiltersParams } from '../contexts/agents-context';
+import { AgentsFiltersParams } from '../types';
 import { getAgentTitle } from '../utils';
 
 interface Props {

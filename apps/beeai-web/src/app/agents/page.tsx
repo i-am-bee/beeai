@@ -14,22 +14,19 @@
  * limitations under the License.
  */
 
-'use client';
+import { getAcpClient } from "@/acp/client";
+import { Container, ViewStack } from "@i-am-bee/beeai-ui";
+import { AgentsView } from "./AgentsView";
 
-import { ArrowUp } from '@carbon/icons-react';
-import { IconButton, IconButtonProps } from '@carbon/react';
-import classes from './ToTopButton.module.scss';
+export default async function AgentsPage() {
+  const client = await getAcpClient();
 
-interface Props {
-  onClick?: IconButtonProps['onClick'];
-}
-
-export function ToTopButton({ onClick }: Props) {
+  const { agents } = await client.listAgents();
   return (
-    <div className={classes.root}>
-      <IconButton label="To top" kind="tertiary" size="md" onClick={onClick}>
-        <ArrowUp />
-      </IconButton>
-    </div>
+    <Container>
+      <ViewStack>
+        <AgentsView agents={agents} />
+      </ViewStack>
+    </Container>
   );
 }

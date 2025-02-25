@@ -38,4 +38,8 @@ const NAV_ITEMS = [
     label: <strong>BeeAI</strong>,
     href: "/",
   },
+  {
+    label: 'Agents',
+    href: '/agents',
+  }
 ];
