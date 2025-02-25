@@ -4,6 +4,7 @@ package: "git+https://github.com/i-am-bee/beeai@agents-v0.0.4#path=agents/offici
 serverType: http
 mcpTransport: sse
 mcpEndpoint: /sse
-
-
-
+env:
+  - required: True
+    name: 'OPENAI_API_KEY'
+    description: 'OpenaAI API key'
