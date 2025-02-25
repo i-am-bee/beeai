@@ -31,10 +31,15 @@ async def run():
 
     @server.agent(
         "ollama-deep-researcher",
-        "...",
+        "TBD",
         input=PromptInput,
         output=PromptOutput,
-        **Metadata(title="Ollama deep researcher", framework="LangGraph", licence="Apache 2.0").model_dump(),
+        **Metadata(
+            framework="LangGraph",
+            license="Apache 2.0",
+            languages=["Python"],
+            githubUrl="https://github.com/i-am-bee/beeai/tree/main/agents/community/langgraph-agents/src/langgraph_agents/ollama_deep_researcher"
+        ).model_dump(),
     )
     async def run_deep_researcher_graph(input: PromptInput, ctx: Context) -> PromptOutput:
         loop = asyncio.get_event_loop()

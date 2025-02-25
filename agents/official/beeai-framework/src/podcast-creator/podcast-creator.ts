@@ -4,14 +4,12 @@ import {
   promptInputSchema,
   promptOutputSchema,
 } from "@i-am-bee/beeai-sdk/schemas/prompt";
-import {
-  SystemMessage,
-  UserMessage,
-} from "beeai-framework/backend/message";
-import { CHAT_MODEL } from "./config.js";
+import { SystemMessage, UserMessage } from "beeai-framework/backend/message";
+import { CHAT_MODEL } from "../config.js";
 import { ChatModel } from "beeai-framework/backend/chat";
 
 const inputSchema = promptInputSchema;
+type Input = z.infer<typeof inputSchema>;
 const outputSchema = promptOutputSchema;
 
 const run = async (
@@ -125,9 +123,10 @@ Example of response:
   };
 };
 
-const exampleInput = `{
-  "prompt": "Artificial intelligence is revolutionizing industries by automating complex tasks, improving efficiency, and enabling data-driven decision-making. In healthcare, AI is helping doctors diagnose diseases earlier and personalize treatments..."
-}`;
+const exampleInput: Input = {
+  prompt:
+    "Artificial intelligence is revolutionizing industries by automating complex tasks, improving efficiency, and enabling data-driven decision-making. In healthcare, AI is helping doctors diagnose diseases earlier and personalize treatments...",
+};
 
 const exampleOutput = `[
   {"speaker": 1, "text": "Artificial intelligence is changing how industries operate by automating complex tasks and improving efficiency."},
@@ -140,12 +139,12 @@ const exampleOutput = `[
 export const agent = {
   name: "podcast-creator",
   description:
-    "The Podcast Creator creates structured podcast-style dialogues optimized for AI-driven text-to-speech (TTS). It formats natural conversations with a lead speaker and an inquisitive co-host, ensuring realistic interruptions and follow-ups. The output is structured for seamless TTS integration.",
+    "The agent creates structured podcast-style dialogues optimized for AI-driven text-to-speech (TTS). It formats natural conversations with a lead speaker and an inquisitive co-host, ensuring realistic interruptions and follow-ups. The output is structured for seamless TTS integration.",
   inputSchema,
   outputSchema,
   run,
   metadata: {
-    fullDescription: `The Podcast Creator converts structured content into a dynamic, natural-sounding podcast script optimized for AI-driven text-to-speech (TTS) applications. It processes input text and transforms it into a structured dialogue between two speakers: one acting as a knowledgeable host and the other as an inquisitive co-host, ensuring a conversational and engaging discussion. The generated dialogue includes interruptions, follow-up questions, and natural reactions to enhance realism.
+    fullDescription: `The \`podcast-creator\' converts structured content into a dynamic, natural-sounding podcast script optimized for AI-driven text-to-speech (TTS) applications. It processes input text and transforms it into a structured dialogue between two speakers: one acting as a knowledgeable host and the other as an inquisitive co-host, ensuring a conversational and engaging discussion. The generated dialogue includes interruptions, follow-up questions, and natural reactions to enhance realism.
     
 ## How It Works
 The agent takes an input content document (e.g., an article, research paper, or structured text) and reformats it into a back-and-forth podcast-style discussion. The output maintains a logical flow, with Speaker 1 explaining concepts while Speaker 2 asks relevant questions, reacts, and occasionally introduces tangents for a more natural feel. The generated script is optimized for AI text-to-speech pipelines, ensuring clarity and proper role differentiation.
@@ -178,12 +177,12 @@ The agent returns a structured JSON list representing the podcast conversation:
 
 ### Input:
 \`\`\`json
-${exampleInput}
+${JSON.stringify(exampleInput, null, 2)}
 \`\`\`
 
 ### CLI:
 \`\`\`bash
-beeai run podcast-creator '${exampleInput}'
+beeai run podcast-creator '${JSON.stringify(exampleInput, null, 2)}'
 \`\`\`
 
 ### Processing Steps:\
@@ -199,7 +198,10 @@ ${exampleOutput}
 \`\`\`
 `,
     framework: "BeeAI",
-    licence: "Apache 2.0",
+    license: "Apache 2.0",
+    languages: ["TypeScript"],
+    githubUrl:
+      "https://github.com/i-am-bee/beeai/blob/main/agents/official/beeai-framework/src/podcast-creator",
     avgRunTimeSeconds: 19,
     avgRunTokens: 5409,
   } satisfies Metadata,

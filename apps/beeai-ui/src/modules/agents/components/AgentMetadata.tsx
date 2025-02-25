@@ -26,7 +26,7 @@ interface Props {
 }
 
 export function AgentMetadata({ agent, className }: Props) {
-  const { avgRunTimeSeconds, avgRunTokens, licence } = agent;
+  const { avgRunTimeSeconds, avgRunTokens, license } = agent;
 
   return (
     <ul className={clsx(classes.root, className)}>
@@ -37,7 +37,7 @@ export function AgentMetadata({ agent, className }: Props) {
         </li>
       )}
       {avgRunTokens && <li className={classes.item}>{avgRunTokens} tokens/run (avg)</li>}
-      {licence && <li className={classes.item}>{licence}</li>}
+      {license && <li className={classes.item}>{license}</li>}
     </ul>
   );
 }

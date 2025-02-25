@@ -8,7 +8,7 @@ from crewai.agents.parser import AgentAction, AgentFinish
 from acp.server.highlevel import Server, Context
 
 from crewai_agents.configuration import load_env
-from crewai_agents.marketing_posts.crew import MarketingPostsCrew
+from crewai_agents.marketing_strategy.crew import MarketingPostsCrew
 
 
 load_env()
@@ -18,11 +18,16 @@ async def run():
     server = Server("crewai-agents")
 
     @server.agent(
-        "marketing-crew",
-        "Perform marketing analysis over a project",
+        "marketing-strategy",
+        "Performs marketing strategy analysis over a project",
         input=PromptInput,
         output=PromptOutput,
-        **Metadata(framework="CrewAI", licence="Apache 2.0").model_dump(),
+        **Metadata(
+            framework="CrewAI",
+            license="Apache 2.0",
+            languages=["Python"],
+            githubUrl="https://github.com/i-am-bee/beeai/tree/main/agents/community/crewai-agents/src/crewai_agents/marketing_strategy"
+        ).model_dump(),
     )
     async def run_marketing_crew(input: PromptInput, ctx: Context) -> PromptOutput:
         loop = asyncio.get_event_loop()
