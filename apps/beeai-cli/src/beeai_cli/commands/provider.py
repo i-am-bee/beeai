@@ -107,7 +107,7 @@ async def list_providers():
                         "unsupported": "orange1",
                     },
                 ),
-                ",".join(item["missing_configuration"]) or "<none>",
+                ",".join(var["name"] for var in item["missing_configuration"]) or "<none>",
                 item["id"],
                 (item.get("last_error") or {}).get("message", None) if item["status"] != "ready" else "",
             )
