@@ -1,8 +1,13 @@
 FROM jdxcode/mise AS build
+ENV UV_LINK_MODE copy
+ENV UV_COMPILE_BYTECODE 1
 WORKDIR /app
 COPY . .
 # `python.uv_venv_auto` must be `false` to avoid https://github.com/rancher-sandbox/rancher-desktop/issues/8281
-RUN mise trust &&\
+RUN --mount=type=cache,target=/mise/downloads \
+    --mount=type=cache,target=/root/.cache/uv \
+    --mount=type=cache,target=/root/.local/share/pnpm/store \
+    mise trust &&\
     mise settings set --local python.uv_venv_auto false &&\
     mise install &&\
     mise run beeai-server:build
