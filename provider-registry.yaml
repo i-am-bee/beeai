@@ -5,3 +5,4 @@ providers:
 - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.6#path=/agents/community/gpt-researcher-agent
 - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.6#path=/agents/community/crewai-agents
 - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.6#path=/agents/community/langgraph-agents
+- url: git+https://github.com/i-am-bee/beeai@agents-v0.0.8#path=/agents/community/aider-agent
