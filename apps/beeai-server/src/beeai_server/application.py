@@ -39,6 +39,13 @@ from beeai_server.utils.periodic import CRON_REGISTRY, run_all_crons
 logger = logging.getLogger(__name__)
 
 
+def extract_messages(exc):
+    if isinstance(exc, BaseExceptionGroup):
+        return [(exc_type, msg) for e in exc.exceptions for exc_type, msg in extract_messages(e)]
+    else:
+        return [(type(exc).__name__, str(exc))]
+
+
 def register_global_exception_handlers(app: FastAPI):
     @app.exception_handler(ManifestLoadError)
     async def entity_not_found_exception_handler(request, exc: ManifestLoadError):
@@ -51,9 +58,9 @@ def register_global_exception_handlers(app: FastAPI):
         This is not the beset security practice as it can reveal details about the internal workings of this service,
         but this is an open-source service anyway, so the risk is acceptable
         """
-        logger.error("Error during HTTP request: %s", exc)
+        logger.error("Error during HTTP request: %s", repr(extract_messages(exc)))
         return await http_exception_handler(
-            request, HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=str(exc))
+            request, HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=repr(extract_messages(exc)))
         )
 
 

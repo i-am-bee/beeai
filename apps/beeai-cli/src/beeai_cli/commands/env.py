@@ -14,10 +14,10 @@
 
 
 import typer
-from rich.table import Table
+from rich.table import Column
 
 from beeai_cli.api import api_request
-from beeai_cli.async_typer import AsyncTyper, console
+from beeai_cli.async_typer import AsyncTyper, console, create_table
 from beeai_cli.utils import parse_env_var
 
 app = AsyncTyper()
@@ -43,10 +43,18 @@ async def list_env():
     """List stored environment variables"""
     # TODO: extract server schemas to a separate package
     resp = await api_request("get", "env")
-    table = Table("name", "value", expand=True)
-    for name, value in sorted(resp["env"].items()):
-        table.add_row(name, value)
+    with create_table(Column("name", style="yellow"), "value") as table:
+        for name, value in sorted(resp["env"].items()):
+            table.add_row(name, value)
     console.print(table)
+
+
+@app.command("remove")
+async def remove_env(
+    env: list[str] = typer.Argument(help="Environment variable(s) to remove"),
+):
+    await api_request("put", "env", json={**({"env": {var: None for var in env}})})
+    console.print(f"Removed env variables: {env}")
 
 
 @app.command(

@@ -30,7 +30,7 @@ class CreateProviderRequest(BaseModel):
 
 
 class UpdateEnvRequest(BaseModel):
-    env: dict[str, str]
+    env: dict[str, str | None]
 
 
 class ListEnvSchema(BaseModel):

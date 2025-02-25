@@ -50,4 +50,4 @@ jobs:
       - name: Deploy to Kubernetes
         run: |
           kubectl set image deployment/beeai-web beeai-web=ghcr.io/${{ github.repository }}/beeai-web:${{ github.sha }} -n ${{ secrets.CLUSTER_NAMESPACE }}
-          kubectl rollout status deployment/beeai-web -n ${{ secrets.CLUSTER_NAMESPACE }}
+          kubectl rollout status deployment/beeai-web --timeout 5m -n ${{ secrets.CLUSTER_NAMESPACE }}
