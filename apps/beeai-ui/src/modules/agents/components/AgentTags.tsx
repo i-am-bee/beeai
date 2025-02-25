@@ -15,10 +15,11 @@
  */
 
 import { TagsList } from '#components/TagsList/TagsList.tsx';
+import { Tooltip } from '#components/Tooltip/Tooltip.tsx';
 import Bee from '#svgs/Bee.svg';
 import { BEE_AI_FRAMEWORK_TAG } from '#utils/constants.ts';
 import { isNotNull } from '#utils/helpers.ts';
-import { Tag, Tooltip } from '@carbon/react';
+import { Tag } from '@carbon/react';
 import { Agent } from '../api/types';
 
 interface Props {
