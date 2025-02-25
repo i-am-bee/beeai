@@ -50,5 +50,5 @@ jobs:
           version: "latest" # Or specify a version, e.g., 'v1.29.2'
       - name: Deploy to Kubernetes
         run: |
-          kubectl set image deployment/beeai-web beeai-server=ghcr.io/${{ github.repository }}/beeai-web:${{ github.sha }} -n ${{ secrets.CLUSTER_NAMESPACE }}
+          kubectl set image deployment/beeai-web beeai-web=ghcr.io/${{ github.repository }}/beeai-web:${{ github.sha }} -n ${{ secrets.CLUSTER_NAMESPACE }}
           kubectl rollout status deployment/beeai-web -n ${{ secrets.CLUSTER_NAMESPACE }}
