@@ -19,7 +19,7 @@ import { ReactNode } from 'react';
 import classes from './ErrorMessage.module.scss';
 
 interface Props {
-  title: string;
+  title?: string;
   subtitle?: string;
   onRetry?: () => void;
   isRefetching?: boolean;
@@ -28,16 +28,19 @@ interface Props {
 
 export function ErrorMessage({ title, subtitle, onRetry, isRefetching, children }: Props) {
   return (
-    <ActionableNotification className={classes.root} title={title} kind="error" lowContrast hideCloseButton>
-      <div className={classes.body}>
-        {subtitle && <p>{subtitle}</p>}
-        {onRetry && (
-          <Button size="md" onClick={() => onRetry()} disabled={isRefetching}>
-            {!isRefetching ? 'Retry' : <InlineLoading description="Retrying..." />}
-          </Button>
-        )}
-        {children}
-      </div>
+    <ActionableNotification title={title} kind="error" lowContrast hideCloseButton>
+      {(subtitle || onRetry) && (
+        <div className={classes.body}>
+          {subtitle && <p>{subtitle}</p>}
+
+          {onRetry && (
+            <Button size="md" onClick={() => onRetry()} disabled={isRefetching}>
+              {!isRefetching ? 'Retry' : <InlineLoading description="Retrying&hellip;" />}
+            </Button>
+          )}
+          {children}
+        </div>
+      )}
     </ActionableNotification>
   );
 }

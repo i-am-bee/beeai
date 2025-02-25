@@ -15,7 +15,7 @@
  */
 
 .root {
-  border-block-end: 1px solid $border-subtle;
+  border-block-end: 1px solid $border-subtle-00;
   padding-block: $spacing-06;
   position: relative;
   display: flex;
@@ -58,12 +58,19 @@
   display: flex;
   flex-direction: column;
   row-gap: $spacing-05;
+
+  :global(.cds--tag) {
+    position: relative;
+    z-index: 1;
+  }
 }
 
 .description {
-  @include line-clamp(2);
   max-inline-size: 90%;
   color: $text-secondary;
   font-size: rem(18px);
   line-height: math.div(24, 18);
+  &:global(:not(.cds--skeleton__text)) {
+    @include line-clamp(2);
+  }
 }

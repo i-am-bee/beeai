@@ -45,11 +45,11 @@ enum Language {
 }
 
 const COMMANDS = {
-  python: {
+  [Language.Python]: {
     command: 'pip install beeai-framework',
     switchToLabel: 'TypeScript',
   },
-  typescript: {
+  [Language.TypeScript]: {
     command: 'npm install beeai-framework',
     switchToLabel: 'Python',
   },

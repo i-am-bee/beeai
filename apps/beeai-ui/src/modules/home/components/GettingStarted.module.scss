@@ -49,6 +49,11 @@
   &:global(.cds--btn) {
     inline-size: 100%;
     border-color: $text-dark;
+    &:hover {
+      color: $text-inverse;
+      background-color: $layer-selected-inverse;
+      border-color: $layer-selected-inverse;
+    }
   }
 }
 

@@ -14,59 +14,159 @@
  * limitations under the License.
  */
 
-import { Button, InlineLoading, ModalBody, ModalFooter, ModalHeader, TextInput } from '@carbon/react';
-import { ModalProps } from '#contexts/Modal/modal-context.ts';
+import { ErrorMessage } from '#components/ErrorMessage/ErrorMessage.tsx';
 import { Modal } from '#components/Modal/Modal.tsx';
-import classes from './AgentModal.module.scss';
-import { useImportProvider } from '../api/mutations/useImportAgents';
+import { ModalProps } from '#contexts/Modal/modal-context.ts';
+import { useCreateProvider } from '#modules/providers/api/mutations/useCreateProvider.ts';
+import { CreateProviderBody } from '#modules/providers/api/types.ts';
+import { useCheckProviderStatus } from '#modules/providers/hooks/useCheckProviderStatus.ts';
+import {
+  Button,
+  FormLabel,
+  InlineLoading,
+  ListItem,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  RadioButton,
+  RadioButtonGroup,
+  TextInput,
+  UnorderedList,
+} from '@carbon/react';
+import pluralize from 'pluralize';
+import { useCallback, useEffect, useId, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useCallback, useId } from 'react';
-import { useToast } from '#contexts/Toast/index.ts';
+import classes from './ImportAgentsModal.module.scss';
 
 export function ImportAgentsModal({ onRequestClose, ...modalProps }: ModalProps) {
   const id = useId();
-  const { addToast } = useToast();
-  const { mutate, isPending } = useImportProvider({
-    onSuccess: () => {
-      addToast({ title: 'Provider was imported successfuly' });
-      onRequestClose();
+  const [createdProviderId, setCreatedProviderId] = useState<string>();
+  const [providerSource, setProviderSource] = useState(ProviderSource.LocalPath);
+  const { status, agents } = useCheckProviderStatus({ id: createdProviderId });
+  const agentsCount = agents.length;
+
+  const { mutate: createProvider, isPending } = useCreateProvider({
+    onSuccess: (provider) => {
+      setCreatedProviderId(provider.id);
     },
   });
 
   const {
     register,
     handleSubmit,
+    reset,
     formState: { isValid },
-  } = useForm<FormValues>({
+  } = useForm<CreateProviderBody>({
     mode: 'onChange',
   });
 
   const onSubmit = useCallback(
-    ({ url }: FormValues) => {
-      mutate({ location: url });
+    ({ location }: CreateProviderBody) => {
+      const locationPrefix = LOCATION_PREFIXES[providerSource];
+
+      createProvider({
+        location: `${locationPrefix}${location}`,
+      });
     },
-    [mutate],
+    [createProvider, providerSource],
   );
 
+  const locationInputProps = INPUTS_PROPS[providerSource];
+
+  useEffect(() => {
+    reset({ location: '' });
+  }, [providerSource, reset]);
+
   return (
-    <Modal {...modalProps} size="md">
+    <Modal {...modalProps}>
       <ModalHeader buttonOnClick={() => onRequestClose()}>
         <h2>Import your agents</h2>
+
+        {status === 'initializing' && (
+          <p className={classes.description}>
+            This could take a few minutes, you will be notified once your agents have been imported successfully.
+          </p>
+        )}
       </ModalHeader>
-      <ModalBody className={classes.body}>
+
+      <ModalBody>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <TextInput id={id} labelText="URL" {...register('url', { required: true })} />
+          {status !== 'initializing' && status !== 'ready' && (
+            <div className={classes.stack}>
+              <RadioButtonGroup
+                name={`${id}:provider-source`}
+                legendText="Select the source of your agent provider"
+                valueSelected={providerSource}
+                onChange={(value) => setProviderSource(value as ProviderSource)}
+              >
+                <RadioButton labelText="Local path" value={ProviderSource.LocalPath} />
+
+                <RadioButton labelText="GitHub" value={ProviderSource.GitHub} />
+              </RadioButtonGroup>
+
+              <TextInput
+                id={`${id}:location`}
+                size="lg"
+                className={classes.locationInput}
+                {...locationInputProps}
+                {...register('location', { required: true })}
+              />
+            </div>
+          )}
+
+          {status === 'ready' && agentsCount > 0 && (
+            <div className={classes.agents}>
+              <FormLabel>
+                {agentsCount} {pluralize('agent', agentsCount)} found
+              </FormLabel>
+
+              <UnorderedList>
+                {agents.map((agent) => (
+                  <ListItem key={agent.name}>{agent.name}</ListItem>
+                ))}
+              </UnorderedList>
+            </div>
+          )}
+
+          {status === 'initializing' && <InlineLoading description="Scraping repository&hellip;" />}
+
+          {status === 'error' && (
+            <ErrorMessage subtitle="Error during agents import. Check the files in the URL provided" />
+          )}
         </form>
       </ModalBody>
+
       <ModalFooter>
-        <Button onClick={() => handleSubmit(onSubmit)()} disabled={isPending || !isValid}>
-          {isPending ? <InlineLoading description="Importing..." /> : 'Import'}
+        <Button kind="ghost" onClick={() => onRequestClose()}>
+          {status === 'initializing' || status === 'ready' ? 'Close' : 'Cancel'}
         </Button>
+
+        {status !== 'initializing' && status !== 'ready' && (
+          <Button onClick={() => handleSubmit(onSubmit)()} disabled={isPending || !isValid}>
+            {isPending ? <InlineLoading description="Importing&hellip;" /> : 'Continue'}
+          </Button>
+        )}
       </ModalFooter>
     </Modal>
   );
 }
 
-interface FormValues {
-  url: string;
+enum ProviderSource {
+  LocalPath = 'LocalPath',
+  GitHub = 'GitHub',
 }
+
+const LOCATION_PREFIXES = {
+  [ProviderSource.LocalPath]: 'file://',
+  [ProviderSource.GitHub]: 'git+',
+};
+
+const INPUTS_PROPS = {
+  [ProviderSource.LocalPath]: {
+    labelText: 'Agent provider path',
+  },
+  [ProviderSource.GitHub]: {
+    labelText: 'GitHub repository URL',
+    helperText: 'Make sure to provide a public link',
+  },
+};

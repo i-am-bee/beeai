@@ -14,34 +14,22 @@
  * limitations under the License.
  */
 
-.stack {
-  display: flex;
-  flex-direction: column;
-  row-gap: $spacing-05;
-}
+import { useModal } from '#contexts/Modal/index.tsx';
+import { Add } from '@carbon/icons-react';
+import { Button } from '@carbon/react';
+import { ImportAgentsModal } from './ImportAgentsModal';
 
-.locationInput {
-  min-block-size: rem(92px);
-}
+export function ImportAgents() {
+  const { openModal } = useModal();
 
-.description {
-  font-size: rem(18px);
-  line-height: math.div(20, 18);
-  color: $text-secondary;
-}
-
-.agents {
-  &,
-  :global(.cds--list--unordered) {
-    display: flex;
-    flex-direction: column;
-    row-gap: $spacing-03;
-  }
-  :global(.cds--list--unordered) {
-    padding-block: $spacing-02;
-    margin-inline-start: $spacing-06;
-    > :global(.cds--list__item::before) {
-      content: '•';
-    }
-  }
+  return (
+    <Button
+      kind="tertiary"
+      size="md"
+      renderIcon={Add}
+      onClick={() => openModal((props) => <ImportAgentsModal {...props} />)}
+    >
+      Import agents
+    </Button>
+  );
 }

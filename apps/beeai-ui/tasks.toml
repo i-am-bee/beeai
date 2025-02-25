@@ -79,3 +79,9 @@ outputs = ["dist/**/*"]
 ["beeai-ui:clean"]
 dir = "{{config_root}}/apps/beeai-ui"
 run = "rm -rf ./dist"
+
+# schema
+
+["beeai-ui:schema:generate"]
+dir = "{{config_root}}/apps/beeai-ui"
+run = "pnpm schema:generate"

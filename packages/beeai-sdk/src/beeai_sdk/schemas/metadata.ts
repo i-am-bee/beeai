@@ -27,6 +27,7 @@ export const metadataSchema = z
     avgRunTokens: z.number(),
     tags: z.array(z.string()),
     ui: z.string(),
+    provider: z.string(),
   })
   .partial()
   .passthrough();

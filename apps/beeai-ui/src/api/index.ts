@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
-import ky from 'ky';
+import createClient from 'openapi-fetch';
+import { paths } from './schema';
 
-export const api = ky.create({ prefixUrl: '/api/v1/' });
+export const api = createClient<paths>({
+  baseUrl: '/',
+});

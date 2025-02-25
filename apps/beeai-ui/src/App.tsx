@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ErrorBoundary } from 'react-error-boundary';
 import { BrowserRouter, Route, Routes } from 'react-router';
 import { ErrorFallback } from './components/fallbacks/ErrorFallback';
 import { AppLayout } from './components/layouts/AppLayout';
 import { MCPClientProvider } from './contexts/MCPClient/MCPClientProvider';
 import { ModalProvider } from './contexts/Modal/ModalProvider';
+import { QueryProvider } from './contexts/QueryProvider/QueryProvider';
 import { ToastProvider } from './contexts/Toast/ToastProvider';
 import { Agents } from './pages/Agents';
 import { Agent } from './pages/agents/Agent';
@@ -29,14 +29,12 @@ import { NotFound } from './pages/NotFound';
 import { AgentRunPage } from './pages/run/AgentRunPage';
 import { routeDefinitions } from './utils/router';
 
-const queryClient = new QueryClient();
-
 export function App() {
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
-      <QueryClientProvider client={queryClient}>
-        <MCPClientProvider>
-          <ToastProvider>
+      <ToastProvider>
+        <QueryProvider>
+          <MCPClientProvider>
             <ModalProvider>
               <BrowserRouter>
                 <Routes>
@@ -51,9 +49,9 @@ export function App() {
                 </Routes>
               </BrowserRouter>
             </ModalProvider>
-          </ToastProvider>
-        </MCPClientProvider>
-      </QueryClientProvider>
+          </MCPClientProvider>
+        </QueryProvider>
+      </ToastProvider>
     </ErrorBoundary>
   );
 }

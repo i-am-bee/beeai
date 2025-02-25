@@ -14,32 +14,27 @@
  * limitations under the License.
  */
 
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { agentKeys } from '#modules/agents/api/keys.ts';
+import { useMutation } from '@tanstack/react-query';
 import { createProvider } from '..';
-import { agentKeys } from '../keys';
-import { useToast } from '#contexts/Toast/index.ts';
+import { providerKeys } from '../keys';
+import { CreateProviderResponse } from '../types';
 
 interface Props {
-  onSuccess?: () => void;
+  onSuccess?: (data: CreateProviderResponse) => void;
 }
 
-export function useImportProvider({ onSuccess }: Props = {}) {
-  const queryClient = useQueryClient();
-  const { addToast } = useToast();
-
-  return useMutation({
+export function useCreateProvider({ onSuccess }: Props = {}) {
+  const mutation = useMutation({
     mutationFn: createProvider,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: agentKeys.lists() });
-      onSuccess?.();
-    },
-    // TODO: handle api errors globally
-    onError: (error) => {
-      addToast({
-        title: 'Importing agents failed',
-        subtitle: error instanceof Error ? error.message : undefined,
-        timeout: 10000,
-      });
+    onSuccess,
+    meta: {
+      invalidates: [providerKeys.list(), agentKeys.lists()],
+      errorToast: {
+        title: 'Error during agents import. Check the files in the URL provided.',
+      },
     },
   });
+
+  return mutation;
 }

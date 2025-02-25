@@ -35,11 +35,6 @@
   }
 }
 
-.frameworks {
-  display: flex;
-  gap: $spacing-03;
-}
-
 .frameworkAll {
   &:global(.cds--tag.cds--tag--operational.selected) {
     background-color: $layer-02;

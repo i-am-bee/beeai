@@ -73,6 +73,10 @@
     }
   }
 
+  pre {
+    white-space: pre-wrap;
+  }
+
   code {
     background-color: $layer-02;
     font-size: math.div(16em, 18);
