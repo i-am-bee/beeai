@@ -11,13 +11,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+import logging
 from copy import deepcopy
 from beeai_cli.async_typer import AsyncTyper
 import beeai_cli.commands.tool
 import beeai_cli.commands.env
 import beeai_cli.commands.agent
 import beeai_cli.commands.provider
+from beeai_cli.configuration import Configuration
+
+logging.basicConfig(level=logging.INFO if Configuration().debug else logging.FATAL)
 
 app = AsyncTyper(no_args_is_help=True)
 app.add_typer(beeai_cli.commands.tool.app, name="tool", no_args_is_help=True)

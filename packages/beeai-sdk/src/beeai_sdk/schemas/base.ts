@@ -14,13 +14,31 @@
  * limitations under the License.
  */
 
-import { z } from "zod";
+import {z} from "zod";
 
-export const configSchema = z.object({ tools: z.array(z.string()).optional() });
+export const logLevelSchema = z.enum(["error", "warning", "info", "cite", "success"]);
+export type LogLevel = z.input<typeof logLevelSchema>
+
+export const logSchema = z.object({level: logLevelSchema.default("info"), message: z.string()}).passthrough();
+export type Log = z.input<typeof logSchema>
+
+export const configSchema = z.object({tools: z.array(z.string()).optional()});
 export type Config = z.input<typeof configSchema>;
 
-export const inputSchema = z.object({ config: configSchema.optional() });
-export type Input = z.input<typeof configSchema>;
+export const inputSchema = z.object({config: configSchema.optional()});
+export type Input = z.input<typeof inputSchema>;
 
-export const outputSchema = z.object({}).passthrough();
-export type Output = z.input<typeof configSchema>;
+
+export const textInputSchema = inputSchema.merge(z.object({
+  type: z.literal("text").default("text"),
+  text: z.string()
+}));
+export type TextInput = z.input<typeof textInputSchema>;
+
+const outputBaseSchema = z.object({logs: z.array(z.union([logSchema, z.null()])).default([])}).passthrough();
+
+export const textOutputSchema = outputBaseSchema.merge(z.object({
+  type: z.literal("text").default("text"),
+  text: z.string()
+}));
+export type TextOutput = z.input<typeof textOutputSchema>

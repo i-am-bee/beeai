@@ -46,6 +46,9 @@ async def run(
                 if text := delta.get("text", None):
                     console.print(text, end="")
                     text_streamed = True
+                else:
+                    err_console.print(delta)
+
             case RunAgentResult() as result:
                 if not text_streamed:
                     if text := result.model_dump().get("output", {}).get("text", None):

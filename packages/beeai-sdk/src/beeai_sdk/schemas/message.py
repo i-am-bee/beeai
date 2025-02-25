@@ -11,11 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import json
+from typing import Annotated, Literal, Union, Self
+from pydantic import BaseModel, Discriminator, model_validator, Field
 
-from typing import Annotated, Literal, Union
-from pydantic import BaseModel, Discriminator
-
-from beeai_sdk.schemas.base import Input, Output
+from beeai_sdk.schemas.base import TextInput, TextOutput
 
 
 class UserMessage(BaseModel):
@@ -31,9 +31,26 @@ class AssistantMessage(BaseModel):
 Message = Annotated[Union[UserMessage, AssistantMessage], Discriminator("role")]
 
 
-class MessageInput(Input):
-    messages: list[Message]
+class MessageInput(TextInput):
+    messages: list[Message] = Field(default_factory=list)
+    text: str = ""
+
+    @model_validator(mode="after")
+    def validate_messages(self) -> Self:
+        if not (bool(self.messages) ^ bool(self.text)):
+            raise ValueError("Must specify exactly one of messages and text")
+        if not self.messages:
+            self.messages = [UserMessage(content=self.text, role="user")]
+        return self
 
 
-class MessageOutput(Output):
+class MessageOutput(TextOutput):
     messages: list[Message]
+    text: str = ""
+
+    @model_validator(mode="after")
+    def validate_messages(self) -> Self:
+        if self.text:
+            raise ValueError("Text is a computed property and cannot be directly set")
+        self.text = json.dumps([m.model_dump(mode="json") for m in self.messages])
+        return self

@@ -14,6 +14,7 @@
 
 from typing import Annotated
 
+from beeai_server.configuration import Configuration
 from beeai_server.services.env import EnvService
 from beeai_server.services.mcp_proxy.proxy_server import MCPProxyServer
 from fastapi import Depends
@@ -22,6 +23,7 @@ from kink import di
 from beeai_server.services.provider import ProviderService
 from acp.server.sse import SseServerTransport
 
+ConfigurationDependency = Annotated[Configuration, Depends(lambda: di[Configuration])]
 ProviderServiceDependency = Annotated[ProviderService, Depends(lambda: di[ProviderService])]
 EnvServiceDependency = Annotated[EnvService, Depends(lambda: di[EnvService])]
 SSEServerTransportDependency = Annotated[SseServerTransport, Depends(lambda: di[SseServerTransport])]

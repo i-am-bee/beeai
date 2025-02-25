@@ -12,16 +12,43 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pydantic import BaseModel, ConfigDict
+
+from enum import StrEnum
+from typing import Literal
+
+from pydantic import BaseModel, Field
 
 
 class Config(BaseModel):
     tools: list[str] | None = None
 
 
-class Input(BaseModel):
+class Input(BaseModel, extra="allow"):
     config: Config | None = None
 
 
-class Output(BaseModel):
-    model_config = ConfigDict(extra="allow")
+class TextInput(Input):
+    type: Literal["text"] = "text"
+    text: str
+
+
+class LogLevel(StrEnum):
+    error = "error"
+    warning = "warning"
+    info = "info"
+    cite = "cite"
+    success = "success"
+
+
+class Log(BaseModel, extra="allow"):
+    level: LogLevel = LogLevel.info
+    message: str
+
+
+class OutputBase(BaseModel, extra="allow"):
+    logs: list[Log | None] = Field(default_factory=list)
+
+
+class TextOutput(OutputBase):
+    type: Literal["text"] = "text"
+    text: str
