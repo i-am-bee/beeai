@@ -25,5 +25,6 @@ class Metadata(BaseModel):
     avgRunTokens: Optional[float] = None
     tags: Optional[list[str]] = None
     ui: Optional[str] = None
+    provider: Optional[str] = None
 
     model_config = ConfigDict(extra="allow")

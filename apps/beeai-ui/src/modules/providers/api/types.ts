@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
-export interface CreateProviderBody {
-  location: string;
-}
+import { ApiRequestBody, ApiResponse } from '#@types/utils.ts';
+
+export type Provider = ApiResponse<'/api/v1/provider'>['items'][number];
+
+export type CreateProviderBody = ApiRequestBody<'/api/v1/provider'>;
+
+export type CreateProviderResponse = ApiResponse<'/api/v1/provider', 'post'>;
+
+export type ProviderStatus = Provider['status'];

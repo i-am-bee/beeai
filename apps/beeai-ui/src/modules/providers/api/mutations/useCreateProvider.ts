@@ -18,9 +18,10 @@ import { agentKeys } from '#modules/agents/api/keys.ts';
 import { useMutation } from '@tanstack/react-query';
 import { createProvider } from '..';
 import { providerKeys } from '../keys';
+import { CreateProviderResponse } from '../types';
 
 interface Props {
-  onSuccess?: () => void;
+  onSuccess?: (data: CreateProviderResponse) => void;
 }
 
 export function useCreateProvider({ onSuccess }: Props = {}) {

@@ -14,18 +14,21 @@
  * limitations under the License.
  */
 
-import { useListProviders } from './useListProviders';
+import { useQuery } from '@tanstack/react-query';
+import { getProviders } from '..';
+import { providerKeys } from '../keys';
 
 interface Props {
-  id: string;
+  id?: string;
 }
 
 export function useProvider({ id }: Props) {
-  const query = useListProviders();
-  const provider = query.data?.items.find((item) => id === item.id);
+  const query = useQuery({
+    queryKey: providerKeys.list(),
+    queryFn: () => getProviders(),
+    select: (data) => data?.items.find((item) => id === item.id),
+    enabled: Boolean(id),
+  });
 
-  return {
-    ...query,
-    data: provider,
-  };
+  return query;
 }

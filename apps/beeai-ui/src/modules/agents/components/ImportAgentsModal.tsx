@@ -14,49 +14,40 @@
  * limitations under the License.
  */
 
+import { ErrorMessage } from '#components/ErrorMessage/ErrorMessage.tsx';
 import { Modal } from '#components/Modal/Modal.tsx';
 import { ModalProps } from '#contexts/Modal/modal-context.ts';
-import { useToast } from '#contexts/Toast/index.ts';
 import { useCreateProvider } from '#modules/providers/api/mutations/useCreateProvider.ts';
 import { CreateProviderBody } from '#modules/providers/api/types.ts';
+import { useCheckProviderStatus } from '#modules/providers/hooks/useCheckProviderStatus.ts';
 import {
   Button,
+  FormLabel,
   InlineLoading,
+  ListItem,
   ModalBody,
   ModalFooter,
   ModalHeader,
   RadioButton,
   RadioButtonGroup,
   TextInput,
+  UnorderedList,
 } from '@carbon/react';
+import pluralize from 'pluralize';
 import { useCallback, useEffect, useId, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import classes from './ImportAgentsModal.module.scss';
 
 export function ImportAgentsModal({ onRequestClose, ...modalProps }: ModalProps) {
   const id = useId();
+  const [createdProviderId, setCreatedProviderId] = useState<string>();
   const [providerSource, setProviderSource] = useState(ProviderSource.LocalPath);
-  const { addToast } = useToast();
-  // const { data, refetch } = useProvider({
-  //   id: 'file:///Users/petr/htdocs/beeai/agents/official/bee-agent-framework/beeai-provider-unmanaged.yaml',
-  // });
-
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     refetch();
-
-  //     console.log(data?.status);
-  //   }, 1000);
-  // });
+  const { status, agents } = useCheckProviderStatus({ id: createdProviderId });
+  const agentsCount = agents.length;
 
   const { mutate: createProvider, isPending } = useCreateProvider({
-    onSuccess: () => {
-      addToast({
-        title: 'Provider was imported successfuly',
-        kind: 'info',
-      });
-
-      onRequestClose();
+    onSuccess: (provider) => {
+      setCreatedProviderId(provider.id);
     },
   });
 
@@ -91,52 +82,70 @@ export function ImportAgentsModal({ onRequestClose, ...modalProps }: ModalProps)
       <ModalHeader buttonOnClick={() => onRequestClose()}>
         <h2>Import your agents</h2>
 
-        <p className={classes.description}>
-          This could take a few minutes, you will be notified once your agents have been imported successfully.
-        </p>
+        {status === 'initializing' && (
+          <p className={classes.description}>
+            This could take a few minutes, you will be notified once your agents have been imported successfully.
+          </p>
+        )}
       </ModalHeader>
 
       <ModalBody>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <div className={classes.stack}>
-            <RadioButtonGroup
-              name={`${id}:provider-source`}
-              legendText="Select the source of your agent provider"
-              valueSelected={providerSource}
-              onChange={(value) => setProviderSource(value as ProviderSource)}
-            >
-              <RadioButton labelText="Local path" value={ProviderSource.LocalPath} />
+          {status !== 'initializing' && status !== 'ready' && (
+            <div className={classes.stack}>
+              <RadioButtonGroup
+                name={`${id}:provider-source`}
+                legendText="Select the source of your agent provider"
+                valueSelected={providerSource}
+                onChange={(value) => setProviderSource(value as ProviderSource)}
+              >
+                <RadioButton labelText="Local path" value={ProviderSource.LocalPath} />
 
-              <RadioButton labelText="GitHub" value={ProviderSource.GitHub} />
-            </RadioButtonGroup>
+                <RadioButton labelText="GitHub" value={ProviderSource.GitHub} />
+              </RadioButtonGroup>
 
-            <TextInput
-              id={`${id}:location`}
-              size="lg"
-              className={classes.locationInput}
-              {...locationInputProps}
-              {...register('location', { required: true })}
-            />
-          </div>
+              <TextInput
+                id={`${id}:location`}
+                size="lg"
+                className={classes.locationInput}
+                {...locationInputProps}
+                {...register('location', { required: true })}
+              />
+            </div>
+          )}
 
-          {/* <InlineLoading description="Scraping repository&hellip;" /> */}
+          {status === 'ready' && agentsCount > 0 && (
+            <div className={classes.agents}>
+              <FormLabel>
+                {agentsCount} {pluralize('agent', agentsCount)} found
+              </FormLabel>
 
-          {/* <ErrorMessage subtitle="Error during agents import. Check the files in the URL provided" /> */}
+              <UnorderedList>
+                {agents.map((agent) => (
+                  <ListItem key={agent.name}>{agent.name}</ListItem>
+                ))}
+              </UnorderedList>
+            </div>
+          )}
+
+          {status === 'initializing' && <InlineLoading description="Scraping repository&hellip;" />}
+
+          {status === 'error' && (
+            <ErrorMessage subtitle="Error during agents import. Check the files in the URL provided" />
+          )}
         </form>
       </ModalBody>
 
       <ModalFooter>
         <Button kind="ghost" onClick={() => onRequestClose()}>
-          Cancel
+          {status === 'initializing' || status === 'ready' ? 'Close' : 'Cancel'}
         </Button>
 
-        <Button onClick={() => handleSubmit(onSubmit)()} disabled={isPending || !isValid}>
-          {isPending ? <InlineLoading description="Importing&hellip;" /> : 'Continue'}
-        </Button>
-
-        {/* <Button kind="ghost" onClick={() => onRequestClose()}>
-          Close
-        </Button> */}
+        {status !== 'initializing' && status !== 'ready' && (
+          <Button onClick={() => handleSubmit(onSubmit)()} disabled={isPending || !isValid}>
+            {isPending ? <InlineLoading description="Importing&hellip;" /> : 'Continue'}
+          </Button>
+        )}
       </ModalFooter>
     </Modal>
   );

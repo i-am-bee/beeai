@@ -15,10 +15,7 @@
  */
 
 import { ErrorMessage } from '#components/ErrorMessage/ErrorMessage.tsx';
-import { useModal } from '#contexts/Modal/index.tsx';
-import { ImportAgentsModal } from '#modules/agents/components/ImportAgentsModal.tsx';
-import { Add } from '@carbon/icons-react';
-import { Button, SkeletonText } from '@carbon/react';
+import { SkeletonText } from '@carbon/react';
 import pluralize from 'pluralize';
 import { useFormContext } from 'react-hook-form';
 import { useAgents } from '../contexts';
@@ -26,9 +23,9 @@ import { AgentsFiltersParams } from '../contexts/agents-context';
 import { useFilteredAgents } from '../hooks/useFilteredAgents';
 import { AgentCard } from './AgentCard';
 import classes from './AgentsList.module.scss';
+import { ImportAgents } from './ImportAgents';
 
 export function AgentsList() {
-  const { openModal } = useModal();
   const {
     agentsQuery: { data, isPending, error, refetch, isRefetching },
   } = useAgents();
@@ -62,14 +59,7 @@ export function AgentsList() {
           <SkeletonText className={classes.count} width="125px" />
         )}
 
-        <Button
-          kind="tertiary"
-          size="md"
-          renderIcon={Add}
-          onClick={() => openModal((props) => <ImportAgentsModal {...props} />)}
-        >
-          Import agents
-        </Button>
+        <ImportAgents />
       </div>
 
       <ul className={classes.list}>

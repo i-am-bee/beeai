@@ -66,9 +66,11 @@
 }
 
 .description {
-  @include line-clamp(2);
   max-inline-size: 90%;
   color: $text-secondary;
   font-size: rem(18px);
   line-height: math.div(24, 18);
+  &:global(:not(.cds--skeleton__text)) {
+    @include line-clamp(2);
+  }
 }
