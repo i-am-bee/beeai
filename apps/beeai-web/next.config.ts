@@ -2,7 +2,8 @@ import type { NextConfig } from "next";
 import path from "path";
 
 const nextConfig: NextConfig = {
-  transpilePackages: ["@beeai/ui"],
+  output: "standalone",
+  transpilePackages: ["@i-am-bee/beeai-ui"],
   sassOptions: {
     additionalData: `@use 'styles/common' as *; @use 'sass:math';`,
     // silenceDeprecations: ['mixed-decls', 'global-builtin'],

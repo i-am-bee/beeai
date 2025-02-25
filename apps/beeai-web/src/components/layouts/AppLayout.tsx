@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { AppFooter, AppHeader } from "@beeai/ui";
+import { AppFooter, AppHeader } from "@i-am-bee/beeai-ui";
 import { PropsWithChildren } from "react";
 import classes from "./AppLayout.module.scss";
 import { MainNav } from "../MainNav/MainNav";
