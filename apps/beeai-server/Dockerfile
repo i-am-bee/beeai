@@ -23,8 +23,7 @@ RUN apt-get update  &&\
     rm -rf /var/lib/apt/lists/*
 RUN pipx install uv
 COPY --from=build /app/apps/beeai-server/dist/*.tar.gz .
-RUN pipx install ./*.tar.gz &&\
-    pipx inject beeai-server packaging
+RUN pipx install ./*.tar.gz
 RUN chmod og+rx /root
 ENV PATH "/root/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 ENV HOME "/tmp"

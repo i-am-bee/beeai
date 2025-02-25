@@ -15,6 +15,7 @@ dependencies = [
     "httpx>=0.28.1",
     "kink>=0.8.1",
     "orjson>=3.10.15",
+    "packaging>=24.2",
     "psutil>=7.0.0",
     "pydantic>=2.10.6",
     "pydantic-settings>=2.7.1",
