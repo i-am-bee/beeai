@@ -19,8 +19,8 @@ import { DuckDuckGoSearchTool } from "beeai-framework/tools/search/duckDuckGoSea
 import { Message } from "beeai-framework/backend/message";
 import { BaseMemory } from "beeai-framework/memory/base";
 import { z, ZodRawShape } from "zod";
-import { agent as contentJudge } from "./content-judge.js";
-import { agent as podcastCreator } from "./podcast-creator.js";
+import { agent as contentJudge } from "./content-judge/content-judge.js";
+import { agent as podcastCreator } from "./podcast-creator/podcast-creator.js";
 import { ChatModel } from "beeai-framework/backend/core";
 import { CHAT_MODEL } from "./config.js";
 
@@ -132,7 +132,7 @@ async function registerAgents(server: AcpServer) {
     },
     {
       framework: "BeeAI",
-      licence: "Apache 2.0",
+      license: "Apache 2.0",
       fullDescription: `TBD`,
       avgRunTimeSeconds: 10,
       avgRunTokens: 48,

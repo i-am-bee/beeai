@@ -8,7 +8,7 @@ import {
 } from "@i-am-bee/beeai-sdk/schemas/prompt";
 import { Client as ACPClient } from "@i-am-bee/acp-sdk/client/index.js";
 import { SSEClientTransport } from "@i-am-bee/acp-sdk/client/sse.js";
-import { CHAT_MODEL } from "./config.js";
+import { CHAT_MODEL } from "../config.js";
 
 const inputSchema = promptInputSchema.extend({
   documents: z.array(z.string()).default([]).optional(),
@@ -194,7 +194,7 @@ export const agent = {
   run,
   metadata: {
     exampleInput: exampleInput1,
-    fullDescription: `The Content Judge Agent evaluates multiple documents and agent-generated content based on four key criteria - correctness, depth & coverage, clarity & structure, and relevance. It assigns a numerical score (0-1) to each document for each criterion, using a weighted average to determine the highest-scoring document. This ensures that the most accurate, comprehensive, well-structured, and relevant document is selected.
+    fullDescription: `The \`content-judge\` Agent evaluates multiple documents and agent-generated content based on four key criteria - correctness, depth & coverage, clarity & structure, and relevance. It assigns a numerical score (0-1) to each document for each criterion, using a weighted average to determine the highest-scoring document. This ensures that the most accurate, comprehensive, well-structured, and relevant document is selected.
 
 ## How It Works
 
@@ -206,7 +206,7 @@ The agent processes all provided text inputs and evaluates them based on the def
 
 ### Input Parameters
 
-The Content Judge operates based on the following input parameters:
+The agent operates based on the following input parameters:
 - **prompt** (string) – The research prompt or query guiding document selection.
 - **documents** (array of strings, optional) – A list of pre-provided documents for evaluation.
 - **agents** (array of strings, optional) – A list of agents to query for additional content.
@@ -279,7 +279,10 @@ ${exampleOutput2}
 \`\`\`
 `,
     framework: "BeeAI",
-    licence: "Apache 2.0",
+    license: "Apache 2.0",
+    languages: ["TypeScript"],
+    githubUrl:
+      "https://github.com/i-am-bee/beeai/blob/main/agents/official/beeai-framework/src/content-judge",
     avgRunTimeSeconds: 22,
     avgRunTokens: 1229,
   } satisfies Metadata,
