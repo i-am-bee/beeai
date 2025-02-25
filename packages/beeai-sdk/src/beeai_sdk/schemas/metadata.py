@@ -20,7 +20,9 @@ class Metadata(BaseModel):
     title: Optional[str] = None
     fullDescription: Optional[str] = None
     framework: Optional[str] = None
-    licence: Optional[str] = None
+    license: Optional[str] = None
+    languages: Optional[list[str]] = None
+    githubUrl: Optional[str] = None
     avgRunTimeSeconds: Optional[float] = None
     avgRunTokens: Optional[float] = None
     tags: Optional[list[str]] = None

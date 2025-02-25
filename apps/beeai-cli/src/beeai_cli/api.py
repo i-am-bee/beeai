@@ -29,9 +29,10 @@ from beeai_cli.async_typer import err_console
 
 from beeai_cli.configuration import Configuration
 
-BASE_URL = str(Configuration().host).rstrip("/")
+config = Configuration()
+BASE_URL = str(config.host).rstrip("/")
 API_BASE_URL = f"{BASE_URL}/api/v1/"
-MCP_URL = f"{BASE_URL}/mcp/sse"
+MCP_URL = f"{BASE_URL}{config.mcp_sse_path}"
 
 
 @asynccontextmanager
