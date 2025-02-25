@@ -46,7 +46,7 @@ def serve():
     os.execv(
         sys.executable,
         [
-            "python",
+            sys.executable,
             "-m",
             "uvicorn",
             "beeai_server.application:app",
