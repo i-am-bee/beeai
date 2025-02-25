@@ -186,7 +186,7 @@ const exampleOutput2 = `{
 }`;
 
 export const agent = {
-  name: "content-judge-v2",
+  name: "content-judge",
   description:
     "Evaluates multiple documents and agent-generated content based on correctness, depth, clarity, and relevance, selecting the highest-scoring one. It ensures optimal document quality for research, content validation, and knowledge refinement.",
   inputSchema,
