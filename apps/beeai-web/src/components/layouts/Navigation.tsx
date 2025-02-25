@@ -14,22 +14,18 @@
  * limitations under the License.
  */
 
-'use client';
+"use client";
 
-import { ArrowUp } from '@carbon/icons-react';
-import { IconButton, IconButtonProps } from '@carbon/react';
-import classes from './ToTopButton.module.scss';
+import { CommunityNav } from "@i-am-bee/beeai-ui";
+import { usePathname } from "next/navigation";
+import { MainNav } from "../MainNav/MainNav";
 
-interface Props {
-  onClick?: IconButtonProps['onClick'];
-}
-
-export function ToTopButton({ onClick }: Props) {
+export function Navigation() {
+  const pathname = usePathname();
   return (
-    <div className={classes.root}>
-      <IconButton label="To top" kind="tertiary" size="md" onClick={onClick}>
-        <ArrowUp />
-      </IconButton>
-    </div>
+    <>
+      <MainNav />
+      {pathname !== "/" && <CommunityNav />}
+    </>
   );
 }

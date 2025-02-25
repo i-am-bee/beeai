@@ -14,40 +14,25 @@
  * limitations under the License.
  */
 
-import { ErrorMessage } from '#components/ErrorMessage/ErrorMessage.tsx';
-import { useModal } from '#contexts/Modal/index.tsx';
-import { ImportAgentsModal } from '#modules/agents/components/ImportAgentsModal.tsx';
-import { Add } from '@carbon/icons-react';
-import { Button } from '@carbon/react';
+'use client';
+
 import pluralize from 'pluralize';
-import { useFormContext } from 'react-hook-form';
-import { useAgents } from '../contexts';
-import { AgentsFiltersParams } from '../contexts/agents-context';
+import { AgentsFiltersParams } from '../types';
 import { useFilteredAgents } from '../hooks/useFilteredAgents';
-import { AgentCard } from './AgentCard';
 import classes from './AgentsList.module.scss';
+import { Agent } from '../api/types';
+import { ReactNode } from 'react';
 
-export function AgentsList() {
-  const { openModal } = useModal();
-  const {
-    agentsQuery: { data, isPending, error, refetch, isRefetching },
-  } = useAgents();
-  const { watch } = useFormContext<AgentsFiltersParams>();
-  const filters = watch();
+interface Props {
+  agents: Agent[] | undefined;
+  filters: AgentsFiltersParams;
+  action?: ReactNode;
+  children: (filteredAgents: Agent[]) => ReactNode;
+}
 
-  const { filteredAgents, filteredCount } = useFilteredAgents({ agents: data ?? [], filters });
-  const totalCount = data?.length ?? 0;
-
-  if (error && !data)
-    return (
-      <ErrorMessage
-        title="Failed to load agents."
-        onRetry={refetch}
-        isRefetching={isRefetching}
-        subtitle={error.message}
-      />
-    );
-
+export function AgentsList({ agents, filters, action, children }: Props) {
+  const { filteredAgents, filteredCount } = useFilteredAgents({ agents: agents ?? [], filters });
+  const totalCount = agents?.length ?? 0;
   return (
     <div>
       <div className={classes.header}>
@@ -57,30 +42,10 @@ export function AgentsList() {
             {pluralize('agent', totalCount)}
           </p>
         )}
-
-        <Button
-          kind="tertiary"
-          size="md"
-          renderIcon={Add}
-          onClick={() => openModal((props) => <ImportAgentsModal {...props} />)}
-        >
-          Import agents
-        </Button>
+        {action}
       </div>
 
-      <ul className={classes.list}>
-        {!isPending
-          ? filteredAgents?.map((agent, idx) => (
-              <li key={idx}>
-                <AgentCard agent={agent} />
-              </li>
-            ))
-          : Array.from({ length: 3 }, (_, idx) => (
-              <li key={idx}>
-                <AgentCard.Skeleton />
-              </li>
-            ))}
-      </ul>
+      <ul className={classes.list}>{children(filteredAgents)}</ul>
     </div>
   );
 }

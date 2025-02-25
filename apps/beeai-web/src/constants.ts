@@ -14,22 +14,9 @@
  * limitations under the License.
  */
 
-'use client';
-
-import { ArrowUp } from '@carbon/icons-react';
-import { IconButton, IconButtonProps } from '@carbon/react';
-import classes from './ToTopButton.module.scss';
-
-interface Props {
-  onClick?: IconButtonProps['onClick'];
+const ACP_SERVER_URL_ENV = process.env.ACP_SERVER_URL;
+if (!ACP_SERVER_URL_ENV) {
+  throw new Error("ENV \"ACP_SERVER_URL\" must be defined!");
 }
 
-export function ToTopButton({ onClick }: Props) {
-  return (
-    <div className={classes.root}>
-      <IconButton label="To top" kind="tertiary" size="md" onClick={onClick}>
-        <ArrowUp />
-      </IconButton>
-    </div>
-  );
-}
+export const ACP_SERVER_URL = new URL(ACP_SERVER_URL_ENV);
