@@ -1,0 +1,9 @@
+manifestVersion: 1
+driver: nodejs
+package: "git+https://github.com/i-am-bee/beeai@main#path=agents/official/bee-supervisor"
+serverType: http
+mcpTransport: sse
+mcpEndpoint: /sse
+
+
+
