@@ -4,10 +4,9 @@ A code-writing agent that uses [Aider](https://github.com/Aider-AI/aider) as a P
 
 ## Features
 
-- Code generation and modification using Aider's capabilities
-- Integration with BeeAI's agent framework
+- Code generation using Aider's capabilities
+- Running shell commands
 - Support for multiple programming languages
-- Interactive code editing sessions
 
 ## Setup
 
@@ -18,4 +17,4 @@ uv run aider-agent
 
 ## Configuration
 
-The agent uses standard BeeAI configuration mechanisms. Configure your OpenAI API key and other settings through the BeeAI platform interface.
+The agent uses standard BeeAI configuration mechanisms. Configure your LLM API key and other settings through the BeeAI platform interface.
