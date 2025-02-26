@@ -27,6 +27,6 @@
   gap: $spacing-02;
   &:not(:last-child) {
     padding-inline-end: $spacing-03;
-    border-inline-end: 1px solid $border-subtle;
+    border-inline-end: 1px solid $border-subtle-00;
   }
 }

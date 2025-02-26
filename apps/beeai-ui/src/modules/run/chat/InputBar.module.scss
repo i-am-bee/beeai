@@ -23,7 +23,7 @@
 .textarea {
   max-block-size: rem(192px);
   overflow-y: auto;
-  border: 1px solid $border-subtle;
+  border: 1px solid $border-subtle-00;
   border-radius: $spacing-03;
   &::after,
   > textarea {

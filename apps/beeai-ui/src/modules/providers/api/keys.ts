@@ -14,34 +14,8 @@
  * limitations under the License.
  */
 
-.stack {
-  display: flex;
-  flex-direction: column;
-  row-gap: $spacing-05;
-}
-
-.locationInput {
-  min-block-size: rem(92px);
-}
-
-.description {
-  font-size: rem(18px);
-  line-height: math.div(20, 18);
-  color: $text-secondary;
-}
-
-.agents {
-  &,
-  :global(.cds--list--unordered) {
-    display: flex;
-    flex-direction: column;
-    row-gap: $spacing-03;
-  }
-  :global(.cds--list--unordered) {
-    padding-block: $spacing-02;
-    margin-inline-start: $spacing-06;
-    > :global(.cds--list__item::before) {
-      content: '•';
-    }
-  }
-}
+export const providerKeys = {
+  all: () => ['providers'] as const,
+  lists: () => [...providerKeys.all(), 'list'] as const,
+  list: () => [...providerKeys.lists()] as const,
+};

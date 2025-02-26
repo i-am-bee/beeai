@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { createContext, ReactNode } from 'react';
+import { IconProps } from '@carbon/icons-react/lib/Icon';
+import { ComponentType, createContext, ReactNode } from 'react';
 
 export interface Toast {
   /**
@@ -34,6 +35,7 @@ export interface Toast {
   timeout?: number;
   title?: string;
   apiError?: string;
+  icon?: ComponentType<IconProps>;
 }
 
 export interface ToastContextValue {

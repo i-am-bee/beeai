@@ -15,25 +15,35 @@
  */
 
 .toasts {
+  @include scrollbar();
+  display: flex;
+  flex-direction: column;
+  row-gap: $spacing-03;
   position: fixed;
-  inset-block-start: 0;
-  inset-inline-end: 0;
-  max-inline-size: 100%;
-  // Set the z-index between the modal and dropdown.
+  inset-block-start: rem(49px);
+  inset-inline-end: $spacing-05;
+  max-block-size: calc(100% - rem(49px));
+  padding: $spacing-05;
+  overflow-y: auto;
   z-index: z('modal') + 1;
 
-  > * {
-    margin-block-start: $spacing-03;
-    margin-inline-end: $spacing-03;
-  }
-
   :global(.cds--toast-notification) {
-    inline-size: rem(360px);
-    max-inline-size: 100%;
+    inline-size: rem(288px);
   }
-  :global(.cds--toast-notification__details) {
-    flex-grow: 1;
-    margin-inline-end: 0;
+}
+
+.clearButton {
+  display: flex;
+  margin-inline-start: auto;
+  background-color: $layer;
+  border-radius: $border-radius;
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 1;
+  :global(.cds--btn) {
+    box-shadow: $box-shadow;
+    padding-inline-end: rem(15px);
+    background-color: $layer;
   }
 }
 

@@ -1,0 +1,137 @@
+/**
+ * Copyright 2025 IBM Corp.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@use 'styles/common' as *;
+@use 'sass:math';
+
+.cds--actionable-notification {
+  max-inline-size: none;
+
+  .cds--toast-notification__icon {
+    margin-block-start: rem(14px);
+  }
+}
+
+.cds--actionable-notification--toast {
+  box-shadow: none;
+
+  .cds--actionable-notification__text-wrapper {
+    padding-block: rem(15px);
+  }
+}
+
+.cds--actionable-notification__content {
+  &,
+  p {
+    font-size: rem(14px);
+    line-height: math.div(18, 14);
+    letter-spacing: rem(0.16px);
+  }
+}
+
+.cds--actionable-notification__title + * {
+  margin-block-start: $spacing-03;
+}
+
+.cds--actionable-notification--low-contrast.cds--actionable-notification--error {
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-block: 1px solid $support-error-30;
+    border-inline-end: 1px solid $support-error-30;
+  }
+}
+
+.cds--toast-notification {
+  padding: $spacing-05 $spacing-05 $spacing-05 rem(13px);
+  display: flex;
+  flex-direction: column;
+  row-gap: $spacing-03;
+  position: relative;
+  box-shadow: $box-shadow;
+  &.cds--toast-notification--custom-icon > .cds--toast-notification__icon {
+    display: none;
+  }
+
+  .cds--toast-notification__icon {
+    margin: 0;
+  }
+}
+
+.cds--toast-notification.cds--toast-notification--low-contrast {
+  border-radius: $border-radius;
+  border: 0;
+  padding: $spacing-05;
+
+  .cds--toast-notification__details,
+  .cds--toast-notification__title,
+  .cds--toast-notification__subtitle,
+  .cds--toast-notification__caption {
+    color: $text-secondary;
+  }
+
+  .cds--toast-notification__details .cds--toast-notification__icon {
+    fill: $text-dark;
+    inline-size: rem(16px);
+    block-size: rem(16px);
+    margin-block: rem(2px);
+  }
+}
+
+.cds--toast-notification__details,
+.cds--toast-notification__title,
+.cds--toast-notification__subtitle {
+  margin: 0;
+  font-size: rem(14px);
+  line-height: math.div(20, 14);
+  letter-spacing: rem(0.16px);
+}
+
+.cds--toast-notification__details {
+  display: flex;
+  flex-direction: column;
+  row-gap: $spacing-03;
+}
+
+.cds--toast-notification__caption {
+  font-size: rem(12px);
+  line-height: math.div(16, 12);
+  letter-spacing: rem(0.16px);
+  padding-block: rem(2px);
+  padding-inline: rem(28px) rem(32px);
+  margin-block-start: rem(-28px);
+}
+
+.cds--toast-notification__close-button {
+  min-inline-size: 0;
+  min-block-size: 0;
+  inline-size: rem(32px);
+  block-size: rem(32px);
+  border-radius: $border-radius;
+  position: absolute;
+  inset-block-start: rem(10px);
+  inset-inline-end: $spacing-03;
+  opacity: 0;
+
+  .cds--toast-notification:hover & {
+    opacity: 1;
+  }
+}
+
+.cds--toast-notification--low-contrast.cds--toast-notification--info {
+  background-color: $layer;
+}

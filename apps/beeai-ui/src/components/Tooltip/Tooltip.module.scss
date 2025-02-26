@@ -14,34 +14,24 @@
  * limitations under the License.
  */
 
-.stack {
-  display: flex;
-  flex-direction: column;
-  row-gap: $spacing-05;
+.root {
+  z-index: z('modal');
 }
 
-.locationInput {
-  min-block-size: rem(92px);
-}
-
-.description {
-  font-size: rem(18px);
-  line-height: math.div(20, 18);
-  color: $text-secondary;
-}
-
-.agents {
-  &,
-  :global(.cds--list--unordered) {
-    display: flex;
-    flex-direction: column;
-    row-gap: $spacing-03;
+.content {
+  @include type-style(label-02);
+  background-color: $background-inverse;
+  color: $text-inverse;
+  border-radius: $border-radius;
+  max-inline-size: rem(264px);
+  .root.sm & {
+    padding: $spacing-02 $spacing-03;
   }
-  :global(.cds--list--unordered) {
-    padding-block: $spacing-02;
-    margin-inline-start: $spacing-06;
-    > :global(.cds--list__item::before) {
-      content: '•';
-    }
+  .root.md & {
+    padding: $spacing-03 $spacing-05;
   }
+}
+
+.arrow {
+  fill: $background-inverse;
 }

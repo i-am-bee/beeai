@@ -14,34 +14,25 @@
  * limitations under the License.
  */
 
-.stack {
-  display: flex;
-  flex-direction: column;
-  row-gap: $spacing-05;
+import { useHandleError } from '#hooks/useHandleError.ts';
+import { QueryKey } from '@tanstack/react-query';
+
+export interface QueryMetadata extends Record<string, unknown> {
+  errorToast?:
+    | false
+    | {
+        title?: string;
+        includeErrorMessage?: boolean;
+      };
 }
 
-.locationInput {
-  min-block-size: rem(92px);
-}
+export type HandleError = ReturnType<typeof useHandleError>;
 
-.description {
-  font-size: rem(18px);
-  line-height: math.div(20, 18);
-  color: $text-secondary;
-}
-
-.agents {
-  &,
-  :global(.cds--list--unordered) {
-    display: flex;
-    flex-direction: column;
-    row-gap: $spacing-03;
-  }
-  :global(.cds--list--unordered) {
-    padding-block: $spacing-02;
-    margin-inline-start: $spacing-06;
-    > :global(.cds--list__item::before) {
-      content: '•';
-    }
+declare module '@tanstack/react-query' {
+  interface Register {
+    queryMeta: QueryMetadata;
+    mutationMeta: QueryMetadata & {
+      invalidates?: QueryKey[];
+    };
   }
 }
