@@ -18,18 +18,10 @@ async function registerAgents(server: AcpServer) {
 }
 
 export async function createServer() {
-  const server = new AcpServer(
-    {
-      name: "agent-docs-creator",
-      version: Version,
-    },
-    {
-      capabilities: {
-        tools: {},
-        agents: {},
-      },
-    }
-  );
+  const server = new AcpServer({
+    name: "agent-docs-creator",
+    version: Version,
+  });
   await registerAgents(server);
   return server;
 }
