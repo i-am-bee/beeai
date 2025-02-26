@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-export const GITHUB_REPO = { owner: 'i-am-bee', repo: 'beeai-framework' };
+import { Container } from '#components/layouts/Container.tsx';
+import { ViewHeader } from '#components/ViewHeader/ViewHeader.tsx';
+import { ViewStack } from '#components/ViewStack/ViewStack.tsx';
+import { EnvsView } from '#modules/envs/components/EnvsView.tsx';
 
-export const GITHUB_REPO_LINK = `https://github.com/${GITHUB_REPO.owner}/${GITHUB_REPO.repo}`;
+export function Settings() {
+  return (
+    <Container size="lg">
+      <ViewStack>
+        <ViewHeader heading="Settings" />
 
-export const DISCORD_LINK = 'https://discord.gg/NradeA6ZNF';
-
-export const YOUTUBE_LINK = 'https://www.youtube.com/@BeeAIAgents';
-
-export const BLUESKY_LINK = 'https://bsky.app/profile/beeaiagents.bsky.social';
-
-// TODO: Add links
-export const DOCUMENTATION_LINK = '#';
-export const GET_STARTED_PYTHON_LINK = '#';
-export const GET_STARTED_TYPESCRIPT_LINK = '#';
-
-export const BEE_AI_FRAMEWORK_TAG = 'BeeAI';
+        <EnvsView />
+      </ViewStack>
+    </Container>
+  );
+}

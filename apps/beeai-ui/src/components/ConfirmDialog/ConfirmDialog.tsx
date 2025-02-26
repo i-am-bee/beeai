@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import { ModalProps } from '#contexts/Modal/modal-context.ts';
 import { Button, ModalBody, ModalFooter, ModalHeader } from '@carbon/react';
 import { TrashCan } from '@carbon/react/icons';
 import clsx from 'clsx';
 import { ComponentType, ReactNode } from 'react';
 import { Modal } from '../Modal/Modal';
 import classes from './ConfirmDialog.module.scss';
-import { ModalProps } from '#contexts/Modal/modal-context.ts';
 
 export interface ConfirmDialogProps {
   title: string;
@@ -51,16 +51,17 @@ export function ConfirmDialog({
   };
   return (
     <Modal size={size} {...props} className={clsx(classes.root)}>
-      <ModalHeader>
+      <ModalHeader buttonOnClick={() => onRequestClose()}>
         <h3 className={classes.heading}>{title}</h3>
       </ModalHeader>
 
       <ModalBody>{body}</ModalBody>
 
       <ModalFooter>
-        <Button kind="ghost" onClick={() => props.onRequestClose()}>
+        <Button kind="ghost" onClick={() => onRequestClose()}>
           {secondaryButtonText ?? 'Cancel'}
         </Button>
+
         <Button
           onClick={onSubmitClick}
           kind={danger ? 'danger' : 'secondary'}

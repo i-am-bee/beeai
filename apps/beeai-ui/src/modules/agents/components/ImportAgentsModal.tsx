@@ -68,7 +68,7 @@ export function ImportAgentsModal({ onRequestClose, ...modalProps }: ModalProps)
   const onSubmit = useCallback(
     ({ location, source }: FormValues) => {
       createProvider({
-        location: `${LOCATION_PREFIXES[source]}${location}`,
+        body: { location: `${LOCATION_PREFIXES[source]}${location}` },
       });
     },
     [createProvider],

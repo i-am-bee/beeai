@@ -14,19 +14,26 @@
  * limitations under the License.
  */
 
-export const GITHUB_REPO = { owner: 'i-am-bee', repo: 'beeai-framework' };
+import { providerKeys } from '#modules/providers/api/keys.ts';
+import { useMutation } from '@tanstack/react-query';
+import { createEnv } from '..';
+import { envKeys } from '../keys';
 
-export const GITHUB_REPO_LINK = `https://github.com/${GITHUB_REPO.owner}/${GITHUB_REPO.repo}`;
+interface Props {
+  onSuccess?: () => void;
+}
 
-export const DISCORD_LINK = 'https://discord.gg/NradeA6ZNF';
+export function useCreateEnv({ onSuccess }: Props = {}) {
+  const mutation = useMutation({
+    mutationFn: createEnv,
+    onSuccess,
+    meta: {
+      invalidates: [envKeys.lists(), providerKeys.lists()],
+      errorToast: {
+        title: 'Failed to create env variable.',
+      },
+    },
+  });
 
-export const YOUTUBE_LINK = 'https://www.youtube.com/@BeeAIAgents';
-
-export const BLUESKY_LINK = 'https://bsky.app/profile/beeaiagents.bsky.social';
-
-// TODO: Add links
-export const DOCUMENTATION_LINK = '#';
-export const GET_STARTED_PYTHON_LINK = '#';
-export const GET_STARTED_TYPESCRIPT_LINK = '#';
-
-export const BEE_AI_FRAMEWORK_TAG = 'BeeAI';
+  return mutation;
+}

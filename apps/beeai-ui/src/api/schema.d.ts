@@ -203,6 +203,13 @@ export interface components {
       /** Detail */
       detail?: components['schemas']['ValidationError'][];
     };
+    /** ListEnvSchema */
+    ListEnvSchema: {
+      /** Env */
+      env: {
+        [key: string]: string;
+      };
+    };
     /**
      * LoadedProviderStatus
      * @enum {string}
@@ -382,7 +389,7 @@ export interface components {
     UpdateEnvRequest: {
       /** Env */
       env: {
-        [key: string]: string;
+        [key: string]: string | null;
       };
     };
     /** ValidationError */
@@ -418,7 +425,7 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          'application/json': unknown;
+          'application/json': components['schemas']['ListEnvSchema'];
         };
       };
     };
@@ -437,7 +444,7 @@ export interface operations {
     };
     responses: {
       /** @description Successful Response */
-      200: {
+      201: {
         headers: {
           [name: string]: unknown;
         };
@@ -543,13 +550,11 @@ export interface operations {
     };
     responses: {
       /** @description Successful Response */
-      200: {
+      204: {
         headers: {
           [name: string]: unknown;
         };
-        content: {
-          'application/json': unknown;
-        };
+        content?: never;
       };
       /** @description Validation Error */
       422: {

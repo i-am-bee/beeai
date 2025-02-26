@@ -29,7 +29,7 @@ export function useCreateProvider({ onSuccess }: Props = {}) {
     mutationFn: createProvider,
     onSuccess,
     meta: {
-      invalidates: [providerKeys.list(), agentKeys.lists()],
+      invalidates: [providerKeys.lists(), agentKeys.lists()],
       errorToast: {
         title: 'Error during agents import. Check the files in the URL provided.',
       },
