@@ -109,6 +109,10 @@ class ManagedProvider(BaseProvider, abc.ABC):
     serverType: ServerType = ServerType.stdio
     command: list[str] = Field(description="Command with arguments to run")
 
+    @property
+    def _global_env(self) -> dict[str, str]:
+        return {"OTEL_EXPORTER_OTLP_ENDPOINT": "http://localhost:6006"}
+
     @asynccontextmanager
     async def _get_mcp_client(
         self, *, command: list[str], env: dict[str, str] | None = None, with_dummy_env: bool = True
@@ -116,6 +120,7 @@ class ManagedProvider(BaseProvider, abc.ABC):
         declared_env_vars = {var.name for var in self.env}
         required_env_vars = {var.name for var in self.env if var.required}
         env = {
+            **self._global_env,
             **({var: "dummy" for var in required_env_vars} if with_dummy_env else {}),
             **({var: env[var] for var in env if var in declared_env_vars}),
         }
@@ -261,7 +266,7 @@ class ContainerProvider(ManagedProvider):
         if not with_dummy_env:
             self.check_env(env)
 
-        env_args = [f"-e={var.name}" for var in self.env] + ["-e=PORT"]
+        env_args = [f"-e={var.name}" for var in self.env] + ["-e=PORT"] + [f"-e={var}" for var in self._global_env]
         name = uuid.uuid4().hex
         try:
             async with super()._get_mcp_client(
