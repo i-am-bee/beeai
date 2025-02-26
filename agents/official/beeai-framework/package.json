@@ -2,10 +2,10 @@
   "name": "beeai-framework",
   "version": "0.0.1",
   "bin": {
-    "server": "./src/server.ts"
+    "server": "BEE_FRAMEWORK_INSTRUMENTATION_ENABLED=true ./src/server.ts"
   },
   "scripts": {
-    "server": "./src/server.ts"
+    "server": "BEE_FRAMEWORK_INSTRUMENTATION_ENABLED=true ./src/server.ts"
   },
   "type": "module",
   "keywords": [],
