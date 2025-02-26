@@ -29,3 +29,4 @@ export * from './modules/agents/utils';
 export * from './modules/agents/components/AgentCard';
 export * from './modules/agents/components/AgentsList';
 export * from './modules/agents/components/AgentsFilters';
+export * from './modules/agents/components/AgentDetail';
