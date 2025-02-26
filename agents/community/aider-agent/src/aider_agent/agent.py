@@ -1,4 +1,5 @@
 import asyncio
+import io
 import subprocess
 import os
 import sys
@@ -59,11 +60,16 @@ async def register_agent() -> int:
                     env=os.environ.copy(),
                 )
 
+                binary_buffer = io.BytesIO()
+                string_reader = io.TextIOWrapper(buffer=binary_buffer, encoding="utf-8")
                 while True:
                     chunk = await process.stdout.read(1024)
                     if not chunk:
                         break
-                    text_chunk = chunk.decode()
+                    binary_buffer_position = binary_buffer.tell()
+                    binary_buffer.write(chunk)
+                    binary_buffer.seek(binary_buffer_position)
+                    text_chunk = string_reader.read()
                     output.text += text_chunk
                     await ctx.report_agent_run_progress(Output(text=text_chunk))
 
