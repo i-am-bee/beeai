@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import contextlib
+import json
+import subprocess
 import urllib
 import urllib.parse
 import uuid
@@ -20,7 +23,7 @@ from typing import AsyncGenerator
 
 import anyio
 import httpx
-from httpx import HTTPStatusError
+from httpx import ConnectError, HTTPStatusError
 from acp import ClientSession, types, ServerNotification
 from acp.client.sse import sse_client
 from acp.shared.session import ReceiveResultT
@@ -28,6 +31,7 @@ from acp.types import RequestParams
 from beeai_cli.async_typer import err_console
 
 from beeai_cli.configuration import Configuration
+import typer
 
 config = Configuration()
 BASE_URL = str(config.host).rstrip("/")
@@ -35,13 +39,43 @@ API_BASE_URL = f"{BASE_URL}/api/v1/"
 MCP_URL = f"{BASE_URL}{config.mcp_sse_path}"
 
 
+def show_connect_hint():
+    typer.echo(f"💥 {typer.style('ConnectError', fg='red')}: Could not connect to the local BeeAI platform.")
+
+    beeai_service = None
+    with contextlib.suppress(Exception):
+        services = json.loads(subprocess.check_output(["brew", "services", "list", "--json"]))
+        beeai_service = next((service for service in services if service["name"] == "beeai"), None)
+
+    if BASE_URL != "http://localhost:8333":
+        typer.echo(
+            f'💡 {typer.style("HINT", fg="yellow")}: You have set the BeeAI platform host to "{typer.style(BASE_URL, bold=True)}" -- is this correct?'
+        )
+    elif not beeai_service:
+        typer.echo(
+            f"💡 {typer.style('HINT', fg='yellow')}: In a separate terminal, run {typer.style('beeai serve', fg='green')}, keep it running and retry."
+        )
+    elif beeai_service["status"] == "started":
+        typer.echo(
+            f"💡 {typer.style('HINT', fg='yellow')}: Reinstall the service with {typer.style('brew reinstall beeai', fg='green')}, then start the service with {typer.style('brew services start beeai', fg='green')} and retry."
+        )
+    else:
+        typer.echo(
+            f"💡 {typer.style('HINT', fg='yellow')}: Start the service with {typer.style('brew services start beeai', fg='green')} and retry."
+        )
+
+
 @asynccontextmanager
 async def mcp_client() -> AsyncGenerator[ClientSession, None]:
     """Context manager for MCP client connection."""
-    async with sse_client(url=MCP_URL) as (read_stream, write_stream):
-        async with ClientSession(read_stream, write_stream) as session:
-            await session.initialize()
-            yield session
+    try:
+        async with sse_client(url=MCP_URL) as (read_stream, write_stream):
+            async with ClientSession(read_stream, write_stream) as session:
+                await session.initialize()
+                yield session
+    except* ConnectError:
+        show_connect_hint()
+        exit(1)
 
 
 async def api_request(method: str, path: str, json: dict | None = None) -> dict | None:
