@@ -185,7 +185,7 @@ ${JSON.stringify(exampleInput, null, 2)}
 beeai run podcast-creator '${JSON.stringify(exampleInput, null, 2)}'
 \`\`\`
 
-#### Processing Steps:\
+#### Processing Steps:
 
 1. Extracts key concepts from the content.
 2. Reformats it into a structured conversation where Speaker 1 explains ideas and Speaker 2 reacts, asks questions, and introduces clarifications.

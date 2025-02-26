@@ -1,6 +1,7 @@
 providers:
 # Official
 - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.7#path=/agents/official/beeai-framework
+- url: git+https://github.com/i-am-bee/beeai@agents-v0.0.8#path=/agents/official/agent-docs-provider
 # Community
 - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.6#path=/agents/community/gpt-researcher-agent
 - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.6#path=/agents/community/crewai-agents

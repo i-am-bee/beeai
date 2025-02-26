@@ -33,6 +33,31 @@ catalogs:
 
 importers:
 
+  agents/official/agent-docs-creator:
+    dependencies:
+      '@ai-sdk/openai':
+        specifier: ^1.1.13
+        version: 1.1.13(zod@3.24.2)
+      '@i-am-bee/acp-sdk':
+        specifier: ^0.0.1
+        version: 0.0.1
+      '@i-am-bee/beeai-sdk':
+        specifier: ^0.0.4
+        version: 0.0.4
+      beeai-framework:
+        specifier: ^0.1.2
+        version: 0.1.2(@ai-sdk/openai@1.1.13(zod@3.24.2))(@aws-sdk/client-bedrock-runtime@3.751.0)(ollama-ai-provider@1.2.0(zod@3.24.2))(react@19.0.0)(yaml@2.7.0)
+      tsx:
+        specifier: ^4.19.2
+        version: 4.19.3
+      zod:
+        specifier: ^3.24.2
+        version: 3.24.2
+    devDependencies:
+      typescript:
+        specifier: ^5.7.3
+        version: 5.7.3
+
   agents/official/beeai-framework:
     dependencies:
       '@ai-sdk/openai':
