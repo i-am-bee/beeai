@@ -16,6 +16,7 @@
 
 import "server-only";
 import { Client } from "@i-am-bee/acp-sdk/client/index.js";
+import type { ServerCapabilities } from "@i-am-bee/acp-sdk/types.js";
 import { SSEClientTransport } from "@i-am-bee/acp-sdk/client/sse.js";
 import { BEEAI_HOST } from "@/constants";
 
@@ -33,7 +34,20 @@ export async function getAcpClient() {
   });
   const client = new Client(ACP_EXAMPLE_AGENT_CONFIG, ACP_EXAMPLE_AGENT_PARAMS);
   await client.connect(transport);
+
+  const capabilities = client.getServerCapabilities();
+  assertServerCapability(capabilities, "agents");
+
   return client;
+}
+
+function assertServerCapability(
+  capabilities: ServerCapabilities | undefined,
+  capability: keyof ServerCapabilities
+) {
+  if (!capabilities?.[capability]) {
+    throw new Error(`ACP Server does not support ${capability}`);
+  }
 }
 
 const ACP_SSE_TRANSPORT_URL = new URL("/mcp/sse", BEEAI_HOST);
