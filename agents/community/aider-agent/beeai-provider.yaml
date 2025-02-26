@@ -49,121 +49,128 @@ env:
 - name: AIDER_MAP_MULTIPLIER_NO_FILES
   required: false
   description: "Multiplier for map tokens when no files are specified (default: 2)"
-  
+
 # Provider-specific configuration:
 - name: ALEPH_ALPHA_API_KEY
   required: false
-- name: ALEPHALPHA_API_KEY
-  required: false
+  description: "API key for Aleph Alpha's language models"
 - name: ANTHROPIC_API_KEY
   required: false
-- name: ANTHROPIC_API_KEY
-  required: false
+  description: "API key for Anthropic's Claude models"
 - name: ANYSCALE_API_KEY
   required: false
-- name: AZURE_AI_API_KEY
-  required: false
+  description: "API key for Anyscale's hosted models"
 - name: AZURE_API_BASE
   required: false
+  description: "Base URL for Azure API endpoints"
 - name: AZURE_API_KEY
   required: false
+  description: "Primary API key for Azure services"
 - name: AZURE_API_VERSION
   required: false
+  description: "Version of the Azure API to use"
 - name: AZURE_OPENAI_API_KEY
   required: false
+  description: "API key for Azure OpenAI services"
 - name: BASETEN_API_KEY
   required: false
+  description: "API key for Baseten's model deployment platform"
 - name: CEREBRAS_API_KEY
   required: false
+  description: "API key for Cerebras AI models"
 - name: CLARIFAI_API_KEY
   required: false
+  description: "API key for Clarifai's AI platform"
 - name: CLOUDFLARE_API_KEY
   required: false
-- name: CO_API_KEY
-  required: false
+  description: "API key for Cloudflare's AI services"
 - name: CODESTRAL_API_KEY
   required: false
+  description: "API key for Codestral's code models"
 - name: COHERE_API_KEY
   required: false
-- name: COHERE_API_KEY
-  required: false
+  description: "API key for Cohere's language models"
 - name: DATABRICKS_API_KEY
   required: false
+  description: "API key for Databricks' AI services"
 - name: DEEPINFRA_API_KEY
   required: false
+  description: "API key for DeepInfra's AI platform"
 - name: DEEPSEEK_API_KEY
   required: false
-- name: DEEPSEEK_API_KEY
-  required: false
-- name: FIREWORKS_AI_API_KEY
-  required: false
+  description: "API key for DeepSeek's AI models"
 - name: FIREWORKS_API_KEY
   required: false
-- name: FIREWORKSAI_API_KEY
-  required: false
+  description: "API key for Fireworks AI services"
 - name: GEMINI_API_KEY
   required: false
-- name: GEMINI_API_KEY
-  required: false
+  description: "API key for Google's Gemini AI models"
 - name: GROQ_API_KEY
   required: false
-- name: GROQ_API_KEY
-  required: false
+  description: "API key for Groq's AI platform"
 - name: HUGGINGFACE_API_KEY
   required: false
+  description: "API key for Hugging Face's model hub"
 - name: LM_STUDIO_API_BASE
   required: false
+  description: "Base URL for LM Studio API"
 - name: LM_STUDIO_API_KEY
   required: false
+  description: "API key for LM Studio"
 - name: MARITALK_API_KEY
   required: false
+  description: "API key for MariTalk's language models"
 - name: MISTRAL_API_KEY
   required: false
+  description: "API key for Mistral AI's models"
 - name: NLP_CLOUD_API_KEY
   required: false
+  description: "API key for NLP Cloud services"
 - name: NVIDIA_NIM_API_KEY
   required: false
+  description: "API key for NVIDIA NIM platform"
 - name: OLLAMA_API_BASE
   required: false
+  description: "Base URL for Ollama API endpoints"
 - name: OLLAMA_API_KEY
   required: false
+  description: "API key for Ollama services"
 - name: OPENAI_API_BASE
   required: false
+  description: "Base URL for OpenAI API endpoints"
 - name: OPENAI_API_KEY
   required: false
-- name: OPENAI_API_KEY
-  required: false
+  description: "API key for OpenAI services"
 - name: OPENAI_LIKE_API_KEY
   required: false
+  description: "API key for OpenAI-compatible services"
 - name: OPENROUTER_API_KEY
   required: false
-- name: OPENROUTER_API_KEY
-  required: false
-- name: OR_API_KEY
-  required: false
+  description: "API key for OpenRouter AI gateway"
 - name: PALM_API_KEY
   required: false
+  description: "API key for Google's PaLM models"
 - name: PERPLEXITYAI_API_KEY
   required: false
+  description: "API key for Perplexity AI services"
 - name: PREDIBASE_API_KEY
   required: false
-- name: PROVIDER_API_KEY
-  required: false
+  description: "API key for Predibase platform"
 - name: REPLICATE_API_KEY
   required: false
+  description: "API key for Replicate's model platform"
 - name: TOGETHERAI_API_KEY
   required: false
+  description: "API key for Together AI platform"
 - name: VOLCENGINE_API_KEY
   required: false
+  description: "API key for VolcEngine AI services"
 - name: VOYAGE_API_KEY
   required: false
+  description: "API key for Voyage AI models"
 - name: WATSONX_API_KEY
   required: false
-- name: WX_API_KEY
-  required: false
-- name: XAI_API_KEY
-  required: false
-- name: XAI_API_KEY
-  required: false
+  description: "API key for IBM's WatsonX AI platform"
 - name: XINFERENCE_API_KEY
   required: false
+  description: "API key for XInference platform"
