@@ -1,4 +1,4 @@
-#!/usr/bin/env npx -y tsx@latest
+#!/usr/bin/env BEE_FRAMEWORK_INSTRUMENTATION_ENABLED=true npx -y tsx@latest
 
 import { AcpServer } from "@i-am-bee/acp-sdk/server/acp.js";
 
@@ -19,7 +19,7 @@ async function registerAgents(server: AcpServer) {
     chat.inputSchema,
     chat.outputSchema,
     chat.run(server),
-    chat.metadata,
+    chat.metadata
   );
 
   server.agent(
@@ -28,7 +28,7 @@ async function registerAgents(server: AcpServer) {
     contentJudge.inputSchema,
     contentJudge.outputSchema,
     contentJudge.run,
-    contentJudge.metadata,
+    contentJudge.metadata
   );
 
   server.agent(
@@ -37,7 +37,7 @@ async function registerAgents(server: AcpServer) {
     podcastCreator.inputSchema,
     podcastCreator.outputSchema,
     podcastCreator.run,
-    podcastCreator.metadata,
+    podcastCreator.metadata
   );
 }
 
