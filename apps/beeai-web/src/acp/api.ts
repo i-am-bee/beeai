@@ -19,15 +19,16 @@ import { getAcpClient } from "./client";
 
 export const getAgentsList = unstable_cache(
   async () => {
-    const client = await getAcpClient();
-
-    const { agents } = await client.listAgents();
-
-    await client.close();
-
-    return agents;
+    let client: Awaited<ReturnType<typeof getAcpClient>> | undefined;
+    try {
+      client = await getAcpClient();
+      const { agents } = await client.listAgents();
+      return agents;
+    } finally {
+      await client?.close();
+    }
   },
-  undefined,
+  undefined
   // ISR can be added like this
   // { revalidate: 30 }
 );
