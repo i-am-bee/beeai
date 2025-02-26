@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Settings } from '#pages/Settings.tsx';
 import { ErrorBoundary } from 'react-error-boundary';
 import { BrowserRouter, Route, Routes } from 'react-router';
 import { ErrorFallback } from './components/fallbacks/ErrorFallback';
@@ -43,6 +44,7 @@ export function App() {
                     <Route path={routeDefinitions.agents()} element={<Agents />} />
                     <Route path={routeDefinitions.agentDetail()} element={<Agent />} />
                     <Route path={routeDefinitions.agentRun()} element={<AgentRunPage />} />
+                    <Route path={routeDefinitions.settings()} element={<Settings />} />
 
                     <Route path="*" element={<NotFound />} />
                   </Route>

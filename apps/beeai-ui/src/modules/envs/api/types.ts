@@ -14,15 +14,6 @@
  * limitations under the License.
  */
 
-import clsx from 'clsx';
-import { PropsWithChildren } from 'react';
-import classes from './Container.module.scss';
+import { ApiRequestBody } from '#@types/utils.ts';
 
-interface Props {
-  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xlg' | 'xxlg';
-  className?: string;
-}
-
-export function Container({ size = 'md', className, children }: PropsWithChildren<Props>) {
-  return <div className={clsx(classes.root, className, { [classes[size]]: size })}>{children}</div>;
-}
+export type CreateEnvBody = ApiRequestBody<'/api/v1/env', 'put'>;

@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import clsx from 'clsx';
-import { PropsWithChildren } from 'react';
-import classes from './Container.module.scss';
+import { useQuery } from '@tanstack/react-query';
+import { getEnvs } from '..';
+import { envKeys } from '../keys';
 
-interface Props {
-  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xlg' | 'xxlg';
-  className?: string;
-}
+export function useListEnvs() {
+  const query = useQuery({
+    queryKey: envKeys.list(),
+    queryFn: () => getEnvs(),
+  });
 
-export function Container({ size = 'md', className, children }: PropsWithChildren<Props>) {
-  return <div className={clsx(classes.root, className, { [classes[size]]: size })}>{children}</div>;
+  return query;
 }

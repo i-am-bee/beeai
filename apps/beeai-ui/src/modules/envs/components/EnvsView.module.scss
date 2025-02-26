@@ -1,0 +1,79 @@
+/**
+ * Copyright 2025 IBM Corp.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.root {
+  display: flex;
+  flex-direction: column;
+  row-gap: $spacing-07;
+}
+
+.heading {
+  @include type-style(heading-03);
+}
+
+.description {
+  @include type-style(body-01);
+}
+
+.toolbar {
+  display: flex;
+}
+
+.toolbarSearch {
+  flex-grow: 1;
+  position: relative;
+
+  > svg {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-end: $spacing-05;
+    transform: translateY(-50%);
+  }
+
+  :global(.#{$prefix}--text-input) {
+    padding-inline-end: rem(47px);
+    border-radius: $border-radius 0 0 0;
+    border-block-end: 0;
+    border-inline-end: 0;
+  }
+}
+
+.toolbarButton {
+  &:global(.cds--btn) {
+    border-radius: 0 $border-radius 0 0;
+  }
+}
+
+.table {
+  :global(.cds--data-table) {
+    border-block-start: 0;
+    border-start-start-radius: 0;
+    border-start-end-radius: 0;
+    th,
+    td {
+      &:last-child {
+        inline-size: 0;
+      }
+    }
+    thead tr:first-child th {
+      border-radius: 0;
+    }
+  }
+}
+
+.tableActions {
+  margin: -$spacing-03;
+}

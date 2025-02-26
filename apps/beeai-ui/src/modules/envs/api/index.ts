@@ -15,23 +15,39 @@
  */
 
 import { api } from '#api/index.ts';
-import { CreateProviderBody } from './types';
+import { CreateEnvBody } from './types';
 
-export async function createProvider({ body }: { body: CreateProviderBody }) {
-  const response = await api.POST('/api/v1/provider', { body });
+export async function createEnv({ body }: { body: CreateEnvBody['env'] }) {
+  const response = await api.PUT('/api/v1/env', {
+    body: { env: body },
+  });
 
   if (response.error) {
-    throw new Error('Failed to create provider.');
+    throw new Error('Failed to create env variable.');
   }
 
   return response.data;
 }
 
-export async function getProviders() {
-  const response = await api.GET('/api/v1/provider');
+export async function deleteEnv({ name }: { name: string }) {
+  const response = await api.PUT('/api/v1/env', {
+    body: {
+      env: { [name]: null },
+    },
+  });
 
   if (response.error) {
-    throw new Error('Failed to get providers.');
+    throw new Error('Failed to create env variable.');
+  }
+
+  return response.data;
+}
+
+export async function getEnvs() {
+  const response = await api.GET('/api/v1/env');
+
+  if (response.error) {
+    throw new Error('Failed to get envs.');
   }
 
   return response.data;

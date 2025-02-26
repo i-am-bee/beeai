@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
-import clsx from 'clsx';
-import { PropsWithChildren } from 'react';
-import classes from './Container.module.scss';
+import { Container } from '#components/layouts/Container.tsx';
+import { ViewHeader } from '#components/ViewHeader/ViewHeader.tsx';
+import { ViewStack } from '#components/ViewStack/ViewStack.tsx';
+import { EnvsView } from '#modules/envs/components/EnvsView.tsx';
 
-interface Props {
-  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xlg' | 'xxlg';
-  className?: string;
-}
+export function Settings() {
+  return (
+    <Container size="lg">
+      <ViewStack>
+        <ViewHeader heading="Settings" />
 
-export function Container({ size = 'md', className, children }: PropsWithChildren<Props>) {
-  return <div className={clsx(classes.root, className, { [classes[size]]: size })}>{children}</div>;
+        <EnvsView />
+      </ViewStack>
+    </Container>
+  );
 }

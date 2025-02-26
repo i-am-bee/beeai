@@ -14,15 +14,21 @@
  * limitations under the License.
  */
 
-import clsx from 'clsx';
-import { PropsWithChildren } from 'react';
-import classes from './Container.module.scss';
+import { providerKeys } from '#modules/providers/api/keys.ts';
+import { useMutation } from '@tanstack/react-query';
+import { deleteEnv } from '..';
+import { envKeys } from '../keys';
 
-interface Props {
-  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xlg' | 'xxlg';
-  className?: string;
-}
+export function useDeleteEnv() {
+  const mutation = useMutation({
+    mutationFn: deleteEnv,
+    meta: {
+      invalidates: [envKeys.lists(), providerKeys.lists()],
+      errorToast: {
+        title: 'Failed to delete env variable.',
+      },
+    },
+  });
 
-export function Container({ size = 'md', className, children }: PropsWithChildren<Props>) {
-  return <div className={clsx(classes.root, className, { [classes[size]]: size })}>{children}</div>;
+  return mutation;
 }

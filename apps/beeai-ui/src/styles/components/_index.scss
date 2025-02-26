@@ -28,7 +28,8 @@
 // @forward '@carbon/styles/scss/components/contained-list';
 // @forward '@carbon/styles/scss/components/content-switcher';
 // @forward '@carbon/styles/scss/components/copy-button';
-// @forward '@carbon/styles/scss/components/data-table';
+@forward '@carbon/styles/scss/components/data-table';
+@forward 'data-table';
 // @forward '@carbon/styles/scss/components/data-table/action';
 // @forward '@carbon/styles/scss/components/data-table/expandable';
 // @forward '@carbon/styles/scss/components/data-table/skeleton';
@@ -62,8 +63,8 @@
 @forward '@carbon/styles/scss/components/notification';
 @forward 'notification';
 // @forward '@carbon/styles/scss/components/number-input';
-// @forward '@carbon/styles/scss/components/overflow-menu';
-// @forward 'overflow-menu';
+@forward '@carbon/styles/scss/components/overflow-menu';
+@forward 'overflow-menu';
 // @forward '@carbon/styles/scss/components/pagination';
 // @forward '@carbon/styles/scss/components/pagination-nav';
 // @forward '@carbon/styles/scss/components/popover';
@@ -79,7 +80,7 @@
 // @forward '@carbon/styles/scss/components/slug';
 // @forward '@carbon/styles/scss/components/stack';
 // @forward '@carbon/styles/scss/components/structured-list';
-// @forward '@carbon/styles/scss/components/tabs';
+@forward '@carbon/styles/scss/components/tabs';
 @forward '@carbon/styles/scss/components/tag';
 @forward 'tag';
 // @forward '@carbon/styles/scss/components/text-area';

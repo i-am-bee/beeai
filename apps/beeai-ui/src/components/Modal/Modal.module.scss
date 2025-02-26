@@ -60,7 +60,7 @@
       line-height: math.div(42, 32);
       font-weight: 400;
       padding-inline-end: 0;
-      + * {
+      + *:global(:not(.cds--modal-close-button)) {
         margin-block-start: $spacing-05;
       }
     }

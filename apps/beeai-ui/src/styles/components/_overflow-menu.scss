@@ -60,6 +60,11 @@
   align-items: center;
   justify-content: space-between;
   column-gap: $spacing-03;
+  text-decoration: none;
+  text-align: start;
+  @at-root a#{&}::before {
+    display: none;
+  }
   svg {
     flex-shrink: 0;
     fill: $text-primary;

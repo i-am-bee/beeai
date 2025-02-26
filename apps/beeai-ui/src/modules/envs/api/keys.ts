@@ -14,15 +14,8 @@
  * limitations under the License.
  */
 
-import clsx from 'clsx';
-import { PropsWithChildren } from 'react';
-import classes from './Container.module.scss';
-
-interface Props {
-  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xlg' | 'xxlg';
-  className?: string;
-}
-
-export function Container({ size = 'md', className, children }: PropsWithChildren<Props>) {
-  return <div className={clsx(classes.root, className, { [classes[size]]: size })}>{children}</div>;
-}
+export const envKeys = {
+  all: () => ['envs'] as const,
+  lists: () => [...envKeys.all(), 'list'] as const,
+  list: () => [...envKeys.lists()] as const,
+};
