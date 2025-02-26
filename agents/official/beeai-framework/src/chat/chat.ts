@@ -54,12 +54,12 @@ const run =
         _meta?: { progressToken?: string | number };
       };
     },
-    { signal }: { signal?: AbortSignal }
+    { signal }: { signal?: AbortSignal },
   ) => {
     const { messages, config } = input;
     const memory = new UnconstrainedMemory();
     await memory.addMany(
-      messages.map(({ role, content }) => Message.of({ role, text: content }))
+      messages.map(({ role, content }) => Message.of({ role, text: content })),
     );
     const agent = new BeeAgent({
       llm: await ChatModel.fromName(CHAT_MODEL),
@@ -85,7 +85,7 @@ const run =
     } as MessageOutput;
   };
 
-const registerTools = async (server: AcpServer) => async () => {
+const registerTools = async (server: AcpServer) => {
   for (const toolName of Object.values(SupportedTool)) {
     const tool = createTool(toolName);
     server.tool(
@@ -95,7 +95,7 @@ const registerTools = async (server: AcpServer) => async () => {
       async (args, { signal }) => {
         const result = await createTool(toolName).run(args as any, { signal });
         return { content: [{ type: "text", text: result.toString() }] };
-      }
+      },
     );
   }
 };
