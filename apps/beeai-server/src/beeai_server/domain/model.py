@@ -54,7 +54,7 @@ class ServerType(StrEnum):
 
 class EnvVar(BaseModel):
     name: str
-    description: str
+    description: str | None = None
     required: bool = False
 
 
