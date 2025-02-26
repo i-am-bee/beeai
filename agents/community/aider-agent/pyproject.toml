@@ -11,6 +11,7 @@ dependencies = [
     "beeai-sdk (>=0.0.2)",
     "pydantic-settings>=2.7.1",
     "pydantic>=2.10.6",
+    "google-generativeai>=0.8.4",
 ]
 
 [project.scripts]

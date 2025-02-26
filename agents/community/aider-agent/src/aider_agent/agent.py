@@ -40,9 +40,6 @@ async def register_agent() -> int:
         with tempfile.TemporaryDirectory() as tmp_dir:
             tmp_path = Path(tmp_dir)
             try:
-                env = os.environ.copy()
-                env["AIDER_MODEL"] = env.get("AIDER_MODEL", "groq/deepseek-r1-distill-llama-70b")
-
                 process = await asyncio.create_subprocess_exec(
                     sys.executable,
                     "-m",
@@ -53,6 +50,7 @@ async def register_agent() -> int:
                     "--no-pretty",
                     "--no-analytics",
                     "--no-restore-chat-history",
+                    "--no-show-model-warnings",
                     "--message",
                     input.prompt,
                     cwd=tmp_dir,
