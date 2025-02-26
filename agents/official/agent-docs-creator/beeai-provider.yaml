@@ -1,6 +1,6 @@
 manifestVersion: 1
 driver: nodejs
-package: "git+https://github.com/i-am-bee/beeai@agents-v0.0.8#path=agents/official/agent-docs-creator"
+package: "git+https://github.com/i-am-bee/beeai@agents-v0.0.9#path=agents/official/agent-docs-creator"
 serverType: http
 mcpTransport: sse
 mcpEndpoint: /sse
