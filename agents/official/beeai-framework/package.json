@@ -1,6 +1,6 @@
 {
   "name": "beeai-framework",
-  "version": "0.0.1",
+  "version": "0.0.11",
   "bin": {
     "server": "BEE_FRAMEWORK_INSTRUMENTATION_ENABLED=true ./src/server.ts"
   },
