@@ -996,7 +996,7 @@ export type AgentCreateCallback<
 > = (
   request: CreateAgentRequest & {
     params: {
-      config: z.infer<Config>;
+      config: z.input<Config>;
     };
   },
   extra: RequestHandlerExtra,
@@ -1008,7 +1008,7 @@ export type AgentRunCallback<
 > = (
   request: RunAgentRequest & {
     params: {
-      input: z.infer<Input>;
+      input: z.input<Input>;
     };
   },
   extra: RequestHandlerExtra,
