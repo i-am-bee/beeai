@@ -58,9 +58,5 @@ const MCP_EXAMPLE_AGENT_CONFIG = {
   version: '1.0.0',
 };
 const MCP_EXAMPLE_AGENT_PARAMS = {
-  capabilities: {
-    prompts: {},
-    resources: {},
-    tools: {},
-  },
+  capabilities: {},
 };
