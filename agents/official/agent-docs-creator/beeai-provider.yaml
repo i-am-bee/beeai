@@ -1,0 +1,10 @@
+manifestVersion: 1
+driver: nodejs
+package: "git+https://github.com/i-am-bee/beeai@agents-v0.0.8#path=agents/official/agent-docs-creator"
+serverType: http
+mcpTransport: sse
+mcpEndpoint: /sse
+env:
+  - required: True
+    name: "OPENAI_API_KEY"
+    description: "OpenAI API key"

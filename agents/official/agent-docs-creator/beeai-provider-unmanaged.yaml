@@ -1,0 +1,5 @@
+manifestVersion: 1
+driver: unmanaged
+serverType: http
+mcpTransport: sse
+mcpEndpoint: http://localhost:8000/sse
