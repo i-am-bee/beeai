@@ -35,13 +35,12 @@ import {
 } from '@carbon/react';
 import pluralize from 'pluralize';
 import { useCallback, useEffect, useId, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useController, useForm } from 'react-hook-form';
 import classes from './ImportAgentsModal.module.scss';
 
 export function ImportAgentsModal({ onRequestClose, ...modalProps }: ModalProps) {
   const id = useId();
   const [createdProviderId, setCreatedProviderId] = useState<string>();
-  const [providerSource, setProviderSource] = useState(ProviderSource.LocalPath);
   const { status, agents } = useCheckProviderStatus({ id: createdProviderId });
   const agentsCount = agents.length;
 
@@ -54,28 +53,32 @@ export function ImportAgentsModal({ onRequestClose, ...modalProps }: ModalProps)
   const {
     register,
     handleSubmit,
-    reset,
+    setValue,
     formState: { isValid },
-  } = useForm<CreateProviderBody>({
+    control,
+  } = useForm<FormValues>({
     mode: 'onChange',
+    defaultValues: {
+      source: Source.LocalPath,
+    },
   });
 
-  const onSubmit = useCallback(
-    ({ location }: CreateProviderBody) => {
-      const locationPrefix = LOCATION_PREFIXES[providerSource];
+  const { field: sourceField } = useController<FormValues, 'source'>({ name: 'source', control });
 
+  const onSubmit = useCallback(
+    ({ location, source }: FormValues) => {
       createProvider({
-        location: `${locationPrefix}${location}`,
+        location: `${LOCATION_PREFIXES[source]}${location}`,
       });
     },
-    [createProvider, providerSource],
+    [createProvider],
   );
 
-  const locationInputProps = INPUTS_PROPS[providerSource];
+  const locationInputProps = INPUTS_PROPS[sourceField.value];
 
   useEffect(() => {
-    reset({ location: '' });
-  }, [providerSource, reset]);
+    setValue('location', '');
+  }, [sourceField.value, setValue]);
 
   return (
     <Modal {...modalProps}>
@@ -94,14 +97,14 @@ export function ImportAgentsModal({ onRequestClose, ...modalProps }: ModalProps)
           {status !== 'initializing' && status !== 'ready' && (
             <div className={classes.stack}>
               <RadioButtonGroup
-                name={`${id}:provider-source`}
+                name={sourceField.name}
                 legendText="Select the source of your agent provider"
-                valueSelected={providerSource}
-                onChange={(value) => setProviderSource(value as ProviderSource)}
+                valueSelected={sourceField.value}
+                onChange={sourceField.onChange}
               >
-                <RadioButton labelText="Local path" value={ProviderSource.LocalPath} />
+                <RadioButton labelText="Local path" value={Source.LocalPath} />
 
-                <RadioButton labelText="GitHub" value={ProviderSource.GitHub} />
+                <RadioButton labelText="GitHub" value={Source.GitHub} />
               </RadioButtonGroup>
 
               <TextInput
@@ -151,21 +154,23 @@ export function ImportAgentsModal({ onRequestClose, ...modalProps }: ModalProps)
   );
 }
 
-enum ProviderSource {
+enum Source {
   LocalPath = 'LocalPath',
   GitHub = 'GitHub',
 }
 
+type FormValues = CreateProviderBody & { source: Source };
+
 const LOCATION_PREFIXES = {
-  [ProviderSource.LocalPath]: 'file://',
-  [ProviderSource.GitHub]: 'git+',
+  [Source.LocalPath]: 'file://',
+  [Source.GitHub]: 'git+',
 };
 
 const INPUTS_PROPS = {
-  [ProviderSource.LocalPath]: {
+  [Source.LocalPath]: {
     labelText: 'Agent provider path',
   },
-  [ProviderSource.GitHub]: {
+  [Source.GitHub]: {
     labelText: 'GitHub repository URL',
     helperText: 'Make sure to provide a public link',
   },
