@@ -19,7 +19,7 @@ async function registerAgents(server: AcpServer) {
     chat.inputSchema,
     chat.outputSchema,
     chat.run(server),
-    chat.metadata
+    chat.metadata,
   );
 
   server.agent(
@@ -28,7 +28,7 @@ async function registerAgents(server: AcpServer) {
     contentJudge.inputSchema,
     contentJudge.outputSchema,
     contentJudge.run,
-    contentJudge.metadata
+    contentJudge.metadata,
   );
 
   server.agent(
@@ -37,23 +37,15 @@ async function registerAgents(server: AcpServer) {
     podcastCreator.inputSchema,
     podcastCreator.outputSchema,
     podcastCreator.run,
-    podcastCreator.metadata
+    podcastCreator.metadata,
   );
 }
 
 export async function createServer() {
-  const server = new AcpServer(
-    {
-      name: "beeai-framework",
-      version: Version,
-    },
-    {
-      capabilities: {
-        tools: {},
-        agents: {},
-      },
-    }
-  );
+  const server = new AcpServer({
+    name: "beeai-framework",
+    version: Version,
+  });
   await registerTools(server);
   await registerAgents(server);
   return server;
