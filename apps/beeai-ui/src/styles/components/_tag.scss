@@ -21,7 +21,7 @@
   min-inline-size: 0;
 
   &.cds--tag--selectable.cds--tag--outline:not(:disabled) {
-    border: 1px solid $border-subtle;
+    border: 1px solid $border-subtle-00;
     outline: none;
     &:hover {
       background-color: $layer-hover-01;
@@ -33,7 +33,7 @@
   }
 
   &.cds--tag--operational {
-    border-color: $border-subtle;
+    border-color: $border-subtle-00;
     background-color: $layer;
     &:hover {
       background-color: $layer-hover-01;

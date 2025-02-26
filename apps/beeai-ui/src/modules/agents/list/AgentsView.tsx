@@ -20,18 +20,14 @@ import { AgentsFiltersParams } from '../types';
 import { AgentsFilters } from '../components/AgentsFilters';
 import { ErrorMessage } from '#components/ErrorMessage/ErrorMessage.tsx';
 import { AgentsList } from '../components/AgentsList';
-import { ImportAgentsModal } from '../components/ImportAgentsModal';
-import { useModal } from '#contexts/Modal/index.tsx';
-import { Button } from '@carbon/react';
-import { Add } from '@carbon/react/icons';
 import { AgentCard } from '../components/AgentCard';
 import { Agent } from '../api/types';
 import { TransitionLink } from '#components/TransitionLink/TransitionLink.tsx';
 import { getAgentTitle } from '../utils';
 import { routes } from '#utils/router.ts';
+import { ImportAgents } from '../components/ImportAgents';
 
 export function AgentsView() {
-  const { openModal } = useModal();
   const {
     agentsQuery: { data, isPending, error, refetch, isRefetching },
   } = useAgents();
@@ -50,20 +46,7 @@ export function AgentsView() {
       );
 
     return (
-      <AgentsList
-        agents={data}
-        filters={filters}
-        action={
-          <Button
-            kind="tertiary"
-            size="md"
-            renderIcon={Add}
-            onClick={() => openModal((props) => <ImportAgentsModal {...props} />)}
-          >
-            Import agents
-          </Button>
-        }
-      >
+      <AgentsList agents={data} filters={filters} action={<ImportAgents />}>
         {(filteredAgents) =>
           !isPending
             ? filteredAgents?.map((agent, idx) => (
@@ -83,7 +66,7 @@ export function AgentsView() {
 
   return (
     <>
-      <AgentsFilters agents={data} />
+      {!isPending ? <AgentsFilters agents={data} /> : <AgentsFilters.Skeleton />}
       {renderList()}
     </>
   );

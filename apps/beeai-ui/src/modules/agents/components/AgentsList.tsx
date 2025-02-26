@@ -16,6 +16,7 @@
 
 'use client';
 
+import { SkeletonText } from '@carbon/react';
 import pluralize from 'pluralize';
 import { AgentsFiltersParams } from '../types';
 import { useFilteredAgents } from '../hooks/useFilteredAgents';
@@ -32,15 +33,19 @@ interface Props {
 
 export function AgentsList({ agents, filters, action, children }: Props) {
   const { filteredAgents, filteredCount } = useFilteredAgents({ agents: agents ?? [], filters });
-  const totalCount = agents?.length ?? 0;
+  const totalCount = agents?.length;
   return (
     <div>
       <div className={classes.header}>
-        {totalCount > 0 && (
-          <p className={classes.count}>
-            Showing {totalCount === filteredCount ? totalCount : `${filteredCount} of ${totalCount}`}{' '}
-            {pluralize('agent', totalCount)}
-          </p>
+        {totalCount == null ? (
+          <SkeletonText className={classes.count} width="125px" />
+        ) : (
+          totalCount > 0 && (
+            <p className={classes.count}>
+              Showing {totalCount === filteredCount ? totalCount : `${filteredCount} of ${totalCount}`}{' '}
+              {pluralize('agent', totalCount)}
+            </p>
+          )
         )}
         {action}
       </div>

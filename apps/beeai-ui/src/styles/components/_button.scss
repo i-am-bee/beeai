@@ -39,7 +39,7 @@
 }
 
 .cds--btn--tertiary {
-  border-color: $border-subtle;
+  border-color: $border-subtle-00;
   &:hover,
   &:active,
   &:focus {
@@ -53,7 +53,7 @@
   &:active {
     background-color: $background-active;
     &:not(:focus) {
-      border-color: $border-subtle;
+      border-color: $border-subtle-00;
     }
   }
 }

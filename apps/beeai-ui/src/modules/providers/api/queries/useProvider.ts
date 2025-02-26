@@ -14,15 +14,21 @@
  * limitations under the License.
  */
 
-import { api } from '#api/index.ts';
-import { CreateProviderBody } from './types';
+import { useQuery } from '@tanstack/react-query';
+import { getProviders } from '..';
+import { providerKeys } from '../keys';
 
-export async function createProvider(body: CreateProviderBody) {
-  const response = await api.post('provider', { json: body });
+interface Props {
+  id?: string;
+}
 
-  if (!response.ok) {
-    throw new Error('Failed to post data');
-  }
+export function useProvider({ id }: Props) {
+  const query = useQuery({
+    queryKey: providerKeys.list(),
+    queryFn: () => getProviders(),
+    select: (data) => data?.items.find((item) => id === item.id),
+    enabled: Boolean(id),
+  });
 
-  return response.json(); // Return the response JSON
+  return query;
 }

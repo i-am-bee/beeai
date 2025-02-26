@@ -18,7 +18,7 @@
 
 .cds--text-area,
 .cds--text-input {
-  border: 1px solid $border-subtle;
+  border: 1px solid $border-subtle-00;
   border-radius: $spacing-03;
   background-color: $layer;
   &,
@@ -32,4 +32,13 @@
 
 .cds--text-area {
   padding-block: $spacing-05;
+}
+
+.cds--form__helper-text {
+  color: $text-helper;
+}
+
+.cds--skeleton.cds--text-area,
+.cds--skeleton.cds--text-input {
+  overflow: hidden;
 }

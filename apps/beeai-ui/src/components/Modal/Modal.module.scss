@@ -25,10 +25,11 @@
     scrollbar-gutter: stable;
     overflow-y: auto;
   }
+
   :global(.cds--modal-container) {
     inline-size: 100%;
     box-shadow: $box-shadow;
-    border-radius: $spacing-03;
+    border-radius: $border-radius;
     min-block-size: 0;
     margin-inline: auto;
     max-inline-size: rem(608px);
@@ -50,20 +51,33 @@
       max-inline-size: rem(928px);
     }
   }
+
   :global(.cds--modal-header) {
     padding: $spacing-05;
+    margin-block-end: 0;
     h2 {
       font-size: rem(32px);
-      line-height: math.div(41.6, 32);
-      letter-spacing: rem(0.16px);
+      line-height: math.div(42, 32);
       font-weight: 400;
+      padding-inline-end: 0;
+      + * {
+        margin-block-start: $spacing-05;
+      }
     }
   }
+
+  :global(.cds--modal-header:has(.cds--modal-close-button)) {
+    padding-inline-end: $spacing-10;
+  }
+
+  :global(.cds--modal-header + .cds--modal-content) {
+    padding-block-start: 0;
+  }
+
   :global(.cds--modal-content) {
-    padding: 0 $spacing-05 $spacing-05;
+    padding: $spacing-05;
     &:global(.cds--modal-scroll-content) {
       mask-image: none;
-      padding-block-end: $spacing-09;
       border-block-end: 0;
       > :last-child {
         margin-block-end: 0;
@@ -73,9 +87,14 @@
       outline: none;
     }
   }
+
+  :global(.cds--modal-content:has(+ .cds--modal-footer)) {
+    padding-block-end: 0;
+  }
+
   :global(.cds--modal-footer) {
     border-radius: 0 0 $spacing-03 $spacing-03;
-    padding: $spacing-03 $spacing-05 $spacing-05 $spacing-05;
+    padding: $spacing-06 $spacing-05 $spacing-05;
 
     &:global(.cds--btn-set) {
       block-size: auto;
@@ -84,17 +103,26 @@
 
     :global(.cds--btn) {
       block-size: rem(48px);
-      padding-block: 0;
       display: flex;
       align-items: center;
       flex: 0 1 auto;
       white-space: nowrap;
       inline-size: auto;
-      // padding-inline-end: $spacing-10;
-      box-shadow: none !important;
-
+      &:not(:focus) {
+        box-shadow: none;
+      }
+      &,
+      &:global(:not(.cds--skeleton)) {
+        padding-block: 0;
+      }
       &:last-child {
         flex-grow: 0;
+      }
+      &:global(.cds--btn--ghost) {
+        padding-inline-end: rem(39px);
+        &:last-child {
+          padding-inline-end: rem(23px);
+        }
       }
     }
   }
@@ -104,18 +132,18 @@
       background-color: $background-hover;
     }
   }
+
   :global(.cds--modal-close-button) {
-    inset-block-start: $spacing-04;
-    inset-inline-end: $spacing-04;
+    inset-block-start: $spacing-03;
+    inset-inline-end: $spacing-03;
 
     :global(.cds--btn) {
-      block-size: auto;
-      inline-size: auto;
       svg {
         min-inline-size: rem(24px);
         block-size: rem(24px);
       }
     }
+
     :global(.cds--popover) {
       display: none;
     }
@@ -125,20 +153,29 @@
 @include breakpoint-up(md) {
   .modal {
     :global(.cds--modal-header) {
-      padding: $spacing-06 $spacing-07;
+      padding: $spacing-07;
+    }
+
+    :global(.cds--modal-header:has(.cds--modal-close-button)) {
+      padding-inline-end: rem(88px);
     }
 
     :global(.cds--modal-content) {
-      padding: $spacing-03 $spacing-07 $spacing-07;
+      padding: $spacing-07;
     }
 
     :global(.cds--modal-footer) {
-      padding: $spacing-03 $spacing-06 $spacing-06 $spacing-06;
+      padding: $spacing-09 $spacing-07 $spacing-07;
 
-      :global(.cds--btn):global(.cds--btn) {
-        padding-inline-end: $spacing-10;
+      :global(.cds--btn) {
+        padding-inline-end: rem(49px);
         padding-block: 0;
       }
+    }
+
+    :global(.cds--modal-close-button) {
+      inset-block-start: rem(20px);
+      inset-inline-end: rem(20px);
     }
   }
 }

@@ -10,7 +10,8 @@
     "check": "prettier --log-level silent --check src && eslint src && tsc --noEmit && stylelint src/styles",
     "fix": "prettier --log-level silent --write src && eslint --fix src && stylelint --fix=lax src/styles",
     "preview": "vite preview",
-    "clean": "rm -rf node_modules && rm -rf dist"
+    "clean": "rm -rf node_modules && rm -rf dist",
+    "schema:generate": "pnpm dlx openapi-typescript 'http://localhost:8333/api/v1/openapi.json' -o ./src/api/schema.d.ts --alphabetize"
   },
   "exports": {
     ".": "./src/index.ts"
@@ -26,9 +27,11 @@
     "@carbon/motion": "^11.24.0",
     "@carbon/react": "^1.75.0",
     "@carbon/styles": "^1.74.0",
+    "@floating-ui/react": "^0.27.4",
     "@i-am-bee/acp-sdk": "^0.0.1",
     "@i-am-bee/beeai-sdk": "workspace:*",
     "@ibm/plex": "^6.4.1",
+    "@radix-ui/react-slot": "^1.1.2",
     "@tanstack/react-query": "^5.66.0",
     "@types/react-resizable": "^3.0.8",
     "clsx": "^2.1.1",
@@ -39,6 +42,7 @@
     "lottie-react": "^2.4.1",
     "mdast-util-to-hast": "^13.1.0",
     "millify": "^6.1.0",
+    "openapi-fetch": "^0.13.4",
     "pluralize": "^8.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

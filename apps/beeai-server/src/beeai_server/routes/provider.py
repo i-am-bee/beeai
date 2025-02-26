@@ -41,10 +41,9 @@ async def list_providers(provider_service: ProviderServiceDependency) -> Paginat
     return PaginatedResponse(items=providers, total_count=len(providers))
 
 
-@router.post("/delete")
-async def delete_provider(request: DeleteProviderRequest, provider_service: ProviderServiceDependency):
+@router.post("/delete", status_code=fastapi.status.HTTP_204_NO_CONTENT)
+async def delete_provider(request: DeleteProviderRequest, provider_service: ProviderServiceDependency) -> None:
     await provider_service.delete_provider(location=request.location)
-    return fastapi.Response(status_code=fastapi.status.HTTP_204_NO_CONTENT)
 
 
 @router.put("/sync")

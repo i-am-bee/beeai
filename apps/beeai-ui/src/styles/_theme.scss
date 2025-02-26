@@ -44,6 +44,7 @@ $light: map.merge(
 
     border-subtle-00: $cool-gray-20,
 
+    support-error-30: rgba($red-60, 0.3),
     text-dark: $black,
     text-placeholder: $cool-gray-40,
     box-shadow-color: rgba(193, 199, 205, 0.45),
@@ -61,6 +62,7 @@ $dark: map.merge(
 
     border-subtle-00: $cool-gray-80,
 
+    support-error-30: rgba($red-50, 0.3),
     text-dark: $white,
     text-placeholder: $cool-gray-60,
     box-shadow-color: rgba($cool-gray-70, 0.45),
@@ -157,6 +159,8 @@ $box-shadow: 0px 2px 8px 0px $box-shadow-color;
 
 $button-tertiary: var(--cds-button-tertiary);
 $button-tertiary-hover: var(--cds-button-tertiary-hover);
+
+$support-error-30: var(--cds-support-error-30);
 
 $modal-background: var(--cds-modal-background);
 

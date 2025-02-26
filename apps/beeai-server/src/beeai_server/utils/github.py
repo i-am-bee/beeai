@@ -18,12 +18,12 @@ import re
 import shutil
 from enum import StrEnum
 from os import PathLike
-from tarfile import ExtractError
+from backports.tarfile import ExtractError
 from typing import Any
 
 import anyio
 import anyio.to_thread
-import tarfile
+import backports.tarfile as tarfile
 import httpx
 from anyio import Path
 from pydantic import model_validator, AnyUrl, ModelWrapValidatorHandler, RootModel

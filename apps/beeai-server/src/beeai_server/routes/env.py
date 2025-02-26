@@ -20,14 +20,13 @@ from beeai_server.schema import UpdateEnvRequest, ListEnvSchema
 router = fastapi.APIRouter()
 
 
-@router.put("")
-async def update_env(request: UpdateEnvRequest, env_service: EnvServiceDependency):
+@router.put("", status_code=fastapi.status.HTTP_201_CREATED)
+async def update_env(request: UpdateEnvRequest, env_service: EnvServiceDependency) -> None:
     await env_service.update_env(env=request.env)
-    return fastapi.Response(status_code=fastapi.status.HTTP_201_CREATED)
 
 
 @router.get("")
-async def list_env(env_service: EnvServiceDependency):
+async def list_env(env_service: EnvServiceDependency) -> ListEnvSchema:
     return ListEnvSchema(env=await env_service.list_env())
 
 

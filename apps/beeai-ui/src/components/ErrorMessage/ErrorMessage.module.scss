@@ -14,25 +14,8 @@
  * limitations under the License.
  */
 
-.root {
-  inline-size: 100%;
-  max-inline-size: none;
-}
-
 .body {
   display: flex;
   flex-direction: column;
   gap: $spacing-04;
-  margin-block-start: $spacing-02;
-
-  p {
-    font-size: rem(14px);
-  }
-
-  button {
-    max-block-size: rem(20px);
-  }
-  :global(.cds--inline-loading) {
-    min-block-size: 0;
-  }
 }
