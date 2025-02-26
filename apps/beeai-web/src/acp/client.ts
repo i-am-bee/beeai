@@ -17,7 +17,7 @@
 import "server-only";
 import { Client } from "@i-am-bee/acp-sdk/client/index.js";
 import { SSEClientTransport } from "@i-am-bee/acp-sdk/client/sse.js";
-import { ACP_SERVER_URL } from "@/constants";
+import { BEEAI_HOST } from "@/constants";
 
 export async function getAcpClient() {
   const transport = new SSEClientTransport(ACP_SSE_TRANSPORT_URL, {
@@ -36,7 +36,7 @@ export async function getAcpClient() {
   return client;
 }
 
-const ACP_SSE_TRANSPORT_URL = new URL("/mcp/sse", ACP_SERVER_URL);
+const ACP_SSE_TRANSPORT_URL = new URL("/mcp/sse", BEEAI_HOST);
 const ACP_EXAMPLE_AGENT_CONFIG = {
   name: "example-client",
   version: "1.0.0",

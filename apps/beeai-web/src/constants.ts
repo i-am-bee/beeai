@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-const ACP_SERVER_URL_ENV = process.env.ACP_SERVER_URL;
-if (!ACP_SERVER_URL_ENV) {
-  throw new Error("ENV \"ACP_SERVER_URL\" must be defined!");
+const BEEAI_HOST_ENV = process.env.BEEAI_HOST;
+if (!BEEAI_HOST_ENV) {
+  throw new Error("ENV \"BEEAI_HOST_ENV\" must be defined!");
 }
 
-export const ACP_SERVER_URL = new URL(ACP_SERVER_URL_ENV);
+export const BEEAI_HOST = BEEAI_HOST_ENV;
