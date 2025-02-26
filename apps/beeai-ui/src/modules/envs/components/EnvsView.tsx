@@ -37,7 +37,7 @@ import classes from './EnvsView.module.scss';
 
 export function EnvsView() {
   const id = useId();
-  const { openModal } = useModal();
+  const { openModal, openConfirmation } = useModal();
   const [search, setSearch] = useState('');
   const { data, isPending } = useListEnvs();
   const { mutate: deleteEnv } = useDeleteEnv();
@@ -58,13 +58,27 @@ export function EnvsView() {
         value,
         actions: (
           <div className={classes.tableActions}>
-            <IconButton label="Delete" kind="ghost" size="sm" onClick={() => deleteEnv({ name })} align="left">
+            <IconButton
+              label="Delete"
+              kind="ghost"
+              size="sm"
+              onClick={() =>
+                openConfirmation({
+                  title: `Delete '${name}'?`,
+                  body: 'Are you sure you want to delete this environment variable? It can’t be undone.',
+                  primaryButtonText: 'Delete',
+                  danger: true,
+                  onSubmit: () => deleteEnv({ name }),
+                })
+              }
+              align="left"
+            >
               <TrashCan />
             </IconButton>
           </div>
         ),
       }));
-  }, [data, search, deleteEnv]);
+  }, [data, search, deleteEnv, openConfirmation]);
 
   return (
     <div className={classes.root}>

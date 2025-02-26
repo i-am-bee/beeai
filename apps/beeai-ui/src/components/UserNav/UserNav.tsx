@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { useViewTransition } from '#hooks/useViewTransition.ts';
 import Bee from '#svgs/Bee.svg';
 import LogoBluesky from '#svgs/LogoBluesky.svg';
 import { BLUESKY_LINK, DISCORD_LINK, DOCUMENTATION_LINK, GITHUB_REPO_LINK, YOUTUBE_LINK } from '#utils/constants.ts';
@@ -22,15 +23,27 @@ import { Launch, LogoDiscord, LogoGithub, LogoYoutube } from '@carbon/icons-reac
 import { OverflowMenu, OverflowMenuItem } from '@carbon/react';
 
 export function UserNav() {
+  const { transitionTo } = useViewTransition();
+
   return (
     <OverflowMenu renderIcon={Bee} size="sm" aria-label="User navigation" flipped>
-      {ITEMS.map(({ isExternal, itemText, icon, ...props }, idx) => {
+      {ITEMS.map(({ itemText, icon, isInternal, isExternal, href, ...props }, idx) => {
         const Icon = icon ? icon : isExternal ? Launch : null;
 
         return (
           <OverflowMenuItem
             key={idx}
             {...props}
+            href={href}
+            target={isExternal ? '_blank' : undefined}
+            onClick={
+              isInternal
+                ? (event) => {
+                    transitionTo(href);
+                    event.preventDefault();
+                  }
+                : undefined
+            }
             itemText={
               Icon ? (
                 <>
@@ -51,6 +64,7 @@ const ITEMS = [
   {
     itemText: 'Settings',
     href: routes.settings(),
+    isInternal: true,
   },
   {
     itemText: 'Documentation',
