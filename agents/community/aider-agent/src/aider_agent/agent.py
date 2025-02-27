@@ -53,7 +53,7 @@ async def register_agent() -> int:
                     "--no-restore-chat-history",
                     "--no-show-model-warnings",
                     "--message",
-                    input.prompt,
+                    input.text,
                     cwd=tmp_dir,
                     stdout=subprocess.PIPE,
                     stderr=subprocess.PIPE,

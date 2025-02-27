@@ -12,12 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import json
 
 import typer
+from click import BadParameter
 from rich.table import Column
 
 from acp import types, ServerNotification, RunAgentResult, McpError, ErrorData
-from acp.types import AgentRunProgressNotification, AgentRunProgressNotificationParams
+from acp.types import AgentRunProgressNotification, AgentRunProgressNotificationParams, Agent
 from beeai_cli.api import send_request, send_request_with_notifications
 from beeai_cli.async_typer import AsyncTyper, console, err_console, create_table
 from beeai_cli.utils import check_json
@@ -28,10 +30,25 @@ app = AsyncTyper()
 @app.command("run")
 async def run(
     name: str = typer.Argument(help="Name of the agent to call"),
-    input: str = typer.Argument(help="Agent input as JSON", callback=check_json),
+    input: str = typer.Argument(help="Agent input as text or JSON"),
 ) -> None:
     """Call an agent with a given input."""
-    text_streamed = False
+    try:
+        check_json(input)
+    except BadParameter:
+        agent = await _get_agent(name)
+        required_input_properties = set(agent.inputSchema.get("required", []))
+        if required_input_properties == {"text"}:
+            input = {"text": input}
+        elif required_input_properties == {"messages"}:
+            input = {"messages": [{"role": "user", "content": input}]}
+        else:
+            raise ValueError(
+                f"Agent {name} does not support plaintext input, "
+                f"please provide a json input with this schema:\n{json.dumps(agent.inputSchema, indent=2)}"
+            )
+
+    last_was_stream = False
     async for message in send_request_with_notifications(
         types.RunAgentRequest(method="agents/run", params=types.RunAgentRequestParams(name=name, input=input)),
         types.RunAgentResult,
@@ -40,14 +57,23 @@ async def run(
             case ServerNotification(
                 root=AgentRunProgressNotification(params=AgentRunProgressNotificationParams(delta=delta))
             ):
-                for log in filter(bool, delta.get("logs", [])):
-                    if text := log.get("text", None):
-                        err_console.print(f"Log: {text.strip()}")
+                for log in list(filter(bool, delta.get("logs", []))):
+                    if text := log.get("message", None):
+                        if last_was_stream:
+                            err_console.print()
+                        err_console.print(f"Log: {text.strip()}", style="dim")
+                        last_was_stream = False
                 if text := delta.get("text", None):
                     console.print(text, end="")
-                    text_streamed = True
+                    last_was_stream = True
+                elif messages := delta.get("messages", None):
+                    console.print(messages[-1]["content"], end="")
+                    last_was_stream = True
+                elif not delta.get("logs", None):
+                    last_was_stream = True
+                    console.print(delta)
             case RunAgentResult() as result:
-                if not text_streamed:
+                if not last_was_stream:
                     if text := result.model_dump().get("output", {}).get("text", None):
                         console.print(text)
                     else:
@@ -71,13 +97,17 @@ async def list_agents():
     console.print(table)
 
 
+async def _get_agent(name: str) -> Agent:
+    result = await send_request(types.ListAgentsRequest(method="agents/list"), types.ListAgentsResult)
+    agents_by_name = {agent.name: agent for agent in result.agents}
+    if agent := agents_by_name.get(name, None):
+        return agent
+    raise McpError(error=ErrorData(code=404, message=f"agent/{name} not found in any provider"))
+
+
 @app.command("info")
 async def agent_detail(
     name: str = typer.Argument(help="Name of agent tool to show"),
 ):
     """Show details of an agent"""
-    result = await send_request(types.ListAgentsRequest(method="agents/list"), types.ListAgentsResult)
-    agents_by_name = {agent.name: agent for agent in result.agents}
-    if not (agent := agents_by_name.get(name, None)):
-        raise McpError(error=ErrorData(code=404, message=f"agent/{name} not found in any provider"))
-    console.print(agent)
+    console.print(await _get_agent(name))

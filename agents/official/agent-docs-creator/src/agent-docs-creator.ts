@@ -19,9 +19,9 @@ const run = async (
   }: {
     params: { input: z.infer<typeof inputSchema> };
   },
-  { signal }: { signal?: AbortSignal }
+  { signal }: { signal?: AbortSignal },
 ) => {
-  const { prompt } = params.input;
+  const { text } = params.input;
 
   const model = await ChatModel.fromName(CHAT_MODEL);
 
@@ -82,7 +82,7 @@ The agent returns a structured JSON list representing the podcast conversation:
 ### Input:
 \`\`\`json
 {
-  prompt:
+  text:
     "Artificial intelligence is revolutionizing industries by automating complex tasks, improving efficiency, and enabling data-driven decision-making. In healthcare, AI is helping doctors diagnose diseases earlier and personalize treatments...",
 }
 \`\`\`
@@ -90,7 +90,7 @@ The agent returns a structured JSON list representing the podcast conversation:
 ### CLI:
 \`\`\`bash
 beeai run podcast-creator '{
-  prompt:
+  text:
     "Artificial intelligence is revolutionizing industries by automating complex tasks, improving efficiency, and enabling data-driven decision-making. In healthcare, AI is helping doctors diagnose diseases earlier and personalize treatments...",
 }'
 \`\`\`
@@ -110,26 +110,25 @@ beeai run podcast-creator '{
   {"speaker": 1, "text": "Not quite! AI is more like an assistant, helping doctors make better decisions rather than replacing them."}
 ]
 \`\`\``),
-      new UserMessage(prompt),
+      new UserMessage(text),
     ],
     maxTokens: 8126,
     temperature: 0.75,
     abortSignal: signal,
   });
 
-  const text = response.getTextContent();
-
   return {
-    text,
+    text: response.getTextContent(),
   };
 };
 
 const exampleInput: Input = {
-  prompt: "function exampleAgent() { /* AI agent source code here */ }",
+  text: "function exampleAgent() { /* AI agent source code here */ }",
 };
 
 const exampleOutput: Output = {
   text: "# Short Description\nThe agent generates structured documentation for AI agents by analyzing their source code...\n\n# Full Description\nThe agent is designed to create structured documentation for AI agents...",
+  logs: [],
 };
 
 export const agent = {

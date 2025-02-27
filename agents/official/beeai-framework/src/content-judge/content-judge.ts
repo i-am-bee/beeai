@@ -14,8 +14,9 @@ const inputSchema = promptInputSchema.extend({
   documents: z.array(z.string()).default([]).optional(),
   agents: z.array(z.string()).default([]).optional(),
 });
-type Input = z.infer<typeof inputSchema>;
+type Input = z.output<typeof inputSchema>;
 const outputSchema = promptOutputSchema;
+type Output = z.output<typeof promptOutputSchema>;
 
 const criteria = [
   "correctness",
@@ -28,7 +29,7 @@ type Criteria = (typeof criteria)[number];
 const structuredGenerationSchema = z.object(
   Object.fromEntries(criteria.map((c) => [c, z.number().min(0).max(1)])) as {
     [key in Criteria]: z.ZodNumber;
-  }
+  },
 );
 
 // Define weighting for each evaluation criterion (using weighted average),
@@ -50,15 +51,15 @@ const EVALUATION_PROMPT = `Evaluate the quality of the generated document based 
 const calculateScore = (result: Weights) =>
   // Multiply by 100 and round to avoid floating precision problem when comparing
   Math.round(
-    criteria.reduce((sum, key) => sum + result[key] * weights[key] * 100, 0)
+    criteria.reduce((sum, key) => sum + result[key] * weights[key] * 100, 0),
   );
 
 const retrieveDocuments = async ({
-  prompt,
+  text,
   agents,
   signal,
 }: {
-  prompt: string;
+  text: string;
   agents: string[];
   signal?: AbortSignal;
 }) => {
@@ -68,7 +69,7 @@ const retrieveDocuments = async ({
   });
   // TODO: Make this env-configurable.
   const transport = new SSEClientTransport(
-    new URL("/mcp/sse", "http://localhost:8333")
+    new URL("/mcp/sse", "http://localhost:8333"),
   );
 
   try {
@@ -93,18 +94,18 @@ const retrieveDocuments = async ({
         client.runAgent(
           {
             name: agent,
-            input: { prompt },
+            input: { text },
           },
           {
             timeout: 10 * 60 * 1000,
             signal,
-          }
-        )
-      )
+          },
+        ),
+      ),
     );
 
     return results.map(
-      (result) => (result.output.text as string) || "No document"
+      (result) => (result.output.text as string) || "No document",
     );
   } finally {
     await client.close();
@@ -117,17 +118,17 @@ const run = async (
   }: {
     params: { input: Input };
   },
-  { signal }: { signal?: AbortSignal }
-) => {
-  const { prompt, documents, agents } = params.input;
+  { signal }: { signal?: AbortSignal },
+): Promise<Output> => {
+  const { text, documents, agents } = params.input;
   if (!documents?.length && !agents?.length)
-    return { text: "No documents or agents provided." };
+    return outputSchema.parse({ text: "No documents or agents provided." });
 
   let finalDocuments = documents || [];
   if (agents?.length) {
     finalDocuments = [
       ...finalDocuments,
-      ...(await retrieveDocuments({ prompt, agents, signal })),
+      ...(await retrieveDocuments({ text, agents, signal })),
     ];
   }
 
@@ -142,28 +143,25 @@ const run = async (
           // REVIEW: this essentially adds second system message because of the internal implementation of `createStructure`
           new SystemMessage(EVALUATION_PROMPT),
           new UserMessage(
-            `Research prompt: ${prompt}\n\n Document: ${document}`
+            `Research prompt: ${prompt}\n\n Document: ${document}`,
           ),
         ],
         abortSignal: signal,
-      })
-    )
+      }),
+    ),
   );
 
   const scores = results.map((result) => calculateScore(result.object));
   const highestValueIndex = scores.reduce(
     (maxIndex, score, index, arr) => (score > arr[maxIndex] ? index : maxIndex),
-    0
+    0,
   );
 
-  return {
-    text: finalDocuments[highestValueIndex],
-  };
+  return outputSchema.parse({ text: finalDocuments[highestValueIndex] });
 };
 
 const exampleInput1: Input = {
-  prompt:
-    "Generate a concise summary of the history of artificial intelligence.",
+  text: "Generate a concise summary of the history of artificial intelligence.",
   agents: ["gpt-researcher", "ollama-deep-researcher"],
 };
 
@@ -172,7 +170,7 @@ const exampleOutput1 = `{
 }`;
 
 const exampleInput2: Input = {
-  prompt: "How does quantum computing impact cryptography?",
+  text: "How does quantum computing impact cryptography?",
   documents: [
     "Quantum computing poses a significant threat to classical encryption methods due to its ability to solve complex mathematical problems exponentially faster...",
     "Current cryptographic standards, such as RSA, rely on integer factorization, which quantum algorithms like Shor’s algorithm can efficiently break...",

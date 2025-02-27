@@ -19,9 +19,11 @@ from contextlib import contextmanager
 from typing import Iterator
 
 import typer
+from httpx import ConnectError
 from rich.console import Console
 from rich.table import Table
 
+from beeai_cli.api import show_connect_hint
 from beeai_cli.configuration import Configuration
 from beeai_cli.utils import extract_messages
 
@@ -53,7 +55,11 @@ class AsyncTyper(typer.Typer):
                         asyncio.run(f(*args, **kwargs))
                     else:
                         f(*args, **kwargs)
-                except Exception as ex:
+                except* (ConnectionError, ConnectError):
+                    show_connect_hint()
+                    if DEBUG:
+                        raise
+                except* Exception as ex:
                     for exc_type, message in extract_messages(ex):
                         err_console.print(f":boom: [bold red]{exc_type}[/bold red]: {message}")
                     if DEBUG:
