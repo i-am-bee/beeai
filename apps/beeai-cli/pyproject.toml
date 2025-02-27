@@ -1,6 +1,6 @@
 [project]
 name = "beeai-cli"
-version = "0.0.2"
+version = "0.0.3"
 description = "Add your description here"
 readme = "README.md"
 authors = [{ name = "IBM Corp." }]
@@ -12,7 +12,7 @@ dependencies = [
     "pydantic>=2.10.6",
     "pydantic-settings>=2.7.1",
     "requests>=2.32.3",
-    "beeai-server==0.0.1",
+    "beeai-server==0.0.2",
 ]
 
 [tool.uv.sources]
