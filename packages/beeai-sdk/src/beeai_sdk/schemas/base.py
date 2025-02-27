@@ -12,16 +12,32 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pydantic import BaseModel, ConfigDict
+
+from enum import StrEnum
+
+from pydantic import BaseModel, Field
 
 
 class Config(BaseModel):
     tools: list[str] | None = None
 
 
-class Input(BaseModel):
+class Input(BaseModel, extra="allow"):
     config: Config | None = None
 
 
-class Output(BaseModel):
-    model_config = ConfigDict(extra="allow")
+class LogLevel(StrEnum):
+    error = "error"
+    warning = "warning"
+    info = "info"
+    cite = "cite"
+    success = "success"
+
+
+class Log(BaseModel, extra="allow"):
+    level: LogLevel = LogLevel.info
+    message: str
+
+
+class Output(BaseModel, extra="allow"):
+    logs: list[Log | None] = Field(default_factory=list)
