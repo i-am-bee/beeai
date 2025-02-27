@@ -106,7 +106,9 @@ function AgentDetailSkeleton() {
 
       <AgentMetadata.Skeleton className={classes.metadata} />
 
-      <SkeletonText className={classes.description} paragraph lineCount={3} />
+      <div className={classes.description}>
+        <SkeletonText paragraph lineCount={3} />
+      </div>
 
       <TagsList.Skeleton length={2} className={classes.tags} />
 
