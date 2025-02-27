@@ -142,9 +142,7 @@ const run = async (
         messages: [
           // REVIEW: this essentially adds second system message because of the internal implementation of `createStructure`
           new SystemMessage(EVALUATION_PROMPT),
-          new UserMessage(
-            `Research prompt: ${prompt}\n\n Document: ${document}`,
-          ),
+          new UserMessage(`Research prompt: ${text}\n\n Document: ${document}`),
         ],
         abortSignal: signal,
       }),
@@ -205,7 +203,7 @@ The agent processes all provided text inputs and evaluates them based on the def
 ### Input Parameters
 
 The agent operates based on the following input parameters:
-- **prompt** (string) – The research prompt or query guiding document selection.
+- **text** (string) – The research prompt or query guiding document selection.
 - **documents** (array of strings, optional) – A list of pre-provided documents for evaluation.
 - **agents** (array of strings, optional) – A list of agents to query for additional content.
 

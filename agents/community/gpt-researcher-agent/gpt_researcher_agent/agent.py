@@ -72,7 +72,8 @@ Our view on unbiased research claims:
                 match data.get("type"):
                     case "logs":
                         log = Log(
-                            message=f"[{data.get('content', 'log')}] {data.get('output')}", **data.get("metadata", {})
+                            message=f"[{data.get('content', 'log')}] {data.get('output')}",
+                            **(data.get("metadata", None) or {}),
                         )
                         output.logs.append(log)
                         await ctx.report_agent_run_progress(PromptOutput(logs=[None, log], text=""))
