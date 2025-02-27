@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import json
+import sys
 
 import typer
 from click import BadParameter
@@ -30,7 +31,7 @@ app = AsyncTyper()
 @app.command("run")
 async def run(
     name: str = typer.Argument(help="Name of the agent to call"),
-    input: str = typer.Argument(help="Agent input as text or JSON"),
+    input: str = typer.Argument(... if sys.stdin.isatty() else sys.stdin.read(), help="Agent input as text or JSON"),
 ) -> None:
     """Call an agent with a given input."""
     try:
