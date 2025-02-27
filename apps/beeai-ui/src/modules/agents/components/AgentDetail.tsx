@@ -65,8 +65,8 @@ export function AgentDetail({ agent, buttons }: Props) {
         <>
           <motion.hr
             {...fadeInPropsWithMarginShift({
-              start: { from: spacing[9], to: spacing[8] },
-              end: { from: spacing[9], to: spacing[8] },
+              start: { from: spacing[7], to: spacing[6] },
+              end: { from: spacing[7], to: spacing[6] },
             })}
             className={classes.divider}
           />
