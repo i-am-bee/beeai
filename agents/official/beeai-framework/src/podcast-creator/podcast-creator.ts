@@ -9,18 +9,19 @@ import { CHAT_MODEL } from "../config.js";
 import { ChatModel } from "beeai-framework/backend/chat";
 
 const inputSchema = promptInputSchema;
-type Input = z.infer<typeof inputSchema>;
+type Input = z.output<typeof inputSchema>;
 const outputSchema = promptOutputSchema;
+type Output = z.output<typeof outputSchema>;
 
 const run = async (
   {
     params,
   }: {
-    params: { input: z.infer<typeof inputSchema> };
+    params: { input: Input };
   },
-  { signal }: { signal?: AbortSignal }
-) => {
-  const { prompt } = params.input;
+  { signal }: { signal?: AbortSignal },
+): Promise<Output> => {
+  const { text } = params.input;
 
   const model = await ChatModel.fromName(CHAT_MODEL);
 
@@ -50,7 +51,7 @@ ALWAYS START YOUR RESPONSE DIRECTLY WITH SPEAKER 1:
 DO NOT GIVE EPISODE TITLES SEPARATELY, LET SPEAKER 1 TITLE IT IN HER SPEECH
 DO NOT GIVE CHAPTER TITLES
 IT SHOULD STRICTLY BE THE DIALOGUES`),
-      new UserMessage(prompt),
+      new UserMessage(text),
     ],
     maxTokens: 8126,
     temperature: 1,
@@ -63,7 +64,7 @@ IT SHOULD STRICTLY BE THE DIALOGUES`),
     z.object({
       speaker: z.number().min(1).max(2),
       text: z.string(),
-    })
+    }),
   );
 
   // Dramatise podcast
@@ -118,14 +119,13 @@ Example of response:
     abortSignal: signal,
   });
 
-  return {
+  return outputSchema.parse({
     text: JSON.stringify(finalReponse.object),
-  };
+  });
 };
 
 const exampleInput: Input = {
-  prompt:
-    "Artificial intelligence is revolutionizing industries by automating complex tasks, improving efficiency, and enabling data-driven decision-making. In healthcare, AI is helping doctors diagnose diseases earlier and personalize treatments...",
+  text: "Artificial intelligence is revolutionizing industries by automating complex tasks, improving efficiency, and enabling data-driven decision-making. In healthcare, AI is helping doctors diagnose diseases earlier and personalize treatments...",
 };
 
 const exampleOutput = `[

@@ -224,6 +224,7 @@ source = { editable = "apps/beeai-cli" }
 dependencies = [
     { name = "acp-sdk" },
     { name = "anyio" },
+    { name = "beeai-sdk" },
     { name = "beeai-server" },
     { name = "pydantic" },
     { name = "pydantic-settings" },
@@ -234,6 +235,7 @@ dependencies = [
 requires-dist = [
     { name = "acp-sdk", editable = "packages/acp-python-sdk" },
     { name = "anyio", specifier = ">=4.8.0" },
+    { name = "beeai-sdk", editable = "packages/beeai-sdk" },
     { name = "beeai-server", editable = "apps/beeai-server" },
     { name = "pydantic", specifier = ">=2.10.6" },
     { name = "pydantic-settings", specifier = ">=2.7.1" },

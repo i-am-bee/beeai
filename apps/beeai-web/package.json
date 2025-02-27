@@ -10,20 +10,20 @@
   },
   "dependencies": {
     "@i-am-bee/beeai-ui": "workspace:*",
-    "@tanstack/react-query": "^5.66.0",
+    "@tanstack/react-query": "^5.66.9",
     "next": "15.1.7",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3",
+    "@eslint/eslintrc": "^3.3.0",
     "@svgr/webpack": "^8.1.0",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
+    "@types/node": "^20.17.19",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
     "eslint": "catalog:",
     "eslint-config-next": "15.1.7",
-    "sass-embedded": "^1.83.4",
+    "sass-embedded": "^1.85.1",
     "typescript": "catalog:"
   },
   "packageManager": "pnpm@9.9.0+sha512.60c18acd138bff695d339be6ad13f7e936eea6745660d4cc4a776d5247c540d0edee1a563695c183a66eb917ef88f2b4feb1fc25f32a7adcadc7aaf3438e99c1"

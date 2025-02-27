@@ -115,6 +115,7 @@ const exampleOutput: Output = {
         "The current temperature in Paris is 12°C with partly cloudy skies.",
     },
   ],
+  logs: [],
 };
 
 export const agent = {

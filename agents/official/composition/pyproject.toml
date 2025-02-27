@@ -1,21 +1,19 @@
 [project]
-name = "gpt-researcher-agent"
+name = "composition"
 version = "0.1.0"
-description = ""
-authors = [{ name = "IBM Corp." }]
+description = "Add your description here"
 readme = "README.md"
+authors = [{ name = "IBM Corp." }]
 requires-python = ">=3.11,<4.0"
 dependencies = [
     "acp-sdk==0.0.3",
-    "gpt-researcher>=0.10.11,<0.11.0",
-    "duckduckgo-search>=7.3.2,<8.0.0",
     "beeai-sdk==0.0.5",
     "pydantic-settings>=2.7.1",
     "pydantic>=2.10.6",
 ]
 
 [project.scripts]
-gpt-researcher-agent = "gpt_researcher_agent.agent:main"
+composition-agent = "composition.server:main"
 
 [build-system]
 requires = ["hatchling"]
