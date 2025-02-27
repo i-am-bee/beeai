@@ -41,10 +41,10 @@ export function ConfirmDialog({
   danger,
   icon: Icon,
   onSubmit,
+  onRequestClose,
   size = 'sm',
   ...props
 }: ConfirmDialogProps & ModalProps) {
-  const { onRequestClose } = props;
   const onSubmitClick = () => {
     onRequestClose();
     onSubmit();

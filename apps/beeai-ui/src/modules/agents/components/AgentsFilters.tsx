@@ -22,15 +22,13 @@ import { OperationalTag, TextInput, TextInputSkeleton } from '@carbon/react';
 import clsx from 'clsx';
 import { useId, useMemo } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { useAgents } from '../contexts';
-import { AgentsFiltersParams } from '../contexts/agents-context';
+import { useListAgents } from '../api/queries/useListAgents';
+import { AgentsFiltersParams } from '../providers/AgentsFiltersProvider';
 import classes from './AgentsFilters.module.scss';
 
 export function AgentsFilters() {
   const id = useId();
-  const {
-    agentsQuery: { data, isPending },
-  } = useAgents();
+  const { data, isPending } = useListAgents();
   const { watch, setValue } = useFormContext<AgentsFiltersParams>();
 
   const frameworks = useMemo(() => {
@@ -72,16 +70,14 @@ export function AgentsFilters() {
             text="All"
             className={clsx(classes.frameworkAll, { selected: !isNotNull(selectedFramework) })}
           />,
-          ...(frameworks
-            ? frameworks.map((framework) => (
-                <OperationalTag
-                  key={framework}
-                  onClick={() => selectFramework(framework)}
-                  text={framework}
-                  className={clsx({ selected: selectedFramework === framework })}
-                />
-              ))
-            : []),
+          ...frameworks.map((framework) => (
+            <OperationalTag
+              key={framework}
+              onClick={() => selectFramework(framework)}
+              text={framework}
+              className={clsx({ selected: selectedFramework === framework })}
+            />
+          )),
         ]}
       />
     </div>

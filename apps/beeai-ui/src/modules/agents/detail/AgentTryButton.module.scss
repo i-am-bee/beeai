@@ -14,29 +14,6 @@
  * limitations under the License.
  */
 
-import { useViewTransition } from '#hooks/useViewTransition.ts';
-import { HTMLProps } from 'react';
-
-interface Props extends Omit<HTMLProps<HTMLAnchorElement>, 'href'> {
-  to?: string;
-}
-
-export function TransitionLink({ to, onClick, children, ...props }: Props) {
-  const { transitionTo } = useViewTransition();
-
-  return (
-    <a
-      {...props}
-      href={to}
-      onClick={(e) => {
-        if (to) {
-          transitionTo(to);
-        }
-        onClick?.(e);
-        e.preventDefault();
-      }}
-    >
-      {children}
-    </a>
-  );
+.root {
+  min-inline-size: rem(208px);
 }

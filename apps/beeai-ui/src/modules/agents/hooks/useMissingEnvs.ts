@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-import { useContext } from 'react';
-import { AgentsContext } from './agents-context';
+import { useProvider } from '#modules/providers/api/queries/useProvider.ts';
+import { Agent } from '../api/types';
 
-export function useAgents() {
-  const context = useContext(AgentsContext);
+interface Props {
+  agent?: Agent;
+}
 
-  if (!context) {
-    throw new Error('useAgents must be used within AgentsProvider');
-  }
+export function useMissingEnvs({ agent }: Props) {
+  const { data, isPending } = useProvider({ id: agent?.provider });
+  const missingEnvs = data?.missing_configuration ?? [];
 
-  return context;
+  return { missingEnvs, isPending };
 }

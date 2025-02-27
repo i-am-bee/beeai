@@ -23,3 +23,5 @@ export type CreateProviderBody = ApiRequestBody<'/api/v1/provider'>;
 export type CreateProviderResponse = ApiResponse<'/api/v1/provider', 'post'>;
 
 export type ProviderStatus = Provider['status'];
+
+export type MissingEnvs = Provider['missing_configuration'];
