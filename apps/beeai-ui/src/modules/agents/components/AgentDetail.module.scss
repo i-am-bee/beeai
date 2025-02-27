@@ -48,6 +48,10 @@
     margin-block-start: $spacing-06;
   }
 
+  .launchButton {
+    min-inline-size: rem(208px);
+  }
+
   .copySnippet {
     min-inline-size: rem(288px);
   }

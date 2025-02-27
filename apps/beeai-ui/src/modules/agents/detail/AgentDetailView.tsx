@@ -17,7 +17,7 @@
 import { ErrorMessage } from '#components/ErrorMessage/ErrorMessage.tsx';
 import { useAgent } from '../api/queries/useAgent';
 import { AgentDetail } from '../components/AgentDetail';
-import { AgentTryButton } from './AgentTryButton';
+import { AgentLaunchButton } from './AgentLaunchButton';
 
 interface Props {
   name: string;
@@ -38,5 +38,5 @@ export function AgentDetailView({ name }: Props) {
       />
     );
   }
-  return <AgentDetail agent={agent} buttons={<AgentTryButton agent={agent} />} />;
+  return <AgentDetail agent={agent} buttons={<AgentLaunchButton agent={agent} />} />;
 }

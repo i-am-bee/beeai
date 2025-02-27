@@ -20,9 +20,9 @@ import { spacing } from '@carbon/layout';
 import { moderate01 } from '@carbon/motion';
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
-import { Agent } from '../api/types';
+import type { Agent } from '../api/types';
 import classes from './AgentDetail.module.scss';
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { getAgentTitle } from '../utils';
 import { AgentMetadata } from './AgentMetadata';
 import { MarkdownContent } from '#components/MarkdownContent/MarkdownContent.tsx';
@@ -93,7 +93,7 @@ AgentDetail.Skeleton = function AgentDetailSkeleton() {
 
       <div className={classes.buttons}>
         {/* .cds--layout--size-md fixes Carbon bug where button size prop is not respected */}
-        <ButtonSkeleton size="md" className={clsx('cds--layout--size-md', classes.tryButton)} />
+        <ButtonSkeleton size="md" className={clsx('cds--layout--size-md', classes.launchButton)} />
 
         <ButtonSkeleton size="md" className={clsx('cds--layout--size-md', classes.copySnippet)} />
       </div>
