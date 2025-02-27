@@ -34,7 +34,7 @@ async def run(
 ) -> None:
     """Call an agent with a given input."""
     try:
-        check_json(input)
+        input = check_json(input)
     except BadParameter:
         agent = await _get_agent(name)
         required_input_properties = set(agent.inputSchema.get("required", []))
