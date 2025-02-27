@@ -17,7 +17,6 @@ from acp.types import (
 from beeai_sdk.schemas.base import Input, Log, LogLevel, Output
 from beeai_sdk.schemas.message import UserMessage
 from beeai_sdk.schemas.metadata import Metadata
-from beeai_sdk.schemas.prompt import PromptInput, PromptOutput
 from beeai_sdk.utils.api import send_request_with_notifications, mcp_client
 from composition.configuration import Configuration
 from composition.utils import extract_messages
@@ -79,12 +78,12 @@ def add_sequential_workflow_agent(server: Server):
         "sequential-workflow",
         "Run agents in a sequential workflow",
         input=SequentialAgentWorkflowInput,
-        output=PromptInput,
+        output=Output,
         **Metadata(framework=None, licence="Apache 2.0").model_dump(),
         composition_agent=True,
     )
-    async def run_sequential_workflow(input: SequentialAgentWorkflowInput, ctx: Context) -> PromptOutput:
-        output = PromptOutput(text="")
+    async def run_sequential_workflow(input: SequentialAgentWorkflowInput, ctx: Context) -> Output:
+        output = Output()
         agent = None
         try:
             async with mcp_client(url=Configuration().mcp_url) as session:

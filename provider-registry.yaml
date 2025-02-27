@@ -1,10 +1,10 @@
 providers:
   # Official
-  - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.13#path=/agents/official/composition
-  - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.14#path=/agents/official/beeai-framework
+  - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.15#path=/agents/official/composition
+  - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.15#path=/agents/official/beeai-framework
   - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.13#path=/agents/official/agent-docs-creator
   # Community
-  - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.14#path=/agents/community/gpt-researcher-agent
+  - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.15#path=/agents/community/gpt-researcher-agent
   - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.13#path=/agents/community/crewai-agents
   - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.13#path=/agents/community/langgraph-agents
   - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.13#path=/agents/community/aider-agent
