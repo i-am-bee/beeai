@@ -20,7 +20,7 @@ import { AddRequiredEnvsModal } from '#modules/envs/components/AddRequiredEnvsMo
 import { routes } from '#utils/router.ts';
 import { ArrowUpRight } from '@carbon/icons-react';
 import { Button } from '@carbon/react';
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 import { Agent } from '../api/types';
 import { useMissingEnvs } from '../hooks/useMissingEnvs';
 import classes from './AgentTryButton.module.scss';
