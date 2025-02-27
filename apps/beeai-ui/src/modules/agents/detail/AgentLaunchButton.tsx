@@ -18,25 +18,25 @@ import { TransitionLink } from '#components/TransitionLink/TransitionLink.tsx';
 import { useModal } from '#contexts/Modal/index.tsx';
 import { AddRequiredEnvsModal } from '#modules/envs/components/AddRequiredEnvsModal.tsx';
 import { routes } from '#utils/router.ts';
-import { ArrowUpRight } from '@carbon/icons-react';
+import { ArrowRight } from '@carbon/icons-react';
 import { Button } from '@carbon/react';
 import isEmpty from 'lodash/isEmpty';
-import { Agent } from '../api/types';
+import type { Agent } from '../api/types';
 import { useMissingEnvs } from '../hooks/useMissingEnvs';
-import classes from './AgentTryButton.module.scss';
+import classes from './AgentLaunchButton.module.scss';
 
 interface Props {
   agent: Agent;
 }
 
-export function AgentTryButton({ agent }: Props) {
+export function AgentLaunchButton({ agent }: Props) {
   const { openModal } = useModal();
   const { missingEnvs, isPending: isMissingEnvsPending } = useMissingEnvs({ agent });
 
   return agent.ui === 'chat' ? (
     <Button
       kind="primary"
-      renderIcon={ArrowUpRight}
+      renderIcon={ArrowRight}
       size="md"
       className={classes.root}
       disabled={isMissingEnvsPending}
@@ -51,7 +51,7 @@ export function AgentTryButton({ agent }: Props) {
             },
           })}
     >
-      Try this agent
+      Launch this agent
     </Button>
   ) : null;
 }
