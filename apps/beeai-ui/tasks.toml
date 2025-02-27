@@ -74,6 +74,13 @@ run = "pnpm build"
 sources = ["*.json", "*.js", "index.html", "src/**/*.tsx", "src/**/*.ts"]
 outputs = ["dist/**/*"]
 
+# preview
+
+["beeai-ui:preview"]
+depends = ["setup:pnpm", "beeai-sdk:build:js"]
+dir = "{{config_root}}/apps/beeai-ui"
+run = "pnpm preview"
+
 # clean
 
 ["beeai-ui:clean"]
