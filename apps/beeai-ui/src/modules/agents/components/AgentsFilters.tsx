@@ -24,9 +24,9 @@ import { OperationalTag, TextInput, TextInputSkeleton } from '@carbon/react';
 import clsx from 'clsx';
 import { useId, useMemo } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { AgentsFiltersParams } from '../types';
-import classes from './AgentsFilters.module.scss';
+import { AgentsFiltersParams } from '../providers/AgentsFiltersProvider';
 import { Agent } from '../api/types';
+import classes from './AgentsFilters.module.scss';
 
 interface Props {
   agents: Agent[] | undefined;

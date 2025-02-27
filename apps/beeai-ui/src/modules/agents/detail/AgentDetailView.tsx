@@ -15,13 +15,9 @@
  */
 
 import { ErrorMessage } from '#components/ErrorMessage/ErrorMessage.tsx';
-import { Button } from '@carbon/react';
 import { useAgent } from '../api/queries/useAgent';
 import { AgentDetail } from '../components/AgentDetail';
-import { ArrowUpRight } from '@carbon/react/icons';
-import { TransitionLink } from '#components/TransitionLink/TransitionLink.tsx';
-import { routes } from '#utils/router.ts';
-import classes from './AgentDetailView.module.scss';
+import { AgentTryButton } from './AgentTryButton';
 
 interface Props {
   name: string;
@@ -42,25 +38,5 @@ export function AgentDetailView({ name }: Props) {
       />
     );
   }
-  return (
-    <AgentDetail
-      agent={agent}
-      buttons={
-        <>
-          {agent.ui === 'chat' && (
-            <Button
-              kind="primary"
-              renderIcon={ArrowUpRight}
-              size="md"
-              className={classes.tryButton}
-              to={routes.agentRun({ name })}
-              as={TransitionLink}
-            >
-              Try this agent
-            </Button>
-          )}
-        </>
-      }
-    />
-  );
+  return <AgentDetail agent={agent} buttons={<AgentTryButton agent={agent} />} />;
 }

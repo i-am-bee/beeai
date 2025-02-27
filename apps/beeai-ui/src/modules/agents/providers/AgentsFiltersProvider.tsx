@@ -14,7 +14,18 @@
  * limitations under the License.
  */
 
+import { PropsWithChildren } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
+
 export interface AgentsFiltersParams {
   search?: string;
   framework?: string | null;
+}
+
+export function AgentsFiltersProvider({ children }: PropsWithChildren) {
+  const formReturn = useForm<AgentsFiltersParams>({
+    mode: 'onChange',
+  });
+
+  return <FormProvider {...formReturn}>{children}</FormProvider>;
 }

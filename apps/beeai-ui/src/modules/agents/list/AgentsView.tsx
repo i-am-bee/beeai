@@ -15,8 +15,6 @@
  */
 
 import { useFormContext } from 'react-hook-form';
-import { useAgents } from '../contexts';
-import { AgentsFiltersParams } from '../types';
 import { AgentsFilters } from '../components/AgentsFilters';
 import { ErrorMessage } from '#components/ErrorMessage/ErrorMessage.tsx';
 import { AgentsList } from '../components/AgentsList';
@@ -26,11 +24,11 @@ import { TransitionLink } from '#components/TransitionLink/TransitionLink.tsx';
 import { getAgentTitle } from '../utils';
 import { routes } from '#utils/router.ts';
 import { ImportAgents } from '../components/ImportAgents';
+import { useListAgents } from '../api/queries/useListAgents';
+import { AgentsFiltersParams } from '../providers/AgentsFiltersProvider';
 
 export function AgentsView() {
-  const {
-    agentsQuery: { data, isPending, error, refetch, isRefetching },
-  } = useAgents();
+  const { data, isPending, error, refetch, isRefetching } = useListAgents();
   const { watch } = useFormContext<AgentsFiltersParams>();
   const filters = watch();
 

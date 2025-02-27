@@ -19,7 +19,7 @@
 import { spacing } from '@carbon/layout';
 import { moderate01 } from '@carbon/motion';
 import clsx from 'clsx';
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Agent } from '../api/types';
 import classes from './AgentDetail.module.scss';
 import { ReactNode } from 'react';
@@ -43,39 +43,37 @@ export function AgentDetail({ agent, buttons }: Props) {
   const runCommand = `beeai run ${isStringTerminalParameterSafe(name) ? name : `'${name}'`}`;
   return (
     <div className={classes.root}>
-      <AnimatePresence>
-        <motion.h1 {...fadeInPropsWithMarginShift({ start: { from: spacing[4] } })} className={classes.name}>
-          {getAgentTitle(agent)}
-        </motion.h1>
+      <motion.h1 {...fadeInPropsWithMarginShift({ start: { from: spacing[4] } })} className={classes.name}>
+        {getAgentTitle(agent)}
+      </motion.h1>
 
-        <motion.div {...fadeInPropsWithMarginShift({ start: { from: spacing[3] } })}>
-          <AgentMetadata agent={agent} className={classes.metadata} />
-          {agent.description && <MarkdownContent className={classes.description}>{agent.description}</MarkdownContent>}
-          <AgentTags agent={agent} className={classes.tags} />
-        </motion.div>
+      <motion.div {...fadeInPropsWithMarginShift({ start: { from: spacing[3] } })}>
+        <AgentMetadata agent={agent} className={classes.metadata} />
+        {agent.description && <MarkdownContent className={classes.description}>{agent.description}</MarkdownContent>}
+        <AgentTags agent={agent} className={classes.tags} />
+      </motion.div>
 
-        <motion.div
-          {...fadeInPropsWithMarginShift({ start: { from: spacing[6], to: spacing[5] } })}
-          className={classes.buttons}
-        >
-          {buttons}
-          <CopySnippet snippet={runCommand} className={classes.copySnippet} />
-        </motion.div>
+      <motion.div
+        {...fadeInPropsWithMarginShift({ start: { from: spacing[6], to: spacing[5] } })}
+        className={classes.buttons}
+      >
+        {buttons}
+        <CopySnippet snippet={runCommand} className={classes.copySnippet} />
+      </motion.div>
 
-        {agent.fullDescription && (
-          <>
-            <motion.hr
-              {...fadeInPropsWithMarginShift({
-                start: { from: spacing[9], to: spacing[8] },
-                end: { from: spacing[9], to: spacing[8] },
-              })}
-              className={classes.divider}
-            />
+      {agent.fullDescription && (
+        <>
+          <motion.hr
+            {...fadeInPropsWithMarginShift({
+              start: { from: spacing[9], to: spacing[8] },
+              end: { from: spacing[9], to: spacing[8] },
+            })}
+            className={classes.divider}
+          />
 
-            <MarkdownContent>{agent.fullDescription}</MarkdownContent>
-          </>
-        )}
-      </AnimatePresence>
+          <MarkdownContent>{agent.fullDescription}</MarkdownContent>
+        </>
+      )}
     </div>
   );
 }
@@ -87,7 +85,9 @@ AgentDetail.Skeleton = function AgentDetailSkeleton() {
 
       <AgentMetadata.Skeleton className={classes.metadata} />
 
-      <SkeletonText className={classes.description} paragraph lineCount={3} />
+      <div className={classes.description}>
+        <SkeletonText paragraph lineCount={3} />
+      </div>
 
       <TagsList.Skeleton length={2} className={classes.tags} />
 

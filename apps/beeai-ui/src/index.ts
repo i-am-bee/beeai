@@ -23,7 +23,7 @@ export * from './components/ViewStack/ViewStack';
 
 export * from './modules/home/components/GettingStarted';
 
-export * from './modules/agents/types';
+export * from './modules/agents/providers/AgentsFiltersProvider';
 export * from './modules/agents/api/types';
 export * from './modules/agents/utils';
 export * from './modules/agents/components/AgentCard';
