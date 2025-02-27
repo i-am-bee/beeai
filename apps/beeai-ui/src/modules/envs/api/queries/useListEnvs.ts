@@ -14,22 +14,15 @@
  * limitations under the License.
  */
 
-import { PropsWithChildren } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
-import { useListAgents } from '../api/queries/useListAgents';
-import { AgentsContext } from './agents-context';
-import { AgentsFiltersParams } from '../types';
+import { useQuery } from '@tanstack/react-query';
+import { getEnvs } from '..';
+import { envKeys } from '../keys';
 
-export function AgentsProvider({ children }: PropsWithChildren) {
-  const agentsQuery = useListAgents();
-
-  const formReturn = useForm<AgentsFiltersParams>({
-    mode: 'onChange',
+export function useListEnvs() {
+  const query = useQuery({
+    queryKey: envKeys.list(),
+    queryFn: () => getEnvs(),
   });
 
-  return (
-    <AgentsContext.Provider value={{ agentsQuery }}>
-      <FormProvider {...formReturn}>{children}</FormProvider>
-    </AgentsContext.Provider>
-  );
+  return query;
 }

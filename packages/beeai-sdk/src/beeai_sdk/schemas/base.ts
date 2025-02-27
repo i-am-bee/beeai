@@ -16,11 +16,27 @@
 
 import { z } from "zod";
 
+export const logLevelSchema = z.enum([
+  "error",
+  "warning",
+  "info",
+  "cite",
+  "success",
+]);
+export type LogLevel = z.input<typeof logLevelSchema>;
+
+export const logSchema = z
+  .object({ level: logLevelSchema.default("info"), message: z.string() })
+  .passthrough();
+export type Log = z.input<typeof logSchema>;
+
 export const configSchema = z.object({ tools: z.array(z.string()).optional() });
 export type Config = z.input<typeof configSchema>;
 
 export const inputSchema = z.object({ config: configSchema.optional() });
 export type Input = z.input<typeof configSchema>;
 
-export const outputSchema = z.object({}).passthrough();
+export const outputSchema = z
+  .object({ logs: z.array(logSchema).default([]) })
+  .passthrough();
 export type Output = z.input<typeof configSchema>;

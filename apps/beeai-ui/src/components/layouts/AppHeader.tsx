@@ -26,7 +26,7 @@ interface Props {
 export function AppHeader({ className, children }: PropsWithChildren<Props>) {
   return (
     <header className={clsx(classes.root, className)}>
-      <Container size="xlg">
+      <Container size="xxlg">
         <div className={classes.holder}>{children}</div>
       </Container>
     </header>

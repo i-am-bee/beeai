@@ -75,16 +75,14 @@ export function AgentsFilters({ agents }: Props) {
             text="All"
             className={clsx(classes.frameworkAll, { selected: !isNotNull(selectedFramework) })}
           />,
-          ...(frameworks
-            ? frameworks.map((framework) => (
-                <OperationalTag
-                  key={framework}
-                  onClick={() => selectFramework(framework)}
-                  text={framework}
-                  className={clsx({ selected: selectedFramework === framework })}
-                />
-              ))
-            : []),
+          ...frameworks.map((framework) => (
+            <OperationalTag
+              key={framework}
+              onClick={() => selectFramework(framework)}
+              text={framework}
+              className={clsx({ selected: selectedFramework === framework })}
+            />
+          )),
         ]}
       />
     </div>

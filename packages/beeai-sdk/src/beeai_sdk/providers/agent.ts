@@ -19,6 +19,7 @@ import { AcpServer } from "@i-am-bee/acp-sdk/server/acp.js";
 import { SSEServerTransport } from "@i-am-bee/acp-sdk/server/sse.js";
 import { Implementation } from "@i-am-bee/acp-sdk/types.js";
 import { NodeSDK, resources } from "@opentelemetry/sdk-node";
+import { trace, SpanStatusCode } from "@opentelemetry/api";
 import {
   ATTR_SERVICE_NAME,
   ATTR_SERVICE_VERSION,
@@ -42,59 +43,73 @@ export async function runAgentProvider(
     });
   sdk.start();
   try {
-    const app = express();
+    await trace
+      .getTracer("beeai-sdk")
+      .startActiveSpan("agent-provider", async (span) => {
+        try {
+          const app = express();
 
-    let clientConnected = false;
+          let clientConnected = false;
 
-    app.get("/sse", async (req, res) => {
-      if (clientConnected) {
-        res
-          .status(400)
-          .send("Multiple connections at a time are not permitted");
-        return;
-      }
-      clientConnected = true;
-      console.log("Client connected");
+          app.get("/sse", async (req, res) => {
+            if (clientConnected) {
+              res
+                .status(400)
+                .send("Multiple connections at a time are not permitted");
+              return;
+            }
+            clientConnected = true;
+            console.log("Client connected");
 
-      res.on("close", () => {
-        clientConnected = false;
-        console.log("Client disconnected");
+            res.on("close", () => {
+              clientConnected = false;
+              console.log("Client disconnected");
+            });
+
+            const transport = new SSEServerTransport("/messages", res);
+            await acpServer.connect(transport);
+          });
+
+          app.post("/messages", async (req, res) => {
+            const transport = acpServer.server.transport as SSEServerTransport;
+            if (!transport) {
+              res.status(404).send("Session not found");
+              return;
+            }
+            await transport.handlePostMessage(req, res);
+          });
+
+          const port = parseInt(process.env.PORT ?? "8000");
+
+          await new Promise<void>((resolve, reject) => {
+            const server = app.listen(port, () => {
+              console.log(`Server is running on port ${port}`);
+            });
+
+            server.on("error", (err) => {
+              reject(err);
+            });
+
+            const shutdownHandler = () => {
+              process.removeListener("SIGINT", shutdownHandler);
+              stoppable(server, 5_000).stop((err) => {
+                if (err) reject(err);
+                else resolve();
+              });
+            };
+
+            process.on("SIGINT", shutdownHandler);
+          });
+        } catch (err) {
+          span.setStatus({
+            code: SpanStatusCode.ERROR,
+            message: err instanceof Error ? err.message : undefined,
+          });
+          throw err;
+        } finally {
+          span.end();
+        }
       });
-
-      const transport = new SSEServerTransport("/messages", res);
-      await acpServer.connect(transport);
-    });
-
-    app.post("/messages", async (req, res) => {
-      const transport = acpServer.server.transport as SSEServerTransport;
-      if (!transport) {
-        res.status(404).send("Session not found");
-        return;
-      }
-      await transport.handlePostMessage(req, res);
-    });
-
-    const port = parseInt(process.env.PORT ?? "8000");
-
-    await new Promise<void>((resolve, reject) => {
-      const server = app.listen(port, () => {
-        console.log(`Server is running on port ${port}`);
-      });
-
-      server.on("error", (err) => {
-        reject(err);
-      });
-
-      const shutdownHandler = () => {
-        process.removeListener("SIGINT", shutdownHandler);
-        stoppable(server, 5_000).stop((err) => {
-          if (err) reject(err);
-          else resolve();
-        });
-      };
-
-      process.on("SIGINT", shutdownHandler);
-    });
   } finally {
     await sdk.shutdown().catch(() => {});
   }

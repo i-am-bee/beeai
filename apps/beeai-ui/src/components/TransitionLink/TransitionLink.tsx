@@ -18,10 +18,10 @@ import { useViewTransition } from '#hooks/useViewTransition.ts';
 import { HTMLProps } from 'react';
 
 interface Props extends Omit<HTMLProps<HTMLAnchorElement>, 'href'> {
-  to: string;
+  to?: string;
 }
 
-export function TransitionLink({ to, children, ...props }: Props) {
+export function TransitionLink({ to, onClick, children, ...props }: Props) {
   const { transitionTo } = useViewTransition();
 
   return (
@@ -32,6 +32,7 @@ export function TransitionLink({ to, children, ...props }: Props) {
         if (to) {
           transitionTo(to);
         }
+        onClick?.(e);
         e.preventDefault();
       }}
     >

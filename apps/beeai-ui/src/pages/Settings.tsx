@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
-import { useContext } from 'react';
-import { AgentsContext } from './agents-context';
+import { Container } from '#components/layouts/Container.tsx';
+import { ViewHeader } from '#components/ViewHeader/ViewHeader.tsx';
+import { ViewStack } from '#components/ViewStack/ViewStack.tsx';
+import { EnvsView } from '#modules/envs/components/EnvsView.tsx';
 
-export function useAgents() {
-  const context = useContext(AgentsContext);
+export function Settings() {
+  return (
+    <Container size="lg">
+      <ViewStack>
+        <ViewHeader heading="Settings" />
 
-  if (!context) {
-    throw new Error('useAgents must be used within AgentsProvider');
-  }
-
-  return context;
+        <EnvsView />
+      </ViewStack>
+    </Container>
+  );
 }

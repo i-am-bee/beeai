@@ -30,9 +30,12 @@
     max-inline-size: calc(rem(768px) + 2 * $grid-margin);
   }
   &.lg {
-    max-inline-size: calc(rem(1088px) + 2 * $grid-margin);
+    max-inline-size: calc(rem(928px) + 2 * $grid-margin);
   }
   &.xlg {
-    max-inline-size: get-value($grid-breakpoints, 'xlg.width');
+    max-inline-size: calc(rem(1088px) + 2 * $grid-margin);
+  }
+  &.xxlg {
+    max-inline-size: calc(rem(1248px) + 2 * $grid-margin);
   }
 }

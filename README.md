@@ -17,18 +17,23 @@ We **recommend Homebrew** since it supports background service management -- you
 Install BeeAI CLI with:
 
 ```sh
-brew install i-am-bee/beeai/beeai # run once to install
-brew services start beeai # run once to enable service
+brew install i-am-bee/beeai/beeai && brew services start beeai
 ```
 
 If you want Arize Phoenix, install it with:
 
 ```sh
-brew install i-am-bee/beeai/arize-phoenix # run once to install
-brew services start arize-phoenix # run once to enable service
+brew install i-am-bee/beeai/arize-phoenix && brew services start arize-phoenix
 ```
 
+> [!WARNING]
+> The Arize Phoenix service takes a few minutes to start.
+
 The services for `beeai` and `arize-phoenix` will continue to run in the background and restart with your device. Run `brew services list` to see their status.
+
+To open the web interfaces, visit:
+- BeeAI: `http://localhost:8333`
+- Arize Phoenix: `http://localhost:6006`
 
 ### PyPI
 
@@ -50,6 +55,10 @@ phoenix serve # keep running in a separate terminal
 ```
 
 This variant does not manage background services -- the `beeai serve` and `phoenix serve` commands need to be kept running in order to use the platform.
+
+To open the web interfaces, visit:
+- BeeAI: `http://localhost:8333`
+- Arize Phoenix: `http://localhost:6006`
 
 ---
 

@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-import { createContext } from 'react';
-import { useListAgents } from '../api/queries/useListAgents';
+.description {
+  @include type-style(body-01);
+  color: $text-secondary;
+}
 
-export const AgentsContext = createContext<AgentsContextValue | null>(null);
-
-interface AgentsContextValue {
-  agentsQuery: ReturnType<typeof useListAgents>;
+.stack {
+  display: flex;
+  flex-direction: column;
+  row-gap: $spacing-06;
 }

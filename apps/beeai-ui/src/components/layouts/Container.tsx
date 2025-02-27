@@ -19,7 +19,7 @@ import { PropsWithChildren } from 'react';
 import classes from './Container.module.scss';
 
 interface Props {
-  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xlg';
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xlg' | 'xxlg';
   className?: string;
 }
 

@@ -20,6 +20,7 @@ export const routeDefinitions = {
   agents: () => '/agents' as const,
   agentDetail: () => '/agents/:agentName' as const,
   agentRun: () => '/run/:agentName' as const,
+  settings: () => '/settings' as const,
 };
 
 export const routes = {

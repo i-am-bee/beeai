@@ -209,10 +209,10 @@ class LoadedProvider:
             await self._initialize_session()
             self.status = LoadedProviderStatus.ready
         except UnsupportedProviderError as ex:
-            self.last_error = LoadProviderErrorMessage(message=extract_messages(ex))
+            self.last_error = LoadProviderErrorMessage(message=str(extract_messages(ex)))
             self.status = LoadedProviderStatus.unsupported
         except LoadFeaturesError as ex:
-            self.last_error = LoadProviderErrorMessage(message=extract_messages(ex))
+            self.last_error = LoadProviderErrorMessage(message=str(extract_messages(ex)))
             self.status = LoadedProviderStatus.error
         except TimeoutError:
             logger.warning("The server did not respond in time, we assume it is processing a request.")
