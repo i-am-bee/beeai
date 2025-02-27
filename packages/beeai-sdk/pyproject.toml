@@ -1,11 +1,11 @@
 [project]
 name = "beeai-sdk"
-version = "0.0.4"
+version = "0.0.5"
 description = "BeeAI SDK"
 readme = "README.md"
 requires-python = ">=3.11,<4.0"
 dependencies = [
-    "acp-sdk>=0.0.1",
+    "acp-sdk==0.0.3",
     "opentelemetry-exporter-otlp-proto-http>=1.30.0",
     "opentelemetry-sdk>=1.30.0",
     "pydantic>=2.10.6",
@@ -13,3 +13,7 @@ dependencies = [
 
 [tool.uv.sources]
 acp-sdk = { workspace = true }
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
