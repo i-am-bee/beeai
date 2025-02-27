@@ -33,7 +33,7 @@ export function useAgent({ name }: Props) {
     select: (data) => {
       const agent = data?.agents.find((item) => name === item.name);
 
-      return agent ? (agent as Agent) : null;
+      return agent ? (agent as Agent) : undefined;
     },
   });
 }

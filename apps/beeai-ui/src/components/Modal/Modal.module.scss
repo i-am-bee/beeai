@@ -67,7 +67,9 @@
   }
 
   :global(.cds--modal-header:has(.cds--modal-close-button)) {
-    padding-inline-end: $spacing-10;
+    h2 {
+      padding-inline-end: $spacing-09;
+    }
   }
 
   :global(.cds--modal-header + .cds--modal-content) {
@@ -157,7 +159,9 @@
     }
 
     :global(.cds--modal-header:has(.cds--modal-close-button)) {
-      padding-inline-end: rem(88px);
+      h2 {
+        padding-inline-end: rem(56px);
+      }
     }
 
     :global(.cds--modal-content) {

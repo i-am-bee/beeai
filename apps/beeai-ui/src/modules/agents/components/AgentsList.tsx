@@ -18,17 +18,15 @@ import { ErrorMessage } from '#components/ErrorMessage/ErrorMessage.tsx';
 import { SkeletonText } from '@carbon/react';
 import pluralize from 'pluralize';
 import { useFormContext } from 'react-hook-form';
-import { useAgents } from '../contexts';
-import { AgentsFiltersParams } from '../contexts/agents-context';
+import { useListAgents } from '../api/queries/useListAgents';
 import { useFilteredAgents } from '../hooks/useFilteredAgents';
+import { AgentsFiltersParams } from '../providers/AgentsFiltersProvider';
 import { AgentCard } from './AgentCard';
 import classes from './AgentsList.module.scss';
 import { ImportAgents } from './ImportAgents';
 
 export function AgentsList() {
-  const {
-    agentsQuery: { data, isPending, error, refetch, isRefetching },
-  } = useAgents();
+  const { data, isPending, error, refetch, isRefetching } = useListAgents();
   const { watch } = useFormContext<AgentsFiltersParams>();
   const filters = watch();
 

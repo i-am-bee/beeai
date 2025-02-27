@@ -18,18 +18,17 @@ import { Container } from '#components/layouts/Container.tsx';
 import { ViewStack } from '#components/ViewStack/ViewStack.tsx';
 import { AgentsFilters } from '#modules/agents/components/AgentsFilters.tsx';
 import { AgentsList } from '#modules/agents/components/AgentsList.tsx';
-
-import { AgentsProvider } from '#modules/agents/contexts/AgentsProvider.tsx';
+import { AgentsFiltersProvider } from '#modules/agents/providers/AgentsFiltersProvider.tsx';
 
 export function Agents() {
   return (
     <Container>
       <ViewStack>
-        <AgentsProvider>
+        <AgentsFiltersProvider>
           <AgentsFilters />
 
           <AgentsList />
-        </AgentsProvider>
+        </AgentsFiltersProvider>
       </ViewStack>
     </Container>
   );

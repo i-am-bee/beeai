@@ -19,14 +19,11 @@ import { ErrorMessage } from '#components/ErrorMessage/ErrorMessage.tsx';
 import { Container } from '#components/layouts/Container.tsx';
 import { MarkdownContent } from '#components/MarkdownContent/MarkdownContent.tsx';
 import { TagsList } from '#components/TagsList/TagsList.tsx';
-import { TransitionLink } from '#components/TransitionLink/TransitionLink.tsx';
 import { fadeProps } from '#utils/fadeProps.ts';
-import { routes } from '#utils/router.ts';
 import { isStringTerminalParameterSafe } from '#utils/strings.ts';
-import { ArrowUpRight } from '@carbon/icons-react';
 import { spacing } from '@carbon/layout';
 import { moderate01 } from '@carbon/motion';
-import { Button, ButtonSkeleton, SkeletonText } from '@carbon/react';
+import { ButtonSkeleton, SkeletonText } from '@carbon/react';
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
 import { useAgent } from '../api/queries/useAgent';
@@ -34,6 +31,7 @@ import { AgentMetadata } from '../components/AgentMetadata';
 import { AgentTags } from '../components/AgentTags';
 import { getAgentTitle } from '../utils';
 import classes from './AgentDetail.module.scss';
+import { AgentTryButton } from './AgentTryButton';
 
 interface Props {
   name: string;
@@ -55,9 +53,11 @@ export function AgentDetail({ name }: Props) {
 
             <motion.div {...fadeInPropsWithMarginShift({ start: { from: spacing[3] } })}>
               <AgentMetadata agent={agent} className={classes.metadata} />
+
               {agent.description && (
                 <MarkdownContent className={classes.description}>{agent.description}</MarkdownContent>
               )}
+
               <AgentTags agent={agent} className={classes.tags} />
             </motion.div>
 
@@ -65,18 +65,7 @@ export function AgentDetail({ name }: Props) {
               {...fadeInPropsWithMarginShift({ start: { from: spacing[6], to: spacing[5] } })}
               className={classes.buttons}
             >
-              {agent.ui === 'chat' && (
-                <Button
-                  kind="primary"
-                  renderIcon={ArrowUpRight}
-                  size="md"
-                  className={classes.tryButton}
-                  to={routes.agentRun({ name })}
-                  as={TransitionLink}
-                >
-                  Try this agent
-                </Button>
-              )}
+              <AgentTryButton agent={agent} />
 
               <CopySnippet snippet={runCommand} className={classes.copySnippet} />
             </motion.div>
@@ -117,7 +106,9 @@ function AgentDetailSkeleton() {
 
       <AgentMetadata.Skeleton className={classes.metadata} />
 
-      <SkeletonText className={classes.description} paragraph lineCount={3} />
+      <div className={classes.description}>
+        <SkeletonText paragraph lineCount={3} />
+      </div>
 
       <TagsList.Skeleton length={2} className={classes.tags} />
 
