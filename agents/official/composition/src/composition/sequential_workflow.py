@@ -110,10 +110,12 @@ def add_sequential_workflow_agent(server: Server):
                             ):
                                 output_delta = Output.model_validate(output_delta_dict)
                                 output_delta.agent_name = agent
+                                output_delta.agent_idx = idx
                                 await ctx.report_agent_run_progress(delta=output_delta)
                             case RunAgentResult(output=output_delta_dict):
                                 output_delta = Output.model_validate(output_delta_dict)
                                 output_delta.agent_name = agent
+                                output_delta.agent_idx = idx
                                 if idx == len(input.agents) - 1:
                                     output = output_delta
                                     break
