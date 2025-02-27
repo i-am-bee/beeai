@@ -55,7 +55,9 @@ AgentCard.Skeleton = function AgentCardSkeleton() {
       <div className={classes.body}>
         <AgentMetadata.Skeleton />
 
-        <SkeletonText className={classes.description} paragraph lineCount={2} />
+        <div className={classes.description}>
+          <SkeletonText paragraph lineCount={2} />
+        </div>
 
         <TagsList.Skeleton length={2} />
       </div>
