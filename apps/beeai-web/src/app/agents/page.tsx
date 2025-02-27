@@ -14,27 +14,17 @@
  * limitations under the License.
  */
 
-import { Container } from '#components/layouts/Container.tsx';
-import { AgentDetailView } from '#modules/agents/detail/AgentDetailView.tsx';
-import { routes } from '#utils/router.ts';
-import { useNavigate, useParams } from 'react-router';
+import { getAgentsList } from "@/acp/api";
+import { Container, ViewStack } from "@i-am-bee/beeai-ui";
+import { AgentsView } from "./AgentsView";
 
-type Params = {
-  agentName: string;
-};
-
-export function Agent() {
-  const { agentName } = useParams<Params>();
-  const navigate = useNavigate();
-
-  if (!agentName) {
-    navigate(routes.notFound(), { replace: true });
-    return null;
-  }
-
+export default async function AgentsPage() {
+  const agents = await getAgentsList();
   return (
     <Container>
-      <AgentDetailView name={agentName} />
+      <ViewStack>
+        <AgentsView agents={agents} />
+      </ViewStack>
     </Container>
   );
 }

@@ -14,32 +14,27 @@
  * limitations under the License.
  */
 
+'use client';
+
 import { MarkdownContent } from '#components/MarkdownContent/MarkdownContent.tsx';
 import { TagsList } from '#components/TagsList/TagsList.tsx';
-import { TransitionLink } from '#components/TransitionLink/TransitionLink.tsx';
-import { routes } from '#utils/router.ts';
 import { SkeletonText } from '@carbon/react';
 import { Agent } from '../api/types';
-import { getAgentTitle } from '../utils';
 import classes from './AgentCard.module.scss';
 import { AgentMetadata } from './AgentMetadata';
 import { AgentTags } from './AgentTags';
+import { ReactNode } from 'react';
 
 interface Props {
   agent: Agent;
+  renderTitle: (props: { className: string; agent: Agent }) => ReactNode;
 }
 
-export function AgentCard({ agent }: Props) {
-  const { name, description } = agent;
-  const route = routes.agentDetail({ name });
-
+export function AgentCard({ agent, renderTitle }: Props) {
+  const { description } = agent;
   return (
     <article className={classes.root}>
-      <h2 className={classes.name}>
-        <TransitionLink className={classes.link} to={route}>
-          {getAgentTitle(agent)}
-        </TransitionLink>
-      </h2>
+      <h2 className={classes.name}>{renderTitle({ className: classes.link, agent })}</h2>
 
       <div className={classes.body}>
         <AgentMetadata agent={agent} />

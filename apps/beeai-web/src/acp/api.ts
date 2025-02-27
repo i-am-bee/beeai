@@ -14,27 +14,21 @@
  * limitations under the License.
  */
 
-import { Container } from '#components/layouts/Container.tsx';
-import { AgentDetailView } from '#modules/agents/detail/AgentDetailView.tsx';
-import { routes } from '#utils/router.ts';
-import { useNavigate, useParams } from 'react-router';
+import { unstable_cache } from "next/cache";
+import { getAcpClient } from "./client";
 
-type Params = {
-  agentName: string;
-};
-
-export function Agent() {
-  const { agentName } = useParams<Params>();
-  const navigate = useNavigate();
-
-  if (!agentName) {
-    navigate(routes.notFound(), { replace: true });
-    return null;
-  }
-
-  return (
-    <Container>
-      <AgentDetailView name={agentName} />
-    </Container>
-  );
-}
+export const getAgentsList = unstable_cache(
+  async () => {
+    let client: Awaited<ReturnType<typeof getAcpClient>> | undefined;
+    try {
+      client = await getAcpClient();
+      const { agents } = await client.listAgents();
+      return agents;
+    } finally {
+      await client?.close();
+    }
+  },
+  undefined
+  // ISR can be added like this
+  // { revalidate: 30 }
+);

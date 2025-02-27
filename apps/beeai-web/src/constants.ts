@@ -14,27 +14,9 @@
  * limitations under the License.
  */
 
-import { Container } from '#components/layouts/Container.tsx';
-import { AgentDetailView } from '#modules/agents/detail/AgentDetailView.tsx';
-import { routes } from '#utils/router.ts';
-import { useNavigate, useParams } from 'react-router';
-
-type Params = {
-  agentName: string;
-};
-
-export function Agent() {
-  const { agentName } = useParams<Params>();
-  const navigate = useNavigate();
-
-  if (!agentName) {
-    navigate(routes.notFound(), { replace: true });
-    return null;
-  }
-
-  return (
-    <Container>
-      <AgentDetailView name={agentName} />
-    </Container>
-  );
+const BEEAI_HOST_ENV = process.env.BEEAI_HOST;
+if (!BEEAI_HOST_ENV) {
+  throw new Error("ENV \"BEEAI_HOST_ENV\" must be defined!");
 }
+
+export const BEEAI_HOST = BEEAI_HOST_ENV;

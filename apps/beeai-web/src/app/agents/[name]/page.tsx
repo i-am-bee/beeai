@@ -14,27 +14,30 @@
  * limitations under the License.
  */
 
-import { Container } from '#components/layouts/Container.tsx';
-import { AgentDetailView } from '#modules/agents/detail/AgentDetailView.tsx';
-import { routes } from '#utils/router.ts';
-import { useNavigate, useParams } from 'react-router';
+import { getAgentsList } from "@/acp/api";
+import { AgentDetail, Container } from "@i-am-bee/beeai-ui";
+import { notFound } from "next/navigation";
 
-type Params = {
-  agentName: string;
-};
+interface Props {
+  params: Promise<{ name: string }>
+}
 
-export function Agent() {
-  const { agentName } = useParams<Params>();
-  const navigate = useNavigate();
-
-  if (!agentName) {
-    navigate(routes.notFound(), { replace: true });
-    return null;
+export default async function AgentPage({ params }: Props) {
+  const { name } = await params;
+  const agents = await getAgentsList();
+  const agent = agents.find((agent) => agent.name === name);
+  if (!agent) {
+    notFound();
   }
 
   return (
     <Container>
-      <AgentDetailView name={agentName} />
+      <AgentDetail agent={agent} />
     </Container>
-  );
+  )
+}
+
+export async function generateStaticParams() {
+  const agents = await getAgentsList();
+  return agents.map(({ name }) => ({ name }));
 }

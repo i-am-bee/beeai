@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+'use client';
+
 import { ArrowUp } from '@carbon/icons-react';
 import { IconButton, IconButtonProps } from '@carbon/react';
 import classes from './ToTopButton.module.scss';

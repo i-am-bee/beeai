@@ -9,11 +9,14 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@i-am-bee/acp-sdk": "workspace:*",
     "@i-am-bee/beeai-ui": "workspace:*",
     "@tanstack/react-query": "^5.66.9",
     "next": "15.1.7",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-hook-form": "^7.54.2",
+    "server-only": "^0.0.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.0",

@@ -14,27 +14,18 @@
  * limitations under the License.
  */
 
-import { Container } from '#components/layouts/Container.tsx';
-import { AgentDetailView } from '#modules/agents/detail/AgentDetailView.tsx';
-import { routes } from '#utils/router.ts';
-import { useNavigate, useParams } from 'react-router';
+"use client";
 
-type Params = {
-  agentName: string;
-};
+import { CommunityNav } from "@i-am-bee/beeai-ui";
+import { usePathname } from "next/navigation";
+import { MainNav } from "../MainNav/MainNav";
 
-export function Agent() {
-  const { agentName } = useParams<Params>();
-  const navigate = useNavigate();
-
-  if (!agentName) {
-    navigate(routes.notFound(), { replace: true });
-    return null;
-  }
-
+export function Navigation() {
+  const pathname = usePathname();
   return (
-    <Container>
-      <AgentDetailView name={agentName} />
-    </Container>
+    <>
+      <MainNav />
+      {pathname !== "/" && <CommunityNav />}
+    </>
   );
 }
