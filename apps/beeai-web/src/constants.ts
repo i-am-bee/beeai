@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-const BEEAI_HOST_ENV = process.env.BEEAI_HOST;
-if (!BEEAI_HOST_ENV) {
-  throw new Error("ENV \"BEEAI_HOST_ENV\" must be defined!");
+if (!process.env.BEEAI_HOST) {
+  throw new Error('ENV "BEEAI_HOST" must be defined!');
 }
 
-export const BEEAI_HOST = BEEAI_HOST_ENV;
+export const BEEAI_HOST = process.env.BEEAI_HOST;

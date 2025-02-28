@@ -18,6 +18,8 @@ import { getAgentsList } from "@/acp/api";
 import { Container, ViewStack } from "@i-am-bee/beeai-ui";
 import { AgentsView } from "./AgentsView";
 
+export const dynamic = "force-dynamic"; // Opt out of static generation
+
 export default async function AgentsPage() {
   const agents = await getAgentsList();
   return (
