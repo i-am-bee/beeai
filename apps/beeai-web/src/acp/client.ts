@@ -21,6 +21,9 @@ import { SSEClientTransport } from "@i-am-bee/acp-sdk/client/sse.js";
 import { BEEAI_HOST } from "@/constants";
 
 export async function getAcpClient() {
+  if (!ACP_SSE_TRANSPORT_URL) {
+    throw new Error("ACP Transport has not been set");
+  }
   const transport = new SSEClientTransport(ACP_SSE_TRANSPORT_URL, {
     eventSourceInit: {
       fetch: (url, init) => {
@@ -50,7 +53,7 @@ function assertServerCapability(
   }
 }
 
-const ACP_SSE_TRANSPORT_URL = new URL(BEEAI_HOST);
+const ACP_SSE_TRANSPORT_URL = BEEAI_HOST ? new URL(BEEAI_HOST) : undefined;
 const ACP_EXAMPLE_AGENT_CONFIG = {
   name: "example-client",
   version: "1.0.0",
