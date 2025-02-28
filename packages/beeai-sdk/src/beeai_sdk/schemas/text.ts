@@ -17,8 +17,8 @@
 import { z } from "zod";
 import { inputSchema, outputSchema } from "./base.js";
 
-export const promptInputSchema = inputSchema.extend({ text: z.string() });
-export type PromptInput = z.input<typeof promptInputSchema>;
+export const textInputSchema = inputSchema.extend({ text: z.string() });
+export type TextInput = z.input<typeof textInputSchema>;
 
-export const promptOutputSchema = outputSchema.extend({ text: z.string() });
-export type PromptOutput = z.output<typeof promptOutputSchema>;
+export const textOutputSchema = outputSchema.extend({ text: z.string() });
+export type TextOutput = z.output<typeof textOutputSchema>;
