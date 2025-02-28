@@ -5,7 +5,7 @@ description = "Collection of CrewAI agents"
 authors = []
 requires-python = ">=3.11,<4.0"
 dependencies = [
-    "beeai-sdk==0.0.5",
+    "beeai-sdk==0.0.6",
     "crewai[tools]>=0.102.0,<1.0.0"
 ]
 

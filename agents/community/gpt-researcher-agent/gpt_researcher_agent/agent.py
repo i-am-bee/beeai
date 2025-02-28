@@ -7,7 +7,7 @@ from acp.server.highlevel import Server
 from beeai_sdk.providers.agent import run_agent_provider
 from beeai_sdk.schemas.base import Log
 from beeai_sdk.schemas.metadata import Metadata
-from beeai_sdk.schemas.prompt import PromptInput, PromptOutput
+from beeai_sdk.schemas.text import TextInput, TextOutput
 from gpt_researcher_agent.configuration import load_env
 
 load_env()  # GPT Researchers uses env variables for configuration
@@ -19,8 +19,8 @@ async def register_agent() -> int:
     @server.agent(
         "gpt-researcher",
         "LLM based autonomous agent that conducts deep local and web research on any topic and generates a long report with citations.",
-        input=PromptInput,
-        output=PromptOutput,
+        input=TextInput,
+        output=TextOutput,
         **Metadata(
             framework="Custom",
             license="Apache 2.0",
@@ -64,8 +64,8 @@ Our view on unbiased research claims:
 """,
         ).model_dump(),
     )
-    async def run_agent(input: PromptInput, ctx) -> PromptOutput:
-        output: PromptOutput = PromptOutput(text="")
+    async def run_agent(input: TextInput, ctx) -> TextOutput:
+        output: TextOutput = TextOutput(text="")
 
         class CustomLogsHandler:
             async def send_json(self, data: dict[str, Any]) -> None:
@@ -76,10 +76,10 @@ Our view on unbiased research claims:
                             metadata=data.get("metadata", None),
                         )
                         output.logs.append(log)
-                        await ctx.report_agent_run_progress(PromptOutput(logs=[None, log], text=""))
+                        await ctx.report_agent_run_progress(TextOutput(logs=[None, log], text=""))
                     case "report":
                         output.text += data.get("output", "")
-                        await ctx.report_agent_run_progress(PromptOutput(text=data.get("output", "")))
+                        await ctx.report_agent_run_progress(TextOutput(text=data.get("output", "")))
 
         researcher = GPTResearcher(query=input.text, report_type="research_report", websocket=CustomLogsHandler())
         # Conduct research on the given query

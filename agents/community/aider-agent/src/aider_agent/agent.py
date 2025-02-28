@@ -9,12 +9,12 @@ from pathlib import Path
 
 from pydantic import Field
 from acp.server.highlevel import Server
-from beeai_sdk.schemas.prompt import PromptInput, PromptOutput
+from beeai_sdk.schemas.text import TextInput, TextOutput
 from beeai_sdk.providers.agent import run_agent_provider
 from beeai_sdk.schemas.metadata import Metadata
 
 
-class Output(PromptOutput):
+class Output(TextOutput):
     files: dict[str, str] = Field(default_factory=dict)
     text: str = Field(default_factory=str)
 
@@ -80,7 +80,7 @@ async def register_agent() -> int:
     @server.agent(
         "aider",
         "An AI pair programmer that edits code in a local Git repository using natural language, executing commands and providing feedback.",
-        input=PromptInput,
+        input=TextInput,
         output=Output,
         **Metadata(
             framework="Custom",
@@ -93,7 +93,7 @@ async def register_agent() -> int:
             avgRunTokens=5000,
         ).model_dump(),
     )
-    async def run_agent(input: PromptInput, ctx) -> Output:
+    async def run_agent(input: TextInput, ctx) -> Output:
         output: Output = Output()
         with tempfile.TemporaryDirectory() as tmp_dir:
             tmp_path = Path(tmp_dir)
