@@ -18,8 +18,10 @@ import { getAgentsList } from "@/acp/api";
 import { AgentDetail, Container } from "@i-am-bee/beeai-ui";
 import { notFound } from "next/navigation";
 
+export const dynamic = "force-dynamic"; // Opt out of static generation
+
 interface Props {
-  params: Promise<{ name: string }>
+  params: Promise<{ name: string }>;
 }
 
 export default async function AgentPage({ params }: Props) {
@@ -34,10 +36,5 @@ export default async function AgentPage({ params }: Props) {
     <Container>
       <AgentDetail agent={agent} />
     </Container>
-  )
-}
-
-export async function generateStaticParams() {
-  const agents = await getAgentsList();
-  return agents.map(({ name }) => ({ name }));
+  );
 }

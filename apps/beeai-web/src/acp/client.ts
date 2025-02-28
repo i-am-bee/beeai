@@ -50,7 +50,7 @@ function assertServerCapability(
   }
 }
 
-const ACP_SSE_TRANSPORT_URL = new URL("/mcp/sse", BEEAI_HOST);
+const ACP_SSE_TRANSPORT_URL = new URL(BEEAI_HOST);
 const ACP_EXAMPLE_AGENT_CONFIG = {
   name: "example-client",
   version: "1.0.0",
