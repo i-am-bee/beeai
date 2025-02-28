@@ -50,7 +50,7 @@ export function AgentDetail({ agent, buttons }: Props) {
       <motion.div {...fadeInPropsWithMarginShift({ start: { from: spacing[3] } })}>
         <AgentMetadata agent={agent} className={classes.metadata} />
         {agent.description && <MarkdownContent className={classes.description}>{agent.description}</MarkdownContent>}
-        <AgentTags agent={agent} className={classes.tags} />
+        <AgentTags agent={agent} showGitHub className={classes.tags} />
       </motion.div>
 
       <motion.div
@@ -120,7 +120,7 @@ function fadeInPropsWithMarginShift({
     visible: {
       marginBlockStart: start ? start.to || 0 : undefined,
       marginBlockEnd: end ? end.to || 0 : undefined,
-      transition: { delay: parseFloat(moderate01) / 1000 },
+      transition: { delay: Number.parseFloat(moderate01) / 1000 },
     },
   });
 }
