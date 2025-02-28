@@ -5,7 +5,7 @@ import json
 from acp.server.highlevel import Context, Server
 from beeai_sdk.providers.agent import run_agent_provider
 from beeai_sdk.schemas.metadata import Metadata
-from beeai_sdk.schemas.prompt import PromptOutput, PromptInput
+from beeai_sdk.schemas.text import TextOutput, TextInput
 from beeai_sdk.schemas.base import Log
 
 from langgraph_agents.configuration import load_env
@@ -95,8 +95,8 @@ async def run():
     @server.agent(
         "ollama-deep-researcher",
         "The agent performs AI-driven research by generating queries, gathering web data, summarizing findings, and refining results through iterative knowledge gap analysis.",
-        input=PromptInput,
-        output=PromptOutput,
+        input=TextInput,
+        output=TextOutput,
         **Metadata(
             framework="LangGraph",
             license="Apache 2.0",
@@ -106,7 +106,7 @@ async def run():
             fullDescription=fullDescription,
         ).model_dump(),
     )
-    async def run_deep_researcher_graph(input: PromptInput, ctx: Context) -> PromptOutput:
+    async def run_deep_researcher_graph(input: TextInput, ctx: Context) -> TextOutput:
         loop = asyncio.get_event_loop()
         inputs = SummaryStateInput(research_topic=input.text)
         try:
@@ -120,9 +120,9 @@ async def run():
                     for key, value in event.items()
                 ]
                 output = event
-                await ctx.report_agent_run_progress(delta=PromptOutput(logs=[None, *logs], text=""))
+                await ctx.report_agent_run_progress(delta=TextOutput(logs=[None, *logs], text=""))
             output = output.get("finalize_summary", {}).get("running_summary", None)
-            return PromptOutput(text=str(output))
+            return TextOutput(text=str(output))
         except Exception as e:
             raise Exception(f"An error occurred while running the graph: {e}")
 

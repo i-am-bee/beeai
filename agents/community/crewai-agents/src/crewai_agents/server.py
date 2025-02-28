@@ -11,7 +11,7 @@ from acp.server.highlevel import Server, Context
 from crewai_agents.configuration import load_env
 from crewai_agents.marketing_strategy.crew import MarketingPostsCrew
 
-from beeai_sdk.schemas.prompt import PromptInput, PromptOutput
+from beeai_sdk.schemas.text import TextInput, TextOutput
 
 load_env()
 
@@ -22,8 +22,8 @@ async def run():
     @server.agent(
         "marketing-strategy",
         "Performs marketing strategy analysis over a project",
-        input=PromptInput,
-        output=PromptOutput,
+        input=TextInput,
+        output=TextOutput,
         **Metadata(
             framework="CrewAI",
             license="Apache 2.0",
@@ -31,7 +31,7 @@ async def run():
             githubUrl="https://github.com/i-am-bee/beeai/tree/main/agents/community/crewai-agents/src/crewai_agents/marketing_strategy",
         ).model_dump(),
     )
-    async def run_marketing_crew(input: PromptInput, ctx: Context) -> PromptOutput:
+    async def run_marketing_crew(input: TextInput, ctx: Context) -> TextOutput:
         loop = asyncio.get_event_loop()
 
         def step_callback(data, *args, **kwargs):
@@ -44,12 +44,12 @@ async def run():
                     "tool_input": data.tool_input,
                     "result": data.result,
                 }
-                delta = PromptOutput(
+                delta = TextOutput(
                     text="",
                     logs=[None, Log(message=json.dumps(action, indent=2), **action)],
                 )
             elif isinstance(data, AgentFinish):
-                delta = PromptOutput(text=data.output, logs=[None, Log(message=data.text, level=LogLevel.success)])
+                delta = TextOutput(text=data.output, logs=[None, Log(message=data.text, level=LogLevel.success)])
             if delta:
                 asyncio.run_coroutine_threadsafe(ctx.report_agent_run_progress(delta=delta), loop)
 
@@ -57,7 +57,7 @@ async def run():
             crew = MarketingPostsCrew().crew(step_callback=step_callback)
             inputs = {"project_description": input.text}
             result: CrewOutput = await asyncio.to_thread(crew.kickoff, inputs=inputs)
-            return PromptOutput(text=result.raw)
+            return TextOutput(text=result.raw)
         except Exception as e:
             raise Exception(f"An error occurred while running the crew: {e}")
 

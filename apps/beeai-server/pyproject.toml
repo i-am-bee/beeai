@@ -6,8 +6,8 @@ readme = "README.md"
 authors = [{ name = "IBM Corp." }]
 requires-python = ">=3.11,<4.0"
 dependencies = [
-    "acp-sdk==0.0.3",
-    "beeai-sdk==0.0.5",
+    "acp-sdk==0.0.4",
+    "beeai-sdk==0.0.6",
     "aiohttp>=3.11.11",
     "anyio>=4.8.0",
     "asgiref>=3.8.1",
