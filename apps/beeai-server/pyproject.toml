@@ -7,6 +7,7 @@ authors = [{ name = "IBM Corp." }]
 requires-python = ">=3.11,<4.0"
 dependencies = [
     "acp-sdk==0.0.3",
+    "beeai-sdk==0.0.5",
     "aiohttp>=3.11.11",
     "anyio>=4.8.0",
     "asgiref>=3.8.1",
@@ -41,3 +42,4 @@ artifacts = ["static/"]
 
 [tool.uv.sources]
 acp-sdk = { workspace = true }
+beeai-sdk = { workspace = true }
