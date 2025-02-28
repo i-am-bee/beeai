@@ -613,7 +613,7 @@ class Server:
                 self._mcp_server.create_initialization_options(),
             )
 
-    async def run_sse_async(self) -> None:
+    async def run_sse_async(self, **uvicorn_kwargs) -> None:
         """Run the server using SSE transport."""
         from starlette.applications import Starlette
         from starlette.routing import Mount, Route
@@ -643,6 +643,7 @@ class Server:
             host=self.settings.host,
             port=self.settings.port,
             log_level=self.settings.log_level.lower(),
+            **uvicorn_kwargs,
         )
         server = uvicorn.Server(config)
         await server.serve()

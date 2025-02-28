@@ -12,7 +12,6 @@ permissions:
 jobs:
   publish-npm:
     name: Publish on NPM
-    if: github.event.base_ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment: release
     steps:

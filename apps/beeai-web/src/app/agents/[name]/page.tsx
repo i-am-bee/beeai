@@ -14,15 +14,27 @@
  * limitations under the License.
  */
 
-import { useContext } from 'react';
-import { AgentsContext } from './agents-context';
+import { getAgentsList } from "@/acp/api";
+import { AgentDetail, Container } from "@i-am-bee/beeai-ui";
+import { notFound } from "next/navigation";
 
-export function useAgents() {
-  const context = useContext(AgentsContext);
+export const dynamic = "force-dynamic"; // Opt out of static generation
 
-  if (!context) {
-    throw new Error('useAgents must be used within AgentsProvider');
+interface Props {
+  params: Promise<{ name: string }>;
+}
+
+export default async function AgentPage({ params }: Props) {
+  const { name } = await params;
+  const agents = await getAgentsList();
+  const agent = agents.find((agent) => agent.name === name);
+  if (!agent) {
+    notFound();
   }
 
-  return context;
+  return (
+    <Container>
+      <AgentDetail agent={agent} />
+    </Container>
+  );
 }

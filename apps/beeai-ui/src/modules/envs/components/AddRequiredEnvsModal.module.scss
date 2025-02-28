@@ -14,21 +14,13 @@
  * limitations under the License.
  */
 
-import { PropsWithChildren } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
-import { useListAgents } from '../api/queries/useListAgents';
-import { AgentsContext, AgentsFiltersParams } from './agents-context';
+.description {
+  @include type-style(body-01);
+  color: $text-secondary;
+}
 
-export function AgentsProvider({ children }: PropsWithChildren) {
-  const agentsQuery = useListAgents();
-
-  const formReturn = useForm<AgentsFiltersParams>({
-    mode: 'onChange',
-  });
-
-  return (
-    <AgentsContext.Provider value={{ agentsQuery }}>
-      <FormProvider {...formReturn}>{children}</FormProvider>
-    </AgentsContext.Provider>
-  );
+.stack {
+  display: flex;
+  flex-direction: column;
+  row-gap: $spacing-06;
 }

@@ -19,9 +19,11 @@ from contextlib import contextmanager
 from typing import Iterator
 
 import typer
+from httpx import ConnectError
 from rich.console import Console
 from rich.table import Table
 
+from beeai_cli.api import resolve_connection_error
 from beeai_cli.configuration import Configuration
 from beeai_cli.utils import extract_messages
 
@@ -49,11 +51,15 @@ class AsyncTyper(typer.Typer):
             @functools.wraps(f)
             def wrapped_f(*args, **kwargs):
                 try:
-                    if inspect.iscoroutinefunction(f):
-                        asyncio.run(f(*args, **kwargs))
-                    else:
-                        f(*args, **kwargs)
-                except Exception as ex:
+                    for retries in range(2):
+                        try:
+                            if inspect.iscoroutinefunction(f):
+                                return asyncio.run(f(*args, **kwargs))
+                            else:
+                                return f(*args, **kwargs)
+                        except* (ConnectionError, ConnectError):
+                            resolve_connection_error(retried=retries > 0)
+                except* Exception as ex:
                     for exc_type, message in extract_messages(ex):
                         err_console.print(f":boom: [bold red]{exc_type}[/bold red]: {message}")
                     if DEBUG:

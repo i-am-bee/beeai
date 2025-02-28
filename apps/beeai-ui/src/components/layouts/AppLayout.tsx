@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
+import { UserNav } from '#components/UserNav/UserNav.tsx';
 import { routes } from '#utils/router.js';
 import { UIEventHandler, useCallback, useRef, useState } from 'react';
 import { Outlet, useLocation } from 'react-router';
+import { MainNav } from '../MainNav/MainNav';
 import { ToTopButton } from '../ToTopButton/ToTopButton';
 import { AppFooter } from './AppFooter';
 import { AppHeader } from './AppHeader';
 import classes from './AppLayout.module.scss';
-import { MainNav } from '../MainNav/MainNav';
-import { CommunityNav } from '../CommunityNav/CommunityNav';
 
 const SCROLLED_OFFSET = 48;
 
@@ -52,7 +52,8 @@ export function AppLayout() {
     <div className={classes.root}>
       <AppHeader className={classes.header}>
         <MainNav />
-        {!isHomeRoute && <CommunityNav />}
+
+        <UserNav />
       </AppHeader>
 
       <main ref={mainRef} className={classes.main} onScroll={handleScroll}>

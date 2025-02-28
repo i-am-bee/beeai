@@ -14,23 +14,32 @@
  * limitations under the License.
  */
 
+import type { ReactElement } from 'react';
+import { Tag } from '@carbon/react';
+import { LogoGithub } from '@carbon/icons-react';
 import { TagsList } from '#components/TagsList/TagsList.tsx';
 import { Tooltip } from '#components/Tooltip/Tooltip.tsx';
 import Bee from '#svgs/Bee.svg';
 import { BEE_AI_FRAMEWORK_TAG } from '#utils/constants.ts';
 import { isNotNull } from '#utils/helpers.ts';
-import { Tag } from '@carbon/react';
-import { Agent } from '../api/types';
+import type { Agent } from '../api/types';
+import classes from './AgentTags.module.scss';
 
 interface Props {
   agent: Agent;
+  showGitHub?: boolean;
   className?: string;
 }
 
-export function AgentTags({ agent, className }: Props) {
-  const { framework } = agent;
+export function AgentTags({ agent, showGitHub, className }: Props) {
+  const { framework, githubUrl } = agent;
 
-  return <TagsList tags={[framework ? <AgentTag name={framework} /> : null].filter(isNotNull)} className={className} />;
+  const tags: ReactElement[] = [
+    framework ? <AgentTag key={framework} name={framework} /> : null,
+    showGitHub && githubUrl ? <AgentGitHubTag key={githubUrl} href={githubUrl} /> : null,
+  ].filter(isNotNull);
+
+  return <TagsList tags={tags} className={className} />;
 }
 
 function AgentTag({ name }: { name: string }) {
@@ -43,4 +52,8 @@ function AgentTag({ name }: { name: string }) {
   ) : (
     <Tag type="cool-gray">{name}</Tag>
   );
+}
+
+function AgentGitHubTag({ href }: { href: string }) {
+  return <Tag type="cool-gray" as="a" href={href} target="_blank" renderIcon={LogoGithub} className={classes.link} />;
 }

@@ -12,22 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import contextlib
+import functools
+import enum
+import json
+import os
+import subprocess
+import time
 import urllib
 import urllib.parse
-import uuid
-from contextlib import asynccontextmanager
-from typing import AsyncGenerator
 
-import anyio
 import httpx
+import typer
 from httpx import HTTPStatusError
-from acp import ClientSession, types, ServerNotification
-from acp.client.sse import sse_client
-from acp.shared.session import ReceiveResultT
-from acp.types import RequestParams
-from beeai_cli.async_typer import err_console
 
 from beeai_cli.configuration import Configuration
+from beeai_sdk.utils.api import send_request as _send_request
+from beeai_sdk.utils.api import send_request_with_notifications as _send_request_with_notifications
 
 config = Configuration()
 BASE_URL = str(config.host).rstrip("/")
@@ -35,13 +36,67 @@ API_BASE_URL = f"{BASE_URL}/api/v1/"
 MCP_URL = f"{BASE_URL}{config.mcp_sse_path}"
 
 
-@asynccontextmanager
-async def mcp_client() -> AsyncGenerator[ClientSession, None]:
-    """Context manager for MCP client connection."""
-    async with sse_client(url=MCP_URL) as (read_stream, write_stream):
-        async with ClientSession(read_stream, write_stream) as session:
-            await session.initialize()
-            yield session
+class BrewServiceStatus(enum.StrEnum):
+    not_installed = "not_installed"
+    stopped = "stopped"
+    started = "started"
+
+
+def brew_service_status() -> BrewServiceStatus:
+    beeai_service = None
+    with contextlib.suppress(Exception):
+        services = json.loads(subprocess.check_output(["brew", "services", "list", "--json"]))
+        beeai_service = next((service for service in services if service["name"] == "beeai"), None)
+    if not beeai_service:
+        return BrewServiceStatus.not_installed
+    elif beeai_service["status"] == "started":
+        return BrewServiceStatus.started
+    else:
+        return BrewServiceStatus.stopped
+
+
+def resolve_connection_error(retried: bool = False):
+    if BASE_URL != "http://localhost:8333":
+        typer.echo(f"💥 {typer.style('ConnectError', fg='red')}: Could not connect to the local BeeAI service.")
+        typer.echo(
+            f'💡 {typer.style("HINT", fg="yellow")}: You have set the BeeAI host to "{typer.style(BASE_URL, bold=True)}" -- is this correct?'
+        )
+        exit(1)
+
+    if retried:
+        typer.echo(f"💥 {typer.style('ConnectError', fg='red')}: We failed to automatically start the BeeAI service.")
+        typer.echo(
+            f"💡 {typer.style('HINT', fg='yellow')}: Try reinstalling the service with {typer.style('brew reinstall beeai', fg='green')}, then retry."
+        )
+        exit(1)
+
+    status = brew_service_status()
+    if status == BrewServiceStatus.started:
+        typer.echo(
+            f"💥 {typer.style('ConnectError', fg='red')}: The BeeAI service is running, but it did not accept the connection."
+        )
+        typer.echo(
+            f"💡 {typer.style('HINT', fg='yellow')}: Try reinstalling the service with {typer.style('brew reinstall beeai', fg='green')}, then retry."
+        )
+        exit(1)
+
+    if status == BrewServiceStatus.not_installed:
+        typer.echo(f"💥 {typer.style('ConnectError', fg='red')}: BeeAI service is not running.")
+        typer.echo(
+            f"💡 {typer.style('HINT', fg='yellow')}: In a separate terminal, run {typer.style('beeai serve', fg='green')}, keep it running and retry this command."
+        )
+        typer.echo(
+            f"💡 {typer.style('HINT', fg='yellow')}: ...or alternatively, install BeeAI through {typer.style('brew', fg='green')} which includes a background service."
+        )
+        exit(1)
+
+    typer.echo(f"⏳ {typer.style('Auto-resolving', fg='magenta')}: Starting the BeeAI service, stand by...")
+    with contextlib.suppress(Exception):
+        os.system("brew services start beeai")
+        time.sleep(3.0)
+        typer.echo(
+            f"ℹ️  {typer.style('NOTE', fg='blue')}: It will take a few minutes before all of the agents are available, please be patient..."
+        )
 
 
 async def api_request(method: str, path: str, json: dict | None = None) -> dict | None:
@@ -59,49 +114,5 @@ async def api_request(method: str, path: str, json: dict | None = None) -> dict 
             return response.json()
 
 
-async def send_request_with_notifications(
-    req: types.Request, result_type: type[ReceiveResultT]
-) -> AsyncGenerator[ReceiveResultT | ServerNotification | None, None]:
-    resp: ReceiveResultT | None = None
-    async with mcp_client() as session:
-        await session.initialize()
-
-        message_writer, message_reader = anyio.create_memory_object_stream()
-
-        req = types.ClientRequest(req).root
-        req.params = req.params or RequestParams()
-        req.params.meta = RequestParams.Meta(progressToken=uuid.uuid4().hex)
-        req = types.ClientRequest(req)
-
-        async with anyio.create_task_group() as task_group:
-
-            async def request_task():
-                nonlocal resp
-                try:
-                    resp = await session.send_request(req, result_type)
-                finally:
-                    task_group.cancel_scope.cancel()
-
-            async def read_notifications():
-                # IMPORTANT(!) if the client does not read the notifications, it gets blocked never receiving the response
-                async for message in session.incoming_messages:
-                    try:
-                        notification = ServerNotification.model_validate(message)
-                        await message_writer.send(notification)
-                    except ValueError:
-                        err_console.print(f"Unable to parse message from server: {message}")
-
-            task_group.start_soon(read_notifications)
-            task_group.start_soon(request_task)
-
-            async for message in message_reader:
-                yield message
-    if resp:
-        yield resp
-
-
-async def send_request(req: types.Request, result_type: type[ReceiveResultT]) -> ReceiveResultT:
-    async for message in send_request_with_notifications(req, result_type):
-        if isinstance(message, result_type):
-            return message
-    raise RuntimeError(f"No response of type {result_type.__name__} was returned")
+send_request_with_notifications = functools.partial(_send_request_with_notifications, MCP_URL)
+send_request = functools.partial(_send_request, MCP_URL)

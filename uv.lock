@@ -18,7 +18,7 @@ dev = [
 
 [[package]]
 name = "acp-sdk"
-version = "0.0.3"
+version = "0.0.4"
 source = { editable = "packages/acp-python-sdk" }
 dependencies = [
     { name = "anyio" },
@@ -217,11 +217,12 @@ wheels = [
 
 [[package]]
 name = "beeai-cli"
-version = "0.0.2"
+version = "0.0.3"
 source = { editable = "apps/beeai-cli" }
 dependencies = [
     { name = "acp-sdk" },
     { name = "anyio" },
+    { name = "beeai-sdk" },
     { name = "beeai-server" },
     { name = "pydantic" },
     { name = "pydantic-settings" },
@@ -232,6 +233,7 @@ dependencies = [
 requires-dist = [
     { name = "acp-sdk", editable = "packages/acp-python-sdk" },
     { name = "anyio", specifier = ">=4.8.0" },
+    { name = "beeai-sdk", editable = "packages/beeai-sdk" },
     { name = "beeai-server", editable = "apps/beeai-server" },
     { name = "pydantic", specifier = ">=2.10.6" },
     { name = "pydantic-settings", specifier = ">=2.7.1" },
@@ -240,8 +242,8 @@ requires-dist = [
 
 [[package]]
 name = "beeai-sdk"
-version = "0.0.4"
-source = { virtual = "packages/beeai-sdk" }
+version = "0.0.5"
+source = { editable = "packages/beeai-sdk" }
 dependencies = [
     { name = "acp-sdk" },
     { name = "opentelemetry-exporter-otlp-proto-http" },
@@ -259,7 +261,7 @@ requires-dist = [
 
 [[package]]
 name = "beeai-server"
-version = "0.0.1"
+version = "0.0.2"
 source = { editable = "apps/beeai-server" }
 dependencies = [
     { name = "acp-sdk" },
@@ -267,6 +269,7 @@ dependencies = [
     { name = "anyio" },
     { name = "asgiref" },
     { name = "backports-tarfile" },
+    { name = "beeai-sdk" },
     { name = "fastapi", extra = ["standard"] },
     { name = "httpx" },
     { name = "kink" },
@@ -293,6 +296,7 @@ requires-dist = [
     { name = "anyio", specifier = ">=4.8.0" },
     { name = "asgiref", specifier = ">=3.8.1" },
     { name = "backports-tarfile", specifier = ">=1.2.0" },
+    { name = "beeai-sdk", editable = "packages/beeai-sdk" },
     { name = "fastapi", extras = ["standard"], specifier = ">=0.115.7" },
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "kink", specifier = ">=0.8.1" },

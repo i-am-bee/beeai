@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+'use client';
+
 import { TagsList } from '#components/TagsList/TagsList.tsx';
 import { BEE_AI_FRAMEWORK_TAG } from '#utils/constants.ts';
 import { isNotNull } from '#utils/helpers.ts';
@@ -22,28 +24,29 @@ import { OperationalTag, TextInput, TextInputSkeleton } from '@carbon/react';
 import clsx from 'clsx';
 import { useId, useMemo } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { useAgents } from '../contexts';
-import { AgentsFiltersParams } from '../contexts/agents-context';
+import { AgentsFiltersParams } from '../providers/AgentsFiltersProvider';
+import { Agent } from '../api/types';
 import classes from './AgentsFilters.module.scss';
 
-export function AgentsFilters() {
+interface Props {
+  agents: Agent[] | undefined;
+}
+
+export function AgentsFilters({ agents }: Props) {
   const id = useId();
-  const {
-    agentsQuery: { data, isPending },
-  } = useAgents();
   const { watch, setValue } = useFormContext<AgentsFiltersParams>();
 
   const frameworks = useMemo(() => {
-    if (!data) return [];
+    if (!agents) return [];
 
-    return [...new Set(data.map(({ framework }) => framework))].filter(isNotNull).sort((a, b) => {
+    return [...new Set(agents.map(({ framework }) => framework))].filter(isNotNull).sort((a, b) => {
       // BeeAI framework should be always first
       if (a === BEE_AI_FRAMEWORK_TAG) return -1;
       if (b === BEE_AI_FRAMEWORK_TAG) return 1;
 
       return a.localeCompare(b);
     });
-  }, [data]);
+  }, [agents]);
 
   const selectFramework = (framework: string | null) => {
     setValue('framework', framework);
@@ -51,7 +54,7 @@ export function AgentsFilters() {
 
   const selectedFramework = watch('framework');
 
-  return !isPending ? (
+  return (
     <div className={classes.root}>
       <div className={classes.searchBar}>
         <Search />
@@ -72,21 +75,17 @@ export function AgentsFilters() {
             text="All"
             className={clsx(classes.frameworkAll, { selected: !isNotNull(selectedFramework) })}
           />,
-          ...(frameworks
-            ? frameworks.map((framework) => (
-                <OperationalTag
-                  key={framework}
-                  onClick={() => selectFramework(framework)}
-                  text={framework}
-                  className={clsx({ selected: selectedFramework === framework })}
-                />
-              ))
-            : []),
+          ...frameworks.map((framework) => (
+            <OperationalTag
+              key={framework}
+              onClick={() => selectFramework(framework)}
+              text={framework}
+              className={clsx({ selected: selectedFramework === framework })}
+            />
+          )),
         ]}
       />
     </div>
-  ) : (
-    <AgentsFilters.Skeleton />
   );
 }
 

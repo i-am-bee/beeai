@@ -16,20 +16,16 @@
 
 import { Container } from '#components/layouts/Container.tsx';
 import { ViewStack } from '#components/ViewStack/ViewStack.tsx';
-import { AgentsFilters } from '#modules/agents/components/AgentsFilters.tsx';
-import { AgentsList } from '#modules/agents/components/AgentsList.tsx';
-
-import { AgentsProvider } from '#modules/agents/contexts/AgentsProvider.tsx';
+import { AgentsFiltersProvider } from '#modules/agents/providers/AgentsFiltersProvider.tsx';
+import { AgentsView } from '#modules/agents/list/AgentsView.tsx';
 
 export function Agents() {
   return (
     <Container>
       <ViewStack>
-        <AgentsProvider>
-          <AgentsFilters />
-
-          <AgentsList />
-        </AgentsProvider>
+        <AgentsFiltersProvider>
+          <AgentsView />
+        </AgentsFiltersProvider>
       </ViewStack>
     </Container>
   );

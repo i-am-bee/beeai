@@ -32,6 +32,7 @@ from beeai_server.configuration import Configuration
 from beeai_server.exceptions import ManifestLoadError
 from beeai_server.routes.mcp_sse import create_mcp_sse_app
 from beeai_server.routes.provider import router as provider_router
+from beeai_server.routes.agent import router as agent_router
 from beeai_server.routes.env import router as env_router
 from beeai_server.services.mcp_proxy.provider import ProviderContainer
 from beeai_server.utils.periodic import CRON_REGISTRY, run_all_crons
@@ -74,6 +75,7 @@ def mount_routes(app: FastAPI):
     ui_app.add_exception_handler(404, lambda _req, _exc: FileResponse(static_directory / "index.html", status_code=200))
 
     server_router = APIRouter()
+    server_router.include_router(agent_router, prefix="/agent", tags=["agent"])
     server_router.include_router(provider_router, prefix="/provider", tags=["provider"])
     server_router.include_router(env_router, prefix="/env", tags=["env"])
 

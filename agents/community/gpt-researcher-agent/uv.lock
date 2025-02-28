@@ -1,4 +1,5 @@
 version = 1
+revision = 1
 requires-python = ">=3.11, <4.0"
 resolution-markers = [
     "python_full_version >= '3.12.4'",
@@ -8,8 +9,8 @@ resolution-markers = [
 
 [[package]]
 name = "acp-sdk"
-version = "0.0.1"
-source = { registry = "https://pypi.org/simple" }
+version = "0.0.3"
+source = { editable = "../../../packages/acp-python-sdk" }
 dependencies = [
     { name = "anyio" },
     { name = "httpx" },
@@ -22,9 +23,33 @@ dependencies = [
     { name = "starlette" },
     { name = "uvicorn" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/d0/cc/bd9f47ecc180d43e4a6a992a3643bcb981517b120f709286f5dd3cdc3372/acp_sdk-0.0.1.tar.gz", hash = "sha256:5e31aa386fa57d148000029a0e38b7bd97df59de7dc8a85a4d0e3fc45c464d10", size = 141753 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/9e/3e/8587a3dad62509b9dabd4cffc3469f46991b025ca9be6ef3a27861222460/acp_sdk-0.0.1-py3-none-any.whl", hash = "sha256:d59b353d8c0730621e8751fabdeb255d39fdd662ffcc9908cfd7b286a5cdaa26", size = 69667 },
+
+[package.metadata]
+requires-dist = [
+    { name = "anyio", specifier = ">=4.5" },
+    { name = "httpx", specifier = ">=0.27" },
+    { name = "httpx-sse", specifier = ">=0.4" },
+    { name = "opentelemetry-api", specifier = ">=1.0.0" },
+    { name = "pydantic", specifier = ">=2.7.2,<3.0.0" },
+    { name = "pydantic-settings", specifier = ">=2.5.2" },
+    { name = "python-dotenv", marker = "extra == 'cli'", specifier = ">=1.0.0" },
+    { name = "rich", marker = "extra == 'rich'", specifier = ">=13.9.4" },
+    { name = "setuptools", specifier = "==75.8.0" },
+    { name = "sse-starlette", specifier = ">=1.6.1" },
+    { name = "starlette", specifier = ">=0.27" },
+    { name = "typer", marker = "extra == 'cli'", specifier = ">=0.12.4" },
+    { name = "uvicorn", specifier = ">=0.23.1" },
+]
+provides-extras = ["rich", "cli"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "pyright", specifier = ">=1.1.391" },
+    { name = "pytest", specifier = ">=8.3.4" },
+    { name = "pytest-flakefinder", specifier = ">=1.1.0" },
+    { name = "pytest-xdist", specifier = ">=3.6.1" },
+    { name = "ruff", specifier = ">=0.8.5" },
+    { name = "trio", specifier = ">=0.26.2" },
 ]
 
 [[package]]
@@ -191,7 +216,7 @@ wheels = [
 
 [[package]]
 name = "beeai-sdk"
-version = "0.0.2"
+version = "0.0.5"
 source = { editable = "../../../packages/beeai-sdk" }
 dependencies = [
     { name = "acp-sdk" },
@@ -202,7 +227,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "acp-sdk", specifier = ">=0.0.1" },
+    { name = "acp-sdk", editable = "../../../packages/acp-python-sdk" },
     { name = "opentelemetry-exporter-otlp-proto-http", specifier = ">=1.30.0" },
     { name = "opentelemetry-sdk", specifier = ">=1.30.0" },
     { name = "pydantic", specifier = ">=2.10.6" },
@@ -706,7 +731,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "acp-sdk", specifier = ">=0.0.1" },
+    { name = "acp-sdk", specifier = "==0.0.3" },
     { name = "beeai-sdk", editable = "../../../packages/beeai-sdk" },
     { name = "duckduckgo-search", specifier = ">=7.3.2,<8.0.0" },
     { name = "gpt-researcher", specifier = ">=0.10.11,<0.11.0" },
