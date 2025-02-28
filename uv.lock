@@ -1,5 +1,4 @@
 version = 1
-revision = 1
 requires-python = ">=3.11, <4.0"
 
 [manifest]
@@ -19,7 +18,7 @@ dev = [
 
 [[package]]
 name = "acp-sdk"
-version = "0.0.3"
+version = "0.0.4"
 source = { editable = "packages/acp-python-sdk" }
 dependencies = [
     { name = "anyio" },
@@ -69,7 +68,6 @@ requires-dist = [
     { name = "typer", marker = "extra == 'cli'", specifier = ">=0.12.4" },
     { name = "uvicorn", specifier = ">=0.23.1" },
 ]
-provides-extras = ["rich", "cli"]
 
 [package.metadata.requires-dev]
 dev = [
