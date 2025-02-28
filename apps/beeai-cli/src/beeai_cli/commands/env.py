@@ -35,7 +35,7 @@ async def add(
         "env",
         json={**({"env": env_vars} if env_vars else {})},
     )
-    console.print(f"Added env variables {list(env_vars.keys())}")
+    await list_env()
 
 
 @app.command("list")
@@ -54,7 +54,7 @@ async def remove_env(
     env: list[str] = typer.Argument(help="Environment variable(s) to remove"),
 ):
     await api_request("put", "env", json={**({"env": {var: None for var in env}})})
-    console.print(f"Removed env variables: {env}")
+    await list_env()
 
 
 @app.command(
