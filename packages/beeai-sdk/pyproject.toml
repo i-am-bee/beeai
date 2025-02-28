@@ -5,7 +5,7 @@ description = "BeeAI SDK"
 readme = "README.md"
 requires-python = ">=3.11,<4.0"
 dependencies = [
-    "acp-sdk==0.0.3",
+    "acp-sdk==0.0.4",
     "opentelemetry-exporter-otlp-proto-http>=1.30.0",
     "opentelemetry-sdk>=1.30.0",
     "pydantic>=2.10.6",
