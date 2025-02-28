@@ -22,7 +22,8 @@ exampleInput = {"text": "Make a program that asks for a number and prints its fa
 exampleInputStr = json.dumps(exampleInput, ensure_ascii=False, indent=2)
 
 fullDescription = f"""
-> [!NOTE]
+> ℹ️ NOTE
+> 
 > This agent works in stateless mode at the moment. While the CLI only shows the textual output, the created files are also available through the API.
 
 The agent is an advanced AI pair programming assistant designed to help developers edit and manage code in their local git repositories via natural language instructions. It leverages AI to assist programmers in writing, editing, debugging, and understanding code, enhancing productivity and simplifying complex coding tasks. The agent runs in a local environment and interacts directly with the user's codebase, providing actionable insights and modifications.
