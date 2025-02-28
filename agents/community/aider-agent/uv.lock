@@ -8,7 +8,7 @@ resolution-markers = [
 
 [[package]]
 name = "acp-sdk"
-version = "0.0.2"
+version = "0.0.4"
 source = { editable = "../../../packages/acp-python-sdk" }
 dependencies = [
     { name = "anyio" },
@@ -66,7 +66,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "acp-sdk", specifier = ">=0.0.2" },
+    { name = "acp-sdk", specifier = "==0.0.4" },
     { name = "aider-chat", specifier = ">=0.18.1" },
     { name = "beeai-sdk", editable = "../../../packages/beeai-sdk" },
     { name = "google-generativeai", specifier = ">=0.8.4" },
@@ -319,7 +319,7 @@ wheels = [
 
 [[package]]
 name = "beeai-sdk"
-version = "0.0.4"
+version = "0.0.5"
 source = { editable = "../../../packages/beeai-sdk" }
 dependencies = [
     { name = "acp-sdk" },
