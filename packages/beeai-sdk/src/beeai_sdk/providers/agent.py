@@ -42,6 +42,6 @@ async def run_agent_provider(server: Server):
     )
     with trace.get_tracer("beeai-sdk").start_as_current_span("agent-provider"):
         try:
-            await server.run_sse_async()
+            await server.run_sse_async(timeout_graceful_shutdown=5)
         except KeyboardInterrupt:
             pass
