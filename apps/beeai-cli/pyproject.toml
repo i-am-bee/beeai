@@ -6,13 +6,13 @@ readme = "README.md"
 authors = [{ name = "IBM Corp." }]
 requires-python = ">=3.11,<4.0"
 dependencies = [
-    "acp-sdk==0.0.4",
-    "beeai-sdk==0.0.6",
+    "beeai-server==0.0.2",
+    "acp-sdk", # version determined by beeai-server
+    "beeai-sdk", # version determined by beeai-server
     "anyio>=4.8.0",
     "pydantic>=2.10.6",
     "pydantic-settings>=2.7.1",
     "requests>=2.32.3",
-    "beeai-server==0.0.2",
 ]
 
 [tool.uv.sources]
