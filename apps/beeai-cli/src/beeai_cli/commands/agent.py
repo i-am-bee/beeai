@@ -14,16 +14,19 @@
 
 import json
 import sys
+from typing import Any
 
+import rich.json
 import typer
 from click import BadParameter
+from rich.markdown import Markdown
 from rich.table import Column
 
 from acp import types, ServerNotification, RunAgentResult, McpError, ErrorData
 from acp.types import AgentRunProgressNotification, AgentRunProgressNotificationParams, Agent
 from beeai_cli.api import send_request, send_request_with_notifications
 from beeai_cli.async_typer import AsyncTyper, console, err_console, create_table
-from beeai_cli.utils import check_json
+from beeai_cli.utils import check_json, omit
 
 app = AsyncTyper()
 
@@ -106,9 +109,32 @@ async def _get_agent(name: str) -> Agent:
     raise McpError(error=ErrorData(code=404, message=f"agent/{name} not found in any provider"))
 
 
+def _render_schema(schema: dict[str, Any] | None):
+    return "No schema provided." if not schema else rich.json.JSON.from_data(schema)
+
+
 @app.command("info")
 async def agent_detail(
     name: str = typer.Argument(help="Name of agent tool to show"),
+    schema: bool | None = typer.Option(default=None),
 ):
     """Show details of an agent"""
-    console.print(await _get_agent(name))
+    agent = await _get_agent(name)
+    if schema:
+        console.print(Markdown(f"# Agent {agent.name}\n## Input Schema\n"))
+        console.print(_render_schema(agent.inputSchema))
+        console.print(Markdown("## Output Schema\n"))
+        console.print(_render_schema(agent.outputSchema))
+        return
+
+    agent_dict = agent.model_dump()
+    basic_info = f"# {agent.name}\n{agent.description}"
+
+    console.print(Markdown(basic_info))
+    console.print(Markdown(agent_dict.get("fullDescription", None) or ""))
+
+    with create_table("Key", "Value", title="Extra information") as table:
+        for key, value in omit(agent.model_extra, {"fullDescription", "inputSchema", "outputSchema"}).items():
+            table.add_row(key, str(value))
+    console.print()
+    console.print(table)

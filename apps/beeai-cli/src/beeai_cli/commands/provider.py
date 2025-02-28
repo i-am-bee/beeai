@@ -13,11 +13,13 @@
 # limitations under the License.
 
 import hashlib
+import re
 from enum import StrEnum
 from pathlib import Path
 from typing import Any
 
 import typer
+from pydantic import ValidationError
 from rich.table import Column
 
 from beeai_cli.api import api_request
@@ -69,7 +71,7 @@ async def add(
     """Add a new provider"""
     location = _get_abs_location(location)
     await api_request("post", "provider", json={"location": location})
-    console.print(f"Added provider: {location}")
+    await list_providers()
 
 
 def render_enum(value: str, colors: dict[str, str]) -> str:
@@ -78,8 +80,28 @@ def render_enum(value: str, colors: dict[str, str]) -> str:
     return value
 
 
-def get_short_id(long_id: str):
+def _get_short_id(long_id: str):
     return hashlib.sha256(long_id.encode("utf-8")).hexdigest()[:8]
+
+
+def _get_short_location(location: str) -> str:
+    try:
+        from beeai_server.utils.github import GithubUrl
+        from beeai_server.domain.constants import DEFAULT_MANIFEST_PATH
+    except ImportError:
+        return location
+    replace_provider_re = rf"/?{DEFAULT_MANIFEST_PATH}$"
+    try:
+        url = GithubUrl(location)
+        return "".join(
+            (
+                f"{url.org}/{url.repo}",
+                f"@{url.version}" if url.version else "",
+                f":{re.sub(replace_provider_re, '', url.path)}" if url.path else "",
+            )
+        )
+    except ValidationError:
+        return re.sub(replace_provider_re, "", location.replace("file://", ""))
 
 
 @app.command("list")
@@ -90,14 +112,18 @@ async def list_providers():
         Column("Short ID", style="yellow"),
         Column("Status"),
         Column("Missing Env"),
-        Column("URL", ratio=1),
-        Column("Last Error", ratio=2),
+        Column("Location", ratio=2),
+        Column("Last Error", ratio=1),
     ) as table:
         for item in sorted(
-            sorted(resp["items"], key=lambda item: item["id"]), key=lambda item: item["status"], reverse=True
+            sorted(
+                resp["items"], key=lambda item: ((item.get("registry", None) or "z"), _get_short_location(item["id"]))
+            ),
+            key=lambda item: item["status"],
+            reverse=True,
         ):
             table.add_row(
-                get_short_id(item["id"]),
+                _get_short_id(item["id"]),
                 render_enum(
                     item["status"],
                     {
@@ -108,15 +134,16 @@ async def list_providers():
                     },
                 ),
                 ",".join(var["name"] for var in item["missing_configuration"]) or "<none>",
-                item["id"],
-                (item.get("last_error") or {}).get("message", None) if item["status"] != "ready" else "",
+                _get_short_location(item["id"]),
+                (item.get("last_error") or {}).get("message", None) if item["status"] != "ready" else "<none>",
             )
     console.print(table)
 
 
 def select_provider(location_or_id: str, providers: list[dict[str, Any]]):
     provider_candidates = {p["id"]: p for p in providers if location_or_id in p["id"]}
-    provider_candidates.update({p["id"]: p for p in providers if location_or_id in get_short_id(p["id"])})
+    provider_candidates.update({p["id"]: p for p in providers if location_or_id in _get_short_id(p["id"])})
+    provider_candidates.update({p["id"]: p for p in providers if location_or_id in _get_short_location(p["id"])})
     if len(provider_candidates) != 1:
         provider_candidates = [f"  - {c}" for c in provider_candidates]
         remove_providers_detail = ":\n" + "\n".join(provider_candidates) if provider_candidates else ""
@@ -136,7 +163,7 @@ async def remove(
     providers = (await api_request("get", "provider"))["items"]
     remove_provider = select_provider(location_or_id, providers)["id"]
     await api_request("post", "provider/delete", json={"location": remove_provider})
-    console.print(f"Removed provider: {remove_provider}")
+    await list_providers()
 
 
 @app.command("info")

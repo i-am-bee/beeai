@@ -18,6 +18,7 @@ import inspect
 from contextlib import contextmanager
 from typing import Iterator
 
+import rich.text
 import typer
 from httpx import ConnectError
 from rich.console import Console
@@ -41,6 +42,9 @@ def create_table(*args, **kwargs) -> Iterator[Table]:
         column.no_wrap = True
         column.overflow = "ellipsis"
         column.header = column.header.upper()
+
+    if not table.rows:
+        table._render = lambda *args, **kwargs: [rich.text.Text("<No items found>", style="italic")]
 
 
 class AsyncTyper(typer.Typer):

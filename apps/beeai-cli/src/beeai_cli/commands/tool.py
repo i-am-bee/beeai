@@ -25,7 +25,7 @@ from acp import types, McpError, ErrorData
 app = AsyncTyper()
 
 
-@app.command("call")
+@app.command("run")
 async def run(
     name: str = typer.Argument(help="Name of the tool to call"),
     input: str = typer.Argument(help="Tool input as JSON", callback=check_json),
