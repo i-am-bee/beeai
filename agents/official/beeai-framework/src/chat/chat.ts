@@ -101,7 +101,7 @@ const registerTools = async (server: AcpServer) => {
 };
 
 const exampleInput: Input = {
-  messages: [{ role: "user", content: "What's the weather like in Paris?" }],
+  messages: [{ role: "user", content: "What is the weather like in Paris?" }],
   config: {
     tools: ["weather"],
   },
