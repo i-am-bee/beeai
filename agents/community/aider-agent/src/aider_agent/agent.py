@@ -4,6 +4,7 @@ import subprocess
 import os
 import sys
 import tempfile
+import json
 from pathlib import Path
 
 from pydantic import Field
@@ -17,13 +18,68 @@ class Output(PromptOutput):
     files: dict[str, str] = Field(default_factory=dict)
     text: str = Field(default_factory=str)
 
+exampleInput = {"text": "Make a program that asks for a number and prints its factorial"}
+exampleInputStr = json.dumps(exampleInput, ensure_ascii=False, indent=2)
+
+fullDescription = f"""
+> ℹ️ NOTE
+> 
+> This agent works in stateless mode at the moment. While the CLI only shows the textual output, the created files are also available through the API.
+
+The agent is an advanced AI pair programming assistant designed to help developers edit and manage code in their local git repositories via natural language instructions. It leverages AI to assist programmers in writing, editing, debugging, and understanding code, enhancing productivity and simplifying complex coding tasks. The agent runs in a local environment and interacts directly with the user's codebase, providing actionable insights and modifications.
+
+## How It Works
+The agent operates as a server-based application that listens for programming-related commands. Upon receiving a command in natural language, it executes the appropriate actions within a temporary directory, simulating changes and returning feedback to the user. The agent uses subprocess execution to run the `aider` command with various options, capturing both standard output and errors to provide detailed responses. It also reads files generated during the process to include their content in the output if applicable.
+
+## Input Parameters
+The agent requires the following input parameters:
+- **input** (string) – The prompt containing natural language instructions for code editing or management.
+
+## Output Structure
+The agent returns an `Output` object with the following fields:
+- **files** (dict) – A dictionary mapping file paths to their respective content, representing any new or modified files.
+- **text** (str) – A string containing the text output from the executed commands, including any error messages.
+
+## Key Features
+- **Natural Language Processing** – Understands and executes code-related commands described in natural language.
+- **Local Environment Integration** – Operates directly within the user's local environment, simulating changes in a temporary workspace.
+- **Real-Time Feedback** – Provides continuous updates on the execution progress and returns detailed results.
+- **Error Handling** – Captures and reports errors encountered during execution, assisting with debugging.
+
+## Use Cases
+- **Program Generation from Natural Language** – Converts user requests into fully functional programs.
+- **Code Editing and Refactoring** – Assists developers in modifying existing codebases without manual intervention.
+- **Debugging Support** – Provides insights and suggestions for resolving coding errors or inefficiencies.
+- **Collaborative Programming** – Simulates a pair programming experience, enhancing coding efficiency and learning.
+- **Bash/Shell Scripting Assistance** – Automates script writing, optimization, and debugging.
+
+## Example Usage
+
+### Example 1: Generating a Factorial Calculator
+
+#### Input:
+```json
+{exampleInputStr}
+```
+
+#### CLI:
+```bash
+beeai run aider '{exampleInputStr}'
+```
+
+### Processing Steps:
+1. The agent is triggered with the natural language input.
+2. It executes the `aider` command in a temporary directory with specified options.
+3. Captures the standard output and error streams, updating the user with progress.
+4. Reads and returns the content of any generated or modified files.
+"""
 
 async def register_agent() -> int:
     server = Server("aider-agent")
 
     @server.agent(
         "aider",
-        "AI pair programming assistant that helps you edit code in your local git repository using natural language.",
+        "An AI pair programmer that edits code in a local Git repository using natural language, executing commands and providing feedback.",
         input=PromptInput,
         output=Output,
         **Metadata(
@@ -31,9 +87,10 @@ async def register_agent() -> int:
             license="Apache 2.0",
             languages=["Python"],
             githubUrl="https://github.com/i-am-bee/beeai/tree/main/agents/community/aider-agent",
+            exampleInput=exampleInput,
+            fullDescription=fullDescription,
             avgRunTimeSeconds=5.0,
             avgRunTokens=5000,
-            fullDescription="""Aider is an AI pair programming assistant that helps you write simple programs.""",
         ).model_dump(),
     )
     async def run_agent(input: PromptInput, ctx) -> Output:
