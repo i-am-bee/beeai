@@ -567,7 +567,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "beeai-sdk", specifier = ">=0.0.4" },
+    { name = "beeai-sdk", specifier = "==0.0.5" },
     { name = "crewai", extras = ["tools"], specifier = ">=0.102.0,<1.0.0" },
 ]
 
