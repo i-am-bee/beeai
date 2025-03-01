@@ -6,8 +6,8 @@ readme = "README.md"
 authors = [{ name = "IBM Corp." }]
 requires-python = ">=3.11,<4.0"
 dependencies = [
-    "acp-sdk==0.0.3",
-    "beeai-sdk==0.0.5",
+    "acp-sdk", # version determined by beeai-sdk
+    "beeai-sdk==0.0.6",
     "pydantic-settings>=2.7.1",
     "pydantic>=2.10.6",
 ]
