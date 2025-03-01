@@ -12,13 +12,53 @@ from gpt_researcher_agent.configuration import load_env
 
 load_env()  # GPT Researchers uses env variables for configuration
 
+agentName = "gpt-researcher"
+
+exampleInputText = "Impact of climate change on global agriculture"
+
+fullDescription = f"""
+The agent is an autonomous system designed to perform detailed research on any specified topic, leveraging both web and local resources. It generates a long, factual report complete with citations, striving to provide unbiased and accurate information. Drawing inspiration from recent advancements in AI-driven research methodologies, the agent addresses common challenges like misinformation and the limits of traditional LLMs, offering robust performance through parallel processing.
+
+## How It Works
+The GPT Researcher agent operates by deploying a 'planner' to generate relevant research questions and 'execution' agents to collect information. The system then aggregates these findings into a well-structured report. This approach minimizes biases by cross-referencing multiple sources and focuses on delivering comprehensive insights. It employs a custom infrastructure to ensure rapid and deterministic outcomes, making it suitable for diverse research applications.
+
+## Input Parameters
+- **text** (string) – The topic or query for which the research report is to be generated.
+
+## Key Features
+- **Comprehensive Research** – Generates detailed reports using information from multiple sources.
+- **Bias Reduction** – Cross-references data from various platforms to minimize misinformation and bias.
+- **High Performance** – Utilizes parallelized processes for efficient and swift report generation.
+- **Customizable** – Offers customization options to tailor research for specific domains or tasks.
+
+## Use Cases
+- **Comprehensive Research** – Generates detailed reports using information from multiple sources.
+- **Bias Reduction** – Cross-references data from various platforms to minimize misinformation and bias.
+- **High Performance** – Utilizes parallelized processes for efficient and swift report generation.
+- **Customizable** – Offers customization options to tailor research for specific domains or tasks.
+
+## Example Usage
+
+### Example: Conducting Research on Climate Change
+
+#### CLI:
+```bash
+beeai run {agentName} "{exampleInputText}"
+```
+
+#### Processing Steps:
+1. Initializes task-specific agents to interpret the query.
+2. Generates a series of questions to form an objective opinion on the topic.
+3. Uses a crawler agent to gather and summarize information for each question.
+4. Aggregates and filters these summaries into a final comprehensive report.
+"""
 
 async def register_agent() -> int:
     server = Server("researcher-agent")
 
     @server.agent(
-        "gpt-researcher",
-        "LLM based autonomous agent that conducts deep local and web research on any topic and generates a long report with citations.",
+        agentName,
+        "The agent conducts in-depth local and web research using a language model to generate comprehensive reports with citations, aimed at delivering factual, unbiased information.",
         input=TextInput,
         output=TextOutput,
         **Metadata(
@@ -28,40 +68,8 @@ async def register_agent() -> int:
             githubUrl="https://github.com/i-am-bee/beeai/tree/main/agents/community/gpt-researcher-agent/gpt_researcher_agent",
             avgRunTimeSeconds=2.1,
             avgRunTokens=111,
-            fullDescription="""
-GPT Researcher is an autonomous agent designed for comprehensive web and local research on any given task.
-
-The agent produces detailed, factual, and unbiased research reports with citations. GPT Researcher provides a full suite of customization options to create tailor made and domain specific research agents. Inspired by the recent Plan-and-Solve and RAG papers, GPT Researcher addresses misinformation, speed, determinism, and reliability by offering stable performance and increased speed through parallelized agent work.
-
-Our mission is to empower individuals and organizations with accurate, unbiased, and factual information through AI.
-
-## Why GPT Researcher?
-
-- Objective conclusions for manual research can take weeks, requiring vast resources and time.
-- LLMs trained on outdated information can hallucinate, becoming irrelevant for current research tasks.
-- Current LLMs have token limitations, insufficient for generating long research reports.
-- Limited web sources in existing services lead to misinformation and shallow results.
-- Selective web sources can introduce bias into research tasks.
-
-## Architecture
-
-The core idea is to utilize 'planner' and 'execution' agents. The planner generates research questions, while the execution agents gather relevant information. The publisher then aggregates all findings into a comprehensive report.
-
-Steps:
-- Create a task-specific agent based on a research query.
-- Generate questions that collectively form an objective opinion on the task.
-- Use a crawler agent for gathering information for each question.
-- Summarize and source-track each resource.
-- Filter and aggregate summaries into a final research report.
-
-## Disclaimer
-
-This project, GPT Researcher, is an experimental application and is provided "as-is" without any warranty, express or implied. We are sharing codes for academic purposes under the Apache 2 license. Nothing herein is academic advice, and NOT a recommendation to use in academic or research papers.
-Our view on unbiased research claims:
-1. The main goal of GPT Researcher is to reduce incorrect and biased facts. How? We assume that the more sites we scrape the less chances of incorrect data. By scraping multiple sites per research, and choosing the most frequent information, the chances that they are all wrong is extremely low.
-2. We do not aim to eliminate biases; we aim to reduce it as much as possible. We are here as a community to figure out the most effective human/llm interactions.
-3. In research, people also tend towards biases as most have already opinions on the topics they research about. This tool scrapes many opinions and will evenly explain diverse views that a biased person would never have read.
-""",
+            exampleInput=exampleInputText,
+            fullDescription=fullDescription,
         ).model_dump(),
     )
     async def run_agent(input: TextInput, ctx) -> TextOutput:

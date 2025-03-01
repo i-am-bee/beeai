@@ -1,7 +1,7 @@
 manifestVersion: 1
 driver: python
 pythonVersion: "3.11"
-package: "git+https://github.com/i-am-bee/beeai@agents-v0.0.24#subdirectory=agents/official/composition"
+package: "git+https://github.com/i-am-bee/beeai@agents-v0.0.25#subdirectory=agents/official/composition"
 serverType: http
 mcpTransport: sse
 mcpEndpoint: /sse

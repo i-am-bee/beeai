@@ -4,7 +4,6 @@ import subprocess
 import os
 import sys
 import tempfile
-import json
 from pathlib import Path
 
 from pydantic import Field
@@ -19,8 +18,7 @@ class Output(TextOutput):
     text: str = Field(default_factory=str)
 
 agentName = "aider"
-exampleInput = {"text": "Make a program that asks for a number and prints its factorial"}
-exampleInputStr = json.dumps(exampleInput, ensure_ascii=False, indent=2)
+exampleInputText = "Make a program that asks for a number and prints its factorial"
 
 fullDescription = f"""
 > ℹ️ NOTE
@@ -60,7 +58,7 @@ The agent returns an `Output` object with the following fields:
 
 #### CLI:
 ```bash
-beeai run {agentName} '{exampleInputStr}'
+beeai run {agentName} "{exampleInputText}"
 ```
 
 ### Processing Steps:
@@ -83,7 +81,7 @@ async def register_agent() -> int:
             license="Apache 2.0",
             languages=["Python"],
             githubUrl="https://github.com/i-am-bee/beeai/tree/main/agents/community/aider-agent",
-            exampleInput=exampleInput,
+            exampleInput=exampleInputText,
             fullDescription=fullDescription,
             avgRunTimeSeconds=5.0,
             avgRunTokens=5000,

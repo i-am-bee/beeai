@@ -44,10 +44,10 @@ It follows a structured template but allows minor flexibility based on the agent
 
 Example:
 
-# Short Description
+## Short Description
 The agent creates structured podcast-style dialogues optimized for AI-driven text-to-speech (TTS). It formats natural conversations with a lead speaker and an inquisitive co-host, ensuring realistic interruptions and follow-ups. The output is structured for seamless TTS integration.
 
-# Full Description
+## Full Description
 The agent converts structured content into a dynamic, natural-sounding podcast script optimized for AI-driven text-to-speech (TTS) applications. It processes input text and transforms it into a structured dialogue between two speakers: one acting as a knowledgeable host and the other as an inquisitive co-host, ensuring a conversational and engaging discussion. The generated dialogue includes interruptions, follow-up questions, and natural reactions to enhance realism.
 
 ## How It Works
@@ -78,7 +78,7 @@ The agent returns a structured JSON list representing the podcast conversation:
 
 ### Example: Converting an Article into a Podcast
 
-### CLI:
+#### CLI:
 \`\`\`bash
 beeai run podcast-creator '{
   text:
@@ -86,12 +86,12 @@ beeai run podcast-creator '{
 }'
 \`\`\`
 
-### Processing Steps:
+#### Processing Steps:
 1. Extracts key concepts from the content.
 2. Reformats it into a structured conversation where Speaker 1 explains ideas and Speaker 2 reacts, asks questions, and introduces clarifications.
 3. Dramatises the content and outputs a structured dialogue suitable for AI voice synthesis.
 
-### Output:
+#### Output:
 \`\`\`json
 [
   {"speaker": 1, "text": "Artificial intelligence is changing how industries operate by automating complex tasks and improving efficiency."},

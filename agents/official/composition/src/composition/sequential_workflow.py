@@ -1,9 +1,10 @@
 from typing import Any
 
+import json
+
 from pydantic import Field, BaseModel
 
 from acp import Agent
-
 
 from acp import RunAgentRequest, RunAgentResult
 from acp.server.highlevel import Context, Server
@@ -21,6 +22,49 @@ from beeai_sdk.utils.api import send_request_with_notifications, mcp_client
 from composition.configuration import Configuration
 from composition.utils import extract_messages
 
+agentName = "sequential-workflow"
+
+agentName = "literature-review"
+
+exampleInput = {"agents": ["gpt-researcher", "podcast-creator"], "input": {"text": "Advancements in quantum computing"}}
+exampleInputStr = json.dumps(exampleInput, ensure_ascii=False, indent=2)
+
+fullDescription = f"""
+The agent orchestrates a series of AI agents to run in a specified sequence. It manages the transformation of outputs from one agent to be used as inputs for the next, ensuring compatibility and a smooth workflow execution. This agent is useful for complex task chains where multiple AI capabilities are needed in tandem.
+
+## How It Works
+The agent takes a list of agent names and an initial input, ensuring all necessary agents are available on the server. It validates compatibility between the agents' input and output schemas before execution. The agent then sequentially processes each agent, transforming outputs as needed to match the next agent in the series. Notifications and progress updates are sent throughout the process.
+
+## Input Parameters
+- **agents** (list of str) – A list of agent names to be executed in sequence.
+- **input** (dict) – The initial input dictionary that matches the schema of the first agent in the sequence.
+
+## Key Features
+- **Sequential Execution** – Runs multiple agents in a defined sequence.
+- **Output Transformation** – Converts outputs between agents for schema compatibility.
+- **Progress Notifications** – Provides updates and notifications for workflow progress.
+- **Error Handling** – Catches and reports errors with detailed messages.
+
+## Use Cases
+- **Complex Task Automation** – Automate workflows requiring multiple AI services.
+- **Data Processing Pipelines** – Sequentially transform and process data through various agents.
+- **Experimentation and Prototyping** – Chain agents to explore new combinations of AI functions.
+
+## Example Usage
+
+### Example: Running a Research Query
+
+#### CLI:
+```bash
+beeai run {agentName} '{exampleInputStr}'
+```
+
+#### Processing Steps:
+1. Validates the availability and compatibility of the agents.
+2. Transforms the initial input for the first agent.
+3. Executes each agent in sequence, transforming outputs as necessary for the next agent.
+4. Sends notifications of progress and completion.
+"""
 
 class SequentialAgentWorkflowInput(Input):
     """Input schema must match the first agent (not checked)"""
@@ -75,11 +119,18 @@ def validate_agents(input: SequentialAgentWorkflowInput, server_agents: dict[str
 
 def add_sequential_workflow_agent(server: Server):
     @server.agent(
-        "sequential-workflow",
-        "Run agents in a sequential workflow",
+        agentName,
+        "The agent executes a sequence of AI agents in a defined workflow, transforming and routing outputs from one agent to the next.",
         input=SequentialAgentWorkflowInput,
         output=Output,
-        **Metadata(framework=None, licence="Apache 2.0").model_dump(),
+        **Metadata(
+            framework=None,
+            licence="Apache 2.0",
+            languages=["Python"],
+            githubUrl="https://github.com/i-am-bee/beeai/tree/main/agents/official/composition/src/composition/sequential_workflow.py",
+            exampleInput=exampleInputStr,
+            fullDescription=fullDescription,
+        ).model_dump(),
         composition_agent=True,
     )
     async def run_sequential_workflow(input: SequentialAgentWorkflowInput, ctx: Context) -> Output:
