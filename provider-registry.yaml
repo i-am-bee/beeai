@@ -6,5 +6,5 @@ providers:
   # Community
   - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.22#path=/agents/community/gpt-researcher-agent
   - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.22#path=/agents/community/crewai-agents
-  - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.22#path=/agents/community/langgraph-agents
+  - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.23#path=/agents/community/langgraph-agents
   - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.22#path=/agents/community/aider-agent

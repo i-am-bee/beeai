@@ -79,7 +79,7 @@ async def run():
             license="Apache 2.0",
             languages=["Python"],
             githubUrl="https://github.com/i-am-bee/beeai/tree/main/agents/community/langgraph-agents/src/langgraph_agents/ollama_deep_researcher",
-            exampleInput=exampleInput,
+            exampleInput=exampleInputText,
             fullDescription=fullDescription,
         ).model_dump(),
     )
