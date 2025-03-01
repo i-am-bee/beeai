@@ -23,6 +23,7 @@ export const metadataSchema = z
     license: z.string(),
     languages: z.array(z.string()),
     githubUrl: z.string(),
+    exampleInput: z.string(),
     avgRunTimeSeconds: z.number(),
     avgRunTokens: z.number(),
     tags: z.array(z.string()),
