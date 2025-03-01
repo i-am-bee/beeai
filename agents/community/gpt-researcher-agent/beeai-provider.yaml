@@ -1,7 +1,7 @@
 manifestVersion: 1
 driver: python
 pythonVersion: "3.11"
-package: "git+https://github.com/i-am-bee/beeai.git@agents-v0.0.21#subdirectory=agents/community/gpt-researcher-agent"
+package: "git+https://github.com/i-am-bee/beeai.git@agents-v0.0.22#subdirectory=agents/community/gpt-researcher-agent"
 serverType: http
 mcpTransport: sse
 mcpEndpoint: /sse
