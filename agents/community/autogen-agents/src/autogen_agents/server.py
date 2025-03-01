@@ -64,7 +64,7 @@ async def run():
         input=TextInput, 
         output=TextOutput,
         **Metadata(
-            framework="Autogen",
+            framework="AutoGen",
             license="CC-BY-4.0, MIT",
             languages=["Python"],
             githubUrl="https://github.com/i-am-bee/beeai/tree/main/agents/community/autogen-agents/src/autogen_agents/literature_review",

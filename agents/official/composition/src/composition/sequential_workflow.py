@@ -24,8 +24,6 @@ from composition.utils import extract_messages
 
 agentName = "sequential-workflow"
 
-agentName = "literature-review"
-
 exampleInput = {"agents": ["gpt-researcher", "podcast-creator"], "input": {"text": "Advancements in quantum computing"}}
 exampleInputStr = json.dumps(exampleInput, ensure_ascii=False, indent=2)
 
