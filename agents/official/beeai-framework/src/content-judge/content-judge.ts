@@ -3,20 +3,20 @@ import { ChatModel } from "beeai-framework/backend/chat";
 import { SystemMessage, UserMessage } from "beeai-framework/backend/message";
 import { Metadata } from "@i-am-bee/beeai-sdk/schemas/metadata";
 import {
-  promptInputSchema,
-  promptOutputSchema,
-} from "@i-am-bee/beeai-sdk/schemas/prompt";
+  textInputSchema,
+  textOutputSchema,
+} from "@i-am-bee/beeai-sdk/schemas/text";
 import { Client as ACPClient } from "@i-am-bee/acp-sdk/client/index.js";
 import { SSEClientTransport } from "@i-am-bee/acp-sdk/client/sse.js";
 import { CHAT_MODEL } from "../config.js";
 
-const inputSchema = promptInputSchema.extend({
+const inputSchema = textInputSchema.extend({
   documents: z.array(z.string()).default([]).optional(),
   agents: z.array(z.string()).default([]).optional(),
 });
 type Input = z.output<typeof inputSchema>;
-const outputSchema = promptOutputSchema;
-type Output = z.output<typeof promptOutputSchema>;
+const outputSchema = textOutputSchema;
+type Output = z.output<typeof outputSchema>;
 
 const criteria = [
   "correctness",
@@ -29,7 +29,7 @@ type Criteria = (typeof criteria)[number];
 const structuredGenerationSchema = z.object(
   Object.fromEntries(criteria.map((c) => [c, z.number().min(0).max(1)])) as {
     [key in Criteria]: z.ZodNumber;
-  },
+  }
 );
 
 // Define weighting for each evaluation criterion (using weighted average),
@@ -51,7 +51,7 @@ const EVALUATION_PROMPT = `Evaluate the quality of the generated document based 
 const calculateScore = (result: Weights) =>
   // Multiply by 100 and round to avoid floating precision problem when comparing
   Math.round(
-    criteria.reduce((sum, key) => sum + result[key] * weights[key] * 100, 0),
+    criteria.reduce((sum, key) => sum + result[key] * weights[key] * 100, 0)
   );
 
 const retrieveDocuments = async ({
@@ -69,7 +69,7 @@ const retrieveDocuments = async ({
   });
   // TODO: Make this env-configurable.
   const transport = new SSEClientTransport(
-    new URL("/mcp/sse", "http://localhost:8333"),
+    new URL("/mcp/sse", "http://localhost:8333")
   );
 
   try {
@@ -99,13 +99,13 @@ const retrieveDocuments = async ({
           {
             timeout: 10 * 60 * 1000,
             signal,
-          },
-        ),
-      ),
+          }
+        )
+      )
     );
 
     return results.map(
-      (result) => (result.output.text as string) || "No document",
+      (result) => (result.output.text as string) || "No document"
     );
   } finally {
     await client.close();
@@ -118,7 +118,7 @@ const run = async (
   }: {
     params: { input: Input };
   },
-  { signal }: { signal?: AbortSignal },
+  { signal }: { signal?: AbortSignal }
 ): Promise<Output> => {
   const { text, documents, agents } = params.input;
   if (!documents?.length && !agents?.length)
@@ -145,18 +145,20 @@ const run = async (
           new UserMessage(`Research prompt: ${text}\n\n Document: ${document}`),
         ],
         abortSignal: signal,
-      }),
-    ),
+      })
+    )
   );
 
   const scores = results.map((result) => calculateScore(result.object));
   const highestValueIndex = scores.reduce(
     (maxIndex, score, index, arr) => (score > arr[maxIndex] ? index : maxIndex),
-    0,
+    0
   );
 
   return outputSchema.parse({ text: finalDocuments[highestValueIndex] });
 };
+
+const agentName = "content-judge";
 
 const exampleInput1: Input = {
   text: "Generate a concise summary of the history of artificial intelligence.",
@@ -182,14 +184,21 @@ const exampleOutput2 = `{
 }`;
 
 export const agent = {
-  name: "content-judge",
+  name: agentName,
   description:
     "Evaluates multiple documents and agent-generated content based on correctness, depth, clarity, and relevance, selecting the highest-scoring one. It ensures optimal document quality for research, content validation, and knowledge refinement.",
   inputSchema,
   outputSchema,
   run,
   metadata: {
+    framework: "BeeAI",
+    license: "Apache 2.0",
+    languages: ["TypeScript"],
+    githubUrl:
+      "https://github.com/i-am-bee/beeai/blob/main/agents/official/beeai-framework/src/content-judge",
     exampleInput: exampleInput1,
+    avgRunTimeSeconds: 22,
+    avgRunTokens: 1229,
     fullDescription: `The agent evaluates multiple documents and agent-generated content based on four key criteria - correctness, depth & coverage, clarity & structure, and relevance. It assigns a numerical score (0-1) to each document for each criterion, using a weighted average to determine the highest-scoring document. This ensures that the most accurate, comprehensive, well-structured, and relevant document is selected.
 
 ## How It Works
@@ -200,7 +209,7 @@ The agent accepts two types of input:
 
 The agent processes all provided text inputs and evaluates them based on the defined criteria. It then selects the document with the highest weighted score and returns it as the best choice.
 
-### Input Parameters
+## Input Parameters
 
 The agent operates based on the following input parameters:
 - **text** (string) – The research prompt or query guiding document selection.
@@ -228,14 +237,9 @@ The agent utilizes the Llama 3.1 8B model to perform structured evaluations and 
 
 ### Example 1: AI Content Refinement
 
-#### Input:
-\`\`\`json
-${JSON.stringify(exampleInput1, null, 2)}
-\`\`\`
-
 #### CLI:
 \`\`\`bash
-beeai run content-judge '${JSON.stringify(exampleInput1, null, 2)}'
+beeai run ${agentName} '${JSON.stringify(exampleInput1, null, 2)}'
 \`\`\`
 
 #### Processing Steps:
@@ -252,14 +256,9 @@ ${exampleOutput1}
 
 ### Example 2: Research Validation
 
-#### Input:
-\`\`\`json
-${JSON.stringify(exampleInput2, null, 2)}
-\`\`\`
-
 #### CLI:
 \`\`\`bash
-beeai run content-judge '${JSON.stringify(exampleInput2, null, 2)}'
+beeai run ${agentName} '${JSON.stringify(exampleInput2, null, 2)}'
 \`\`\`
 
 #### Processing Steps:
@@ -267,19 +266,6 @@ beeai run content-judge '${JSON.stringify(exampleInput2, null, 2)}'
 1. Queries the agents for additional insights on quantum computing and cryptography.
 2. Evaluates all gathered documents using the four scoring criteria.
 3. Assigns scores and selects the document that best aligns with the research prompt.
-
-### Output:
-
-\`\`\`json
-${exampleOutput2}
-\`\`\`
 `,
-    framework: "BeeAI",
-    license: "Apache 2.0",
-    languages: ["TypeScript"],
-    githubUrl:
-      "https://github.com/i-am-bee/beeai/blob/main/agents/official/beeai-framework/src/content-judge",
-    avgRunTimeSeconds: 22,
-    avgRunTokens: 1229,
   } satisfies Metadata,
 };

@@ -18,6 +18,7 @@ class Output(TextOutput):
     files: dict[str, str] = Field(default_factory=dict)
     text: str = Field(default_factory=str)
 
+agentName = "aider"
 exampleInput = {"text": "Make a program that asks for a number and prints its factorial"}
 exampleInputStr = json.dumps(exampleInput, ensure_ascii=False, indent=2)
 
@@ -57,14 +58,9 @@ The agent returns an `Output` object with the following fields:
 
 ### Example 1: Generating a Factorial Calculator
 
-#### Input:
-```json
-{exampleInputStr}
-```
-
 #### CLI:
 ```bash
-beeai run aider '{exampleInputStr}'
+beeai run {agentName} '{exampleInputStr}'
 ```
 
 ### Processing Steps:
@@ -78,7 +74,7 @@ async def register_agent() -> int:
     server = Server("aider-agent")
 
     @server.agent(
-        "aider",
+        agentName,
         "An AI pair programmer that edits code in a local Git repository using natural language, executing commands and providing feedback.",
         input=TextInput,
         output=Output,
