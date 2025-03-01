@@ -196,7 +196,7 @@ export const agent = {
     languages: ["TypeScript"],
     githubUrl:
       "https://github.com/i-am-bee/beeai/blob/main/agents/official/beeai-framework/src/content-judge",
-    exampleInput: exampleInput1,
+    exampleInput: JSON.stringify(exampleInput1),
     avgRunTimeSeconds: 22,
     avgRunTokens: 1229,
     fullDescription: `The agent evaluates multiple documents and agent-generated content based on four key criteria - correctness, depth & coverage, clarity & structure, and relevance. It assigns a numerical score (0-1) to each document for each criterion, using a weighted average to determine the highest-scoring document. This ensures that the most accurate, comprehensive, well-structured, and relevant document is selected.
