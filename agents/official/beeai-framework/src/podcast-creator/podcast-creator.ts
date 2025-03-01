@@ -1,16 +1,17 @@
 import { z } from "zod";
 import { Metadata } from "@i-am-bee/beeai-sdk/schemas/metadata";
 import {
-  promptInputSchema,
-  promptOutputSchema,
-} from "@i-am-bee/beeai-sdk/schemas/prompt";
+  textInputSchema,
+  textOutputSchema,
+} from "@i-am-bee/beeai-sdk/schemas/text";
 import { SystemMessage, UserMessage } from "beeai-framework/backend/message";
 import { CHAT_MODEL } from "../config.js";
 import { ChatModel } from "beeai-framework/backend/chat";
 
-const inputSchema = promptInputSchema;
+const inputSchema = textInputSchema;
 type Input = z.output<typeof inputSchema>;
-const outputSchema = promptOutputSchema;
+// TODO: type appropriately
+const outputSchema = textOutputSchema;
 type Output = z.output<typeof outputSchema>;
 
 const run = async (
@@ -19,7 +20,7 @@ const run = async (
   }: {
     params: { input: Input };
   },
-  { signal }: { signal?: AbortSignal },
+  { signal }: { signal?: AbortSignal }
 ): Promise<Output> => {
   const { text } = params.input;
 
@@ -64,7 +65,7 @@ IT SHOULD STRICTLY BE THE DIALOGUES`),
     z.object({
       speaker: z.number().min(1).max(2),
       text: z.string(),
-    }),
+    })
   );
 
   // Dramatise podcast
@@ -124,8 +125,13 @@ Example of response:
   });
 };
 
+const agentName = "podcast-creator";
+
+const exampleInputText =
+  "Artificial intelligence is revolutionizing industries by automating complex tasks, improving efficiency, and enabling data-driven decision-making. In healthcare, AI is helping doctors diagnose diseases earlier and personalize treatments...";
+
 const exampleInput: Input = {
-  text: "Artificial intelligence is revolutionizing industries by automating complex tasks, improving efficiency, and enabling data-driven decision-making. In healthcare, AI is helping doctors diagnose diseases earlier and personalize treatments...",
+  text: exampleInputText,
 };
 
 const exampleOutput = `[
@@ -137,21 +143,21 @@ const exampleOutput = `[
 ]`;
 
 export const agent = {
-  name: "podcast-creator",
+  name: agentName,
   description:
     "The agent creates structured podcast-style dialogues optimized for AI-driven text-to-speech (TTS). It formats natural conversations with a lead speaker and an inquisitive co-host, ensuring realistic interruptions and follow-ups. The output is structured for seamless TTS integration.",
   inputSchema,
   outputSchema,
   run,
   metadata: {
-    fullDescription: `The \`podcast-creator\' agent converts structured content into a dynamic, natural-sounding podcast script optimized for AI-driven text-to-speech (TTS) applications. It processes input text and transforms it into a structured dialogue between two speakers: one acting as a knowledgeable host and the other as an inquisitive co-host, ensuring a conversational and engaging discussion. The generated dialogue includes interruptions, follow-up questions, and natural reactions to enhance realism.
+    fullDescription: `The agent converts structured content into a dynamic, natural-sounding podcast script optimized for AI-driven text-to-speech (TTS) applications. It processes input text and transforms it into a structured dialogue between two speakers: one acting as a knowledgeable host and the other as an inquisitive co-host, ensuring a conversational and engaging discussion. The generated dialogue includes interruptions, follow-up questions, and natural reactions to enhance realism.
     
 ## How It Works
 The agent takes an input content document (e.g., an article, research paper, or structured text) and reformats it into a back-and-forth podcast-style discussion. The output maintains a logical flow, with Speaker 1 explaining concepts while Speaker 2 asks relevant questions, reacts, and occasionally introduces tangents for a more natural feel. The generated script is optimized for AI text-to-speech pipelines, ensuring clarity and proper role differentiation.
 
 ## Input Parameters
 The agent requires the following input parameters:
-- **prompt** (string) – The full content or topic material to be converted into a podcast dialogue.
+- **text** (string) – The full content or topic material to be converted into a podcast dialogue.
 
 ## Output Structure
 The agent returns a structured JSON list representing the podcast conversation:
@@ -175,14 +181,9 @@ The agent returns a structured JSON list representing the podcast conversation:
 
 ### Example 1: Converting an Article into a Podcast
 
-#### Input:
-\`\`\`json
-${JSON.stringify(exampleInput, null, 2)}
-\`\`\`
-
 #### CLI:
 \`\`\`bash
-beeai run podcast-creator '${JSON.stringify(exampleInput, null, 2)}'
+beeai run ${agentName} "${exampleInputText}"
 \`\`\`
 
 #### Processing Steps:
@@ -202,6 +203,7 @@ ${exampleOutput}
     languages: ["TypeScript"],
     githubUrl:
       "https://github.com/i-am-bee/beeai/blob/main/agents/official/beeai-framework/src/podcast-creator",
+    exampleInput: exampleInputText,
     avgRunTimeSeconds: 19,
     avgRunTokens: 5409,
   } satisfies Metadata,

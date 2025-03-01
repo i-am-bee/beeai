@@ -14,6 +14,7 @@ from langgraph_agents.ollama_deep_researcher.state import SummaryStateInput
 
 load_env()
 
+agentName = "ollama-deep-researcher"
 
 exampleInput = {"text": "Advancements in quantum computing"}
 
@@ -62,14 +63,9 @@ The agent loops through steps 2–4 until the research loop limit is reached.
 
 ### Example 1: Running a Research Query
 
-#### Input:
-```json
-{exampleInputStr}
-```
-
 #### CLI:
 ```bash
-beeai run ollama-deep-researcher '{exampleInputStr}'
+beeai run {agentName} '{exampleInputStr}'
 ```
 
 #### Processing Steps:
@@ -80,12 +76,6 @@ beeai run ollama-deep-researcher '{exampleInputStr}'
 4. Reflects on missing insights, generating a follow-up query: "How do quantum error correction techniques improve stability?"
 5. Repeats the search-summarization cycle until the iteration limit is reached.
 6. Outputs a structured summary with cited sources.
-
-### Output:
-
-```json
-{exampleOutputStr}
-```
 """
 
 
@@ -93,7 +83,7 @@ async def run():
     server = Server("langgraph-agents")
 
     @server.agent(
-        "ollama-deep-researcher",
+        agentName,
         "The agent performs AI-driven research by generating queries, gathering web data, summarizing findings, and refining results through iterative knowledge gap analysis.",
         input=TextInput,
         output=TextOutput,

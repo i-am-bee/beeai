@@ -1,16 +1,16 @@
 import { z } from "zod";
 import { Metadata } from "@i-am-bee/beeai-sdk/schemas/metadata";
 import {
-  promptInputSchema,
-  promptOutputSchema,
-} from "@i-am-bee/beeai-sdk/schemas/prompt";
+  textInputSchema,
+  textOutputSchema,
+} from "@i-am-bee/beeai-sdk/schemas/text";
 import { SystemMessage, UserMessage } from "beeai-framework/backend/message";
 import { CHAT_MODEL } from "./config.js";
 import { ChatModel } from "beeai-framework/backend/chat";
 
-const inputSchema = promptInputSchema;
+const inputSchema = textInputSchema;
 type Input = z.infer<typeof inputSchema>;
-const outputSchema = promptOutputSchema;
+const outputSchema = textOutputSchema;
 type Output = z.infer<typeof outputSchema>;
 
 const run = async (
@@ -79,14 +79,6 @@ The agent returns a structured JSON list representing the podcast conversation:
 
 ### Example 1: Converting an Article into a Podcast
 
-### Input:
-\`\`\`json
-{
-  text:
-    "Artificial intelligence is revolutionizing industries by automating complex tasks, improving efficiency, and enabling data-driven decision-making. In healthcare, AI is helping doctors diagnose diseases earlier and personalize treatments...",
-}
-\`\`\`
-
 ### CLI:
 \`\`\`bash
 beeai run podcast-creator '{
@@ -122,17 +114,24 @@ beeai run podcast-creator '{
   };
 };
 
+const agentName = "agent-docs-creator";
+
+const exampleInputText =
+  "function exampleAgent() { /* AI agent source code here */ }";
+
 const exampleInput: Input = {
-  text: "function exampleAgent() { /* AI agent source code here */ }",
+  text: exampleInputText,
 };
 
+const exampleOutputText: string = `"# Short Description\nThe agent generates structured documentation for AI agents by analyzing their source code...\n\n# Full Description\nThe agent is designed to create structured documentation for AI agents..."`;
+
 const exampleOutput: Output = {
-  text: "# Short Description\nThe agent generates structured documentation for AI agents by analyzing their source code...\n\n# Full Description\nThe agent is designed to create structured documentation for AI agents...",
+  text: exampleOutputText,
   logs: [],
 };
 
 export const agent = {
-  name: "agent-docs-creator",
+  name: agentName,
   description: `The agent analyzes AI source code to generate structured, clear, and complete documentation in a consistent template, supporting multiple languages.`,
   inputSchema,
   outputSchema,
@@ -169,33 +168,21 @@ The agent returns an object with the following structure:
 
 ### Example 1: Documenting an AI Agent
 
-### Input:
-\`\`\`json
-${JSON.stringify(exampleInput, null, 2)}
-\`\`\`
-
 ### CLI:
 \`\`\`bash
-beeai run agent-docs-creator '${JSON.stringify(exampleInput, null, 2)}'
+beeai run ${agentName} "${exampleInputText}"
 \`\`\`
 
 ### Processing Steps:
 1. Analyzes the provided source code to extract key features and functionality.
 2. Formats the extracted information into a structured documentation template.
-3. Simulates an interactive discussion to ensure the output adheres to the documentation standards.
-
-### Output:
-\`\`\`json
-${JSON.stringify(exampleOutput, null, 2)}
-\`\`\`
-
-This agent is particularly useful for developers and documentation specialists looking to automate the process of generating high-quality documentation for AI agents, ensuring that all necessary
-details are covered efficiently.`,
+3. Simulates an interactive discussion to ensure the output adheres to the documentation standards.`,
     framework: "BeeAI",
     license: "Apache 2.0",
     languages: ["TypeScript"],
     githubUrl:
       "https://github.com/i-am-bee/beeai/blob/main/agents/official/agent-docs-creator",
+    exampleInput: exampleInputText,
     avgRunTimeSeconds: 19,
     avgRunTokens: 5409,
   } satisfies Metadata,
