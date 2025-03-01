@@ -54,7 +54,6 @@ The agent converts structured content into a dynamic, natural-sounding podcast s
 The agent takes an input content document (e.g., an article, research paper, or structured text) and reformats it into a back-and-forth podcast-style discussion. The output maintains a logical flow, with Speaker 1 explaining concepts while Speaker 2 asks relevant questions, reacts, and occasionally introduces tangents for a more natural feel. The generated script is optimized for AI text-to-speech pipelines, ensuring clarity and proper role differentiation.
 
 ## Input Parameters
-The agent requires the following input parameters:
 - **text** (string) – The full content or topic material to be converted into a podcast dialogue.
 
 ## Output Structure
@@ -77,7 +76,7 @@ The agent returns a structured JSON list representing the podcast conversation:
 
 ## Example Usage
 
-### Example 1: Converting an Article into a Podcast
+### Example: Converting an Article into a Podcast
 
 ### CLI:
 \`\`\`bash

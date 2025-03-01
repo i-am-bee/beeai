@@ -16,21 +16,12 @@ load_env()
 
 agentName = "ollama-deep-researcher"
 
-exampleInput = {"text": "Advancements in quantum computing"}
-
-exampleOutput = {
-    "text": "## Summary\n\nMicrosoft's advancements in quantum computing have led to the development of..."
-}
-
-# Convert JSON to a properly escaped string
-exampleInputStr = json.dumps(exampleInput, ensure_ascii=False, indent=2)
-exampleOutputStr = json.dumps(exampleOutput, ensure_ascii=False, indent=2)
+exampleInputText = "Advancements in quantum computing"
 
 fullDescription = f"""
 This agent automates deep web research by generating queries, gathering relevant sources, summarizing key information, and iterating on knowledge gaps to refine the results. It enables structured, efficient research through a configurable workflow.
 
 ## How It Works
-
 The agent follows a structured workflow to perform iterative web research and summarization:
 
 - **Query Generation**: Uses an LLM to generate a precise search query based on the given research topic.
@@ -42,18 +33,15 @@ The agent follows a structured workflow to perform iterative web research and su
 The agent loops through steps 2–4 until the research loop limit is reached.
 
 ## Input Parameters
-
 - **prompt** (string) – The topic to research.
 
 ## Key Features
-
 - **Iterative Research Process** – Automatically refines queries and expands knowledge.
 - **Multi-Source Information Gathering** – Supports Tavily, DuckDuckGo, and Perplexity APIs.
 - **LLM-Powered Summarization** – Generates coherent and well-structured summaries.
 - **Automated Query Refinement** – Identifies knowledge gaps and adjusts queries dynamically.
 
 ## Use Cases
-
 - **Market Research** – Automates data gathering for competitive analysis.
 - **Academic Research** – Summarizes recent findings on a specific topic.
 - **Content Creation** – Gathers background information for articles, blogs, and reports.
@@ -61,15 +49,14 @@ The agent loops through steps 2–4 until the research loop limit is reached.
 
 ## Example Usage
 
-### Example 1: Running a Research Query
+### Example: Running a Research Query
 
 #### CLI:
 ```bash
-beeai run {agentName} '{exampleInputStr}'
+beeai run {agentName} "{exampleInputText}"
 ```
 
 #### Processing Steps:
-
 1. Generates a query: "Recent breakthroughs in quantum computing hardware"
 2. Searches the web using Tavily.
 3. Summarizes retrieved data.
