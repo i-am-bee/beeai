@@ -23,6 +23,7 @@ class Metadata(BaseModel):
     license: Optional[str] = None
     languages: Optional[list[str]] = None
     githubUrl: Optional[str] = None
+    exampleInput: Optional[str] = None
     avgRunTimeSeconds: Optional[float] = None
     avgRunTokens: Optional[float] = None
     tags: Optional[list[str]] = None
