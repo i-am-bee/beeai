@@ -19,7 +19,9 @@ from functools import cached_property
 
 import anyio
 from anyio.streams.memory import MemoryObjectReceiveStream, MemoryObjectSendStream
+from beeai_server.telemetry import INSTRUMENTATION_NAME
 from kink import inject
+from opentelemetry import metrics
 
 from beeai_server.services.mcp_proxy.constants import NotificationStreamType
 from acp import (
@@ -49,6 +51,9 @@ from acp.types import (
 from beeai_server.services.mcp_proxy.provider import ProviderContainer
 
 logger = logging.getLogger(__name__)
+
+AGENT_RUNS = metrics.get_meter(INSTRUMENTATION_NAME).create_counter("agent_runs_total")
+TOOL_CALLS = metrics.get_meter(INSTRUMENTATION_NAME).create_counter("tool_calls_total")
 
 
 @inject
@@ -110,14 +115,21 @@ class MCPProxyServer:
 
         @server.call_tool()
         async def call_tool(name: str, arguments: dict | None = None):
-            provider = self._provider_container.get_provider(f"tool/{name}")
-            resp = await self._send_request_with_token(
-                provider.session,
-                server,
-                CallToolRequest(method="tools/call", params=CallToolRequestParams(name=name, arguments=arguments)),
-                CallToolResult,
-            )
-            return resp.content
+            result = "success"
+            try:
+                provider = self._provider_container.get_provider(f"tool/{name}")
+                resp = await self._send_request_with_token(
+                    provider.session,
+                    server,
+                    CallToolRequest(method="tools/call", params=CallToolRequestParams(name=name, arguments=arguments)),
+                    CallToolResult,
+                )
+                return resp.content
+            except:
+                result = "failure"
+                raise
+            finally:
+                TOOL_CALLS.add(1, {"tool": name, "result": result})
 
         @server.create_agent()
         async def create_agent(req: CreateAgentRequest) -> CreateAgentResult:
@@ -126,8 +138,15 @@ class MCPProxyServer:
 
         @server.run_agent()
         async def run_agent(req: RunAgentRequest) -> RunAgentResult:
-            provider = self._provider_container.get_provider(f"agent/{req.params.name}")
-            return await self._send_request_with_token(provider.session, server, req, RunAgentResult)
+            result = "success"
+            try:
+                provider = self._provider_container.get_provider(f"agent/{req.params.name}")
+                return await self._send_request_with_token(provider.session, server, req, RunAgentResult)
+            except:
+                result = "failure"
+                raise
+            finally:
+                AGENT_RUNS.add(1, {"agent": req.params.name, "result": result})
 
         @server.destroy_agent()
         async def destroy_agent(req: DestroyAgentRequest) -> DestroyAgentResult:

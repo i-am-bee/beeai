@@ -27,6 +27,8 @@ from kink import inject, di
 from starlette.responses import FileResponse
 from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 
+from beeai_server.telemetry import shutdown_telemetry
+from beeai_server.domain.telemetry import TelemetryCollectorManager
 from beeai_server.bootstrap import bootstrap_dependencies
 from beeai_server.configuration import Configuration
 from beeai_server.exceptions import ManifestLoadError
@@ -34,6 +36,7 @@ from beeai_server.routes.mcp_sse import create_mcp_sse_app
 from beeai_server.routes.provider import router as provider_router
 from beeai_server.routes.agent import router as agent_router
 from beeai_server.routes.env import router as env_router
+from beeai_server.routes.telemetry import router as telemetry_router
 from beeai_server.services.mcp_proxy.provider import ProviderContainer
 from beeai_server.utils.periodic import CRON_REGISTRY, run_all_crons
 
@@ -78,6 +81,7 @@ def mount_routes(app: FastAPI):
     server_router.include_router(agent_router, prefix="/agent", tags=["agent"])
     server_router.include_router(provider_router, prefix="/provider", tags=["provider"])
     server_router.include_router(env_router, prefix="/env", tags=["env"])
+    server_router.include_router(telemetry_router, prefix="/telemetry", tags=["telemetry"])
 
     app.mount("/healthcheck", lambda: "OK")
     app.mount("/mcp", create_mcp_sse_app())
@@ -87,9 +91,12 @@ def mount_routes(app: FastAPI):
 
 @asynccontextmanager
 @inject
-async def lifespan(_app: FastAPI, provider_container: ProviderContainer):
-    async with provider_container, run_all_crons():
+async def lifespan(
+    _app: FastAPI, provider_container: ProviderContainer, telemetry_collector_manager: TelemetryCollectorManager
+):
+    async with provider_container, telemetry_collector_manager, run_all_crons():
         yield
+    shutdown_telemetry()
 
 
 @contextlib.asynccontextmanager

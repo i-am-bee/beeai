@@ -42,9 +42,11 @@ class Configuration(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", env_nested_delimiter="__")
     logging: LoggingConfiguration = LoggingConfiguration()
     provider_config_path: Path = Path.home() / ".beeai" / "providers.yaml"
+    telemetry_config_path: Path = Path.home() / ".beeai" / "telemetry.yaml"
     env_path: Path = Path.home() / ".beeai" / ".env"
     cache_dir: Path = Path.home() / ".beeai" / "cache"
     port: int = 8333
+    collector_port: int = 8335
     provider_registry_location: GithubUrl = "https://github.com/i-am-bee/beeai@main#path=provider-registry.yaml"
 
 

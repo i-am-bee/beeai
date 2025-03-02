@@ -19,6 +19,7 @@ from kink import inject
 
 from beeai_server.services.env import EnvService
 from beeai_server.services.provider import ProviderService
+from beeai_server.services.telemetry import TelemetryService
 from beeai_server.utils.periodic import periodic
 
 logger = logging.getLogger(__name__)
@@ -26,7 +27,9 @@ logger = logging.getLogger(__name__)
 
 @periodic(period=timedelta(minutes=1))
 @inject
-async def reload_providers(provider_service: ProviderService, env_service: EnvService):
+async def reload_providers(
+    provider_service: ProviderService, env_service: EnvService, telemetry_service: TelemetryService
+):
     """
     Periodically external changes to providers and environment variables.
 
@@ -34,3 +37,4 @@ async def reload_providers(provider_service: ProviderService, env_service: EnvSe
     """
     await env_service.sync()
     await provider_service.sync()
+    await telemetry_service.sync()
