@@ -104,8 +104,8 @@ importers:
         specifier: ^11.24.0
         version: 11.24.0
       '@carbon/react':
-        specifier: ^1.76.0
-        version: 1.76.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(sass@1.85.0)
+        specifier: ^1.77.0
+        version: 1.77.0(react-dom@19.0.0(react@19.0.0))(react-is@19.0.0)(react@19.0.0)(sass@1.85.0)
       '@carbon/styles':
         specifier: ^1.75.0
         version: 1.75.0(sass@1.85.0)
@@ -172,6 +172,9 @@ importers:
       react-hook-form:
         specifier: ^7.54.2
         version: 7.54.2(react@19.0.0)
+      react-is:
+        specifier: ^19.0.0
+        version: 19.0.0
       react-markdown:
         specifier: ^9.1.0
         version: 9.1.0(@types/react@19.0.10)(react@19.0.0)
@@ -290,6 +293,9 @@ importers:
       react-hook-form:
         specifier: ^7.54.2
         version: 7.54.2(react@19.0.0)
+      react-is:
+        specifier: ^19.0.0
+        version: 19.0.0
       server-only:
         specifier: ^0.0.1
         version: 0.0.1
@@ -1272,31 +1278,52 @@ packages:
   '@carbon/colors@11.29.0':
     resolution: {integrity: sha512-3lUSH1YB7Umi32KP5enZ2pCf5wcScisGlEGh11b4GDf2d5pAGuk/BucjQq92NINon+/GFg08Zc28aQfJOT7cGg==}
 
+  '@carbon/colors@11.30.0':
+    resolution: {integrity: sha512-DvTOv6yLpSnPVFJdNeW6dqo4KlpbmFBQvEM0HI/PP7WVcox8QEJKyw5SkEo/lK23pVg6xzBOQKIMLrouNAkWoQ==}
+
   '@carbon/feature-flags@0.24.0':
     resolution: {integrity: sha512-GQEeXnfmnAtGVfKHSwJoJUsZ8YXAMKgL1TkJf2cUVuHYFk2WScHvCx7SUTDFJKLalGB+QnZPNuFLZ5oapsuwPw==}
 
   '@carbon/grid@11.31.0':
     resolution: {integrity: sha512-6Tk5b0IA21rPLgOu49XZVnVPdpvGg6cgjztG4AM2ADeAh44hsixptshJNmdpcSmZL69GC7nkTnLXhnxJicg9NQ==}
 
+  '@carbon/grid@11.32.0':
+    resolution: {integrity: sha512-O8QkUoOglhmOgZ7cvxUSy9I+G+eY/k9t1BnqunHGs7xIswkXeFxOwvUPbcUbrVoNu4rMP8eXv91Eq/f3QpV/Jg==}
+
   '@carbon/icon-helpers@10.54.0':
     resolution: {integrity: sha512-IJ6uzwRA/6yvSG6tTCQoKIcGehwZYYqjvLHylILmEwyfB8kWV9VmJu957hfrfbS2rmuCXwmN6kCAnb4WS8FnFw==}
+
+  '@carbon/icon-helpers@10.55.0':
+    resolution: {integrity: sha512-CNpIbZ4sIoZtBufybrRaf6DoJrhJswNAPJoDZ8Yr8eTQG6tp9cVkEjh97ZXOGJuMVCkG+TyTPdIBAsUv9acFdA==}
 
   '@carbon/icons-react@11.55.0':
     resolution: {integrity: sha512-20KFPgKWutJLn1rE74os7KHwdnke0E1+hMtU7KT9F2b9i7UikN8FKeBuPiSJ+mZLbv43FQADTHYBb1jeBUfBhw==}
     peerDependencies:
       react: '>=16'
 
+  '@carbon/icons-react@11.56.0':
+    resolution: {integrity: sha512-nXNju4eTpDm2noD50eF8BtH9KgOGHO1vsvVwfCP94sY2hjB/w5hQy0pVDNtTz7nu4JGUQk2+wZlM50Wz33ZShw==}
+    peerDependencies:
+      react: '>=16'
+
   '@carbon/layout@11.29.0':
     resolution: {integrity: sha512-u6QTLmotAodw+bcr1p3gc1hIXveWQ8/INbOhR53nfRsRgAg85TcCUwg6ZoVzQGStXc/TaTn/3mk1iSBLi59bkw==}
+
+  '@carbon/layout@11.30.0':
+    resolution: {integrity: sha512-r/z1tvTkBfZu0Mk6r0QDYVvi67TT8NSIA4cJHTng4F+GiBu1VBpiHHYYMvdFzqYGhqKMVtER4hp9mldRBn00dQ==}
 
   '@carbon/motion@11.24.0':
     resolution: {integrity: sha512-JtsSQ3DgVqZXpOdKthetUi5Tp94jkWffgxgrEylbNYErITNt7PeSF6YTXnqtSldk/dUCBkfD1kXkfH1NAxrr1w==}
 
-  '@carbon/react@1.76.0':
-    resolution: {integrity: sha512-iRHtSghEqz/WnERT48koRLyyXf9qeRZExbgtpzr68WhPNyWNbaG3ThCY5Z+sSATUxbVpd7SyWXhhXU1G57PG4Q==}
+  '@carbon/motion@11.25.0':
+    resolution: {integrity: sha512-oqrXmWmlVuXmKhHG1dUm4zy2TR8CGYqcentDcMEAJqcvlF1qhDuF/1j0JQ0X7mOl3/suGBtBsxCoC5CN8KO1IQ==}
+
+  '@carbon/react@1.77.0':
+    resolution: {integrity: sha512-yWR1I0GLVgYQbaGz2lWISympCoookc1wO99g2vcLSi9JTPw98swcjBm0lYfMVqh1ko9r/jGfb2U3xSG/HG7Omg==}
     peerDependencies:
       react: ^16.8.6 || ^17.0.1 || ^18.2.0 || ^19.0.0
       react-dom: ^16.8.6 || ^17.0.1 || ^18.2.0 || ^19.0.0
+      react-is: ^18.3.1 || ^19.0.0
       sass: ^1.33.0
 
   '@carbon/styles@1.75.0':
@@ -1307,11 +1334,25 @@ packages:
       sass:
         optional: true
 
+  '@carbon/styles@1.76.0':
+    resolution: {integrity: sha512-NzffRGFo/PpAbpsX24GkNdFat6gRwmDpswZbQvu1GWXxMYHyIDM9ObVF0n+gjy5bcnkMjFyvN4eINJf1uDSf4w==}
+    peerDependencies:
+      sass: ^1.33.0
+    peerDependenciesMeta:
+      sass:
+        optional: true
+
   '@carbon/themes@11.46.0':
     resolution: {integrity: sha512-QozDO0nFdwvt4qrIxyHPAKCqEbfKEnROUyVDzmrg2RNU51u2Rq58W9YGIIcRY0/Xyu/QugqxoTo9tDxZ4xwQlA==}
 
+  '@carbon/themes@11.47.0':
+    resolution: {integrity: sha512-I+nQs+RANvZRTCWcqRtK1crKmI/9bYkefQaOW4pJIetTmOt3sezM0MVDQn20nNXEJNY6zRVB1TZU3+mxYI41UQ==}
+
   '@carbon/type@11.35.0':
     resolution: {integrity: sha512-Ok9XoEqBGztlv2QzQY1IwzSwVFsCs9pUaoc/XcOAvbFm6rDeJaRtjKrZKcjhdz++dGbiQthr/lWZDXZc+3dhQg==}
+
+  '@carbon/type@11.36.0':
+    resolution: {integrity: sha512-SL0LQTyRoPeifHZy9KFMNheas4qa6BvdvADkd0E4L2tG6JOijpqkicRQ/OnCe5Z/DfIdqe7Qj+0Qm5uGz6G69Q==}
 
   '@csstools/css-parser-algorithms@3.0.4':
     resolution: {integrity: sha512-Up7rBoV77rv29d3uKHUIVubz1BTcgyUK72IvCQAbfbMv584xHcGKCKbWh7i8hPrRJ7qU4Y8IO3IY9m+iTB7P3A==}
@@ -1542,12 +1583,6 @@ packages:
 
   '@floating-ui/react-dom@2.1.2':
     resolution: {integrity: sha512-06okr5cgPzMNBy+Ycse2A6udMi4bqwW/zgBF/rwjcNqWkyr82Mcg8b0vjX8OJpZFy/FKjJmw6wV7t44kK6kW7A==}
-    peerDependencies:
-      react: '>=16.8.0'
-      react-dom: '>=16.8.0'
-
-  '@floating-ui/react@0.26.28':
-    resolution: {integrity: sha512-yORQuuAtVpiRjpMhdc0wJj06b9JFjrYF4qp96j++v2NBpbi6SEGF7donUJ3TMieerQ6qVkAv1tgr7L4r5roTqw==}
     peerDependencies:
       react: '>=16.8.0'
       react-dom: '>=16.8.0'
@@ -6350,6 +6385,9 @@ packages:
   react-is@18.3.1:
     resolution: {integrity: sha512-/LLMVyas0ljjAtoYiPqYiL8VWXzUUdThrmU5+n20DZv+a+ClRoevUzw5JxU+Ieh5/c87ytoTBV9G1FiKfNJdmg==}
 
+  react-is@19.0.0:
+    resolution: {integrity: sha512-H91OHcwjZsbq3ClIDHMzBShc1rotbfACdWENsmEf0IFvZ3FgGPtdHMcsv45bQ1hAbgdfiA8SnxTKfDS+x/8m2g==}
+
   react-markdown@9.1.0:
     resolution: {integrity: sha512-xaijuJB0kzGiUdG7nc2MOMDUDBWPyGAjZtUrow9XxUeua8IqeP+VlIfAZ3bphpcLTnSZXz6z9jcVC/TCwbfgdw==}
     peerDependencies:
@@ -8934,6 +8972,10 @@ snapshots:
     dependencies:
       '@ibm/telemetry-js': 1.9.1
 
+  '@carbon/colors@11.30.0':
+    dependencies:
+      '@ibm/telemetry-js': 1.9.1
+
   '@carbon/feature-flags@0.24.0':
     dependencies:
       '@ibm/telemetry-js': 1.9.1
@@ -8943,7 +8985,16 @@ snapshots:
       '@carbon/layout': 11.29.0
       '@ibm/telemetry-js': 1.9.1
 
+  '@carbon/grid@11.32.0':
+    dependencies:
+      '@carbon/layout': 11.30.0
+      '@ibm/telemetry-js': 1.9.1
+
   '@carbon/icon-helpers@10.54.0':
+    dependencies:
+      '@ibm/telemetry-js': 1.9.1
+
+  '@carbon/icon-helpers@10.55.0':
     dependencies:
       '@ibm/telemetry-js': 1.9.1
 
@@ -8954,7 +9005,18 @@ snapshots:
       prop-types: 15.8.1
       react: 19.0.0
 
+  '@carbon/icons-react@11.56.0(react@19.0.0)':
+    dependencies:
+      '@carbon/icon-helpers': 10.55.0
+      '@ibm/telemetry-js': 1.9.1
+      prop-types: 15.8.1
+      react: 19.0.0
+
   '@carbon/layout@11.29.0':
+    dependencies:
+      '@ibm/telemetry-js': 1.9.1
+
+  '@carbon/layout@11.30.0':
     dependencies:
       '@ibm/telemetry-js': 1.9.1
 
@@ -8962,14 +9024,18 @@ snapshots:
     dependencies:
       '@ibm/telemetry-js': 1.9.1
 
-  '@carbon/react@1.76.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(sass@1.85.0)':
+  '@carbon/motion@11.25.0':
+    dependencies:
+      '@ibm/telemetry-js': 1.9.1
+
+  '@carbon/react@1.77.0(react-dom@19.0.0(react@19.0.0))(react-is@19.0.0)(react@19.0.0)(sass@1.85.0)':
     dependencies:
       '@babel/runtime': 7.26.9
       '@carbon/feature-flags': 0.24.0
-      '@carbon/icons-react': 11.55.0(react@19.0.0)
-      '@carbon/layout': 11.29.0
-      '@carbon/styles': 1.75.0(sass@1.85.0)
-      '@floating-ui/react': 0.26.28(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      '@carbon/icons-react': 11.56.0(react@19.0.0)
+      '@carbon/layout': 11.30.0
+      '@carbon/styles': 1.76.0(sass@1.85.0)
+      '@floating-ui/react': 0.27.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@ibm/telemetry-js': 1.9.1
       classnames: 2.5.1
       copy-to-clipboard: 3.3.3
@@ -8981,7 +9047,7 @@ snapshots:
       react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)
       react-fast-compare: 3.2.2
-      react-is: 18.3.1
+      react-is: 19.0.0
       sass: 1.85.0
       tabbable: 6.2.0
       use-resize-observer: 6.1.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -9009,6 +9075,28 @@ snapshots:
     optionalDependencies:
       sass: 1.85.0
 
+  '@carbon/styles@1.76.0(sass@1.85.0)':
+    dependencies:
+      '@carbon/colors': 11.30.0
+      '@carbon/feature-flags': 0.24.0
+      '@carbon/grid': 11.32.0
+      '@carbon/layout': 11.30.0
+      '@carbon/motion': 11.25.0
+      '@carbon/themes': 11.47.0
+      '@carbon/type': 11.36.0
+      '@ibm/plex': 6.0.0-next.6
+      '@ibm/plex-mono': 0.0.3-alpha.0
+      '@ibm/plex-sans': 0.0.3-alpha.0
+      '@ibm/plex-sans-arabic': 0.0.3-alpha.0
+      '@ibm/plex-sans-devanagari': 0.0.3-alpha.0
+      '@ibm/plex-sans-hebrew': 0.0.3-alpha.0
+      '@ibm/plex-sans-thai': 0.0.3-alpha.0
+      '@ibm/plex-sans-thai-looped': 0.0.3-alpha.0
+      '@ibm/plex-serif': 0.0.3-alpha.0
+      '@ibm/telemetry-js': 1.9.1
+    optionalDependencies:
+      sass: 1.85.0
+
   '@carbon/themes@11.46.0':
     dependencies:
       '@carbon/colors': 11.29.0
@@ -9017,10 +9105,24 @@ snapshots:
       '@ibm/telemetry-js': 1.9.1
       color: 4.2.3
 
+  '@carbon/themes@11.47.0':
+    dependencies:
+      '@carbon/colors': 11.30.0
+      '@carbon/layout': 11.30.0
+      '@carbon/type': 11.36.0
+      '@ibm/telemetry-js': 1.9.1
+      color: 4.2.3
+
   '@carbon/type@11.35.0':
     dependencies:
       '@carbon/grid': 11.31.0
       '@carbon/layout': 11.29.0
+      '@ibm/telemetry-js': 1.9.1
+
+  '@carbon/type@11.36.0':
+    dependencies:
+      '@carbon/grid': 11.32.0
+      '@carbon/layout': 11.30.0
       '@ibm/telemetry-js': 1.9.1
 
   '@csstools/css-parser-algorithms@3.0.4(@csstools/css-tokenizer@3.0.3)':
@@ -9182,14 +9284,6 @@ snapshots:
       '@floating-ui/dom': 1.6.13
       react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)
-
-  '@floating-ui/react@0.26.28(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
-    dependencies:
-      '@floating-ui/react-dom': 2.1.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
-      '@floating-ui/utils': 0.2.9
-      react: 19.0.0
-      react-dom: 19.0.0(react@19.0.0)
-      tabbable: 6.2.0
 
   '@floating-ui/react@0.27.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
     dependencies:
@@ -12348,8 +12442,8 @@ snapshots:
       '@typescript-eslint/parser': 8.24.1(eslint@9.20.1)(typescript@5.7.3)
       eslint: 9.20.1
       eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.8.3(eslint-plugin-import@2.31.0)(eslint@9.20.1)
-      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@8.24.1(eslint@9.20.1)(typescript@5.7.3))(eslint-import-resolver-typescript@3.8.3)(eslint@9.20.1)
+      eslint-import-resolver-typescript: 3.8.3(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.24.1(eslint@9.20.1)(typescript@5.7.3))(eslint@9.20.1))(eslint@9.20.1)
+      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@8.24.1(eslint@9.20.1)(typescript@5.7.3))(eslint-import-resolver-typescript@3.8.3(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.24.1(eslint@9.20.1)(typescript@5.7.3))(eslint@9.20.1))(eslint@9.20.1))(eslint@9.20.1)
       eslint-plugin-jsx-a11y: 6.10.2(eslint@9.20.1)
       eslint-plugin-react: 7.37.4(eslint@9.20.1)
       eslint-plugin-react-hooks: 5.1.0(eslint@9.20.1)
@@ -12368,7 +12462,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-import-resolver-typescript@3.8.3(eslint-plugin-import@2.31.0)(eslint@9.20.1):
+  eslint-import-resolver-typescript@3.8.3(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.24.1(eslint@9.20.1)(typescript@5.7.3))(eslint@9.20.1))(eslint@9.20.1):
     dependencies:
       '@nolyfill/is-core-module': 1.0.39
       debug: 4.4.0
@@ -12379,22 +12473,22 @@ snapshots:
       stable-hash: 0.0.4
       tinyglobby: 0.2.12
     optionalDependencies:
-      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@8.24.1(eslint@9.20.1)(typescript@5.7.3))(eslint-import-resolver-typescript@3.8.3)(eslint@9.20.1)
+      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@8.24.1(eslint@9.20.1)(typescript@5.7.3))(eslint-import-resolver-typescript@3.8.3(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.24.1(eslint@9.20.1)(typescript@5.7.3))(eslint@9.20.1))(eslint@9.20.1))(eslint@9.20.1)
     transitivePeerDependencies:
       - supports-color
 
-  eslint-module-utils@2.12.0(@typescript-eslint/parser@8.24.1(eslint@9.20.1)(typescript@5.7.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.8.3)(eslint@9.20.1):
+  eslint-module-utils@2.12.0(@typescript-eslint/parser@8.24.1(eslint@9.20.1)(typescript@5.7.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.8.3(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.24.1(eslint@9.20.1)(typescript@5.7.3))(eslint@9.20.1))(eslint@9.20.1))(eslint@9.20.1):
     dependencies:
       debug: 3.2.7
     optionalDependencies:
       '@typescript-eslint/parser': 8.24.1(eslint@9.20.1)(typescript@5.7.3)
       eslint: 9.20.1
       eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.8.3(eslint-plugin-import@2.31.0)(eslint@9.20.1)
+      eslint-import-resolver-typescript: 3.8.3(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.24.1(eslint@9.20.1)(typescript@5.7.3))(eslint@9.20.1))(eslint@9.20.1)
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.24.1(eslint@9.20.1)(typescript@5.7.3))(eslint-import-resolver-typescript@3.8.3)(eslint@9.20.1):
+  eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.24.1(eslint@9.20.1)(typescript@5.7.3))(eslint-import-resolver-typescript@3.8.3(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.24.1(eslint@9.20.1)(typescript@5.7.3))(eslint@9.20.1))(eslint@9.20.1))(eslint@9.20.1):
     dependencies:
       '@rtsao/scc': 1.1.0
       array-includes: 3.1.8
@@ -12405,7 +12499,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 9.20.1
       eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.12.0(@typescript-eslint/parser@8.24.1(eslint@9.20.1)(typescript@5.7.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.8.3)(eslint@9.20.1)
+      eslint-module-utils: 2.12.0(@typescript-eslint/parser@8.24.1(eslint@9.20.1)(typescript@5.7.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.8.3(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.24.1(eslint@9.20.1)(typescript@5.7.3))(eslint@9.20.1))(eslint@9.20.1))(eslint@9.20.1)
       hasown: 2.0.2
       is-core-module: 2.16.1
       is-glob: 4.0.3
@@ -15288,6 +15382,8 @@ snapshots:
   react-is@18.2.0: {}
 
   react-is@18.3.1: {}
+
+  react-is@19.0.0: {}
 
   react-markdown@9.1.0(@types/react@19.0.10)(react@19.0.0):
     dependencies:

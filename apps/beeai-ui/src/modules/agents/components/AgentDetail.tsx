@@ -16,22 +16,24 @@
 
 'use client';
 
+import type { ReactNode } from 'react';
+import { ButtonSkeleton, SkeletonText } from '@carbon/react';
 import { spacing } from '@carbon/layout';
 import { moderate01 } from '@carbon/motion';
-import clsx from 'clsx';
 import { motion } from 'framer-motion';
+import clsx from 'clsx';
 import type { Agent } from '../api/types';
-import classes from './AgentDetail.module.scss';
-import type { ReactNode } from 'react';
 import { getAgentTitle } from '../utils';
 import { AgentMetadata } from './AgentMetadata';
-import { MarkdownContent } from '#components/MarkdownContent/MarkdownContent.tsx';
-import { AgentTags } from './AgentTags';
-import { CopySnippet } from '#components/CopySnippet/CopySnippet.tsx';
-import { isStringTerminalParameterSafe } from '#utils/strings.ts';
-import { fadeProps } from '#utils/fadeProps.ts';
-import { ButtonSkeleton, SkeletonText } from '@carbon/react';
 import { TagsList } from '#components/TagsList/TagsList.tsx';
+import { CopySnippet } from '#components/CopySnippet/CopySnippet.tsx';
+import { MarkdownContent } from '#components/MarkdownContent/MarkdownContent.tsx';
+import { AgentDetailSection } from './AgentDetailSection';
+import { AgentExampleRequests } from './AgentExampleRequests';
+import { AgentTags } from './AgentTags';
+import { fadeProps } from '#utils/fadeProps.ts';
+import commands from '#utils/commands.ts';
+import classes from './AgentDetail.module.scss';
 
 interface Props {
   agent: Agent;
@@ -39,8 +41,7 @@ interface Props {
 }
 
 export function AgentDetail({ agent, buttons }: Props) {
-  const { name } = agent;
-  const runCommand = `beeai run ${isStringTerminalParameterSafe(name) ? name : `'${name}'`}`;
+  const { name, exampleInput, description, fullDescription } = agent;
   return (
     <div className={classes.root}>
       <motion.h1 {...fadeInPropsWithMarginShift({ start: { from: spacing[4] } })} className={classes.name}>
@@ -49,7 +50,7 @@ export function AgentDetail({ agent, buttons }: Props) {
 
       <motion.div {...fadeInPropsWithMarginShift({ start: { from: spacing[3] } })}>
         <AgentMetadata agent={agent} className={classes.metadata} />
-        {agent.description && <MarkdownContent className={classes.description}>{agent.description}</MarkdownContent>}
+        {description && <MarkdownContent className={classes.description}>{description}</MarkdownContent>}
         <AgentTags agent={agent} showGitHub className={classes.tags} />
       </motion.div>
 
@@ -58,21 +59,29 @@ export function AgentDetail({ agent, buttons }: Props) {
         className={classes.buttons}
       >
         {buttons}
-        <CopySnippet snippet={runCommand} className={classes.copySnippet} />
+        <CopySnippet snippet={commands.beeai.run(name)} className={classes.copySnippet} />
       </motion.div>
 
-      {agent.fullDescription && (
-        <>
-          <motion.hr
-            {...fadeInPropsWithMarginShift({
-              start: { from: spacing[7], to: spacing[6] },
-              end: { from: spacing[7], to: spacing[6] },
-            })}
-            className={classes.divider}
-          />
+      {(exampleInput || fullDescription) && (
+        <motion.hr
+          {...fadeInPropsWithMarginShift({
+            start: { from: spacing[7], to: spacing[6] },
+            end: { from: spacing[7], to: spacing[6] },
+          })}
+          className={classes.divider}
+        />
+      )}
 
-          <MarkdownContent>{agent.fullDescription}</MarkdownContent>
-        </>
+      {exampleInput && (
+        <AgentDetailSection title="Example requests">
+          <AgentExampleRequests cli={commands.beeai.run(name, exampleInput)} />
+        </AgentDetailSection>
+      )}
+
+      {fullDescription && (
+        <AgentDetailSection title="Description" titleSpacing="large">
+          <MarkdownContent className={classes.fullDescription}>{fullDescription}</MarkdownContent>
+        </AgentDetailSection>
       )}
     </div>
   );
@@ -100,7 +109,7 @@ AgentDetail.Skeleton = function AgentDetailSkeleton() {
 
       <hr className={classes.divider} />
 
-      <SkeletonText paragraph lineCount={6} />
+      <AgentDetailSection.Skeleton titleWidth="10rem" lineCount={6} />
     </div>
   );
 };

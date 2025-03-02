@@ -63,3 +63,12 @@
     margin-block: $spacing-06;
   }
 }
+
+.fullDescription {
+  h2 {
+    font-size: rem(14px);
+    font-weight: 600;
+    line-height: rem(20px);
+    letter-spacing: rem(0.32px);
+  }
+}
