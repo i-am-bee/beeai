@@ -1,3 +1,6 @@
+> [!WARNING]
+> This project is in **Pre-Alpha** and under rapid development. Breaking changes should be expected.
+
 # BeeAI <img align="center" alt="Project Status: Pre-alpha" src="https://img.shields.io/badge/Status-Pre--alpha-blue">
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-EA7826?style=flat)](https://github.com/i-am-bee/beeai?tab=Apache-2.0-1-ov-file#readme)
@@ -6,10 +9,6 @@
 [![GitHub Repo stars](https://img.shields.io/github/stars/I-am-bee/beeai)](https://github.com/i-am-bee/beeai-framework)
 
 Discover, run, and compose AI agents from any provider
-
-
-> [!WARNING]
-> This project is in **Pre-Alpha** and under rapid development. Breaking changes should be expected.
 
 ## Installation
 
