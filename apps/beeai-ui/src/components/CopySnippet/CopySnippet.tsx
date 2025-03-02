@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-import { Checkmark, Copy } from '@carbon/icons-react';
-import { IconButton } from '@carbon/react';
-import clsx from 'clsx';
 import { useState } from 'react';
+import { IconButton } from '@carbon/react';
+import { Checkmark, Copy } from '@carbon/icons-react';
+import clsx from 'clsx';
 import classes from './CopySnippet.module.scss';
 
 interface Props {
+  type?: 'single' | 'multi';
   snippet: string;
   className?: string;
 }
 
-export function CopySnippet({ snippet, className }: Props) {
+export function CopySnippet({ type = 'single', snippet, className }: Props) {
   const [copied, setCopied] = useState(false);
 
   const handleCopyClick = () => {
@@ -39,7 +40,7 @@ export function CopySnippet({ snippet, className }: Props) {
   };
 
   return (
-    <div className={clsx(classes.root, className)}>
+    <div className={clsx(classes.root, classes[type], { [classes.oneline]: isOneline(snippet) }, className)}>
       <code className={classes.content}>{snippet}</code>
 
       <div className={classes.button}>
@@ -49,4 +50,8 @@ export function CopySnippet({ snippet, className }: Props) {
       </div>
     </div>
   );
+}
+
+function isOneline(snippet: string): boolean {
+  return snippet.indexOf('\n') === -1;
 }

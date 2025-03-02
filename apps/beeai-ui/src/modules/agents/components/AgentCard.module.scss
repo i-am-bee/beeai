@@ -69,7 +69,7 @@
   color: $text-secondary;
   font-size: rem(14px);
   line-height: math.div(24, 14);
-  letter-spacing: 0.32px;
+  letter-spacing: rem(0.32px);
   margin-block: rem(8px) rem(12px);
 
   &:global(:not(.cds--skeleton__text)) {
