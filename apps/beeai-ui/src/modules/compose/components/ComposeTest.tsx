@@ -17,7 +17,7 @@
 import { TextAreaAutoHeight } from '#components/TextAreaAutoHeight/TextAreaAutoHeight.tsx';
 import { useForm } from 'react-hook-form';
 import { submitFormOnEnter } from '#utils/formUtils.ts';
-import classes from './CompositionTest.module.scss';
+import classes from './ComposeTest.module.scss';
 import { Button } from '@carbon/react';
 import { ArrowRight, NewTab, StopOutlineFilled } from '@carbon/icons-react';
 import { useEffect, useRef } from 'react';
@@ -25,8 +25,8 @@ import { useCompose } from '../contexts';
 import { MarkdownContent } from '#components/MarkdownContent/MarkdownContent.tsx';
 import { Container } from '#components/layouts/Container.tsx';
 
-export function CompositionTest() {
-  const { result, onSubmit, onCancel, onReset } = useCompose();
+export function ComposeTest() {
+  const { result, onSubmit, onCancel, onReset, isPending } = useCompose();
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -67,6 +67,7 @@ export function CompositionTest() {
                 className={classes.textarea}
                 rows={4}
                 placeholder="What is your research task?"
+                disabled={isPending}
                 {...register('input', {
                   required: true,
                 })}

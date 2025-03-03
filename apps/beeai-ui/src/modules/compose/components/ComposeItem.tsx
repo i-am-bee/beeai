@@ -16,39 +16,61 @@
 
 import { getAgentTitle } from '#modules/agents/utils.ts';
 import { MarkdownContent } from '#components/MarkdownContent/MarkdownContent.tsx';
-import classes from './CompositionItem.module.scss';
+import classes from './ComposeItem.module.scss';
 import { AgentInstance } from '../contexts/compose-context';
-import { InlineLoading } from '@carbon/react';
+import { InlineLoading, OverflowMenu, OverflowMenuItem } from '@carbon/react';
 import { useEffect, useState } from 'react';
+import { useCompose } from '../contexts';
+import clsx from 'clsx';
 
 interface Props {
   agent: AgentInstance;
+  idx: number;
 }
-export function CompositionItem({ agent: agentInstance }: Props) {
-  const { data, isPending, logs, stats } = agentInstance;
+export function ComposeItem({ agent: agentInstance, idx }: Props) {
+  const { setAgents, isPending: isRunPending } = useCompose();
+  const { data, isPending, logs, stats, result } = agentInstance;
   const { description } = data;
+
+  const isFinished = !isPending && result;
 
   return (
     <div className={classes.root}>
-      <span className={classes.name}>{getAgentTitle(data)}</span>
+      <div className={classes.name}>{getAgentTitle(data)}</div>
+
+      <div className={classes.actions}>
+        <OverflowMenu aria-label="Options" size="md">
+          <OverflowMenuItem
+            itemText="Remove"
+            disabled={isRunPending}
+            onClick={() => setAgents((agents) => agents.filter((_, index) => index !== idx))}
+          />
+        </OverflowMenu>
+      </div>
+
       {description && <MarkdownContent className={classes.description}>{description}</MarkdownContent>}
-      {(isPending || stats) && (
-        <div className={classes.output}>
-          {logs && (
+      {(isPending || stats || result) && (
+        <div className={clsx(classes.run, { [classes.finished]: isFinished })}>
+          {logs?.length ? (
             <div className={classes.logs}>
               {logs.map((log, order) => (
                 <div key={order}>{log}</div>
               ))}
             </div>
-          )}
+          ) : null}
 
           <div className={classes.status}>
-            <div>Output:</div>
             <div className={classes.loading}>
               <ElapsedTime stats={stats} />
               <InlineLoading status={isPending ? 'active' : 'finished'} />
             </div>
           </div>
+
+          {isFinished && (
+            <div className={classes.result}>
+              <MarkdownContent>{result}</MarkdownContent>
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -62,7 +84,7 @@ function ElapsedTime({ stats }: { stats: AgentInstance['stats'] }) {
     if (!stats?.startTime || stats.endTime) return;
 
     const interval = setInterval(() => {
-      forceRerender((prev) => prev + 1); // Increment to force rerender
+      forceRerender((prev) => prev + 1);
     }, 1000 / 24); // refresh at standard frame rate for smooth increments
 
     return () => clearInterval(interval);

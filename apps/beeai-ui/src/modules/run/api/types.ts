@@ -15,17 +15,17 @@
  */
 
 import { AgentRunProgressNotificationSchema, RunAgentResultSchema } from '@i-am-bee/acp-sdk/types.js';
-import { promptOutputSchema } from '@i-am-bee/beeai-sdk/schemas/prompt';
+import { textOutputSchema } from '@i-am-bee/beeai-sdk/schemas/text';
 import { messageOutputSchema } from '@i-am-bee/beeai-sdk/schemas/message';
 import { z } from 'zod';
 
-export const promptNotificationsSchema = AgentRunProgressNotificationSchema.extend({
-  params: z.object({ delta: promptOutputSchema }),
+export const textNotificationsSchema = AgentRunProgressNotificationSchema.extend({
+  params: z.object({ delta: textOutputSchema }),
 });
-export type PromptNotifications = typeof promptNotificationsSchema;
+export type TextNotifications = typeof textNotificationsSchema;
 
-export const promptResultSchema = RunAgentResultSchema.extend({ output: promptOutputSchema });
-export type PromptResult = z.infer<typeof promptResultSchema>;
+export const textResultSchema = RunAgentResultSchema.extend({ output: textOutputSchema });
+export type TextResult = z.infer<typeof textResultSchema>;
 
 export const messagesNotificationsSchema = AgentRunProgressNotificationSchema.extend({
   params: z.object({ delta: messageOutputSchema }),

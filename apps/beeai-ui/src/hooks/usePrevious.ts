@@ -14,21 +14,14 @@
  * limitations under the License.
  */
 
-.main {
-  background-color: $layer-02;
-  overflow: hidden;
+import { useEffect, useRef } from 'react';
 
-  > div > div {
-    overflow: hidden;
-  }
-}
+export function usePrevious<T>(value: T): T {
+  const ref = useRef<T>(value);
 
-.splitContainer {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  inline-size: 100%;
+  useEffect(() => {
+    ref.current = value;
+  }, [value]);
 
-  > div {
-    padding-block-start: $spacing-09;
-  }
+  return ref.current;
 }

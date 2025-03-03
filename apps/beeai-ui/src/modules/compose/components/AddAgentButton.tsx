@@ -19,14 +19,19 @@ import classes from './AddAgentButton.module.scss';
 import { RefObject, useId, useMemo, useRef, useState } from 'react';
 import { AgentListOption } from './AgentListOption';
 import { useOnClickOutside } from 'usehooks-ts';
-import { useCompose } from '../contexts';
 import { messageInputSchema } from '@i-am-bee/beeai-sdk/schemas/message';
 import { zodToJsonSchema } from 'zod-to-json-schema';
-import { promptInputSchema, promptOutputSchema } from '@i-am-bee/beeai-sdk/schemas/prompt';
+import { textInputSchema, textOutputSchema } from '@i-am-bee/beeai-sdk/schemas/text';
 import { ExtendedJSONSchema } from 'json-schema-to-ts';
 import { useListAgents } from '#modules/agents/api/queries/useListAgents.ts';
+import { Agent } from '#modules/agents/api/types.ts';
 
-export function AddAgentButton() {
+interface Props {
+  onSelectAgent: (agent: Agent) => void;
+  isDisabled?: boolean;
+}
+
+export function AddAgentButton({ onSelectAgent, isDisabled }: Props) {
   const id = useId();
   const [expanded, setExpanded] = useState(false);
 
@@ -35,7 +40,6 @@ export function AddAgentButton() {
     setExpanded(false);
   });
 
-  const { setAgents } = useCompose();
   const { data, isPending } = useListAgents();
 
   const availableAgents = useMemo(
@@ -44,8 +48,8 @@ export function AddAgentButton() {
         (agent) =>
           (validateSchema(agent.inputSchema as JSONSchema, messageInputJsonSchema as JSONSchema) &&
             validateSchema(agent.outputSchema as JSONSchema, messageOutputJsonSchema as JSONSchema)) ||
-          (validateSchema(agent.inputSchema as JSONSchema, promptInputJsonSchema as JSONSchema) &&
-            validateSchema(agent.outputSchema as JSONSchema, promptOutputJsonSchema as JSONSchema)),
+          (validateSchema(agent.inputSchema as JSONSchema, textInputJsonSchema as JSONSchema) &&
+            validateSchema(agent.outputSchema as JSONSchema, textOutputJsonSchema as JSONSchema)),
       ),
     [data],
   );
@@ -59,6 +63,7 @@ export function AddAgentButton() {
         aria-haspopup="listbox"
         aria-controls={`${id}:options`}
         onClick={() => setExpanded(!expanded)}
+        disabled={isDisabled}
       >
         Add an agent
       </Button>
@@ -69,7 +74,7 @@ export function AddAgentButton() {
                 agent={agent}
                 key={agent.name}
                 onClick={() => {
-                  setAgents((agents) => [...agents, { data: agent }]);
+                  onSelectAgent(agent);
                   setExpanded(false);
                 }}
               />
@@ -84,8 +89,8 @@ const AGENTS_SKELETON_COUNT = 4;
 
 const messageInputJsonSchema = zodToJsonSchema(messageInputSchema);
 const messageOutputJsonSchema = zodToJsonSchema(messageInputSchema);
-const promptInputJsonSchema = zodToJsonSchema(promptInputSchema);
-const promptOutputJsonSchema = zodToJsonSchema(promptOutputSchema);
+const textInputJsonSchema = zodToJsonSchema(textInputSchema);
+const textOutputJsonSchema = zodToJsonSchema(textOutputSchema);
 
 type JSONSchema = Exclude<ExtendedJSONSchema, boolean>;
 

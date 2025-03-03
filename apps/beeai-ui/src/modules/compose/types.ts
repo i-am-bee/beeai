@@ -14,19 +14,29 @@
  * limitations under the License.
  */
 
+import { MessagesResult, TextResult } from '#modules/run/api/types.ts';
 import { AgentRunProgressNotificationSchema } from '@i-am-bee/acp-sdk/types.js';
 import { outputSchema } from '@i-am-bee/beeai-sdk/schemas/base';
-import { PromptInput } from '@i-am-bee/beeai-sdk/schemas/prompt';
+import { TextInput } from '@i-am-bee/beeai-sdk/schemas/text';
 import { z } from 'zod';
 
 export const composeNotificationSchema = AgentRunProgressNotificationSchema.extend({
   params: z.object({
-    delta: outputSchema,
+    delta: outputSchema.extend({
+      agent_idx: z.number(),
+      agent_name: z.string(),
+      logs: z.array(z.object({ message: z.string() }).nullable()),
+      // text: z.string().nullable(),
+      // messages: z.array(z.object({ content: z.string(), role: z.string() }).nullable()),
+    }),
   }),
 });
-export type ComposeNotifications = typeof composeNotificationSchema;
+export type ComposeNotificationsZod = typeof composeNotificationSchema;
+export type ComposeNotifications = z.infer<ComposeNotificationsZod>;
 
 export type ComposeInput = {
-  input: PromptInput;
+  input: TextInput;
   agents: string[];
 };
+
+export type ComposeResult = TextResult | MessagesResult;

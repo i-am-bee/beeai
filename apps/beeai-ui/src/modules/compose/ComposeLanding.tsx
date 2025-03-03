@@ -14,31 +14,35 @@
  * limitations under the License.
  */
 
-import classes from './CompositionSetup.module.scss';
-import { AddAgentButton } from './AddAgentButton';
-import { useCompose } from '../contexts';
-import { CompositionItem } from './CompositionItem';
+import { MainContent } from '#components/layouts/MainContent.tsx';
 import { Container } from '#components/layouts/Container.tsx';
+import classes from './ComposeLanding.module.scss';
 import { VersionTag } from '#components/VersionTag/VersionTag.tsx';
+import { AddAgentButton } from './components/AddAgentButton';
+import { useNavigate } from 'react-router';
+import { Agent } from '#modules/agents/api/types.ts';
+import { routes } from '#utils/router.ts';
 
-export function CompositionSetup() {
-  const { agents } = useCompose();
+export function ComposeLanding() {
+  const navigate = useNavigate();
 
   return (
-    <div className={classes.root}>
+    <MainContent className={classes.main}>
       <Container>
         <h1>
           Compose playground <VersionTag>alpha</VersionTag>
         </h1>
 
         <div className={classes.agents}>
-          {agents.map((agent, order) => (
-            <CompositionItem agent={agent} key={`${order}${agent.data.name}`} />
-          ))}
+          <AddAgentButton
+            onSelectAgent={(agent: Agent) => {
+              const params = new URLSearchParams({ agents: agent.name });
 
-          <AddAgentButton />
+              navigate(`${routes.composeSequential()}?${params.toString()}`);
+            }}
+          />
         </div>
       </Container>
-    </div>
+    </MainContent>
   );
 }

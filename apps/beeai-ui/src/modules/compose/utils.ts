@@ -15,10 +15,22 @@
  */
 
 import { Agent } from '#modules/agents/api/types.ts';
+import { MessagesResult } from '#modules/run/api/types.ts';
 import { SEQUENTIAL_COMPOSE_AGENT_NAME } from './contexts/compose-context';
+import { ComposeNotifications, ComposeResult } from './types';
 
 export function getSequentialComposeAgent(agents?: Agent[]) {
-  console.log({ agents });
-
   return agents?.find(({ name }) => name === SEQUENTIAL_COMPOSE_AGENT_NAME);
+}
+
+export function isComposeMessageResult(result: ComposeResult): result is MessagesResult {
+  return Array.isArray(result.output.messages);
+}
+
+export function getComposeResultText(result: ComposeResult) {
+  return isComposeMessageResult(result) ? result.output.messages.at(-1)?.content : result.output.text;
+}
+
+export function getComposeDeltaResultText(result: ComposeNotifications['params']['delta']) {
+  return Array.isArray(result.messages) ? result.messages.at(-1)?.content : (result.text ?? '');
 }

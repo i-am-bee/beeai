@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import { ComposeIndex } from '#modules/compose/ComposeIndex.tsx';
-import { ComposeProvider } from '#modules/compose/contexts/ComposeProvider.tsx';
+.main {
+  background-color: $layer-02;
+  overflow: hidden;
 
-export function ComposePage() {
-  return (
-    <ComposeProvider>
-      <ComposeIndex />
-    </ComposeProvider>
-  );
+  > div > div {
+    overflow: hidden;
+  }
 }

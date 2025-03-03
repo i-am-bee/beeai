@@ -18,60 +18,91 @@ import { PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } 
 import { AgentInstance, ComposeContext, SEQUENTIAL_COMPOSE_AGENT_NAME } from './compose-context';
 import { useSearchParams } from 'react-router';
 import { useRunAgent } from '#modules/run/api/mutations/useRunAgent.tsx';
-import { PromptResult } from '#modules/run/api/types.ts';
 import { useListAgents } from '#modules/agents/api/queries/useListAgents.ts';
 import { isNotNull } from '#utils/helpers.ts';
-import { getSequentialComposeAgent } from '../utils';
+import { getComposeDeltaResultText, getComposeResultText, getSequentialComposeAgent } from '../utils';
 import { useHandleError } from '#hooks/useHandleError.ts';
-import { ComposeInput, ComposeNotifications, composeNotificationSchema } from '../types';
+import { ComposeInput, composeNotificationSchema, ComposeNotificationsZod, ComposeResult } from '../types';
+import { usePrevious } from '#hooks/usePrevious.ts';
 
 export function ComposeProvider({ children }: PropsWithChildren) {
-  const { data } = useListAgents();
+  const { data: availableAgents } = useListAgents();
   const [agents, setAgents] = useState<AgentInstance[]>([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const [result, setResult] = useState<string>();
   const abortControllerRef = useRef<AbortController | null>(null);
   const handleError = useHandleError();
-
-  console.log(agents);
+  const [isPending, setPending] = useState<boolean>(false);
 
   useEffect(() => {
-    if (!data || agents.length) return;
+    if (!availableAgents) return;
 
-    const agentNames = searchParams.get(URL_PARAM_AGENTS)?.split(',');
-    if (agentNames) {
+    const agentNames = searchParams
+      .get(URL_PARAM_AGENTS)
+      ?.split(',')
+      .filter((item) => item.length);
+    if (agentNames?.length) {
       setAgents(
         agentNames
           .map((name) => {
-            const agent = data.find((agent) => name === agent.name);
+            const agent = availableAgents.find((agent) => name === agent.name);
             return agent ? { data: agent } : null;
           })
           .filter(isNotNull),
       );
     }
-  }, [agents, data, searchParams]);
+  }, [availableAgents, searchParams]);
 
-  const updateAgents = useCallback(
-    (updater: (agent: AgentInstance[]) => AgentInstance[]) => {
-      setAgents((oldAgents) => {
-        const agents = updater(oldAgents);
+  const previousAgents = usePrevious(agents);
+  useEffect(() => {
+    if (!availableAgents || agents.length === previousAgents.length) return;
 
-        setSearchParams((searchParams) => {
-          searchParams.set('agents', agents.map(({ data }) => data.name).join(','));
-          return searchParams;
-        });
+    setSearchParams((searchParams) => {
+      searchParams.set('agents', agents.map(({ data }) => data.name).join(','));
+      return searchParams;
+    });
+  }, [agents, availableAgents, previousAgents, setSearchParams]);
 
-        return agents;
-      });
-    },
-    [setSearchParams],
-  );
-
-  const { runAgent } = useRunAgent<ComposeInput, ComposeNotifications>({
+  const { runAgent } = useRunAgent<ComposeInput, ComposeNotificationsZod>({
     notifications: {
       schema: composeNotificationSchema,
       handler: (notification) => {
-        console.log({ notification, logs: notification.params.delta.logs });
+        const delta = notification.params.delta;
+
+        console.log(delta.agent_idx, delta.agent_name, { logs: delta.logs, delta, notification });
+
+        if (delta.agent_idx !== undefined) {
+          setAgents((agents) =>
+            agents.map((agent, idx) => {
+              if (idx === delta.agent_idx) {
+                if (delta.agent_name !== agent.data.name) {
+                  console.error(
+                    `Agent name and index mismatch: ${delta.agent_name} is supposed to be at index '${idx}'`,
+                  );
+                  return agent;
+                }
+
+                return {
+                  ...agent,
+                  isPending: true,
+                  stats: {
+                    startTime: agent.stats?.startTime ?? Date.now(),
+                  },
+                  result: `${agent.result}${getComposeDeltaResultText(delta)}`,
+                  logs: [...(agent.logs ?? []), ...delta.logs.filter(isNotNull).map((item) => item.message)],
+                };
+              } else {
+                return {
+                  ...agent,
+                  isPending: false,
+                  stats: agent.stats?.startTime
+                    ? { ...agent.stats, endTime: agent.stats.endTime ?? Date.now() }
+                    : undefined,
+                };
+              }
+            }),
+          );
+        }
       },
     },
   });
@@ -84,31 +115,37 @@ export function ComposeProvider({ children }: PropsWithChildren) {
 
         setResult('');
 
-        const composeAgent = getSequentialComposeAgent(data);
+        const composeAgent = getSequentialComposeAgent(availableAgents);
         if (!composeAgent) throw Error(`'${SEQUENTIAL_COMPOSE_AGENT_NAME}' agent is not available.`);
 
         setAgents((agents) =>
-          agents.map((instance) => ({
+          agents.map((instance, index) => ({
             ...instance,
-            isPending: true,
-            logs: ['Running the agent...'],
-            stats: {
-              startTime: Date.now(),
-            },
+            isPending: index === 0,
+            logs: [],
+            stats:
+              index === 0
+                ? {
+                    startTime: Date.now(),
+                  }
+                : undefined,
           })),
         );
 
-        const response = (await runAgent({
+        setPending(true);
+
+        const result = (await runAgent({
           agent: composeAgent,
           input: { input: { text: input }, agents: agents.map(({ data }) => data.name) },
           abortController,
-        })) as PromptResult;
+        })) as ComposeResult;
 
-        setResult(response.output.text);
+        setResult(getComposeResultText(result));
       } catch (error) {
         console.error(error);
         handleError(error, { errorToast: { title: 'Run failed', includeErrorMessage: true } });
       } finally {
+        setPending(false);
         setAgents((agents) =>
           agents.map((instance) => {
             instance.isPending = false;
@@ -120,7 +157,7 @@ export function ComposeProvider({ children }: PropsWithChildren) {
         );
       }
     },
-    [agents, data, handleError, runAgent],
+    [agents, availableAgents, handleError, runAgent],
   );
 
   const handleCancel = useCallback(() => {
@@ -143,16 +180,17 @@ export function ComposeProvider({ children }: PropsWithChildren) {
     () => ({
       agents,
       result,
-      setAgents: updateAgents,
+      isPending,
+      setAgents,
       onSubmit: send,
       onCancel: handleCancel,
       onClear: () => setAgents([]),
       onReset: handleReset,
     }),
-    [agents, handleCancel, handleReset, result, send, updateAgents],
+    [agents, handleCancel, handleReset, isPending, result, send],
   );
 
   return <ComposeContext.Provider value={value}>{children}</ComposeContext.Provider>;
 }
 
-export const URL_PARAM_AGENTS = 'agents';
+const URL_PARAM_AGENTS = 'agents';

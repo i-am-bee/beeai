@@ -22,6 +22,7 @@ export const ComposeContext = createContext<ComposeContextValue | null>(null);
 interface ComposeContextValue {
   agents: AgentInstance[];
   result?: string;
+  isPending: boolean;
   onSubmit: (input: string) => Promise<void>;
   onCancel: () => void;
   onClear: () => void;
@@ -33,6 +34,7 @@ export interface AgentInstance {
   data: Agent;
   isPending?: boolean;
   logs?: string[];
+  result?: string;
   stats?: {
     startTime: number;
     endTime?: number;

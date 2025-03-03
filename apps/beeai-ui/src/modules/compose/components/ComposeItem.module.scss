@@ -15,6 +15,7 @@
  */
 
 .root {
+  position: relative;
   display: flex;
   flex-direction: column;
   background-color: $background;
@@ -27,6 +28,13 @@
 .name {
   display: block;
   margin-block-end: $spacing-04;
+  padding-inline-end: $spacing-08;
+}
+
+.actions {
+  position: absolute;
+  inset-inline-end: 0;
+  inset-block-start: 0;
 }
 
 .description {
@@ -35,9 +43,16 @@
   margin-block-end: $spacing-03;
 }
 
-.output {
+.run {
   border-block-start: 1px solid $border-subtle;
   margin-block-start: $spacing-04;
+
+  &.finished {
+    .logs {
+      block-size: 0;
+      opacity: 0;
+    }
+  }
 }
 
 .logs {
@@ -48,8 +63,13 @@
   margin-block-start: $spacing-05;
   margin-block-end: $spacing-03;
   border-block-end: 1px solid $border-subtle;
-  padding-block-end: $spacing-04;
-  overflow: auto;
+  padding-block-end: $spacing-05;
+  max-block-size: 50vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  transition:
+    block-size $duration-fast-01 motion(standard, productive),
+    opacity $duration-fast-01 motion(standard, productive);
 
   > div {
     font-size: rem(12px);
@@ -58,9 +78,10 @@
 }
 
 .status {
-  display: grid;
-  grid-template-columns: 1fr max-content;
+  display: flex;
+  justify-content: flex-end;
   inline-size: 100%;
+  padding-block-start: $spacing-04;
 }
 
 .loading {
