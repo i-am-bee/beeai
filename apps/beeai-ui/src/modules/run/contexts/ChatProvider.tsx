@@ -26,6 +26,7 @@ import {
   MessagesNotifications,
   messagesNotificationsSchema,
   MessagesResult,
+  SendMessageParams,
 } from '../chat/types';
 import { ChatContext, ChatMessagesContext } from './chat-context';
 
@@ -70,7 +71,7 @@ export function ChatProvider({ agent, children }: PropsWithChildren<Props>) {
   }, [getMessages]);
 
   const sendMessage = useCallback(
-    async (input: string) => {
+    async ({ input, config }: SendMessageParams) => {
       setMessages((messages) => {
         messages.push({
           key: uuid(),
@@ -92,6 +93,7 @@ export function ChatProvider({ agent, children }: PropsWithChildren<Props>) {
         const response = (await runAgent({
           input: {
             messages: getInputMessages(),
+            config,
           },
           abortController,
         })) as MessagesResult;

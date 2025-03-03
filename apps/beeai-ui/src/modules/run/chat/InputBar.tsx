@@ -19,10 +19,12 @@ import { dispatchInputEventOnFormTextarea, submitFormOnEnter } from '#utils/form
 import { Send, StopOutlineFilled } from '@carbon/icons-react';
 import { Button } from '@carbon/react';
 import { memo, useCallback, useRef } from 'react';
-import { useForm } from 'react-hook-form';
+import { FormProvider, useForm } from 'react-hook-form';
 import { mergeRefs } from 'react-merge-refs';
 import { useChat } from '../contexts';
+import { ChatSettings } from './ChatSettings';
 import classes from './InputBar.module.scss';
+import { ChatDefaultTools } from './constants';
 
 interface Props {
   onMessageSubmit?: () => void;
@@ -34,14 +36,19 @@ export const InputBar = memo(function InputBar({ onMessageSubmit }: Props) {
 
   const { sendMessage, onCancel } = useChat();
 
+  const form = useForm<ChatFormValues>({
+    mode: 'onChange',
+    defaultValues: {
+      tools: ChatDefaultTools,
+    },
+  });
+
   const {
     register,
     watch,
     handleSubmit,
     formState: { isSubmitting },
-  } = useForm<FormValues>({
-    mode: 'onChange',
-  });
+  } = form;
 
   const resetForm = useCallback(() => {
     {
@@ -73,60 +80,69 @@ export const InputBar = memo(function InputBar({ onMessageSubmit }: Props) {
   const placeholder = 'Ask a question…';
 
   return (
-    <form
-      className={classes.root}
-      ref={formRef}
-      onSubmit={(e) => {
-        e.preventDefault();
-        if (isSubmitDisabled) return;
+    <FormProvider {...form}>
+      <form
+        className={classes.root}
+        ref={formRef}
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (isSubmitDisabled) return;
 
-        handleSubmit(async ({ input }) => {
-          onMessageSubmit?.();
-          resetForm();
+          handleSubmit(async ({ input, tools }) => {
+            onMessageSubmit?.();
+            resetForm();
 
-          await sendMessage(input);
-        })();
-      }}
-    >
-      <TextAreaAutoHeight
-        className={classes.textarea}
-        rows={3}
-        placeholder={placeholder}
-        autoFocus
-        ref={mergeRefs([inputFormRef, inputRef])}
-        {...inputFormProps}
-        onKeyDown={(e) => !isSubmitDisabled && submitFormOnEnter(e)}
-      />
+            await sendMessage({ input, config: { tools } });
+          })();
+        }}
+      >
+        <TextAreaAutoHeight
+          className={classes.textarea}
+          rows={1}
+          placeholder={placeholder}
+          autoFocus
+          ref={mergeRefs([inputFormRef, inputRef])}
+          {...inputFormProps}
+          onKeyDown={(e) => !isSubmitDisabled && submitFormOnEnter(e)}
+        />
 
-      <div className={classes.buttonContainer}>
-        {!isPending ? (
-          <Button
-            type="submit"
-            renderIcon={Send}
-            kind="ghost"
-            size="sm"
-            hasIconOnly
-            iconDescription="Send"
-            disabled={isSubmitDisabled}
-          />
-        ) : (
-          <Button
-            renderIcon={StopOutlineFilled}
-            kind="ghost"
-            size="sm"
-            hasIconOnly
-            iconDescription="Cancel"
-            onClick={(e) => {
-              onCancel();
-              e.preventDefault();
-            }}
-          />
-        )}
-      </div>
-    </form>
+        <div className={classes.actionBar}>
+          <div className={classes.actions}>
+            <ChatSettings containerRef={formRef} />
+          </div>
+
+          <div>
+            {!isPending ? (
+              <Button
+                type="submit"
+                renderIcon={Send}
+                kind="ghost"
+                size="sm"
+                hasIconOnly
+                iconDescription="Send"
+                disabled={isSubmitDisabled}
+              />
+            ) : (
+              <Button
+                renderIcon={StopOutlineFilled}
+                kind="ghost"
+                size="sm"
+                hasIconOnly
+                iconDescription="Cancel"
+                onClick={(e) => {
+                  onCancel();
+                  e.preventDefault();
+                }}
+              />
+            )}
+          </div>
+        </div>
+      </form>
+    </FormProvider>
   );
 });
 
-interface FormValues {
+export interface ChatFormValues {
   input: string;
+  tools?: string[];
 }

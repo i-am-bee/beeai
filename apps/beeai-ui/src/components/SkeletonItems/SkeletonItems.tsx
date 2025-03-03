@@ -14,24 +14,13 @@
  * limitations under the License.
  */
 
-@use 'sass:map';
+import { ReactNode } from 'react';
 
-$sizes: (
-  xs: rem(504px),
-  sm: rem(608px),
-  md: rem(768px),
-  lg: rem(928px),
-  xlg: rem(1088px),
-  xxlg: rem(1248px),
-);
+interface Props {
+  count: number;
+  render: (idx: number) => ReactNode;
+}
 
-.root {
-  margin-inline: auto;
-  padding-inline: $grid-margin;
-  inline-size: 100%;
-  @each $size, $width in $sizes {
-    &.#{$size} {
-      max-inline-size: calc($width + 2 * $grid-margin);
-    }
-  }
+export function SkeletonItems({ count, render }: Props) {
+  return Array.from({ length: count }, (_, idx) => render(idx));
 }

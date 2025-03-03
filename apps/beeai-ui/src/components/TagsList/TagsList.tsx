@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { SkeletonItems } from '#components/SkeletonItems/SkeletonItems.tsx';
 import { TagSkeleton } from '@carbon/react';
 import clsx from 'clsx';
 import { ReactElement } from 'react';
@@ -42,9 +43,7 @@ interface SkeletonProps {
 TagsList.Skeleton = function TagsListSkeleton({ length = 1, className }: SkeletonProps) {
   return (
     <div className={clsx(classes.root, className)}>
-      {Array.from({ length }).map((_, idx) => (
-        <TagSkeleton key={idx} />
-      ))}
+      <SkeletonItems count={length} render={(idx) => <TagSkeleton key={idx} />} />
     </div>
   );
 };

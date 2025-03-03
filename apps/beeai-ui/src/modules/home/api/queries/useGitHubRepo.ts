@@ -25,6 +25,9 @@ export function useGitHubRepo(params: GitHubRepoParams) {
     queryFn: () => fetchGitHubRepo(params),
     staleTime: 1000 * 60 * 5,
     retry: 1,
+    meta: {
+      errorToast: false,
+    },
   });
 
   return query;

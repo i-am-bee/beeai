@@ -14,25 +14,16 @@
  * limitations under the License.
  */
 
-import { useListTools } from '../api/queries/useListTools';
+.root {
+  display: flex;
+  align-items: center;
+  column-gap: $spacing-03;
+}
 
-export const ToolsView = () => {
-  const { data, isLoading, isSuccess } = useListTools();
-
-  if (isLoading || !data || !isSuccess) {
-    return <div>Loading...</div>;
-  }
-
-  return (
-    <>
-      <h2>Available Tools</h2>
-      <ul>
-        {data.tools.map((tool) => (
-          <li key={tool.name}>
-            {tool.name} - {tool.description}
-          </li>
-        ))}
-      </ul>
-    </>
-  );
-};
+.heading {
+  min-inline-size: 0;
+  font-size: rem(14px);
+  line-height: math.div(18, 14);
+  padding-block: 1px;
+  flex-grow: 1;
+}

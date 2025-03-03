@@ -14,24 +14,6 @@
  * limitations under the License.
  */
 
-@use 'sass:map';
+export const ChatSupportedTools = ['search', 'wikipedia', 'weather'];
 
-$sizes: (
-  xs: rem(504px),
-  sm: rem(608px),
-  md: rem(768px),
-  lg: rem(928px),
-  xlg: rem(1088px),
-  xxlg: rem(1248px),
-);
-
-.root {
-  margin-inline: auto;
-  padding-inline: $grid-margin;
-  inline-size: 100%;
-  @each $size, $width in $sizes {
-    &.#{$size} {
-      max-inline-size: calc($width + 2 * $grid-margin);
-    }
-  }
-}
+export const ChatDefaultTools = [...ChatSupportedTools];

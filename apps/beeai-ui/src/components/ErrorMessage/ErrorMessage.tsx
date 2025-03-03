@@ -34,7 +34,7 @@ export function ErrorMessage({ title, subtitle, onRetry, isRefetching, children 
           {subtitle && <p>{subtitle}</p>}
 
           {onRetry && (
-            <Button size="md" onClick={() => onRetry()} disabled={isRefetching}>
+            <Button size="sm" onClick={() => onRetry()} disabled={isRefetching}>
               {!isRefetching ? 'Retry' : <InlineLoading description="Retrying&hellip;" />}
             </Button>
           )}

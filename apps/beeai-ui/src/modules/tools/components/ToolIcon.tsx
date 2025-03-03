@@ -14,24 +14,27 @@
  * limitations under the License.
  */
 
-@use 'sass:map';
+import Wikipedia from '#svgs/Wikipedia.svg';
+import { IbmWatsonDiscovery, PartlyCloudy, Tools } from '@carbon/icons-react';
+import { Tool } from '../api/types';
+import classes from './ToolIcon.module.scss';
 
-$sizes: (
-  xs: rem(504px),
-  sm: rem(608px),
-  md: rem(768px),
-  lg: rem(928px),
-  xlg: rem(1088px),
-  xxlg: rem(1248px),
-);
-
-.root {
-  margin-inline: auto;
-  padding-inline: $grid-margin;
-  inline-size: 100%;
-  @each $size, $width in $sizes {
-    &.#{$size} {
-      max-inline-size: calc($width + 2 * $grid-margin);
-    }
-  }
+interface Props {
+  name: Tool['name'];
 }
+
+export function ToolIcon({ name }: Props) {
+  const Icon = ICONS_MAP[name as keyof typeof ICONS_MAP] ?? Tools;
+
+  return (
+    <span className={classes.root}>
+      <Icon />
+    </span>
+  );
+}
+
+const ICONS_MAP = {
+  search: IbmWatsonDiscovery,
+  wikipedia: Wikipedia,
+  weather: PartlyCloudy,
+};
