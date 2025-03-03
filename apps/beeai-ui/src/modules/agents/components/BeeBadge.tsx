@@ -14,25 +14,28 @@
  * limitations under the License.
  */
 
-import type { ReactElement } from 'react';
-import { Tag } from '@carbon/react';
-import { TagsList } from '#components/TagsList/TagsList.tsx';
-import { isNotNull } from '#utils/helpers.ts';
+import { ComponentProps } from 'react';
+import { BEE_AI_FRAMEWORK_TAG } from '#utils/constants.ts';
+import { Tooltip } from '#components/Tooltip/Tooltip.tsx';
+import Bee from '#svgs/Bee.svg';
 import type { Agent } from '../api/types';
+import { Tag } from '@carbon/react';
+import classes from './BeeBadge.module.scss';
 
 interface Props {
   agent: Agent;
-  className?: string;
+  size?: ComponentProps<typeof Tag>['size'];
 }
 
-export function AgentTags({ agent, className }: Props) {
+export function BeeBadge({ agent, size }: Props) {
   const { framework } = agent;
-
-  const tags: ReactElement[] = [framework ? <AgentTag key={framework} name={framework} /> : null].filter(isNotNull);
-
-  return <TagsList tags={tags} className={className} />;
-}
-
-function AgentTag({ name }: { name: string }) {
-  return <Tag type="cool-gray">{name}</Tag>;
+  return (
+    <>
+      {framework === BEE_AI_FRAMEWORK_TAG && (
+        <Tooltip content="Built by the BeeAI team" placement="top" asChild>
+          <Tag type="green" renderIcon={Bee} size={size} className={classes.tag} />
+        </Tooltip>
+      )}
+    </>
+  );
 }
