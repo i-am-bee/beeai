@@ -1,5 +1,4 @@
 version = 1
-revision = 1
 requires-python = ">=3.11, <4.0"
 
 [manifest]
@@ -19,7 +18,7 @@ dev = [
 
 [[package]]
 name = "acp-sdk"
-version = "0.0.3"
+version = "0.0.4"
 source = { editable = "packages/acp-python-sdk" }
 dependencies = [
     { name = "anyio" },
@@ -69,7 +68,6 @@ requires-dist = [
     { name = "typer", marker = "extra == 'cli'", specifier = ">=0.12.4" },
     { name = "uvicorn", specifier = ">=0.23.1" },
 ]
-provides-extras = ["rich", "cli"]
 
 [package.metadata.requires-dev]
 dev = [
@@ -219,7 +217,7 @@ wheels = [
 
 [[package]]
 name = "beeai-cli"
-version = "0.0.2"
+version = "0.0.3"
 source = { editable = "apps/beeai-cli" }
 dependencies = [
     { name = "acp-sdk" },
@@ -244,7 +242,7 @@ requires-dist = [
 
 [[package]]
 name = "beeai-sdk"
-version = "0.0.5"
+version = "0.0.6"
 source = { editable = "packages/beeai-sdk" }
 dependencies = [
     { name = "acp-sdk" },
@@ -263,7 +261,7 @@ requires-dist = [
 
 [[package]]
 name = "beeai-server"
-version = "0.0.1"
+version = "0.0.2"
 source = { editable = "apps/beeai-server" }
 dependencies = [
     { name = "acp-sdk" },
@@ -271,6 +269,7 @@ dependencies = [
     { name = "anyio" },
     { name = "asgiref" },
     { name = "backports-tarfile" },
+    { name = "beeai-sdk" },
     { name = "fastapi", extra = ["standard"] },
     { name = "httpx" },
     { name = "kink" },
@@ -297,6 +296,7 @@ requires-dist = [
     { name = "anyio", specifier = ">=4.8.0" },
     { name = "asgiref", specifier = ">=3.8.1" },
     { name = "backports-tarfile", specifier = ">=1.2.0" },
+    { name = "beeai-sdk", editable = "packages/beeai-sdk" },
     { name = "fastapi", extras = ["standard"], specifier = ">=0.115.7" },
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "kink", specifier = ">=0.8.1" },

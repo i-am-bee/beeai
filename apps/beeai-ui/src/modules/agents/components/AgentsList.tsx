@@ -14,65 +14,43 @@
  * limitations under the License.
  */
 
-import { ErrorMessage } from '#components/ErrorMessage/ErrorMessage.tsx';
+'use client';
+
 import { SkeletonText } from '@carbon/react';
 import pluralize from 'pluralize';
-import { useFormContext } from 'react-hook-form';
-import { useListAgents } from '../api/queries/useListAgents';
+import { ReactNode } from 'react';
 import { useFilteredAgents } from '../hooks/useFilteredAgents';
 import { AgentsFiltersParams } from '../providers/AgentsFiltersProvider';
-import { AgentCard } from './AgentCard';
 import classes from './AgentsList.module.scss';
-import { ImportAgents } from './ImportAgents';
+import { Agent } from '../api/types';
 
-export function AgentsList() {
-  const { data, isPending, error, refetch, isRefetching } = useListAgents();
-  const { watch } = useFormContext<AgentsFiltersParams>();
-  const filters = watch();
+interface Props {
+  agents: Agent[] | undefined;
+  filters: AgentsFiltersParams;
+  action?: ReactNode;
+  children: (filteredAgents: Agent[]) => ReactNode;
+}
 
-  const { filteredAgents, filteredCount } = useFilteredAgents({ agents: data ?? [], filters });
-  const totalCount = data?.length ?? 0;
-
-  if (error && !data)
-    return (
-      <ErrorMessage
-        title="Failed to load agents."
-        onRetry={refetch}
-        isRefetching={isRefetching}
-        subtitle={error.message}
-      />
-    );
-
+export function AgentsList({ agents, filters, action, children }: Props) {
+  const { filteredAgents, filteredCount } = useFilteredAgents({ agents: agents ?? [], filters });
+  const totalCount = agents?.length;
   return (
     <div>
       <div className={classes.header}>
-        {!isPending ? (
+        {totalCount == null ? (
+          <SkeletonText className={classes.count} width="125px" />
+        ) : (
           totalCount > 0 && (
             <p className={classes.count}>
               Showing {totalCount === filteredCount ? totalCount : `${filteredCount} of ${totalCount}`}{' '}
               {pluralize('agent', totalCount)}
             </p>
           )
-        ) : (
-          <SkeletonText className={classes.count} width="125px" />
         )}
-
-        <ImportAgents />
+        {action}
       </div>
 
-      <ul className={classes.list}>
-        {!isPending
-          ? filteredAgents?.map((agent, idx) => (
-              <li key={idx}>
-                <AgentCard agent={agent} />
-              </li>
-            ))
-          : Array.from({ length: 3 }, (_, idx) => (
-              <li key={idx}>
-                <AgentCard.Skeleton />
-              </li>
-            ))}
-      </ul>
+      <ul className={classes.list}>{children(filteredAgents)}</ul>
     </div>
   );
 }

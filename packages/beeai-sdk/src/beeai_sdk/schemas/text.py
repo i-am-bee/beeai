@@ -15,9 +15,9 @@
 from beeai_sdk.schemas.base import Input, Output
 
 
-class PromptInput(Input):
+class TextInput(Input):
     text: str
 
 
-class PromptOutput(Output):
+class TextOutput(Output):
     text: str

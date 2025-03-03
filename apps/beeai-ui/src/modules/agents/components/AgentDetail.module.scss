@@ -48,6 +48,10 @@
     margin-block-start: $spacing-06;
   }
 
+  .launchButton {
+    min-inline-size: rem(208px);
+  }
+
   .copySnippet {
     min-inline-size: rem(288px);
   }
@@ -56,6 +60,15 @@
     inline-size: 100%;
     border: none;
     border-block-start: 1px solid $border-subtle-00;
-    margin-block: $spacing-09;
+    margin-block: $spacing-06;
+  }
+}
+
+.fullDescription {
+  h2 {
+    font-size: rem(14px);
+    font-weight: 600;
+    line-height: rem(20px);
+    letter-spacing: rem(0.32px);
   }
 }

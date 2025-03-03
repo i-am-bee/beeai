@@ -3,7 +3,7 @@ import asyncio
 
 from acp.server.highlevel import Server
 from beeai_sdk.providers.agent import run_agent_provider
-from composition.linear_workflow import add_sequential_workflow_agent
+from composition.sequential_workflow import add_sequential_workflow_agent
 
 
 async def run():

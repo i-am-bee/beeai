@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import json
-from typing import Any
+from typing import Any, TypeVar, Iterable
 
 import typer
 import yaml
@@ -48,3 +48,10 @@ def check_json(value: Any) -> dict[str, Any]:
         return json.loads(value)
     except json.decoder.JSONDecodeError:
         raise typer.BadParameter(f"Invalid JSON '{value}'")
+
+
+DictType = TypeVar("DictType", bound=dict)
+
+
+def omit(dict: DictType, keys: Iterable[str]) -> DictType:
+    return {key: value for key, value in dict.items() if key not in keys}

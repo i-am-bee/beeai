@@ -1,16 +1,16 @@
 import { z } from "zod";
 import { Metadata } from "@i-am-bee/beeai-sdk/schemas/metadata";
 import {
-  promptInputSchema,
-  promptOutputSchema,
-} from "@i-am-bee/beeai-sdk/schemas/prompt";
+  textInputSchema,
+  textOutputSchema,
+} from "@i-am-bee/beeai-sdk/schemas/text";
 import { SystemMessage, UserMessage } from "beeai-framework/backend/message";
 import { CHAT_MODEL } from "./config.js";
 import { ChatModel } from "beeai-framework/backend/chat";
 
-const inputSchema = promptInputSchema;
+const inputSchema = textInputSchema;
 type Input = z.infer<typeof inputSchema>;
-const outputSchema = promptOutputSchema;
+const outputSchema = textOutputSchema;
 type Output = z.infer<typeof outputSchema>;
 
 const run = async (
@@ -19,7 +19,7 @@ const run = async (
   }: {
     params: { input: z.infer<typeof inputSchema> };
   },
-  { signal }: { signal?: AbortSignal },
+  { signal }: { signal?: AbortSignal }
 ) => {
   const { text } = params.input;
 
@@ -30,7 +30,7 @@ const run = async (
       new SystemMessage(`You are a helpful assistant designed to generate structured documentation for AI agents based on their source code. You extract key details, format them into a consistent structure, and ensure clarity and completeness. The assistant supports multiple programming languages and asks for clarification when necessary.
 
 You provide two sections:
-- **Short Description**: A high-level summary (max 3 concise sentences) describing what the agent does for the catalog.
+- **Short Description**: A high-level summary (max 3 lines) describing what the agent does for the catalog.
 - **Full Description**: A Markdown-formatted text structured as follows:
   - Intro paragraph
   - How It Works
@@ -44,18 +44,17 @@ It follows a structured template but allows minor flexibility based on the agent
 
 Example:
 
-# Short Desc
+## Short Description
 The agent creates structured podcast-style dialogues optimized for AI-driven text-to-speech (TTS). It formats natural conversations with a lead speaker and an inquisitive co-host, ensuring realistic interruptions and follow-ups. The output is structured for seamless TTS integration.
 
-# Full Description
+## Full Description
 The agent converts structured content into a dynamic, natural-sounding podcast script optimized for AI-driven text-to-speech (TTS) applications. It processes input text and transforms it into a structured dialogue between two speakers: one acting as a knowledgeable host and the other as an inquisitive co-host, ensuring a conversational and engaging discussion. The generated dialogue includes interruptions, follow-up questions, and natural reactions to enhance realism.
 
 ## How It Works
 The agent takes an input content document (e.g., an article, research paper, or structured text) and reformats it into a back-and-forth podcast-style discussion. The output maintains a logical flow, with Speaker 1 explaining concepts while Speaker 2 asks relevant questions, reacts, and occasionally introduces tangents for a more natural feel. The generated script is optimized for AI text-to-speech pipelines, ensuring clarity and proper role differentiation.
 
 ## Input Parameters
-The agent requires the following input parameters:
-- **prompt** (string) – The full content or topic material to be converted into a podcast dialogue.
+- **text** (string) – The full content or topic material to be converted into a podcast dialogue.
 
 ## Output Structure
 The agent returns a structured JSON list representing the podcast conversation:
@@ -77,17 +76,9 @@ The agent returns a structured JSON list representing the podcast conversation:
 
 ## Example Usage
 
-### Example 1: Converting an Article into a Podcast
+### Example: Converting an Article into a Podcast
 
-### Input:
-\`\`\`json
-{
-  text:
-    "Artificial intelligence is revolutionizing industries by automating complex tasks, improving efficiency, and enabling data-driven decision-making. In healthcare, AI is helping doctors diagnose diseases earlier and personalize treatments...",
-}
-\`\`\`
-
-### CLI:
+#### CLI:
 \`\`\`bash
 beeai run podcast-creator '{
   text:
@@ -95,12 +86,12 @@ beeai run podcast-creator '{
 }'
 \`\`\`
 
-### Processing Steps:
+#### Processing Steps:
 1. Extracts key concepts from the content.
 2. Reformats it into a structured conversation where Speaker 1 explains ideas and Speaker 2 reacts, asks questions, and introduces clarifications.
 3. Dramatises the content and outputs a structured dialogue suitable for AI voice synthesis.
 
-### Output:
+#### Output:
 \`\`\`json
 [
   {"speaker": 1, "text": "Artificial intelligence is changing how industries operate by automating complex tasks and improving efficiency."},
@@ -122,17 +113,24 @@ beeai run podcast-creator '{
   };
 };
 
+const agentName = "agent-docs-creator";
+
+const exampleInputText =
+  "function exampleAgent() { /* AI agent source code here */ }";
+
 const exampleInput: Input = {
-  text: "function exampleAgent() { /* AI agent source code here */ }",
+  text: exampleInputText,
 };
 
+const exampleOutputText: string = `"# Short Description\nThe agent generates structured documentation for AI agents by analyzing their source code...\n\n# Full Description\nThe agent is designed to create structured documentation for AI agents..."`;
+
 const exampleOutput: Output = {
-  text: "# Short Description\nThe agent generates structured documentation for AI agents by analyzing their source code...\n\n# Full Description\nThe agent is designed to create structured documentation for AI agents...",
+  text: exampleOutputText,
   logs: [],
 };
 
 export const agent = {
-  name: "agent-docs-creator",
+  name: agentName,
   description: `The agent analyzes AI source code to generate structured, clear, and complete documentation in a consistent template, supporting multiple languages.`,
   inputSchema,
   outputSchema,
@@ -142,13 +140,13 @@ export const agent = {
 critical details and formatting them into a predefined documentation template. This ensures that the documentation is clear, complete, and consistent across different AI agents.
 
 ## How It Works
-The agent uses a chat model to analyze the input source code provided through a prompt. It constructs a structured document consisting of a short description and a detailed markdown-formatted
+The agent uses a chat model to analyze the input source code. It constructs a structured document consisting of a short description and a detailed markdown-formatted
 full description. The short description provides a high-level summary, while the full description includes sections like "How It Works," "Input Parameters," "Output Structure," "Key Features,"
 "Use Cases," and "Example Usage." The agent's output is generated by simulating a conversation between system and user messages to refine the output to meet the documentation standards.
 
 ## Input Parameters
 The agent requires the following input parameter:
-- **prompt** (string) – String that represents the source code of the AI agent to be documented.
+- **text** (string) – String that represents the source code of the AI agent to be documented.
 
 ## Output Structure
 The agent returns an object with the following structure:
@@ -169,33 +167,21 @@ The agent returns an object with the following structure:
 
 ### Example 1: Documenting an AI Agent
 
-### Input:
-\`\`\`json
-${JSON.stringify(exampleInput, null, 2)}
-\`\`\`
-
 ### CLI:
 \`\`\`bash
-beeai run agent-docs-creator '${JSON.stringify(exampleInput, null, 2)}'
+beeai run ${agentName} "${exampleInputText}"
 \`\`\`
 
 ### Processing Steps:
 1. Analyzes the provided source code to extract key features and functionality.
 2. Formats the extracted information into a structured documentation template.
-3. Simulates an interactive discussion to ensure the output adheres to the documentation standards.
-
-### Output:
-\`\`\`json
-${JSON.stringify(exampleOutput, null, 2)}
-\`\`\`
-
-This agent is particularly useful for developers and documentation specialists looking to automate the process of generating high-quality documentation for AI agents, ensuring that all necessary
-details are covered efficiently.`,
+3. Simulates an interactive discussion to ensure the output adheres to the documentation standards.`,
     framework: "BeeAI",
     license: "Apache 2.0",
     languages: ["TypeScript"],
     githubUrl:
       "https://github.com/i-am-bee/beeai/blob/main/agents/official/agent-docs-creator",
+    exampleInput: exampleInputText,
     avgRunTimeSeconds: 19,
     avgRunTokens: 5409,
   } satisfies Metadata,

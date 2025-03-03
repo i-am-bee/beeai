@@ -14,11 +14,27 @@
  * limitations under the License.
  */
 
-import { z } from "zod";
-import { inputSchema, outputSchema } from "./base.js";
+import { getAgentsList } from "@/acp/api";
+import { AgentDetail, Container } from "@i-am-bee/beeai-ui";
+import { notFound } from "next/navigation";
 
-export const promptInputSchema = inputSchema.extend({ text: z.string() });
-export type PromptInput = z.input<typeof promptInputSchema>;
+export const dynamic = "force-dynamic"; // Opt out of static generation
 
-export const promptOutputSchema = outputSchema.extend({ text: z.string() });
-export type PromptOutput = z.output<typeof promptOutputSchema>;
+interface Props {
+  params: Promise<{ name: string }>;
+}
+
+export default async function AgentPage({ params }: Props) {
+  const { name } = await params;
+  const agents = await getAgentsList();
+  const agent = agents.find((agent) => agent.name === name);
+  if (!agent) {
+    notFound();
+  }
+
+  return (
+    <Container>
+      <AgentDetail agent={agent} />
+    </Container>
+  );
+}

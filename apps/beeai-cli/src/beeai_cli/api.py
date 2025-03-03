@@ -14,8 +14,11 @@
 
 import contextlib
 import functools
+import enum
 import json
+import os
 import subprocess
+import time
 import urllib
 import urllib.parse
 
@@ -33,29 +36,66 @@ API_BASE_URL = f"{BASE_URL}/api/v1/"
 MCP_URL = f"{BASE_URL}{config.mcp_sse_path}"
 
 
-def show_connect_hint():
-    typer.echo(f"💥 {typer.style('ConnectError', fg='red')}: Could not connect to the local BeeAI platform.")
+class BrewServiceStatus(enum.StrEnum):
+    not_installed = "not_installed"
+    stopped = "stopped"
+    started = "started"
 
+
+def brew_service_status() -> BrewServiceStatus:
     beeai_service = None
     with contextlib.suppress(Exception):
         services = json.loads(subprocess.check_output(["brew", "services", "list", "--json"]))
         beeai_service = next((service for service in services if service["name"] == "beeai"), None)
-
-    if BASE_URL != "http://localhost:8333":
-        typer.echo(
-            f'💡 {typer.style("HINT", fg="yellow")}: You have set the BeeAI platform host to "{typer.style(BASE_URL, bold=True)}" -- is this correct?'
-        )
-    elif not beeai_service:
-        typer.echo(
-            f"💡 {typer.style('HINT', fg='yellow')}: In a separate terminal, run {typer.style('beeai serve', fg='green')}, keep it running and retry."
-        )
+    if not beeai_service:
+        return BrewServiceStatus.not_installed
     elif beeai_service["status"] == "started":
-        typer.echo(
-            f"💡 {typer.style('HINT', fg='yellow')}: Reinstall the service with {typer.style('brew reinstall beeai', fg='green')}, then start the service with {typer.style('brew services start beeai', fg='green')} and retry."
-        )
+        return BrewServiceStatus.started
     else:
+        return BrewServiceStatus.stopped
+
+
+def resolve_connection_error(retried: bool = False):
+    if BASE_URL != "http://localhost:8333":
+        typer.echo(f"💥 {typer.style('ConnectError', fg='red')}: Could not connect to the local BeeAI service.")
         typer.echo(
-            f"💡 {typer.style('HINT', fg='yellow')}: Start the service with {typer.style('brew services start beeai', fg='green')} and retry."
+            f'💡 {typer.style("HINT", fg="yellow")}: You have set the BeeAI host to "{typer.style(BASE_URL, bold=True)}" -- is this correct?'
+        )
+        exit(1)
+
+    if retried:
+        typer.echo(f"💥 {typer.style('ConnectError', fg='red')}: We failed to automatically start the BeeAI service.")
+        typer.echo(
+            f"💡 {typer.style('HINT', fg='yellow')}: Try reinstalling the service with {typer.style('brew reinstall beeai', fg='green')}, then retry."
+        )
+        exit(1)
+
+    status = brew_service_status()
+    if status == BrewServiceStatus.started:
+        typer.echo(
+            f"💥 {typer.style('ConnectError', fg='red')}: The BeeAI service is running, but it did not accept the connection."
+        )
+        typer.echo(
+            f"💡 {typer.style('HINT', fg='yellow')}: Try reinstalling the service with {typer.style('brew reinstall beeai', fg='green')}, then retry."
+        )
+        exit(1)
+
+    if status == BrewServiceStatus.not_installed:
+        typer.echo(f"💥 {typer.style('ConnectError', fg='red')}: BeeAI service is not running.")
+        typer.echo(
+            f"💡 {typer.style('HINT', fg='yellow')}: In a separate terminal, run {typer.style('beeai serve', fg='green')}, keep it running and retry this command."
+        )
+        typer.echo(
+            f"💡 {typer.style('HINT', fg='yellow')}: ...or alternatively, install BeeAI through {typer.style('brew', fg='green')} which includes a background service."
+        )
+        exit(1)
+
+    typer.echo(f"⏳ {typer.style('Auto-resolving', fg='magenta')}: Starting the BeeAI service, stand by...")
+    with contextlib.suppress(Exception):
+        os.system("brew services start beeai")
+        time.sleep(3.0)
+        typer.echo(
+            f"ℹ️  {typer.style('NOTE', fg='blue')}: It will take a few minutes before all of the agents are available, please be patient..."
         )
 
 

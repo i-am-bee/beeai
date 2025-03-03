@@ -18,12 +18,13 @@ import inspect
 from contextlib import contextmanager
 from typing import Iterator
 
+import rich.text
 import typer
 from httpx import ConnectError
 from rich.console import Console
 from rich.table import Table
 
-from beeai_cli.api import show_connect_hint
+from beeai_cli.api import resolve_connection_error
 from beeai_cli.configuration import Configuration
 from beeai_cli.utils import extract_messages
 
@@ -42,6 +43,9 @@ def create_table(*args, **kwargs) -> Iterator[Table]:
         column.overflow = "ellipsis"
         column.header = column.header.upper()
 
+    if not table.rows:
+        table._render = lambda *args, **kwargs: [rich.text.Text("<No items found>", style="italic")]
+
 
 class AsyncTyper(typer.Typer):
     def command(self, *args, **kwargs):
@@ -51,14 +55,14 @@ class AsyncTyper(typer.Typer):
             @functools.wraps(f)
             def wrapped_f(*args, **kwargs):
                 try:
-                    if inspect.iscoroutinefunction(f):
-                        asyncio.run(f(*args, **kwargs))
-                    else:
-                        f(*args, **kwargs)
-                except* (ConnectionError, ConnectError):
-                    show_connect_hint()
-                    if DEBUG:
-                        raise
+                    for retries in range(2):
+                        try:
+                            if inspect.iscoroutinefunction(f):
+                                return asyncio.run(f(*args, **kwargs))
+                            else:
+                                return f(*args, **kwargs)
+                        except* (ConnectionError, ConnectError):
+                            resolve_connection_error(retried=retries > 0)
                 except* Exception as ex:
                     for exc_type, message in extract_messages(ex):
                         err_console.print(f":boom: [bold red]{exc_type}[/bold red]: {message}")
