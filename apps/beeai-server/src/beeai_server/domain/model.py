@@ -74,8 +74,10 @@ class BaseProvider(BaseModel, abc.ABC):
 
     def check_env(self, env: dict[str, str] | None = None, raise_error: bool = True) -> list[EnvVar]:
         required_env = {var.name for var in self.env if var.required}
-        missing_env = [var for var in self.env if var.name in required_env - env.keys()]
-        if missing_env and raise_error:
+        all_env = {var.name for var in self.env}
+        missing_env = [var for var in self.env if var.name in all_env - env.keys()]
+        missing_required_env = [var for var in self.env if var.name in required_env - env.keys()]
+        if missing_required_env and raise_error:
             raise MissingConfigurationError(missing_env=missing_env)
         return missing_env
 
