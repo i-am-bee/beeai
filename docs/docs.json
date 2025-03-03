@@ -1,7 +1,7 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "BeeAI platform",
+  "name": "BeeAI",
   "colors": {
     "primary": "#F3C622",
     "light": "#F3C622",
@@ -18,7 +18,7 @@
             "pages": [
               "get-started/introduction",
               "get-started/quickstart",
-              "get-started/development"
+              "get-started/installation"
             ]
           },
           {
@@ -43,7 +43,7 @@
       "anchors": [
         {
           "anchor": "BeeAI website",
-          "href": "https://iambee.ai/",
+          "href": "https://beeai.dev/",
           "icon": "globe-pointer"
         },
         {
