@@ -27,8 +27,8 @@
     inline-size: rem(18px);
 
     > svg {
-      block-size: rem(18px);
-      inline-size: rem(18px);
+      block-size: rem(18px) !important;
+      inline-size: rem(18px) !important;
     }
   }
 }
