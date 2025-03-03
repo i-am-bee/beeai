@@ -3,25 +3,33 @@ title: "Quickstart"
 description: "Start using the beeai platform"
 ---
 
+> [!WARNING]
+> This project is in **Pre-Alpha** and under rapid development. Breaking changes should be expected.
+
 ## Installation
 
 ```sh
-# run once to install
-brew install i-am-bee/beeai/beeai
-# run once to enable as service
-brew services start beeai
+brew install i-am-bee/beeai/beeai && brew services start beeai
 ```
 
-Open [http://localhost:8333](http://localhost:8333).
+Additional installation methods are available [here](./installation.mdx).
 
-## CLI
+## Web Interface
 
-```bash
+Once installed, open [http://localhost:8333](http://localhost:8333).
+
+## CLI Usage
+
+To list all available agents:
+```sh
+beeai list
+```
+
+To run a `chat` agent with a given input:
+```sh
 beeai run chat "Hello"
 ```
 
 ## Agent library
 
-BeeAI comes with a list of agents available on [beeai.dev/agents](https://beeai.dev/agents).
-
-The following are some example agents and how to use them.
+A complete list of reference agent implementations is available at [beeai.dev/agents](https://beeai.dev/agents).
