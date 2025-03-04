@@ -15,12 +15,12 @@
  */
 
 import { PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { AgentInstance, ComposeContext, SEQUENTIAL_COMPOSE_AGENT_NAME } from './compose-context';
+import { AgentInstance, ComposeContext } from './compose-context';
 import { useSearchParams } from 'react-router';
 import { useRunAgent } from '#modules/run/api/mutations/useRunAgent.tsx';
 import { useListAgents } from '#modules/agents/api/queries/useListAgents.ts';
 import { isNotNull } from '#utils/helpers.ts';
-import { getComposeDeltaResultText, getComposeResultText, getSequentialComposeAgent } from '../utils';
+import { getComposeDeltaResultText, getComposeResultText } from '../utils';
 import { useHandleError } from '#hooks/useHandleError.ts';
 import {
   ComposeInput,
@@ -30,6 +30,7 @@ import {
   ComposeResult,
 } from '../types';
 import { usePrevious } from '#hooks/usePrevious.ts';
+import { getSequentialComposeAgent, SEQUENTIAL_COMPOSE_AGENT_NAME } from '../sequential-workflow';
 
 export function ComposeProvider({ children }: PropsWithChildren) {
   const { data: availableAgents } = useListAgents();

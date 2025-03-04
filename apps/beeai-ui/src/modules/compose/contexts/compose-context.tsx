@@ -40,5 +40,3 @@ export interface AgentInstance {
     endTime?: number;
   };
 }
-
-export const SEQUENTIAL_COMPOSE_AGENT_NAME = 'sequential-workflow';
