@@ -16,7 +16,7 @@
 
 import { getAgentTitle } from '#modules/agents/utils.ts';
 import { MarkdownContent } from '#components/MarkdownContent/MarkdownContent.tsx';
-import classes from './ComposeItem.module.scss';
+import classes from './AgentInstanceListItem.module.scss';
 import { AgentInstance } from '../contexts/compose-context';
 import { Accordion, AccordionItem, InlineLoading, OverflowMenu, OverflowMenuItem } from '@carbon/react';
 import { useEffect, useState } from 'react';
@@ -28,7 +28,7 @@ interface Props {
   agent: AgentInstance;
   idx: number;
 }
-export function ComposeItem({ agent: agentInstance, idx }: Props) {
+export function AgentInstanceListItem({ agent: agentInstance, idx }: Props) {
   const { setAgents, isPending: isRunPending } = useCompose();
   const { data, isPending, logs, stats, result } = agentInstance;
   const { description } = data;

@@ -22,6 +22,7 @@ import { useOnClickOutside } from 'usehooks-ts';
 import { useListAgents } from '#modules/agents/api/queries/useListAgents.ts';
 import { Agent } from '#modules/agents/api/types.ts';
 import { isValidForSequentialWorkflow } from '../sequential-workflow';
+import { SkeletonItems } from '#components/SkeletonItems/SkeletonItems.tsx';
 
 interface Props {
   onSelectAgent: (agent: Agent) => void;
@@ -55,18 +56,20 @@ export function AddAgentButton({ onSelectAgent, isDisabled }: Props) {
         Add an agent
       </Button>
       <ul className={classes.list} role="listbox" tabIndex={0} id={`${id}:options`} aria-expanded={expanded}>
-        {!isPending
-          ? availableAgents?.map((agent) => (
-              <AgentListOption
-                agent={agent}
-                key={agent.name}
-                onClick={() => {
-                  onSelectAgent(agent);
-                  setExpanded(false);
-                }}
-              />
-            ))
-          : Array.from({ length: AGENTS_SKELETON_COUNT }, (_, idx) => <AgentListOption.Skeleton key={idx} />)}
+        {!isPending ? (
+          availableAgents?.map((agent) => (
+            <AgentListOption
+              agent={agent}
+              key={agent.name}
+              onClick={() => {
+                onSelectAgent(agent);
+                setExpanded(false);
+              }}
+            />
+          ))
+        ) : (
+          <SkeletonItems count={AGENTS_SKELETON_COUNT} render={(idx) => <AgentListOption.Skeleton key={idx} />} />
+        )}
       </ul>
     </div>
   );

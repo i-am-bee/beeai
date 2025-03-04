@@ -17,7 +17,7 @@
 import classes from './ComposeSetup.module.scss';
 import { AddAgentButton } from './AddAgentButton';
 import { useCompose } from '../contexts';
-import { ComposeItem } from './ComposeItem';
+import { AgentInstanceListItem } from './AgentInstanceListItem';
 import { Container } from '#components/layouts/Container.tsx';
 import { VersionTag } from '#components/VersionTag/VersionTag.tsx';
 import { Agent } from '@i-am-bee/acp-sdk/types.js';
@@ -34,7 +34,7 @@ export function ComposeSetup() {
 
         <div className={classes.agents}>
           {agents.map((agent, idx) => (
-            <ComposeItem agent={agent} key={`${idx}${agent.data.name}`} idx={idx} />
+            <AgentInstanceListItem agent={agent} key={`${idx}${agent.data.name}`} idx={idx} />
           ))}
 
           <AddAgentButton
