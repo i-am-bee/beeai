@@ -14,20 +14,12 @@
  * limitations under the License.
  */
 
-import { AppHeader } from "@i-am-bee/beeai-ui";
-import { PropsWithChildren } from "react";
-import { Navigation } from "./Navigation";
-import { Footer } from "./Footer";
-import classes from "./AppLayout.module.scss";
-
-export default function AppLayout({ children }: PropsWithChildren) {
-  return (
-    <div className={classes.root}>
-      <AppHeader className={classes.header}>
-        <Navigation />
-      </AppHeader>
-      {children}
-      <Footer className={classes.footer} />
-    </div>
-  );
+.root {
+  @include scrollbar();
+  padding-block: $spacing-09;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  grid-area: main;
+  scroll-behavior: smooth;
 }

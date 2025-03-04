@@ -17,18 +17,26 @@
 "use client";
 
 import { ToTopButton } from "@i-am-bee/beeai-ui";
+import clsx from "clsx";
 import { usePathname } from "next/navigation";
-import { PropsWithChildren, UIEventHandler, useCallback, useRef, useState } from "react";
+import {
+  PropsWithChildren,
+  UIEventHandler,
+  useCallback,
+  useRef,
+  useState,
+} from "react";
+import classes from "./MainContent.module.scss";
 
 interface Props {
   className?: string;
 }
 
-export function Main({ className, children }: PropsWithChildren<Props>) {
+export function MainContent({ className, children }: PropsWithChildren<Props>) {
   const mainRef = useRef<HTMLElement>(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const pathname = usePathname();
-  const isAgentsRoute = pathname === '/agents';
+  const isAgentsRoute = pathname === "/agents";
 
   const handleScroll: UIEventHandler = useCallback((event) => {
     const { scrollTop } = event.currentTarget;
@@ -45,9 +53,15 @@ export function Main({ className, children }: PropsWithChildren<Props>) {
   }, []);
 
   return (
-    <main ref={mainRef} className={className} onScroll={handleScroll}>
+    <main
+      ref={mainRef}
+      className={clsx(classes.root, className)}
+      onScroll={handleScroll}
+    >
       {children}
-      {isAgentsRoute && isScrolled && <ToTopButton onClick={handleToTopClick} />}
+      {isAgentsRoute && isScrolled && (
+        <ToTopButton onClick={handleToTopClick} />
+      )}
     </main>
   );
 }

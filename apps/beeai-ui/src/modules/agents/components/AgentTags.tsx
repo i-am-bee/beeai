@@ -18,15 +18,13 @@ import type { ReactElement } from 'react';
 import { Tag } from '@carbon/react';
 import { TagsList } from '#components/TagsList/TagsList.tsx';
 import { isNotNull } from '#utils/helpers.ts';
-import { ComponentProps } from 'react';
 import type { Agent } from '../api/types';
-
-type TagSize = ComponentProps<typeof Tag>['size'];
+import { TagBaseProps } from '@carbon/react/lib/components/Tag/Tag';
 
 interface Props {
   agent: Agent;
   className?: string;
-  size?: TagSize;
+  size?: TagBaseProps['size'];
 }
 
 export function AgentTags({ agent, className }: Props) {

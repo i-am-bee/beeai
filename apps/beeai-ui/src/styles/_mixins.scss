@@ -62,7 +62,7 @@
 
 @mixin h1() {
   font-size: rem(24px);
-  line-height: math.div(31.2, 24);
+  line-height: math.div(31, 24);
   font-weight: 400;
   margin-block-end: $spacing-06;
 }
