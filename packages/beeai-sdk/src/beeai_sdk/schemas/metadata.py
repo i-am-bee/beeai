@@ -20,23 +20,24 @@ from pydantic import BaseModel
 
 class UiType(StrEnum):
     chat = "chat"
-    single_prompt = "single_prompt"
+    single_prompt = "single-prompt"
+    hands_off = "hands-off"
     custom = "custom"
 
 
-class Example(BaseModel, extra="allow"):
+class CliExample(BaseModel, extra="allow"):
     command: str
     name: Optional[str] = None
     description: Optional[str] = None
 
 
-class UIDefinition(BaseModel, extra="allow"):
+class UiDefinition(BaseModel, extra="allow"):
     type: UiType
     userGreeting: str | None = None
 
 
 class Examples(BaseModel, extra="allow"):
-    cli: Optional[list[Example]] = None
+    cli: Optional[list[CliExample]] = None
 
 
 class Metadata(BaseModel, extra="allow"):
@@ -50,5 +51,5 @@ class Metadata(BaseModel, extra="allow"):
     avgRunTimeSeconds: Optional[float] = None
     avgRunTokens: Optional[float] = None
     tags: Optional[list[str]] = None
-    ui: Optional[UIDefinition] = None
+    ui: Optional[UiDefinition] = None
     provider: Optional[str] = None
