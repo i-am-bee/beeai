@@ -13,6 +13,7 @@ dependencies = [
     "pydantic>=2.10.6",
     "pydantic-settings>=2.7.1",
     "requests>=2.32.3",
+    "jsonschema>=4.23.0",
 ]
 
 [tool.uv.sources]

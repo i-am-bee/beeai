@@ -17,6 +17,7 @@ import sys
 from builtins import input as user_input
 from typing import Any
 
+import jsonschema
 import rich.json
 import typer
 from click import BadParameter
@@ -69,6 +70,73 @@ async def _run_agent(name: str, input: dict[str, Any]) -> RunAgentResult:
     raise RuntimeError(f"Agent {name} did not produce a result")
 
 
+def _render_config_schema(config_schema: dict[str, Any]) -> None:
+    for keys in config_schema:
+        ...
+
+
+def _handle_command(command: str, config_schema: dict[str, Any] | None, config: dict[str, Any]):
+    match command.split(" ", maxsplit=1):
+        case ["set", args_str]:
+            key, value = args_str.split(" ", maxsplit=1)
+            if not config_schema:
+                raise ValueError("This agent can't be configured")
+            if key not in config_schema["properties"]:
+                raise ValueError(f"Unknown option {key}")
+            try:
+                if value.strip("\"'") == value and not value.startswith("{") and not value.startswith("["):
+                    value = f'"{value}"'
+                json_value = json.loads(value)
+                tmp_config = {**config, key: json_value}
+                jsonschema.validate(tmp_config, config_schema)
+                config[key] = json_value
+            except json.JSONDecodeError:
+                raise ValueError(f"The provided value cannot be parsed into JSON: {value}")
+            except jsonschema.ValidationError as ex:
+                raise ValueError(f"Invalid value for key {key}: {ex}")
+        case ["show-config"]:
+            if not config_schema:
+                console.print("This agent can't be configured")
+            console.print(Markdown("## Configuration schema"))
+            with create_table(Column("Key", ratio=1), Column("Type", ratio=5)) as table:
+                for prop, schema in config_schema["properties"].items():
+                    table.add_row(prop, json.dumps(schema))
+            console.print(table)
+            if config:
+                console.print(Markdown("## Current configuration"))
+                with create_table(Column("Key", ratio=1), Column("Value", ratio=5)) as table:
+                    for key, value in config.items():
+                        table.add_row(key, json.dumps(value))
+                console.print(table)
+        case ["?"]:
+            with create_table("command", "arguments", "description") as table:
+                table.add_row("/q", "n/a", "Quit.")
+                table.add_row("/?", "n/a", "Show this help.")
+                table.add_row(
+                    "/set", "<key> <value>", "Set agent configuration value. Use JSON syntax for more complex objects"
+                )
+                table.add_row("/show-config", "n/a", "Show available and currently set configuration options")
+            console.print(table)
+
+        case ["q"]:
+            sys.exit(0)
+        case _:
+            raise ValueError(f"Invalid command: {command}")
+
+
+def _handle_input(config_schema: dict[str, Any] | None, config: dict[str, Any]) -> str:
+    print()
+    while True:
+        try:
+            input = user_input("👩‍💼 >>>: ")
+            if input.startswith("/"):
+                _handle_command(input.lstrip("/"), config_schema, config)
+                continue
+            return input
+        except ValueError as exc:
+            err_console.print(str(exc))
+
+
 @app.command("run")
 async def run(
     name: str = typer.Argument(help="Name of the agent to call"),
@@ -79,6 +147,7 @@ async def run(
 ) -> None:
     """Call an agent with a given input."""
     agent = await _get_agent(name)
+    config = {}
     user_greeting = agent.model_extra.get("greeting", "How can I help you?")
     required_input_properties = set(agent.inputSchema.get("required", []))
     if not input:
@@ -88,32 +157,35 @@ async def run(
                 f"{json.dumps(omit(agent.inputSchema, '$defs'), indent=2)}"
             )
         console.print(Markdown(f"# {agent.name}  \n{agent.description}"))
+
+        if config_schema := agent.inputSchema.get("properties", {}).get("config", None):
+            _handle_command("show-config", config_schema, config)
+
+        console.print("\nRunning in interactive mode, use '/?' for help, [red]type '/q' to quit.[/red]", style="bold")
+        if config_schema:
+            console.print("Hint: Use /set <key> <value> to set an agent configuration property.")
+
         console.print()
-        console.print("Running in interactive mode, [red]type 'q' to quit.[/red]\n", style="bold")
-
-        def _is_quit(inp: str):
-            return (inp or "").lower() in {"q", "quit", "exit"}
-
         if required_input_properties == {"messages"}:
             messages = []
             console.print(f"🤖 Agent: {user_greeting}")
-            input = user_input("\n👩‍💼 User message: ")
-            while not _is_quit(input):
+            input = _handle_input(config_schema, config)
+            while True:
                 messages.append({"role": "user", "content": input})
                 console.print("\n🤖 Agent: ", end=None)
-                result = await _run_agent(name, {"messages": messages})
+                result = await _run_agent(name, {"messages": messages, **({"config": config} if config else {})})
                 if not (new_messages := result.output.get("messages", None)):
                     raise ValueError("Agent did not return messages in the output")
                 if all([message["role"] == "assistant" for message in new_messages]):
                     messages.extend(new_messages)
                 else:
                     messages = new_messages
-                input = user_input("\n👩‍💼 User message: ")
+                input = _handle_input(config_schema, config)
+
         if required_input_properties == {"text"}:
-            text = user_input("👩‍💼 Prompt: ")
-            if not _is_quit(text):
-                console.print("\n🤖 Agent:")
-                await _run_agent(name, {"text": text})
+            input = _handle_input(config_schema, config)
+            console.print("\n🤖 Agent:")
+            await _run_agent(name, {"text": input, "config": config})
     else:
         try:
             input = check_json(input)
