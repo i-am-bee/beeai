@@ -29,7 +29,7 @@ type Criteria = (typeof criteria)[number];
 const structuredGenerationSchema = z.object(
   Object.fromEntries(criteria.map((c) => [c, z.number().min(0).max(1)])) as {
     [key in Criteria]: z.ZodNumber;
-  }
+  },
 );
 
 // Define weighting for each evaluation criterion (using weighted average),
@@ -51,7 +51,7 @@ const EVALUATION_PROMPT = `Evaluate the quality of the generated document based 
 const calculateScore = (result: Weights) =>
   // Multiply by 100 and round to avoid floating precision problem when comparing
   Math.round(
-    criteria.reduce((sum, key) => sum + result[key] * weights[key] * 100, 0)
+    criteria.reduce((sum, key) => sum + result[key] * weights[key] * 100, 0),
   );
 
 const retrieveDocuments = async ({
@@ -69,7 +69,7 @@ const retrieveDocuments = async ({
   });
   // TODO: Make this env-configurable.
   const transport = new SSEClientTransport(
-    new URL("/mcp/sse", "http://localhost:8333")
+    new URL("/mcp/sse", "http://localhost:8333"),
   );
 
   try {
@@ -99,13 +99,13 @@ const retrieveDocuments = async ({
           {
             timeout: 10 * 60 * 1000,
             signal,
-          }
-        )
-      )
+          },
+        ),
+      ),
     );
 
     return results.map(
-      (result) => (result.output.text as string) || "No document"
+      (result) => (result.output.text as string) || "No document",
     );
   } finally {
     await client.close();
@@ -118,7 +118,7 @@ const run = async (
   }: {
     params: { input: Input };
   },
-  { signal }: { signal?: AbortSignal }
+  { signal }: { signal?: AbortSignal },
 ): Promise<Output> => {
   const { text, documents, agents } = params.input;
   if (!documents?.length && !agents?.length)
@@ -145,14 +145,14 @@ const run = async (
           new UserMessage(`Research prompt: ${text}\n\n Document: ${document}`),
         ],
         abortSignal: signal,
-      })
-    )
+      }),
+    ),
   );
 
   const scores = results.map((result) => calculateScore(result.object));
   const highestValueIndex = scores.reduce(
     (maxIndex, score, index, arr) => (score > arr[maxIndex] ? index : maxIndex),
-    0
+    0,
   );
 
   return outputSchema.parse({ text: finalDocuments[highestValueIndex] });
@@ -160,16 +160,15 @@ const run = async (
 
 const agentName = "content-judge";
 
-const exampleInput1: Input = {
+const exampleInputAgents: Input = {
   text: "Generate a concise summary of the history of artificial intelligence.",
   agents: ["gpt-researcher", "ollama-deep-researcher"],
 };
 
-const exampleOutput1 = `{
-  "text": "Artificial Intelligence has evolved from early symbolic reasoning systems in the 1950s to deep learning-powered applications today, transforming industries such as healthcare, finance, and autonomous systems."
-}`;
+const exampleOutputAgents =
+  "Artificial Intelligence has evolved from early symbolic reasoning systems in the 1950s to deep learning-powered applications today, transforming industries such as healthcare, finance, and autonomous systems.";
 
-const exampleInput2: Input = {
+const exampleInputDocuments: Input = {
   text: "How does quantum computing impact cryptography?",
   documents: [
     "Quantum computing poses a significant threat to classical encryption methods due to its ability to solve complex mathematical problems exponentially faster...",
@@ -179,7 +178,7 @@ const exampleInput2: Input = {
   agents: ["gpt-researcher", "ollama-deep-researcher"],
 };
 
-const exampleOutput2 = `{
+const exampleOutputDocuments = `{
   "text": "Quantum computing poses a significant threat to classical encryption methods due to its ability to solve complex mathematical problems exponentially faster..."
 }`;
 
@@ -196,7 +195,33 @@ export const agent = {
     languages: ["TypeScript"],
     githubUrl:
       "https://github.com/i-am-bee/beeai/blob/main/agents/official/beeai-framework/src/content-judge",
-    exampleInput: JSON.stringify(exampleInput1),
+    ui: { type: "custom" },
+    examples: {
+      cli: [
+        {
+          command: `beeai run ${agentName} '${JSON.stringify(exampleInputAgents)}'`,
+          name: "AI Content Refinement",
+          description:
+            "Provide agent names that will generate the content to compare.",
+          output: exampleOutputAgents,
+          processingSteps: [
+            "No pre-provided documents are available, so it queries agents for content",
+            "Evaluates and scores the generated responses based on correctness, clarity, and relevance",
+            "Returns the best summary based on the highest score",
+          ],
+        },
+        {
+          command: `beeai run ${agentName} '${JSON.stringify(exampleInputDocuments)}'`,
+          name: "Research Validation",
+          description: "Provide existing documents to compare.",
+          processingSteps: [
+            "Queries the agents for additional insights on quantum computing and cryptography",
+            "Evaluates all gathered documents using the four scoring criteria",
+            "Assigns scores and selects the document that best aligns with the research prompt",
+          ],
+        },
+      ],
+    },
     avgRunTimeSeconds: 22,
     avgRunTokens: 1229,
     fullDescription: `The agent evaluates multiple documents and agent-generated content based on four key criteria - correctness, depth & coverage, clarity & structure, and relevance. It assigns a numerical score (0-1) to each document for each criterion, using a weighted average to determine the highest-scoring document. This ensures that the most accurate, comprehensive, well-structured, and relevant document is selected.
@@ -232,40 +257,6 @@ The agent utilizes the Llama 3.1 8B model to perform structured evaluations and 
 - **Content Refinement** – Helps refine AI-generated content by scoring and selecting the most coherent and accurate version.
 - **Document Summarization Assessment** – Evaluates multiple AI-generated summaries and chooses the most comprehensive one.
 - **Quality Assurance for AI Outputs** – Ensures AI responses in a pipeline meet accuracy and relevance requirements.
-
-## Example usage
-
-### Example 1: AI Content Refinement
-
-#### CLI:
-\`\`\`bash
-beeai run ${agentName} '${JSON.stringify(exampleInput1, null, 2)}'
-\`\`\`
-
-#### Processing Steps:
-
-1. No pre-provided documents are available, so it queries agents for content.
-2. Evaluates and scores the generated responses based on correctness, clarity, and relevance.
-3. Returns the best summary based on the highest score.
-
-### Output:
-
-\`\`\`json
-${exampleOutput1}
-\`\`\`
-
-### Example 2: Research Validation
-
-#### CLI:
-\`\`\`bash
-beeai run ${agentName} '${JSON.stringify(exampleInput2, null, 2)}'
-\`\`\`
-
-#### Processing Steps:
-
-1. Queries the agents for additional insights on quantum computing and cryptography.
-2. Evaluates all gathered documents using the four scoring criteria.
-3. Assigns scores and selects the document that best aligns with the research prompt.
 `,
   } satisfies Metadata,
 };

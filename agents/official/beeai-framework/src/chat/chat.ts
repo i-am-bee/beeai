@@ -54,12 +54,12 @@ const run =
         _meta?: { progressToken?: string | number };
       };
     },
-    { signal }: { signal?: AbortSignal }
+    { signal }: { signal?: AbortSignal },
   ) => {
     const { messages, config } = input;
     const memory = new UnconstrainedMemory();
     await memory.addMany(
-      messages.map(({ role, content }) => Message.of({ role, text: content }))
+      messages.map(({ role, content }) => Message.of({ role, text: content })),
     );
     const agent = new BeeAgent({
       llm: await ChatModel.fromName(CHAT_MODEL),
@@ -95,7 +95,7 @@ const registerTools = async (server: AcpServer) => {
       async (args, { signal }) => {
         const result = await createTool(toolName).run(args as any, { signal });
         return { content: [{ type: "text", text: result.toString() }] };
-      }
+      },
     );
   }
 };
@@ -111,16 +111,13 @@ const exampleInput: Input = {
   },
 };
 
-const exampleOutput: Output = {
-  messages: [
-    {
-      role: "assistant",
-      content:
-        "The current temperature in Paris is 12°C with partly cloudy skies.",
-    },
-  ],
-  logs: [],
-};
+const exampleOutput =
+  "The current temperature in Paris is 12°C with partly cloudy skies.";
+const processingSteps = [
+  "The agent receives the user message and detects the weather query",
+  "It invokes the OpenMeteoTool to fetch real-time weather data",
+  "The response is generated and sent back to the user",
+];
 
 export const agent = {
   name: agentName,
@@ -135,7 +132,6 @@ export const agent = {
     languages: ["TypeScript"],
     githubUrl:
       "https://github.com/i-am-bee/beeai/blob/main/agents/official/beeai-framework/src/chat",
-    exampleInput: exampleInputText,
     fullDescription: `The agent is an AI-powered conversational system designed to process user messages, maintain context, and generate intelligent responses. Built on the **BeeAI framework**, it leverages memory and external tools to enhance interactions. It supports real-time web search, Wikipedia lookups, and weather updates, making it a versatile assistant for various applications.  
 
 ## How It Works  
@@ -173,28 +169,29 @@ The agent returns an object with:
 - **Research Assistance** – Retrieves relevant information from web search and Wikipedia.  
 - **Weather Inquiries** – Provides real-time weather updates based on location.  
 - **AI Agents with Long-Term Memory** – Maintains context across conversations for improved interactions.  
-
-## Example Usage  
-
-### CLI:
-
-\`\`\`bash
-# No tools
-beeai run ${agentName} "${exampleInputText}"
-
-# With weather tool
-beeai run ${agentName} '${JSON.stringify(exampleInput, null, 2)}'
-\`\`\`
-
-### Processing Steps
-1. The agent receives the user message and detects the weather query.
-2. It invokes the OpenMeteoTool to fetch real-time weather data.
-3. The response is generated and sent back to the user.
 `,
 
     avgRunTimeSeconds: 3,
     avgRunTokens: 89,
-    ui: "chat",
+    examples: {
+      cli: [
+        {
+          command: `beeai run ${agentName} "What is the capital of France?"`,
+          name: "No tools",
+          description: "Run agent with no tools.",
+          output: exampleOutput,
+          processingSteps,
+        },
+        {
+          command: `beeai run ${agentName} '${JSON.stringify(exampleInput, null, 2)}'`,
+          name: "With tools",
+          description: "Run agent with tools.",
+          output: exampleOutput,
+          processingSteps,
+        },
+      ],
+    },
+    ui: { type: "chat", userGreeting: "How can I help you?" },
   } satisfies Metadata,
   registerTools,
 };

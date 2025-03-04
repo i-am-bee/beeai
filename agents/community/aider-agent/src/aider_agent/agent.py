@@ -10,17 +10,30 @@ from pydantic import Field
 from acp.server.highlevel import Server
 from beeai_sdk.schemas.text import TextInput, TextOutput
 from beeai_sdk.providers.agent import run_agent_provider
-from beeai_sdk.schemas.metadata import Metadata
+from beeai_sdk.schemas.metadata import Metadata, Examples, CliExample, UiDefinition, UiType
 
 
 class Output(TextOutput):
     files: dict[str, str] = Field(default_factory=dict)
     text: str = Field(default_factory=str)
 
-agentName = "aider"
-exampleInputText = "Make a program that asks for a number and prints its factorial"
 
-fullDescription = f"""
+agentName = "aider"
+examples = Examples(
+    cli=[
+        CliExample(
+            command=f'beeai run {agentName} "Make a program that asks for a number and prints its factorial"',
+            processingSteps=[
+                "The agent is triggered with the natural language input",
+                "It executes the `aider` command in a temporary directory with specified options",
+                "Captures the standard output and error streams, updating the user with progress",
+                "Reads and returns the content of any generated or modified files",
+            ],
+        )
+    ]
+)
+
+fullDescription = """
 > ℹ️ NOTE
 > 
 > This agent works in stateless mode at the moment. While the CLI only shows the textual output, the created files are also available through the API.
@@ -51,22 +64,8 @@ The agent returns an `Output` object with the following fields:
 - **Debugging Support** – Provides insights and suggestions for resolving coding errors or inefficiencies.
 - **Collaborative Programming** – Simulates a pair programming experience, enhancing coding efficiency and learning.
 - **Bash/Shell Scripting Assistance** – Automates script writing, optimization, and debugging.
-
-## Example Usage
-
-### Example 1: Generating a Factorial Calculator
-
-#### CLI:
-```bash
-beeai run {agentName} "{exampleInputText}"
-```
-
-### Processing Steps:
-1. The agent is triggered with the natural language input.
-2. It executes the `aider` command in a temporary directory with specified options.
-3. Captures the standard output and error streams, updating the user with progress.
-4. Reads and returns the content of any generated or modified files.
 """
+
 
 async def register_agent() -> int:
     server = Server("aider-agent")
@@ -81,7 +80,8 @@ async def register_agent() -> int:
             license="Apache 2.0",
             languages=["Python"],
             githubUrl="https://github.com/i-am-bee/beeai/tree/main/agents/community/aider-agent",
-            exampleInput=exampleInputText,
+            examples=examples,
+            ui=UiDefinition(type=UiType.single_prompt, userGreeting="Define your programming task."),
             fullDescription=fullDescription,
             avgRunTimeSeconds=5.0,
             avgRunTokens=5000,

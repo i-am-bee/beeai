@@ -20,7 +20,7 @@ const run = async (
   }: {
     params: { input: Input };
   },
-  { signal }: { signal?: AbortSignal }
+  { signal }: { signal?: AbortSignal },
 ): Promise<Output> => {
   const { text } = params.input;
 
@@ -65,7 +65,7 @@ IT SHOULD STRICTLY BE THE DIALOGUES`),
     z.object({
       speaker: z.number().min(1).max(2),
       text: z.string(),
-    })
+    }),
   );
 
   // Dramatise podcast
@@ -142,6 +142,12 @@ const exampleOutput = `[
   {"speaker": 1, "text": "Not quite! AI is more like an assistant, helping doctors make better decisions rather than replacing them."}
 ]`;
 
+const processingSteps = [
+  "Extracts key concepts from the content",
+  "Reformats it into a structured conversation where Speaker 1 explains ideas and Speaker 2 reacts, asks questions, and introduces clarifications",
+  "Dramatises the content and outputs a structured dialogue suitable for AI voice synthesis",
+];
+
 export const agent = {
   name: agentName,
   description:
@@ -188,9 +194,6 @@ beeai run ${agentName} "${exampleInputText}"
 
 #### Processing Steps:
 
-1. Extracts key concepts from the content.
-2. Reformats it into a structured conversation where Speaker 1 explains ideas and Speaker 2 reacts, asks questions, and introduces clarifications.
-3. Dramatises the content and outputs a structured dialogue suitable for AI voice synthesis.
 
 #### Output:
 
@@ -203,7 +206,29 @@ ${exampleOutput}
     languages: ["TypeScript"],
     githubUrl:
       "https://github.com/i-am-bee/beeai/blob/main/agents/official/beeai-framework/src/podcast-creator",
-    exampleInput: exampleInputText,
+    examples: {
+      cli: [
+        {
+          command: `beeai run ${agentName} '${exampleInputText}'`,
+          name: "Insert article directly",
+          description: "Provide the entire article on the command line",
+          output: exampleOutput,
+          processingSteps,
+        },
+        {
+          command: `cat /path/to/article.txt | beeai run ${agentName}"`,
+          name: "Pipe file content to the agent",
+          description:
+            "Use bash features to find and pipe article text to the agent stdin.",
+          output: exampleOutput,
+          processingSteps,
+        },
+      ],
+    },
+    ui: {
+      type: "single-prompt",
+      userGreeting: "Provide article that should be converted to a podcast.",
+    },
     avgRunTimeSeconds: 19,
     avgRunTokens: 5409,
   } satisfies Metadata,

@@ -3,7 +3,7 @@ import json
 
 from beeai_sdk.providers.agent import run_agent_provider
 from beeai_sdk.schemas.base import Log, LogLevel
-from beeai_sdk.schemas.metadata import Metadata
+from beeai_sdk.schemas.metadata import Metadata, Examples, CliExample, UiDefinition, UiType
 from crewai.crew import CrewOutput
 from crewai.agents.parser import AgentAction, AgentFinish
 from acp.server.highlevel import Server, Context
@@ -15,11 +15,26 @@ from beeai_sdk.schemas.text import TextInput, TextOutput
 
 load_env()
 
-agentName="marketing-strategy"
+agentName = "marketing-strategy"
 
-exampleInputText = "Launch of a new eco-friendly product line targeting young adults interested in sustainable living."
+examples = Examples(
+    cli=[
+        CliExample(
+            command=(
+                f"beeai run {agentName} "
+                '"Launch of a new eco-friendly product line targeting young adults interested in sustainable living."'
+            ),
+            description="Generating a Marketing Strategy for a New Product",
+            processingSteps=[
+                "The Lead Market Analyst conducts research on the product and its competitors",
+                "The Chief Marketing Strategist synthesizes insights to formulate a marketing strategy",
+                "The Creative Content Creator develops campaign ideas and creates marketing copies",
+            ],
+        )
+    ]
+)
 
-fullDescription = f"""
+fullDescription = """
 The agent conducts in-depth marketing strategy analysis for projects by leveraging a coordinated crew of agents with specific roles. It breaks down the process into sequential tasks, each handled by specialized agents such as the Lead Market Analyst, Chief Marketing Strategist, and Creative Content Creator. This approach ensures that the final output is a well-rounded and actionable marketing strategy tailored to the project's needs.
 
 ## How It Works
@@ -37,20 +52,6 @@ The agent initializes a server where it registers a "marketing-strategy" agent, 
 - **Marketing Strategy Development** – Ideal for businesses needing a comprehensive marketing plan for new projects or campaigns.
 - **Campaign Ideation** – Generates innovative and engaging campaign ideas aligned with marketing strategies.
 - **Copy Creation** – Develops compelling marketing copies tailored to specific campaign ideas and target audiences.
-
-## Example Usage
-
-### Example: Generating a Marketing Strategy for a New Product
-
-#### CLI:
-```bash
-beeai run {agentName} "{exampleInputText}"
-```
-
-#### Processing Steps:
-1. The Lead Market Analyst conducts research on the product and its competitors.
-2. The Chief Marketing Strategist synthesizes insights to formulate a marketing strategy.
-3. The Creative Content Creator develops campaign ideas and creates marketing copies.
 """
 
 
@@ -67,7 +68,8 @@ async def run():
             license="Apache 2.0",
             languages=["Python"],
             githubUrl="https://github.com/i-am-bee/beeai/tree/main/agents/community/crewai-agents/src/crewai_agents/marketing_strategy",
-            exampleInput=exampleInputText,
+            ui=UiDefinition(type=UiType.single_prompt, userGreeting="Describe a project or a product to analyze."),
+            examples=examples,
             fullDescription=fullDescription,
         ).model_dump(),
     )

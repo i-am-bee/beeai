@@ -17,7 +17,7 @@ from acp.types import (
 )
 from beeai_sdk.schemas.base import Input, Log, LogLevel, Output
 from beeai_sdk.schemas.message import UserMessage
-from beeai_sdk.schemas.metadata import Metadata
+from beeai_sdk.schemas.metadata import Metadata, CliExample, Examples, UiDefinition, UiType
 from beeai_sdk.utils.api import send_request_with_notifications, mcp_client
 from composition.configuration import Configuration
 from composition.utils import extract_messages
@@ -26,8 +26,21 @@ agentName = "sequential-workflow"
 
 exampleInput = {"agents": ["gpt-researcher", "podcast-creator"], "input": {"text": "Advancements in quantum computing"}}
 exampleInputStr = json.dumps(exampleInput, ensure_ascii=False, indent=2)
+examples = Examples(
+    cli=[
+        CliExample(
+            command=f"beeai run {agentName} '{exampleInputStr}'",
+            processingSteps=[
+                "Validates the availability and compatibility of the agents",
+                "Transforms the initial input for the first agent",
+                "Executes each agent in sequence, transforming outputs as necessary for the next agent",
+                "Sends notifications of progress and completion",
+            ],
+        )
+    ]
+)
 
-fullDescription = f"""
+fullDescription = """
 The agent orchestrates a series of AI agents to run in a specified sequence. It manages the transformation of outputs from one agent to be used as inputs for the next, ensuring compatibility and a smooth workflow execution. This agent is useful for complex task chains where multiple AI capabilities are needed in tandem.
 
 ## How It Works
@@ -47,22 +60,8 @@ The agent takes a list of agent names and an initial input, ensuring all necessa
 - **Complex Task Automation** – Automate workflows requiring multiple AI services.
 - **Data Processing Pipelines** – Sequentially transform and process data through various agents.
 - **Experimentation and Prototyping** – Chain agents to explore new combinations of AI functions.
-
-## Example Usage
-
-### Example: Running a Research Query
-
-#### CLI:
-```bash
-beeai run {agentName} '{exampleInputStr}'
-```
-
-#### Processing Steps:
-1. Validates the availability and compatibility of the agents.
-2. Transforms the initial input for the first agent.
-3. Executes each agent in sequence, transforming outputs as necessary for the next agent.
-4. Sends notifications of progress and completion.
 """
+
 
 class SequentialAgentWorkflowInput(Input):
     """Input schema must match the first agent (not checked)"""
@@ -126,7 +125,8 @@ def add_sequential_workflow_agent(server: Server):
             licence="Apache 2.0",
             languages=["Python"],
             githubUrl="https://github.com/i-am-bee/beeai/tree/main/agents/official/composition/src/composition/sequential_workflow.py",
-            exampleInput=exampleInputStr,
+            examples=examples,
+            ui=UiDefinition(type=UiType.custom),
             fullDescription=fullDescription,
         ).model_dump(),
         composition_agent=True,
