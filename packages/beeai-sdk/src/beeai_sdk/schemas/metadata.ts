@@ -38,7 +38,7 @@ export const metadataSchema = z
     avgRunTokens: z.number(),
     tags: z.array(z.string()),
     ui: z.object({
-      type: z.enum(["chat", "single_prompt", "custom"]),
+      type: z.enum(["chat", "single-prompt", "hands-off", "custom"]),
       userGreeting: z.string().optional(),
     }),
     provider: z.string(),
