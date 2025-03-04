@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import clsx from 'clsx';
 import Markdown from 'react-markdown';
-import { PluggableList } from 'unified';
+import clsx from 'clsx';
+import { isString } from 'lodash';
+import { CopySnippet } from '#components/CopySnippet/CopySnippet.tsx';
+import { SyntaxHighlighter } from '#components/SyntaxHighlighter/SyntaxHighlighter.tsx';
 import classes from './MarkdownContent.module.scss';
 
 interface Props {
@@ -26,10 +28,32 @@ interface Props {
 
 export function MarkdownContent({ className, children }: Props) {
   return (
-    <Markdown rehypePlugins={REHYPE_PLUGINS} className={clsx(classes.root, className)}>
+    <Markdown
+      className={clsx(classes.root, className)}
+      components={{
+        code({ className = '', children }) {
+          const language = getLanguage(className);
+          if (!language) {
+            return <code className={className}>{children}</code>;
+          }
+
+          if (!isString(children)) {
+            return null;
+          }
+
+          return (
+            <CopySnippet>
+              <SyntaxHighlighter language={language}>{children}</SyntaxHighlighter>
+            </CopySnippet>
+          );
+        },
+      }}
+    >
       {children}
     </Markdown>
   );
 }
 
-const REHYPE_PLUGINS = [] satisfies PluggableList;
+function getLanguage(className: string): string | undefined {
+  return /language-(\w+)/.exec(className)?.[1];
+}
