@@ -20,7 +20,7 @@ Additional installation methods are available [here](./docs/get-started/installa
 
 ## Web Interface
 
-Once installed, open [http://localhost:8333](http://localhost:8333).
+Run `beeai ui` to open the web interface in your browser.
 
 ## CLI Usage
 
