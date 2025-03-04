@@ -18,6 +18,7 @@ import { useMutation } from '@tanstack/react-query';
 import { Agent } from '@i-am-bee/acp-sdk/types.js';
 import z, { ZodLiteral, ZodObject } from 'zod';
 import { useCreateMCPClient } from '#api/mcp-client/useCreateMCPClient.ts';
+import { QueryMetadata } from '#contexts/QueryProvider/types.ts';
 
 interface Props<
   NotificationsSchema extends ZodObject<{
@@ -28,6 +29,7 @@ interface Props<
     schema: NotificationsSchema;
     handler: (notification: z.infer<NotificationsSchema>) => void | Promise<void>;
   };
+  queryMetadata?: QueryMetadata;
 }
 
 interface RunMutationProps<Input extends { [x: string]: unknown }> {
@@ -41,7 +43,7 @@ export function useRunAgent<
   NotificationsSchema extends ZodObject<{
     method: ZodLiteral<string>;
   }>,
->({ notifications }: Props<NotificationsSchema>) {
+>({ notifications, queryMetadata }: Props<NotificationsSchema>) {
   const createClient = useCreateMCPClient();
 
   const { mutateAsync, isPending } = useMutation({
@@ -64,6 +66,12 @@ export function useRunAgent<
           signal: abortController?.signal,
         },
       );
+    },
+    meta: queryMetadata ?? {
+      errorToast: {
+        title: 'Agent run failed',
+        includeErrorMessage: true,
+      },
     },
   });
 

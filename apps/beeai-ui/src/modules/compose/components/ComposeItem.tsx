@@ -18,9 +18,10 @@ import { getAgentTitle } from '#modules/agents/utils.ts';
 import { MarkdownContent } from '#components/MarkdownContent/MarkdownContent.tsx';
 import classes from './ComposeItem.module.scss';
 import { AgentInstance } from '../contexts/compose-context';
-import { InlineLoading, OverflowMenu, OverflowMenuItem } from '@carbon/react';
+import { Accordion, AccordionItem, InlineLoading, OverflowMenu, OverflowMenuItem } from '@carbon/react';
 import { useEffect, useState } from 'react';
 import { useCompose } from '../contexts';
+import ScrollToBottom from 'react-scroll-to-bottom';
 import clsx from 'clsx';
 
 interface Props {
@@ -50,27 +51,38 @@ export function ComposeItem({ agent: agentInstance, idx }: Props) {
 
       {description && <MarkdownContent className={classes.description}>{description}</MarkdownContent>}
       {(isPending || stats || result) && (
-        <div className={clsx(classes.run, { [classes.finished]: isFinished })}>
-          {logs?.length ? (
-            <div className={classes.logs}>
-              {logs.map((log, order) => (
-                <div key={order}>{log}</div>
-              ))}
-            </div>
-          ) : null}
+        <div className={clsx(classes.run, { [classes.finished]: isFinished, [classes.pending]: isPending })}>
+          <Accordion>
+            {logs?.length ? (
+              <div className={classes.logsGroup}>
+                <AccordionItem title="Logs" open={!isFinished ? isPending : undefined}>
+                  <ScrollToBottom
+                    className={classes.logs}
+                    scrollViewClassName={classes.logsScroll}
+                    mode={isPending ? 'bottom' : 'top'}
+                  >
+                    {logs?.map((log, order) => <div key={order}>{log}</div>)}
+                  </ScrollToBottom>
+                </AccordionItem>
+              </div>
+            ) : null}
 
-          <div className={classes.status}>
-            <div className={classes.loading}>
-              <ElapsedTime stats={stats} />
-              <InlineLoading status={isPending ? 'active' : 'finished'} />
+            <div className={clsx(classes.resultGroup, { [classes.empty]: !result })}>
+              <AccordionItem
+                title={
+                  <div className={classes.result}>
+                    <div>{isFinished ? 'Output' : null}</div>
+                    <div className={classes.loading}>
+                      <ElapsedTime stats={stats} />
+                      <InlineLoading status={isPending ? 'active' : 'finished'} />
+                    </div>
+                  </div>
+                }
+              >
+                <MarkdownContent>{result}</MarkdownContent>
+              </AccordionItem>
             </div>
-          </div>
-
-          {isFinished && (
-            <div className={classes.result}>
-              <MarkdownContent>{result}</MarkdownContent>
-            </div>
-          )}
+          </Accordion>
         </div>
       )}
     </div>

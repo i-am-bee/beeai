@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-// @forward '@carbon/styles/scss/components/accordion';
+@forward '@carbon/styles/scss/components/accordion';
+@forward 'accordion';
 // @forward '@carbon/styles/scss/components/ai-label';
 // @forward '@carbon/styles/scss/components/aspect-ratio';
 // @forward '@carbon/styles/scss/components/breadcrumb';

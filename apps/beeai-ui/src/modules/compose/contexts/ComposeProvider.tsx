@@ -22,7 +22,13 @@ import { useListAgents } from '#modules/agents/api/queries/useListAgents.ts';
 import { isNotNull } from '#utils/helpers.ts';
 import { getComposeDeltaResultText, getComposeResultText, getSequentialComposeAgent } from '../utils';
 import { useHandleError } from '#hooks/useHandleError.ts';
-import { ComposeInput, composeNotificationSchema, ComposeNotificationsZod, ComposeResult } from '../types';
+import {
+  ComposeInput,
+  ComposeNotifications,
+  composeNotificationSchema,
+  ComposeNotificationsZod,
+  ComposeResult,
+} from '../types';
 import { usePrevious } from '#hooks/usePrevious.ts';
 
 export function ComposeProvider({ children }: PropsWithChildren) {
@@ -63,47 +69,46 @@ export function ComposeProvider({ children }: PropsWithChildren) {
     });
   }, [agents, availableAgents, previousAgents, setSearchParams]);
 
+  const handleRunDelta = useCallback((delta: ComposeNotifications['params']['delta']) => {
+    if (delta.agent_idx === undefined) return;
+
+    setAgents((agents) =>
+      agents.map((agent, idx) => {
+        if (idx === delta.agent_idx) {
+          if (delta.agent_name !== agent.data.name) {
+            console.error(`Agent name and index mismatch: ${delta.agent_name} is supposed to be at index '${idx}'`);
+            return agent;
+          }
+
+          return {
+            ...agent,
+            isPending: true,
+            stats: {
+              startTime: agent.stats?.startTime ?? Date.now(),
+            },
+            result: `${agent.result ?? ''}${getComposeDeltaResultText(delta)}`,
+            logs: [...(agent.logs ?? []), ...delta.logs.filter(isNotNull).map((item) => item.message)],
+          };
+        } else {
+          return {
+            ...agent,
+            isPending: false,
+            stats: agent.stats?.startTime ? { ...agent.stats, endTime: agent.stats.endTime ?? Date.now() } : undefined,
+          };
+        }
+      }),
+    );
+  }, []);
+
   const { runAgent } = useRunAgent<ComposeInput, ComposeNotificationsZod>({
     notifications: {
       schema: composeNotificationSchema,
       handler: (notification) => {
-        const delta = notification.params.delta;
-
-        console.log(delta.agent_idx, delta.agent_name, { logs: delta.logs, delta, notification });
-
-        if (delta.agent_idx !== undefined) {
-          setAgents((agents) =>
-            agents.map((agent, idx) => {
-              if (idx === delta.agent_idx) {
-                if (delta.agent_name !== agent.data.name) {
-                  console.error(
-                    `Agent name and index mismatch: ${delta.agent_name} is supposed to be at index '${idx}'`,
-                  );
-                  return agent;
-                }
-
-                return {
-                  ...agent,
-                  isPending: true,
-                  stats: {
-                    startTime: agent.stats?.startTime ?? Date.now(),
-                  },
-                  result: `${agent.result}${getComposeDeltaResultText(delta)}`,
-                  logs: [...(agent.logs ?? []), ...delta.logs.filter(isNotNull).map((item) => item.message)],
-                };
-              } else {
-                return {
-                  ...agent,
-                  isPending: false,
-                  stats: agent.stats?.startTime
-                    ? { ...agent.stats, endTime: agent.stats.endTime ?? Date.now() }
-                    : undefined,
-                };
-              }
-            }),
-          );
-        }
+        handleRunDelta(notification.params.delta);
       },
+    },
+    queryMetadata: {
+      errorToast: false,
     },
   });
 
@@ -142,8 +147,10 @@ export function ComposeProvider({ children }: PropsWithChildren) {
 
         setResult(getComposeResultText(result));
       } catch (error) {
+        if (abortControllerRef.current?.signal.aborted) return;
+
         console.error(error);
-        handleError(error, { errorToast: { title: 'Run failed', includeErrorMessage: true } });
+        handleError(error, { errorToast: { title: 'Agent run failed', includeErrorMessage: true } });
       } finally {
         setPending(false);
         setAgents((agents) =>
@@ -167,11 +174,8 @@ export function ComposeProvider({ children }: PropsWithChildren) {
   const handleReset = useCallback(() => {
     setResult('');
     setAgents((agents) =>
-      agents.map((instance) => ({
-        ...instance,
-        isPending: false,
-        logs: undefined,
-        stats: undefined,
+      agents.map(({ data }) => ({
+        data,
       })),
     );
   }, []);
