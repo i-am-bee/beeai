@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-export interface MessageBase {
-  key: string;
-  content: string;
-  error?: Error;
-}
-export interface ClientMessage extends MessageBase {
-  role: 'user';
-}
-export interface AgentMessage extends MessageBase {
-  role: 'assistant';
-  status: 'pending' | 'error' | 'aborted' | 'success';
-}
-export type ChatMessage = ClientMessage | AgentMessage;
+@use 'styles/common' as *;
+@use 'sass:math';
 
-export type SendMessageParams = { input: string; config?: MessageInput['config'] };
+.cds--toggle {
+  --cds-support-success: #{$text-primary};
+  --cds-icon-on-color: #{$text-inverse};
+  padding-block: 1px;
+}
+
+.cds--toggle__appearance {
+  vertical-align: top;
+}
+
+.cds--toggle__text {
+  line-height: math.div(16, 14);
+  min-inline-size: rem(20px);
+}

@@ -14,25 +14,20 @@
  * limitations under the License.
  */
 
-import { useListTools } from '../api/queries/useListTools';
+@use 'styles/common' as *;
 
-export const ToolsView = () => {
-  const { data, isLoading, isSuccess } = useListTools();
+.root {
+  position: relative;
+  inline-size: 100%;
+  z-index: z('modal') - 1;
+}
 
-  if (isLoading || !data || !isSuccess) {
-    return <div>Loading...</div>;
-  }
-
-  return (
-    <>
-      <h2>Available Tools</h2>
-      <ul>
-        {data.tools.map((tool) => (
-          <li key={tool.name}>
-            {tool.name} - {tool.description}
-          </li>
-        ))}
-      </ul>
-    </>
-  );
-};
+.content {
+  background-color: $layer;
+  border-radius: $border-radius;
+  box-shadow: $box-shadow;
+  padding: $spacing-05;
+  display: flex;
+  flex-direction: column;
+  row-gap: $spacing-06;
+}

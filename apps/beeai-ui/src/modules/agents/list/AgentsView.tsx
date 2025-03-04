@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-import { useFormContext } from 'react-hook-form';
-import { AgentsFilters } from '../components/AgentsFilters';
 import { ErrorMessage } from '#components/ErrorMessage/ErrorMessage.tsx';
-import { AgentsList } from '../components/AgentsList';
-import { AgentCard } from '../components/AgentCard';
-import { Agent } from '../api/types';
+import { SkeletonItems } from '#components/SkeletonItems/SkeletonItems.tsx';
 import { TransitionLink } from '#components/TransitionLink/TransitionLink.tsx';
-import { getAgentTitle } from '../utils';
 import { routes } from '#utils/router.ts';
-import { ImportAgents } from '../components/ImportAgents';
+import { useFormContext } from 'react-hook-form';
 import { useListAgents } from '../api/queries/useListAgents';
+import { Agent } from '../api/types';
+import { AgentCard } from '../components/AgentCard';
+import { AgentsFilters } from '../components/AgentsFilters';
+import { AgentsList } from '../components/AgentsList';
+import { ImportAgents } from '../components/ImportAgents';
 import { AgentsFiltersParams } from '../providers/AgentsFiltersProvider';
+import { getAgentTitle } from '../utils';
 
 export function AgentsView() {
   const { data, isPending, error, refetch, isRefetching } = useListAgents();
@@ -46,17 +47,22 @@ export function AgentsView() {
     return (
       <AgentsList agents={data} filters={filters} action={<ImportAgents />}>
         {(filteredAgents) =>
-          !isPending
-            ? filteredAgents?.map((agent, idx) => (
-                <li key={idx}>
-                  <AgentCard agent={agent} renderTitle={renderAgentTitle} />
-                </li>
-              ))
-            : Array.from({ length: 3 }, (_, idx) => (
+          !isPending ? (
+            filteredAgents?.map((agent, idx) => (
+              <li key={idx}>
+                <AgentCard agent={agent} renderTitle={renderAgentTitle} />
+              </li>
+            ))
+          ) : (
+            <SkeletonItems
+              count={5}
+              render={(idx) => (
                 <li key={idx}>
                   <AgentCard.Skeleton />
                 </li>
-              ))
+              )}
+            />
+          )
         }
       </AgentsList>
     );

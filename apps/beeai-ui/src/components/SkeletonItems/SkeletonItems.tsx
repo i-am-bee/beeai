@@ -14,18 +14,13 @@
  * limitations under the License.
  */
 
-export interface MessageBase {
-  key: string;
-  content: string;
-  error?: Error;
-}
-export interface ClientMessage extends MessageBase {
-  role: 'user';
-}
-export interface AgentMessage extends MessageBase {
-  role: 'assistant';
-  status: 'pending' | 'error' | 'aborted' | 'success';
-}
-export type ChatMessage = ClientMessage | AgentMessage;
+import { ReactNode } from 'react';
 
-export type SendMessageParams = { input: string; config?: MessageInput['config'] };
+interface Props {
+  count: number;
+  render: (idx: number) => ReactNode;
+}
+
+export function SkeletonItems({ count, render }: Props) {
+  return Array.from({ length: count }, (_, idx) => render(idx));
+}

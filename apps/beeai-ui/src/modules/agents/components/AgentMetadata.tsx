@@ -16,6 +16,7 @@
 
 import { Time } from '@carbon/icons-react';
 import { SkeletonText } from '@carbon/react';
+import { LogoGithub } from '@carbon/icons-react';
 import clsx from 'clsx';
 import { Agent } from '../api/types';
 import classes from './AgentMetadata.module.scss';
@@ -23,10 +24,11 @@ import classes from './AgentMetadata.module.scss';
 interface Props {
   agent: Agent;
   className?: string;
+  showGithub?: boolean;
 }
 
-export function AgentMetadata({ agent, className }: Props) {
-  const { avgRunTimeSeconds, avgRunTokens, license } = agent;
+export function AgentMetadata({ agent, className, showGithub }: Props) {
+  const { avgRunTimeSeconds, avgRunTokens, license, githubUrl } = agent;
 
   return (
     <ul className={clsx(classes.root, className)}>
@@ -38,6 +40,11 @@ export function AgentMetadata({ agent, className }: Props) {
       )}
       {avgRunTokens && <li className={classes.item}>{avgRunTokens} tokens/run (avg)</li>}
       {license && <li className={classes.item}>{license}</li>}
+      {showGithub && githubUrl && (
+        <li className={classes.item}>
+          <GithubLink githubUrl={githubUrl} />
+        </li>
+      )}
     </ul>
   );
 }
@@ -49,3 +56,11 @@ interface SkeletonProps {
 AgentMetadata.Skeleton = function AgentMetadataSkeleton({ className }: SkeletonProps) {
   return <SkeletonText className={clsx(classes.root, className)} width="33%" />;
 };
+
+function GithubLink({ githubUrl }: { githubUrl: string }) {
+  return (
+    <a target="_blank" href={githubUrl} className={classes.githubLink} aria-label="Open on Github">
+      <LogoGithub size={16} />
+    </a>
+  );
+}

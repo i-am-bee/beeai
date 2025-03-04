@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import TypeVar, Generic
-from pydantic import BaseModel
+from typing import TypeVar, Generic, Any
+from pydantic import BaseModel, RootModel
 
 from beeai_server.domain.model import ManifestLocation
 
@@ -35,6 +35,9 @@ class UpdateEnvRequest(BaseModel):
 
 class ListEnvSchema(BaseModel):
     env: dict[str, str]
+
+
+RunAgentInput = RootModel[dict[str, Any]]
 
 
 DeleteProviderRequest = CreateProviderRequest

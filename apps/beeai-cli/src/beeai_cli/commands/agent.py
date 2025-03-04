@@ -14,6 +14,7 @@
 
 import json
 import sys
+from builtins import input as user_input
 from typing import Any
 
 import rich.json
@@ -31,27 +32,7 @@ from beeai_cli.utils import check_json, omit
 app = AsyncTyper()
 
 
-@app.command("run")
-async def run(
-    name: str = typer.Argument(help="Name of the agent to call"),
-    input: str = typer.Argument(... if sys.stdin.isatty() else sys.stdin.read(), help="Agent input as text or JSON"),
-) -> None:
-    """Call an agent with a given input."""
-    try:
-        input = check_json(input)
-    except BadParameter:
-        agent = await _get_agent(name)
-        required_input_properties = set(agent.inputSchema.get("required", []))
-        if required_input_properties == {"text"}:
-            input = {"text": input}
-        elif required_input_properties == {"messages"}:
-            input = {"messages": [{"role": "user", "content": input}]}
-        else:
-            raise ValueError(
-                f"Agent {name} does not support plaintext input, "
-                f"please provide a json input with this schema:\n{json.dumps(agent.inputSchema, indent=2)}"
-            )
-
+async def _run_agent(name: str, input: dict[str, Any]) -> RunAgentResult:
     last_was_stream = False
     async for message in send_request_with_notifications(
         types.RunAgentRequest(method="agents/run", params=types.RunAgentRequestParams(name=name, input=input)),
@@ -84,6 +65,69 @@ async def run(
                         console.print(result)
                 else:
                     console.print()
+                return result
+    raise RuntimeError(f"Agent {name} did not produce a result")
+
+
+@app.command("run")
+async def run(
+    name: str = typer.Argument(help="Name of the agent to call"),
+    input: str = typer.Argument(
+        None if sys.stdin.isatty() else sys.stdin.read(),
+        help="Agent input as text or JSON",
+    ),
+) -> None:
+    """Call an agent with a given input."""
+    agent = await _get_agent(name)
+    user_greeting = agent.model_extra.get("greeting", "How can I help you?")
+    required_input_properties = set(agent.inputSchema.get("required", []))
+    if not input:
+        if required_input_properties not in [{"messages"}, {"text"}]:
+            raise BadParameter(
+                f"Agent {name} requires a JSON input according to the schema:\n"
+                f"{json.dumps(omit(agent.inputSchema, '$defs'), indent=2)}"
+            )
+        console.print(Markdown(f"# {agent.name}  \n{agent.description}"))
+        console.print()
+        console.print("Running in interactive mode, [red]type 'q' to quit.[/red]\n", style="bold")
+
+        def _is_quit(inp: str):
+            return (inp or "").lower() in {"q", "quit", "exit"}
+
+        if required_input_properties == {"messages"}:
+            messages = []
+            console.print(f"🤖 Agent: {user_greeting}")
+            input = user_input("\n👩‍💼 User message: ")
+            while not _is_quit(input):
+                messages.append({"role": "user", "content": input})
+                console.print("\n🤖 Agent: ", end=None)
+                result = await _run_agent(name, {"messages": messages})
+                if not (new_messages := result.output.get("messages", None)):
+                    raise ValueError("Agent did not return messages in the output")
+                if all([message["role"] == "assistant" for message in new_messages]):
+                    messages.extend(new_messages)
+                else:
+                    messages = new_messages
+                input = user_input("\n👩‍💼 User message: ")
+        if required_input_properties == {"text"}:
+            text = user_input("👩‍💼 Prompt: ")
+            if not _is_quit(text):
+                console.print("\n🤖 Agent:")
+                await _run_agent(name, {"text": text})
+    else:
+        try:
+            input = check_json(input)
+        except BadParameter:
+            if required_input_properties == {"text"}:
+                input = {"text": input}
+            elif required_input_properties == {"messages"}:
+                input = {"messages": [{"role": "user", "content": input}]}
+            else:
+                raise ValueError(
+                    f"Agent {name} does not support plaintext input, "
+                    f"please provide a json input with this schema:\n{json.dumps(agent.inputSchema, indent=2)}"
+                )
+        await _run_agent(name, input)
 
 
 @app.command("list")

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
-import { ListToolsRequest } from '@i-am-bee/acp-sdk/types.js';
+import { ListToolsRequest, Tool as SdkTool } from '@i-am-bee/acp-sdk/types.js';
 
 export type ListToolsParams = ListToolsRequest['params'];
+
+export type Tool = SdkTool;

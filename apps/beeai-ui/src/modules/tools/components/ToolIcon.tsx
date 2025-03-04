@@ -14,18 +14,27 @@
  * limitations under the License.
  */
 
-export interface MessageBase {
-  key: string;
-  content: string;
-  error?: Error;
-}
-export interface ClientMessage extends MessageBase {
-  role: 'user';
-}
-export interface AgentMessage extends MessageBase {
-  role: 'assistant';
-  status: 'pending' | 'error' | 'aborted' | 'success';
-}
-export type ChatMessage = ClientMessage | AgentMessage;
+import Wikipedia from '#svgs/Wikipedia.svg';
+import { IbmWatsonDiscovery, PartlyCloudy, Tools } from '@carbon/icons-react';
+import { Tool } from '../api/types';
+import classes from './ToolIcon.module.scss';
 
-export type SendMessageParams = { input: string; config?: MessageInput['config'] };
+interface Props {
+  name: Tool['name'];
+}
+
+export function ToolIcon({ name }: Props) {
+  const Icon = ICONS_MAP[name as keyof typeof ICONS_MAP] ?? Tools;
+
+  return (
+    <span className={classes.root}>
+      <Icon />
+    </span>
+  );
+}
+
+const ICONS_MAP = {
+  search: IbmWatsonDiscovery,
+  wikipedia: Wikipedia,
+  weather: PartlyCloudy,
+};

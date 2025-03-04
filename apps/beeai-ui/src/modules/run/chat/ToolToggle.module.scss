@@ -14,6 +14,16 @@
  * limitations under the License.
  */
 
-.link {
-  cursor: pointer;
+.root {
+  display: flex;
+  align-items: center;
+  column-gap: $spacing-03;
+}
+
+.heading {
+  min-inline-size: 0;
+  font-size: rem(14px);
+  line-height: math.div(18, 14);
+  padding-block: 1px;
+  flex-grow: 1;
 }

@@ -116,7 +116,7 @@ export function EnvsView() {
               </div>
 
               {isPending ? (
-                <DataTableSkeleton headers={HEADERS} showToolbar={false} />
+                <DataTableSkeleton headers={HEADERS} showToolbar={false} showHeader={false} />
               ) : (
                 <Table {...getTableProps()}>
                   <TableHead>

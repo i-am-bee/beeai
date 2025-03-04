@@ -16,32 +16,23 @@
 
 @use 'sass:map';
 
+$sizes: (
+  xs: rem(504px),
+  sm: rem(608px),
+  md: rem(768px),
+  lg: rem(928px),
+  xlg: rem(1088px),
+  xxlg: rem(1248px),
+  mdmd: rem(1632px),
+);
+
 .root {
   margin-inline: auto;
   padding-inline: $grid-margin;
   inline-size: 100%;
-  &.xs {
-    max-inline-size: calc(rem(504px) + 2 * $grid-margin);
-  }
-  &.sm {
-    max-inline-size: calc(rem(608px) + 2 * $grid-margin);
-  }
-  &.md {
-    max-inline-size: calc(rem(768px) + 2 * $grid-margin);
-  }
-  &.lg {
-    max-inline-size: calc(rem(928px) + 2 * $grid-margin);
-  }
-  &.xlg {
-    max-inline-size: calc(rem(1088px) + 2 * $grid-margin);
-  }
-  &.xxlg {
-    max-inline-size: calc(rem(1248px) + 2 * $grid-margin);
-  }
-  &.mdmd {
-    max-inline-size: calc(2 * (rem(768px) + 2 * $grid-margin + $spacing-05));
-  }
-  &.lglg {
-    max-inline-size: calc(2 * (rem(1088px) + 2 * $grid-margin));
+  @each $size, $width in $sizes {
+    &.#{$size} {
+      max-inline-size: calc($width + 2 * $grid-margin);
+    }
   }
 }

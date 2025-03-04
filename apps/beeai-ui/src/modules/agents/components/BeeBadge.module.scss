@@ -14,18 +14,21 @@
  * limitations under the License.
  */
 
-export interface MessageBase {
-  key: string;
-  content: string;
-  error?: Error;
+.tag:global(.#{$prefix}--tag) {
+  margin-inline-start: $spacing-03;
 }
-export interface ClientMessage extends MessageBase {
-  role: 'user';
-}
-export interface AgentMessage extends MessageBase {
-  role: 'assistant';
-  status: 'pending' | 'error' | 'aborted' | 'success';
-}
-export type ChatMessage = ClientMessage | AgentMessage;
 
-export type SendMessageParams = { input: string; config?: MessageInput['config'] };
+.tag:global(.#{$prefix}--tag--lg) {
+  padding-inline-start: rem(7px) !important;
+  padding-inline-end: rem(7px) !important;
+
+  :global(.#{$prefix}--tag__custom-icon) {
+    block-size: rem(18px);
+    inline-size: rem(18px);
+
+    > svg {
+      block-size: rem(18px) !important;
+      inline-size: rem(18px) !important;
+    }
+  }
+}

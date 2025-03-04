@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-export interface MessageBase {
-  key: string;
-  content: string;
-  error?: Error;
-}
-export interface ClientMessage extends MessageBase {
-  role: 'user';
-}
-export interface AgentMessage extends MessageBase {
-  role: 'assistant';
-  status: 'pending' | 'error' | 'aborted' | 'success';
-}
-export type ChatMessage = ClientMessage | AgentMessage;
+import { Tool } from '../api/types';
 
-export type SendMessageParams = { input: string; config?: MessageInput['config'] };
+interface Props {
+  name: Tool['name'];
+}
+
+export function ToolName({ name }: Props) {
+  return NAMES_MAP[name as keyof typeof NAMES_MAP] ?? name;
+}
+
+const NAMES_MAP = {
+  search: 'Search',
+  wikipedia: 'Wikipedia',
+  weather: 'Weather',
+};

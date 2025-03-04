@@ -111,7 +111,7 @@ async def list_providers():
     with create_table(
         Column("Short ID", style="yellow"),
         Column("Status"),
-        Column("Missing Env"),
+        Column("Missing Env", max_width=100),
         Column("Location", ratio=2),
         Column("Last Error", ratio=1),
     ) as table:

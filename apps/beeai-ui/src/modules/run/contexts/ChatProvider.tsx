@@ -20,7 +20,7 @@ import { MessageInput } from '@i-am-bee/beeai-sdk/schemas/message';
 import { PropsWithChildren, useCallback, useMemo, useRef } from 'react';
 import { v4 as uuid } from 'uuid';
 import { useRunAgent } from '../api/mutations/useRunAgent';
-import { AgentMessage, ChatMessage } from '../chat/types';
+import { AgentMessage, ChatMessage, SendMessageParams } from '../chat/types';
 import { ChatContext, ChatMessagesContext } from './chat-context';
 import { MessagesNotifications, messagesNotificationsSchema, MessagesResult } from '../api/types';
 
@@ -64,7 +64,7 @@ export function ChatProvider({ agent, children }: PropsWithChildren<Props>) {
   }, [getMessages]);
 
   const sendMessage = useCallback(
-    async (input: string) => {
+    async ({ input, config }: SendMessageParams) => {
       setMessages((messages) => {
         messages.push({
           key: uuid(),
@@ -87,6 +87,7 @@ export function ChatProvider({ agent, children }: PropsWithChildren<Props>) {
           agent,
           input: {
             messages: getInputMessages(),
+            config,
           },
           abortController,
         })) as MessagesResult;
