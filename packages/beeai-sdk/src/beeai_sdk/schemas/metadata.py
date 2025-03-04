@@ -12,22 +12,43 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from enum import StrEnum
 from typing import Optional
-from pydantic import BaseModel, ConfigDict
+
+from pydantic import BaseModel
 
 
-class Metadata(BaseModel):
+class UiType(StrEnum):
+    chat = "chat"
+    single_prompt = "single_prompt"
+    custom = "custom"
+
+
+class Example(BaseModel, extra="allow"):
+    command: str
+    name: Optional[str] = None
+    description: Optional[str] = None
+
+
+class UIDefinition(BaseModel, extra="allow"):
+    type: UiType
+    userGreeting: str | None = None
+
+
+class Examples(BaseModel, extra="allow"):
+    cli: Optional[list[Example]] = None
+
+
+class Metadata(BaseModel, extra="allow"):
     title: Optional[str] = None
     fullDescription: Optional[str] = None
     framework: Optional[str] = None
     license: Optional[str] = None
     languages: Optional[list[str]] = None
     githubUrl: Optional[str] = None
-    exampleInput: Optional[str] = None
+    examples: Optional[Examples] = None
     avgRunTimeSeconds: Optional[float] = None
     avgRunTokens: Optional[float] = None
     tags: Optional[list[str]] = None
-    ui: Optional[str] = None
+    ui: Optional[UIDefinition] = None
     provider: Optional[str] = None
-
-    model_config = ConfigDict(extra="allow")

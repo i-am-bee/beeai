@@ -23,11 +23,24 @@ export const metadataSchema = z
     license: z.string(),
     languages: z.array(z.string()),
     githubUrl: z.string(),
-    exampleInput: z.string(),
+    examples: z.object({
+      cli: z
+        .array(
+          z.object({
+            command: z.string(),
+            name: z.string().optional(),
+            description: z.string().optional(),
+          }),
+        )
+        .optional(),
+    }),
     avgRunTimeSeconds: z.number(),
     avgRunTokens: z.number(),
     tags: z.array(z.string()),
-    ui: z.string(),
+    ui: z.object({
+      type: z.enum(["chat", "single_prompt", "custom"]),
+      userGreeting: z.string().optional(),
+    }),
     provider: z.string(),
   })
   .partial()
