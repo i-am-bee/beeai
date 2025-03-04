@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "check": "prettier --log-level silent --check src && eslint src && tsc --noEmit && stylelint src/styles",
+    "check": "prettier --log-level silent --check src && eslint src && tsc --noEmit -p tsconfig.app.json && stylelint src/styles",
     "fix": "prettier --log-level silent --write src && eslint --fix src && stylelint --fix=lax src/styles",
     "preview": "vite preview",
     "clean": "rm -rf node_modules && rm -rf dist",
