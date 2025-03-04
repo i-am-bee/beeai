@@ -32,7 +32,7 @@ export function AgentRun({ name }: Props) {
 
   return !isPending ? (
     agent ? (
-      agent.ui === 'chat' ? (
+      agent.ui?.type === 'chat' ? (
         <ChatProvider agent={agent}>
           <Chat />
         </ChatProvider>
@@ -40,8 +40,8 @@ export function AgentRun({ name }: Props) {
         <Container size="sm">
           <h1>{getAgentTitle(agent)}</h1>
           <div className={classes.uiNotAvailable}>
-            {agent.ui
-              ? `The UI requested by the agent is not available: '${agent.ui}'`
+            {agent.ui?.type
+              ? `The UI requested by the agent is not available: '${agent.ui.type}'`
               : `The agent doesn’t have a defined UI.`}
           </div>
         </Container>

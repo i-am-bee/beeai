@@ -29,6 +29,7 @@ from acp.types import AgentRunProgressNotification, AgentRunProgressNotification
 from beeai_cli.api import send_request, send_request_with_notifications
 from beeai_cli.async_typer import AsyncTyper, console, err_console, create_table
 from beeai_cli.utils import check_json, omit
+from beeai_sdk.schemas.metadata import UiType
 
 app = AsyncTyper()
 
@@ -147,11 +148,11 @@ async def run(
 ) -> None:
     """Call an agent with a given input."""
     agent = await _get_agent(name)
+    ui_type = agent.model_extra.get("ui", {}).get("type", None)
     config = {}
     user_greeting = agent.model_extra.get("greeting", "How can I help you?")
-    required_input_properties = set(agent.inputSchema.get("required", []))
     if not input:
-        if required_input_properties not in [{"messages"}, {"text"}]:
+        if ui_type not in {UiType.chat, UiType.single_prompt}:
             raise BadParameter(
                 f"Agent {name} requires a JSON input according to the schema:\n"
                 f"{json.dumps(omit(agent.inputSchema, '$defs'), indent=2)}"
@@ -166,7 +167,7 @@ async def run(
             console.print("Hint: Use /set <key> <value> to set an agent configuration property.")
 
         console.print()
-        if required_input_properties == {"messages"}:
+        if ui_type == UiType.chat:
             messages = []
             console.print(f"🤖 Agent: {user_greeting}")
             input = _handle_input(config_schema, config)
@@ -182,7 +183,7 @@ async def run(
                     messages = new_messages
                 input = _handle_input(config_schema, config)
 
-        if required_input_properties == {"text"}:
+        if ui_type == UiType.single_prompt:
             input = _handle_input(config_schema, config)
             console.print("\n🤖 Agent:")
             await _run_agent(name, {"text": input, "config": config})
@@ -190,9 +191,9 @@ async def run(
         try:
             input = check_json(input)
         except BadParameter:
-            if required_input_properties == {"text"}:
+            if ui_type == UiType.single_prompt:
                 input = {"text": input}
-            elif required_input_properties == {"messages"}:
+            elif ui_type == UiType.chat:
                 input = {"messages": [{"role": "user", "content": input}]}
             else:
                 raise ValueError(
@@ -206,12 +207,11 @@ async def run(
 async def list_agents():
     """List available agents"""
     result = await send_request(types.ListAgentsRequest(method="agents/list"), types.ListAgentsResult)
-    extra_cols = ["ui"]
-    with create_table(Column("Name", style="yellow"), *extra_cols, Column("Description", ratio=1)) as table:
+    with create_table(Column("Name", style="yellow"), "UI", Column("Description", ratio=1)) as table:
         for agent in result.agents:
             table.add_row(
                 agent.name,
-                *[str(agent.model_extra.get(col, "<none>")) for col in extra_cols],
+                agent.model_extra.get("ui", {}).get("type", None) or "<none>",
                 agent.description,
             )
     console.print(table)

@@ -34,7 +34,7 @@ export function AgentLaunchButton({ agent }: Props) {
   const { openModal } = useModal();
   const { missingEnvs, isPending: isMissingEnvsPending } = useMissingEnvs({ agent });
 
-  return agent.ui === 'chat' ? (
+  return agent.ui?.type === 'chat' ? (
     <Button
       kind="primary"
       renderIcon={ArrowRight}
