@@ -62,7 +62,7 @@ export function ChatTools() {
             <li key={tool.name}>
               <ToolToggle
                 tool={tool}
-                toggled={chatTools?.includes(tool.name) ?? false}
+                toggled={Boolean(chatTools?.includes(tool.name))}
                 onToggle={(checked) => handleToggle({ tool: tool.name, checked })}
               />
             </li>
