@@ -74,7 +74,7 @@ class ProviderService:
             provider.id: {
                 "status": provider.status,
                 "last_error": provider.last_error,
-                "missing_configuration": provider.missing_configuration,
+                "missing_configuration": [var for var in provider.missing_configuration if var.required],
             }
             for provider in self._loaded_provider_container.loaded_providers
         }
@@ -86,7 +86,9 @@ class ProviderService:
                     provider.id,
                     {
                         "status": LoadedProviderStatus.initializing,
-                        "missing_configuration": provider.manifest.check_env(env, raise_error=False),
+                        "missing_configuration": [
+                            var for var in provider.manifest.check_env(env, raise_error=False) if var.required
+                        ],
                     },
                 ),
             )

@@ -24,6 +24,7 @@ import classes from './AgentCard.module.scss';
 import { AgentMetadata } from './AgentMetadata';
 import { AgentTags } from './AgentTags';
 import { ReactNode } from 'react';
+import { BeeBadge } from './BeeBadge';
 
 interface Props {
   agent: Agent;
@@ -34,7 +35,10 @@ export function AgentCard({ agent, renderTitle }: Props) {
   const { description } = agent;
   return (
     <article className={classes.root}>
-      <h2 className={classes.name}>{renderTitle({ className: classes.link, agent })}</h2>
+      <h2 className={classes.name}>
+        {renderTitle({ className: classes.link, agent })}
+        <BeeBadge agent={agent} />
+      </h2>
 
       <div className={classes.body}>
         <AgentMetadata agent={agent} />

@@ -35,6 +35,7 @@ import { AgentDetailSection } from './AgentDetailSection';
 import { AgentExampleRequests } from './AgentExampleRequests';
 import { AgentMetadata } from './AgentMetadata';
 import { AgentTags } from './AgentTags';
+import { BeeBadge } from './BeeBadge';
 
 interface Props {
   agent: Agent;
@@ -47,12 +48,13 @@ export function AgentDetail({ agent, buttons }: Props) {
     <div className={classes.root}>
       <motion.h1 {...fadeInPropsWithMarginShift({ start: { from: spacing[4] } })} className={classes.name}>
         {getAgentTitle(agent)}
+        <BeeBadge agent={agent} size="lg" />
       </motion.h1>
 
       <motion.div {...fadeInPropsWithMarginShift({ start: { from: spacing[3] } })}>
-        <AgentMetadata agent={agent} className={classes.metadata} />
+        <AgentMetadata agent={agent} showGithub className={classes.metadata} />
         {description && <MarkdownContent className={classes.description}>{description}</MarkdownContent>}
-        <AgentTags agent={agent} showGitHub className={classes.tags} />
+        <AgentTags agent={agent} className={classes.tags} />
       </motion.div>
 
       <motion.div
