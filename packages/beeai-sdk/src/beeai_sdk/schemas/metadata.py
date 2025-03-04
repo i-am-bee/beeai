@@ -29,6 +29,8 @@ class CliExample(BaseModel, extra="allow"):
     command: str
     name: Optional[str] = None
     description: Optional[str] = None
+    output: Optional[str] = None
+    processingSteps: Optional[list[str]] = None
 
 
 class UiDefinition(BaseModel, extra="allow"):
