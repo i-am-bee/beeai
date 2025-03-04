@@ -14,18 +14,7 @@
  * limitations under the License.
  */
 
-import { cache } from "react";
-import { getAcpClient } from "./client";
-
-export const getAgentsList = cache(
-  async () => {
-    let client: Awaited<ReturnType<typeof getAcpClient>> | undefined;
-    try {
-      client = await getAcpClient();
-      const { agents } = await client.listAgents();
-      return agents;
-    } finally {
-      await client?.close();
-    }
-  },
-);
+export async function register() {
+  const { storeNativeFetch } = await import('./acp/native-fetch');
+  storeNativeFetch();
+}
