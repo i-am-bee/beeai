@@ -21,12 +21,13 @@ import { BLUESKY_LINK, DISCORD_LINK, DOCUMENTATION_LINK, GITHUB_REPO_LINK, YOUTU
 import { routes } from '#utils/router.ts';
 import { Launch, LogoDiscord, LogoGithub, LogoYoutube } from '@carbon/icons-react';
 import { OverflowMenu, OverflowMenuItem } from '@carbon/react';
+import classes from './UserNav.module.scss';
 
 export function UserNav() {
   const { transitionTo } = useViewTransition();
 
   return (
-    <OverflowMenu renderIcon={Bee} size="sm" aria-label="User navigation" flipped>
+    <OverflowMenu renderIcon={Bee} size="sm" aria-label="User navigation" flipped menuOptionsClass={classes.options}>
       {ITEMS.map(({ itemText, icon, isInternal, isExternal, href, ...props }, idx) => {
         const Icon = icon ? icon : isExternal ? Launch : null;
 

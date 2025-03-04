@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-"use client";
+import { routes } from '#utils/router.js';
+import { PropsWithChildren, UIEventHandler, useCallback, useRef, useState } from 'react';
+import { useLocation } from 'react-router';
+import { ToTopButton } from '../ToTopButton/ToTopButton';
+import classes from './MainContent.module.scss';
+import clsx from 'clsx';
 
-import { ToTopButton } from "@i-am-bee/beeai-ui";
-import { usePathname } from "next/navigation";
-import { PropsWithChildren, UIEventHandler, useCallback, useRef, useState } from "react";
+const SCROLLED_OFFSET = 48;
 
-interface Props {
-  className?: string;
-}
-
-export function Main({ className, children }: PropsWithChildren<Props>) {
-  const mainRef = useRef<HTMLElement>(null);
+export function MainContent({ className, children }: PropsWithChildren<{ className?: string }>) {
+  const mainRef = useRef<HTMLDivElement>(null);
   const [isScrolled, setIsScrolled] = useState(false);
-  const pathname = usePathname();
-  const isAgentsRoute = pathname === '/agents';
+
+  const { pathname } = useLocation();
+  const isAgentsRoute = pathname === routes.agents();
 
   const handleScroll: UIEventHandler = useCallback((event) => {
     const { scrollTop } = event.currentTarget;
@@ -45,11 +45,10 @@ export function Main({ className, children }: PropsWithChildren<Props>) {
   }, []);
 
   return (
-    <main ref={mainRef} className={className} onScroll={handleScroll}>
+    <div ref={mainRef} className={clsx(classes.root, className)} onScroll={handleScroll}>
       {children}
+
       {isAgentsRoute && isScrolled && <ToTopButton onClick={handleToTopClick} />}
-    </main>
+    </div>
   );
 }
-
-const SCROLLED_OFFSET = 48;

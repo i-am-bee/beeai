@@ -14,5 +14,13 @@
  * limitations under the License.
  */
 
-.root {
+import { NavSectionName } from '#utils/router.ts';
+import { useCallback } from 'react';
+import { useLocation } from 'react-router';
+
+export function useIsNavSectionActive() {
+  const { pathname } = useLocation();
+  const section = pathname.split('/').at(1);
+
+  return useCallback((name: NavSectionName) => name === section, [section]);
 }

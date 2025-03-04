@@ -18,7 +18,6 @@ import { AppHeader } from "@i-am-bee/beeai-ui";
 import { PropsWithChildren } from "react";
 import { Navigation } from "./Navigation";
 import { Footer } from "./Footer";
-import { Main } from "./Main";
 import classes from "./AppLayout.module.scss";
 
 export default function AppLayout({ children }: PropsWithChildren) {
@@ -27,7 +26,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
       <AppHeader className={classes.header}>
         <Navigation />
       </AppHeader>
-      <Main className={classes.main}>{children}</Main>
+      {children}
       <Footer className={classes.footer} />
     </div>
   );

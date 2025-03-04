@@ -15,6 +15,7 @@
  */
 
 import { getAgentsList } from "@/acp/api";
+import { MainContent } from "@/components/layouts/MainContent";
 import { AgentDetail, Container } from "@i-am-bee/beeai-ui";
 import { notFound } from "next/navigation";
 
@@ -33,8 +34,10 @@ export default async function AgentPage({ params }: Props) {
   }
 
   return (
-    <Container>
-      <AgentDetail agent={agent} />
-    </Container>
+    <MainContent>
+      <Container>
+        <AgentDetail agent={agent} />
+      </Container>
+    </MainContent>
   );
 }

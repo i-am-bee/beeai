@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-// @forward '@carbon/styles/scss/components/accordion';
+@forward '@carbon/styles/scss/components/accordion';
+@forward 'accordion';
 // @forward '@carbon/styles/scss/components/ai-label';
 // @forward '@carbon/styles/scss/components/aspect-ratio';
 // @forward '@carbon/styles/scss/components/breadcrumb';
@@ -70,6 +71,7 @@
 // @forward '@carbon/styles/scss/components/popover';
 // @forward '@carbon/styles/scss/components/progress-bar';
 // @forward '@carbon/styles/scss/components/progress-indicator';
+// @forward 'progress-bar';
 @forward '@carbon/styles/scss/components/radio-button';
 @forward 'radio-button';
 @forward '@carbon/styles/scss/components/search';

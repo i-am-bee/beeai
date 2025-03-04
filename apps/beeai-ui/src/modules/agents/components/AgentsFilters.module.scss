@@ -30,7 +30,7 @@
     transform: translateY(-50%);
   }
 
-  :global(.#{$prefix}--text-input) {
+  :global(.cds--text-input) {
     padding-inline-start: rem(47px);
   }
 }

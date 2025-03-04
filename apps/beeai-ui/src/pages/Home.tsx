@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
+import { MainContent } from '#components/layouts/MainContent.tsx';
 import { GettingStarted } from '#modules/home/components/GettingStarted.tsx';
 
 export function Home() {
-  return <GettingStarted />;
+  return (
+    <MainContent>
+      <GettingStarted />
+    </MainContent>
+  );
 }

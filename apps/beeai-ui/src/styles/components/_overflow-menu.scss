@@ -28,7 +28,6 @@
 .cds--overflow-menu-options {
   padding: $spacing-03;
   border-radius: $border-radius;
-  transform: translate(0, $spacing-06);
   box-shadow: $box-shadow;
   background-color: $background;
   inline-size: rem(224px);
@@ -36,10 +35,6 @@
 
   &::after {
     display: none;
-  }
-
-  &[data-floating-menu-direction='top'] {
-    transform: translate(0, -$spacing-06);
   }
 
   .cds--overflow-menu-options__option {
