@@ -15,7 +15,7 @@
  */
 
 import { AgentRunProgressNotificationSchema, RunAgentResultSchema } from '@i-am-bee/acp-sdk/types.js';
-import { messageOutputSchema } from '@i-am-bee/beeai-sdk/schemas/message';
+import { MessageInput, messageOutputSchema } from '@i-am-bee/beeai-sdk/schemas/message';
 import { z } from 'zod';
 
 export const messagesNotificationsSchema = AgentRunProgressNotificationSchema.extend({
@@ -39,3 +39,5 @@ export interface AgentMessage extends MessageBase {
   status: 'pending' | 'error' | 'aborted' | 'success';
 }
 export type ChatMessage = ClientMessage | AgentMessage;
+
+export type SendMessageParams = { input: string; config?: MessageInput['config'] };

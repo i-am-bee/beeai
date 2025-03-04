@@ -19,7 +19,8 @@ import { useModal } from '#contexts/Modal/index.tsx';
 import { AddRequiredEnvsModal } from '#modules/envs/components/AddRequiredEnvsModal.tsx';
 import { routes } from '#utils/router.ts';
 import { ArrowRight } from '@carbon/icons-react';
-import { Button } from '@carbon/react';
+import { Button, ButtonSkeleton } from '@carbon/react';
+import clsx from 'clsx';
 import isEmpty from 'lodash/isEmpty';
 import type { Agent } from '../api/types';
 import { useMissingEnvs } from '../hooks/useMissingEnvs';
@@ -55,3 +56,8 @@ export function AgentLaunchButton({ agent }: Props) {
     </Button>
   ) : null;
 }
+
+AgentLaunchButton.Skeleton = function AgentLaunchButtonSkeleton() {
+  /* .cds--layout--size-md fixes Carbon bug where button size prop is not respected */
+  return <ButtonSkeleton size="md" className={clsx('cds--layout--size-md', classes.root)} />;
+};

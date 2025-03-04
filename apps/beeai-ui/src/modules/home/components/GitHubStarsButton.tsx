@@ -15,7 +15,7 @@
  */
 
 import { Spinner } from '#components/Spinner/Spinner.tsx';
-import { GITHUB_REPO } from '#utils/constants.ts';
+import { GITHUB_REPO, GITHUB_REPO_LINK } from '#utils/constants.ts';
 import { LogoGithub } from '@carbon/icons-react';
 import { Button } from '@carbon/react';
 import { millify } from 'millify';
@@ -27,13 +27,7 @@ export function GitHubStarsButton() {
   const count = data?.stargazers_count && millify(data.stargazers_count);
 
   return (
-    <Button
-      as="a"
-      href={`https://github.com/${GITHUB_REPO.owner}/${GITHUB_REPO.repo}`}
-      target="_blank"
-      size="md"
-      className={classes.root}
-    >
+    <Button as="a" href={GITHUB_REPO_LINK} target="_blank" size="md" className={classes.root}>
       <LogoGithub />
 
       {isLoading ? <Spinner size="sm" /> : <span>{count || 'Star'}</span>}

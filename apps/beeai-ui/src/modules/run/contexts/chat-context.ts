@@ -17,7 +17,7 @@
 import { Updater } from '#hooks/useImmerWithGetter.ts';
 import { Agent } from '#modules/agents/api/types.ts';
 import { createContext } from 'react';
-import { ChatMessage } from '../chat/types';
+import { ChatMessage, SendMessageParams } from '../chat/types';
 
 export const ChatContext = createContext<ChatContextValue | null>(null);
 
@@ -30,5 +30,5 @@ interface ChatContextValue {
   onClear: () => void;
   onCancel: () => void;
   setMessages: Updater<ChatMessage[]>;
-  sendMessage: (input: string) => Promise<void>;
+  sendMessage: ({ input, config }: SendMessageParams) => Promise<void>;
 }

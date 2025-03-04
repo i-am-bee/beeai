@@ -95,7 +95,7 @@
   }
 
   :global(.cds--modal-footer) {
-    border-radius: 0 0 $spacing-03 $spacing-03;
+    border-radius: 0 0 $border-radius $border-radius;
     padding: $spacing-06 $spacing-05 $spacing-05;
 
     &:global(.cds--btn-set) {

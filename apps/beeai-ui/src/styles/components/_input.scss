@@ -19,7 +19,7 @@
 .cds--text-area,
 .cds--text-input {
   border: 1px solid $border-subtle-00;
-  border-radius: $spacing-03;
+  border-radius: $border-radius;
   background-color: $layer;
   &,
   .cds--modal & {

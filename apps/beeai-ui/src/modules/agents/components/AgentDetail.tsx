@@ -16,25 +16,26 @@
 
 'use client';
 
-import type { ReactNode } from 'react';
-import { ButtonSkeleton, SkeletonText } from '@carbon/react';
-import { spacing } from '@carbon/layout';
-import { moderate01 } from '@carbon/motion';
-import { motion } from 'framer-motion';
-import clsx from 'clsx';
-import type { Agent } from '../api/types';
-import { getAgentTitle } from '../utils';
-import { AgentMetadata } from './AgentMetadata';
-import { TagsList } from '#components/TagsList/TagsList.tsx';
 import { CopySnippet } from '#components/CopySnippet/CopySnippet.tsx';
 import { MarkdownContent } from '#components/MarkdownContent/MarkdownContent.tsx';
+import { TagsList } from '#components/TagsList/TagsList.tsx';
+import commands from '#utils/commands.ts';
+import { fadeProps } from '#utils/fadeProps.ts';
+import { spacing } from '@carbon/layout';
+import { moderate01 } from '@carbon/motion';
+import { ButtonSkeleton, SkeletonText } from '@carbon/react';
+import clsx from 'clsx';
+import { motion } from 'framer-motion';
+import type { ReactNode } from 'react';
+import type { Agent } from '../api/types';
+import { AgentLaunchButton } from '../detail/AgentLaunchButton';
+import { getAgentTitle } from '../utils';
+import classes from './AgentDetail.module.scss';
 import { AgentDetailSection } from './AgentDetailSection';
 import { AgentExampleRequests } from './AgentExampleRequests';
+import { AgentMetadata } from './AgentMetadata';
 import { AgentTags } from './AgentTags';
 import { BeeBadge } from './BeeBadge';
-import { fadeProps } from '#utils/fadeProps.ts';
-import commands from '#utils/commands.ts';
-import classes from './AgentDetail.module.scss';
 
 interface Props {
   agent: Agent;
@@ -103,9 +104,9 @@ AgentDetail.Skeleton = function AgentDetailSkeleton() {
       <TagsList.Skeleton length={2} className={classes.tags} />
 
       <div className={classes.buttons}>
-        {/* .cds--layout--size-md fixes Carbon bug where button size prop is not respected */}
-        <ButtonSkeleton size="md" className={clsx('cds--layout--size-md', classes.launchButton)} />
+        <AgentLaunchButton.Skeleton />
 
+        {/* .cds--layout--size-md fixes Carbon bug where button size prop is not respected */}
         <ButtonSkeleton size="md" className={clsx('cds--layout--size-md', classes.copySnippet)} />
       </div>
 

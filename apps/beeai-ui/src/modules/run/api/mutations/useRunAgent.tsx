@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { useMutation } from '@tanstack/react-query';
-import { Agent } from '@i-am-bee/acp-sdk/types.js';
-import z, { ZodLiteral, ZodObject } from 'zod';
 import { useCreateMCPClient } from '#api/mcp-client/useCreateMCPClient.ts';
+import { Agent } from '@i-am-bee/acp-sdk/types.js';
+import { useMutation } from '@tanstack/react-query';
+import z, { ZodLiteral, ZodObject } from 'zod';
 
 interface Props<
   NotificationsSchema extends ZodObject<{

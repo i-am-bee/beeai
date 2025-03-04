@@ -18,18 +18,17 @@
 
 .root {
   position: relative;
+  border: 1px solid $border-subtle-00;
+  border-radius: $border-radius;
 }
 
 .textarea {
   max-block-size: rem(192px);
   overflow-y: auto;
-  border: 1px solid $border-subtle-00;
-  border-radius: $spacing-03;
   &::after,
   > textarea {
-    padding: $spacing-04;
-    padding-inline-end: rem(56px);
-    border-radius: $spacing-03;
+    padding: rem(11px) rem(11px) $spacing-03;
+    border-radius: calc($border-radius - 1px) calc($border-radius - 1px) 0 0;
   }
   > textarea {
     color: inherit;
@@ -47,8 +46,31 @@
   }
 }
 
-.buttonContainer {
-  position: absolute;
-  inset-inline-end: $spacing-04;
-  inset-block-end: $spacing-04;
+.actionBar {
+  padding: 0 rem(11px) rem(11px);
+  display: flex;
+  justify-content: space-between;
+  column-gap: $spacing-04;
+}
+
+.actions {
+  display: flex;
+  :global(.#{$prefix}--btn) {
+    &:hover,
+    &:active,
+    &[aria-expanded='true'] {
+      background-color: $button-primary;
+      color: $text-inverse;
+    }
+    &:not([disabled]) svg {
+      fill: currentColor;
+    }
+  }
+  [aria-owns] :global(.#{$prefix}--popover) {
+    display: none;
+  }
+}
+
+.submit {
+  margin-inline-start: auto;
 }
