@@ -39,11 +39,11 @@ importers:
         specifier: ^1.1.13
         version: 1.1.13(zod@3.24.2)
       '@i-am-bee/acp-sdk':
-        specifier: 0.0.3
-        version: 0.0.3
+        specifier: 0.0.4
+        version: 0.0.4
       '@i-am-bee/beeai-sdk':
-        specifier: 0.0.6
-        version: 0.0.6
+        specifier: 0.0.10
+        version: 0.0.10
       beeai-framework:
         specifier: ^0.1.2
         version: 0.1.2(@ai-sdk/openai@1.1.13(zod@3.24.2))(@aws-sdk/client-bedrock-runtime@3.751.0)(ollama-ai-provider@1.2.0(zod@3.24.2))(react@19.0.0)(yaml@2.7.0)
@@ -64,11 +64,11 @@ importers:
         specifier: ^1.1.14
         version: 1.1.14(zod@3.24.2)
       '@i-am-bee/acp-sdk':
-        specifier: 0.0.3
-        version: 0.0.3
+        specifier: 0.0.4
+        version: 0.0.4
       '@i-am-bee/beeai-sdk':
-        specifier: 0.0.6
-        version: 0.0.6
+        specifier: 0.0.10
+        version: 0.0.10
       beeai-framework:
         specifier: ^0.1.2
         version: 0.1.2(@ai-sdk/openai@1.1.14(zod@3.24.2))(@aws-sdk/client-bedrock-runtime@3.751.0)(ollama-ai-provider@1.2.0(zod@3.24.2))(react@19.0.0)(yaml@2.7.0)
@@ -1633,8 +1633,8 @@ packages:
     resolution: {integrity: sha512-bp0Nx1SibAeq+QbmavYf4cOBzW98crtn8gXfq4VCo0Vm7VIHEC0IGA40g+iFHx+OTAyAN/he0PAme2pGyGseXw==}
     engines: {node: '>=18'}
 
-  '@i-am-bee/beeai-sdk@0.0.6':
-    resolution: {integrity: sha512-+bOZVZWy740GUshx9y//Bv5CA3Dhtd7iHYJKqqUsMwkqWWry8Ij1Xux3cM1dA1CXFJz5keNfaEONFYmC2+hXxA==}
+  '@i-am-bee/beeai-sdk@0.0.10':
+    resolution: {integrity: sha512-VAt/WdvAj3BkOnvyRFuGWPYsPB9RgzZ6x/1OZLlwOrCw/0Qu/iDzUNSevXTe0S8xea32iFj+Je0wjRdWo0Zl0g==}
 
   '@ibm/plex-mono@0.0.3-alpha.0':
     resolution: {integrity: sha512-xSa/c1vrzGmMR5xQr/aWP/q62jUD41mKwm2w4kFsvIVyT9fxC3wq81UYMSGBxQZ6+P1AROMSefF22aLXkv6uqw==}
@@ -9338,7 +9338,7 @@ snapshots:
       zod: 3.24.2
       zod-to-json-schema: 3.24.3(zod@3.24.2)
 
-  '@i-am-bee/beeai-sdk@0.0.6':
+  '@i-am-bee/beeai-sdk@0.0.10':
     dependencies:
       '@i-am-bee/acp-sdk': 0.0.4
       '@opentelemetry/api': 1.9.0

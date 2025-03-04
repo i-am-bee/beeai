@@ -7,7 +7,7 @@ import json
 import dataclasses
 
 from beeai_sdk.providers.agent import run_agent_provider
-from beeai_sdk.schemas.metadata import Metadata
+from beeai_sdk.schemas.metadata import Metadata, Examples, CliExample, UiDefinition, UiType
 from beeai_sdk.schemas.text import TextInput, TextOutput
 from acp.server.highlevel import Server, Context
 from autogen_agentchat.messages import BaseChatMessage, BaseAgentEvent
@@ -17,9 +17,25 @@ from beeai_sdk.schemas.base import Log, LogLevel
 
 agentName = "literature-review"
 
-exampleInputText = "AI applications in healthcare, focusing on diagnostic tools and patient data management."
+examples = Examples(
+    cli=[
+        CliExample(
+            command=(
+                f"beeai run {agentName} "
+                '"AI applications in healthcare, focusing on diagnostic tools and patient data management.'
+            ),
+            description="Conducting a Literature Review on AI in Healthcare",
+            processingSteps=[
+                "Initiates a round-robin task involving Google and Arxiv search agents to gather data",
+                "Collects and processes search results from both sources",
+                "The report agent synthesizes the data into a formatted literature review with appropriate references",
+                "Outputs the literature review, ending the task with the specified termination condition",
+            ],
+        )
+    ]
+)
 
-fullDescription = f"""
+fullDescription = """
 The agent is designed to automate the process of conducting literature reviews by gathering, analyzing, and synthesizing information from multiple sources. It uses a combination of Google searches and Arxiv database queries to fetch relevant academic papers and data, subsequently generating a well-formatted report.
 
 ## How It Works
@@ -38,22 +54,8 @@ The agent handles requests to perform literature reviews. It utilizes a set of a
 - **Academic Research** – Supports researchers by automating the initial phase of literature review.
 - **Report Generation** – Generates structured academic reports for various topics.
 - **Resource Compilation** – Compiles a list of academic papers and articles relevant to a given topic.
-
-## Example Usage
-
-### Example: Conducting a Literature Review on AI in Healthcare
-
-#### CLI:
-```bash
-beeai run {agentName} "{exampleInputText}"
-```
-
-#### Processing Steps:
-1. Initiates a round-robin task involving Google and Arxiv search agents to gather data.
-2. Collects and processes search results from both sources.
-3. The report agent synthesizes the data into a formatted literature review with appropriate references.
-4. Outputs the literature review, ending the task with the specified termination condition.
 """
+
 
 async def run():
     server = Server("autogen-agents")
@@ -61,14 +63,15 @@ async def run():
     @server.agent(
         agentName,
         "This agent automates deep web research by generating queries, gathering relevant sources, summarizing key information, and iterating on knowledge gaps to refine the results.",
-        input=TextInput, 
+        input=TextInput,
         output=TextOutput,
         **Metadata(
             framework="AutoGen",
             license="CC-BY-4.0, MIT",
             languages=["Python"],
             githubUrl="https://github.com/i-am-bee/beeai/tree/main/agents/community/autogen-agents/src/autogen_agents/literature_review",
-            exampleInput=exampleInputText,
+            examples=examples,
+            ui=UiDefinition(type=UiType.single_prompt, userGreeting="What literature do you want to review?"),
             fullDescription=fullDescription,
         ).model_dump(),
     )
@@ -88,9 +91,7 @@ async def run():
             async for value in team.run_stream(
                 task=input.text,
             ):
-                if isinstance(value, BaseChatMessage) or isinstance(
-                    value, BaseAgentEvent
-                ):
+                if isinstance(value, BaseChatMessage) or isinstance(value, BaseAgentEvent):
                     action = {
                         "content": value.content,
                         "type": value.type,
