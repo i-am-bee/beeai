@@ -26,6 +26,8 @@ export const composeNotificationSchema = AgentRunProgressNotificationSchema.exte
       agent_idx: z.number(),
       agent_name: z.string(),
       logs: z.array(z.object({ message: z.string() }).nullable()),
+      // TODO:  I couldn’t define these properly without breaking
+      // the received logs—let’s revisit this later.
       // text: z.string().nullable(),
       // messages: z.array(z.object({ content: z.string(), role: z.string() }).nullable()),
     }),
