@@ -5,7 +5,10 @@ import {
   textInputSchema,
   textOutputSchema,
 } from "@i-am-bee/beeai-sdk/schemas/text";
-import { createBeeSupervisor } from "@i-am-bee/beeai-supervisor";
+import {
+  createRuntime as createSupervisor,
+  RuntimeOutputMethod,
+} from "@i-am-bee/beeai-supervisor";
 import { CreateAgentConfig } from "@i-am-bee/beeai-supervisor/agents/registry/registry.js";
 import { z } from "zod";
 import { AgentFactory } from "./agent-factory.js";
@@ -52,7 +55,7 @@ const run =
         } as CreateAgentConfig)
     );
 
-    const supervisorAgent = await createBeeSupervisor({
+    const supervisorAgent = await createSupervisor({
       agentConfigFixtures,
       agentFactory: new AgentFactory(),
       switches: {
@@ -68,35 +71,27 @@ const run =
       outputDirPath: "./output",
     });
 
-    const response = await supervisorAgent
-      .run(
-        {
-          prompt: input.text,
-        },
-        {
-          execution: {
-            maxIterations: 100,
-            maxRetriesPerStep: 2,
-            totalMaxRetries: 10,
-          },
-          signal,
-        }
-      )
-      .observe((emitter) => {
-        emitter.on("partialUpdate", async ({ update }) => {
-          if (_meta?.progressToken && update.key === "final_answer") {
-            await server.server.sendAgentRunProgress({
-              progressToken: _meta.progressToken,
-              delta: {
-                messages: [{ role: "assistant", content: update.value }],
-              } as MessageOutput,
-            });
-          }
-        });
-      });
+    const output: RuntimeOutputMethod = async (output) => {
+      let role;
+      if (output.agent) {
+        role = `🤖 [${output.agent.agentId}] `;
+      } else {
+        role = `📋 [${output.taskRun.taskRunId}] `;
+      }
 
+      if (_meta?.progressToken) {
+        await server.server.sendAgentRunProgress({
+          progressToken: _meta.progressToken,
+          delta: {
+            text: `${role} ${output.text}`,
+          },
+        });
+      }
+    };
+
+    const response = await supervisorAgent.run(input.text, output);
     return {
-      text: response.result.text,
+      text: response,
       logs: [],
     };
   };
