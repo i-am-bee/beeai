@@ -10,6 +10,7 @@ dependencies = [
     "beeai-sdk==0.0.10",
     "pydantic-settings>=2.7.1",
     "pydantic>=2.10.6",
+    "pyyaml>=6.0.2",
 ]
 
 [project.scripts]
