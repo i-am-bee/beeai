@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import contextlib
 import json
 from enum import StrEnum
 
@@ -86,8 +87,10 @@ async def _run_agent(name: str, input: dict[str, Any], dump_files_path: Path | N
 
                     for file_path, content in files.items():
                         full_path = dump_files_path / file_path
-                        full_path.parent.mkdir(parents=True, exist_ok=True)
-                        full_path.write_text(content)
+                        with contextlib.suppress(ValueError):
+                            full_path.resolve().relative_to(dump_files_path.resolve())  # throws if outside folder
+                            full_path.parent.mkdir(parents=True, exist_ok=True)
+                            full_path.write_text(content)
 
                     console.print(f"📁 Saved {len(files)} files to {dump_files_path}.")
 
