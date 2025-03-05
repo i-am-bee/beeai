@@ -47,11 +47,11 @@ Markdown.elements["heading_open"] = _LeftAlignedHeading
 
 
 @contextmanager
-def create_table(*args, **kwargs) -> Iterator[Table]:
+def create_table(*args, no_wrap: bool = True, **kwargs) -> Iterator[Table]:
     table = Table(*args, **kwargs, box=None, pad_edge=False, width=console.width, show_header=True)
     yield table
     for column in table.columns:
-        column.no_wrap = True
+        column.no_wrap = no_wrap
         column.overflow = "ellipsis"
         column.header = column.header.upper()
 

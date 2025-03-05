@@ -13,24 +13,33 @@
 # limitations under the License.
 
 import json
+from enum import StrEnum
+
+from prompt_toolkit.completion import NestedCompleter
+
+try:
+    # This is necessary for proper handling of arrow keys in interactive input
+    import gnureadline as readline  # noqa: F401
+except ImportError:
+    import readline  # noqa: F401
+
 import sys
-from builtins import input as user_input
 from typing import Any
 
 import jsonschema
 import rich.json
 import typer
+from acp import ErrorData, McpError, RunAgentResult, ServerNotification, types
+from acp.types import Agent, AgentRunProgressNotification, AgentRunProgressNotificationParams
+from beeai_sdk.schemas.metadata import UiType
 from click import BadParameter
 from rich.markdown import Markdown
 from rich.table import Column
 from rich.text import Text
 
-from acp import types, ServerNotification, RunAgentResult, McpError, ErrorData
-from acp.types import AgentRunProgressNotification, AgentRunProgressNotificationParams, Agent
 from beeai_cli.api import send_request, send_request_with_notifications
-from beeai_cli.async_typer import AsyncTyper, console, err_console, create_table
-from beeai_cli.utils import check_json, omit
-from beeai_sdk.schemas.metadata import UiType
+from beeai_cli.async_typer import AsyncTyper, console, create_table, err_console
+from beeai_cli.utils import check_json, generate_schema_example, omit, prompt_user
 
 app = AsyncTyper()
 
@@ -72,9 +81,19 @@ async def _run_agent(name: str, input: dict[str, Any]) -> RunAgentResult:
     raise RuntimeError(f"Agent {name} did not produce a result")
 
 
+class Command(StrEnum):
+    quit = "q"
+    set = "set"
+    show_config = "show-config"
+    help = "?"
+
+
 def _handle_command(command: str, config_schema: dict[str, Any] | None, config: dict[str, Any]):
+    [args_str] = command.split(" ", maxsplit=1)[1:] or [None]
     match command.split(" ", maxsplit=1):
-        case ["set", args_str]:
+        case [Command.set, *_rest]:
+            if not args_str:
+                raise ValueError("Please provide a config key to update")
             key, value = args_str.split(" ", maxsplit=1)
             if not config_schema:
                 raise ValueError("This agent can't be configured")
@@ -87,17 +106,19 @@ def _handle_command(command: str, config_schema: dict[str, Any] | None, config: 
                 tmp_config = {**config, key: json_value}
                 jsonschema.validate(tmp_config, config_schema)
                 config[key] = json_value
+                console.print("Config:", config)
             except json.JSONDecodeError:
                 raise ValueError(f"The provided value cannot be parsed into JSON: {value}")
             except jsonschema.ValidationError as ex:
+                err_console.print(json.dumps(generate_schema_example(config_schema["properties"][key])))
                 raise ValueError(f"Invalid value for key {key}: {ex}")
-        case ["show-config"]:
+        case [Command.show_config]:
             if not config_schema:
                 console.print("This agent can't be configured")
             console.print(Markdown("## Configuration schema"))
-            with create_table(Column("Key", ratio=1), Column("Type", ratio=5)) as table:
+            with create_table(Column("Key", ratio=1), Column("Type", ratio=3), Column("Example", ratio=2)) as table:
                 for prop, schema in config_schema["properties"].items():
-                    table.add_row(prop, json.dumps(schema))
+                    table.add_row(prop, json.dumps(schema), json.dumps(generate_schema_example(schema)))
             console.print(table)
             if config:
                 console.print(Markdown("## Current configuration"))
@@ -105,7 +126,7 @@ def _handle_command(command: str, config_schema: dict[str, Any] | None, config: 
                     for key, value in config.items():
                         table.add_row(key, json.dumps(value))
                 console.print(table)
-        case ["?"]:
+        case [Command.help]:
             with create_table("command", "arguments", "description") as table:
                 table.add_row("/q", "n/a", "Quit.")
                 table.add_row("/?", "n/a", "Show this help.")
@@ -121,11 +142,24 @@ def _handle_command(command: str, config_schema: dict[str, Any] | None, config: 
             raise ValueError(f"Invalid command: {command}")
 
 
+def _create_completer(config_schema: dict[str, Any]):
+    return NestedCompleter.from_nested_dict(
+        {
+            f"/{Command.help}": None,
+            f"/{Command.quit}": None,
+            f"/{Command.show_config}": None,
+            f"/{Command.set}": {
+                key: {json.dumps(generate_schema_example(schema))}
+                for key, schema in config_schema["properties"].items()
+            },
+        }
+    )
+
+
 def _handle_input(config_schema: dict[str, Any] | None, config: dict[str, Any]) -> str:
-    print()
     while True:
         try:
-            input = user_input("👩‍💼 >>>: ")
+            input = prompt_user(completer=_create_completer(config_schema))
             if input.startswith("/"):
                 _handle_command(input.lstrip("/"), config_schema, config)
                 continue
