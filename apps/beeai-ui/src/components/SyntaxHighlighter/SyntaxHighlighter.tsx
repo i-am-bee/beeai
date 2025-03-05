@@ -15,15 +15,9 @@
  */
 
 import { Light as Highlighter } from 'react-syntax-highlighter';
-import bash from 'react-syntax-highlighter/dist/esm/languages/hljs/bash';
-import shell from 'react-syntax-highlighter/dist/esm/languages/hljs/shell';
-import json from 'react-syntax-highlighter/dist/esm/languages/hljs/json';
-import yaml from 'react-syntax-highlighter/dist/esm/languages/hljs/yaml';
-import javascript from 'react-syntax-highlighter/dist/esm/languages/hljs/javascript';
-import typescript from 'react-syntax-highlighter/dist/esm/languages/hljs/typescript';
-import python from 'react-syntax-highlighter/dist/esm/languages/hljs/python';
 import { style, customStyle } from './theme';
 import classes from './SyntaxHighlighter.module.scss';
+import { registerLanguages } from './languages';
 
 interface Props {
   language: string;
@@ -40,10 +34,4 @@ export function SyntaxHighlighter({ language, children }: Props) {
   );
 }
 
-Highlighter.registerLanguage('bash', bash);
-Highlighter.registerLanguage('shell', shell);
-Highlighter.registerLanguage('json', json);
-Highlighter.registerLanguage('yaml', yaml);
-Highlighter.registerLanguage('javascript', javascript);
-Highlighter.registerLanguage('typescript', typescript);
-Highlighter.registerLanguage('python', python);
+registerLanguages(Highlighter);
