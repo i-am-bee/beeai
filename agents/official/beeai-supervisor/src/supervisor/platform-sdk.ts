@@ -105,7 +105,7 @@ export class PlatformSdk {
     }
 
     return this.client.runAgent(
-      { name: beeAiAgentId, input: { prompt } },
+      { name: beeAiAgentId, input: { text: prompt } },
       { timeout: 10000000 }
     );
   }

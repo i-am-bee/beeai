@@ -3,11 +3,11 @@ import {
   promptInputSchema,
   promptOutputSchema,
 } from "@i-am-bee/beeai-sdk/schemas/prompt";
-import { createBeeSupervisor } from "beeai-supervisor";
-import { CreateAgentConfig } from "beeai-supervisor/agents/registry/index.js";
 import { z } from "zod";
-import { AgentFactory } from "./agent-factory.js";
 import { PlatformSdk } from "./platform-sdk.js";
+import { AgentFactory } from "./agent-factory.js";
+import { createBeeSupervisor } from "@i-am-bee/beeai-supervisor";
+import { CreateAgentConfig } from "@i-am-bee/beeai-supervisor/agents/registry/registry.js";
 
 const inputSchema = promptInputSchema.extend({
   availableAgents: z.array(z.string()),
