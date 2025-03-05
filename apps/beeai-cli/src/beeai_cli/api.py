@@ -66,7 +66,7 @@ def resolve_connection_error(retried: bool = False):
     if retried:
         typer.echo(f"💥 {typer.style('ConnectError', fg='red')}: We failed to automatically start the BeeAI service.")
         typer.echo(
-            f"💡 {typer.style('HINT', fg='yellow')}: Try reinstalling the service with {typer.style('brew reinstall beeai', fg='green')}, then retry."
+            f"💡 {typer.style('HINT', fg='yellow')}: Try starting the service manually with: {typer.style('brew services start beeai', fg='green')}"
         )
         exit(1)
 
@@ -93,9 +93,10 @@ def resolve_connection_error(retried: bool = False):
     typer.echo(f"⏳ {typer.style('Auto-resolving', fg='magenta')}: Starting the BeeAI service, stand by...")
     with contextlib.suppress(Exception):
         os.system("brew services start beeai")
-        time.sleep(3.0)
+        typer.echo(f"⏳  {typer.style('Auto-resolving', fg='magenta')}: Waiting for the service to boot up...")
+        time.sleep(10.0)
         typer.echo(
-            f"ℹ️  {typer.style('NOTE', fg='blue')}: It will take a few minutes before all of the agents are available, please be patient..."
+            f"ℹ️  {typer.style('NOTE', fg='blue')}: It will take a few minutes before all of the agents are available, please be patient!"
         )
 
 

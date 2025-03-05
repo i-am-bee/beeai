@@ -15,6 +15,7 @@
  */
 
 import { Container } from '#components/layouts/Container.tsx';
+import { MainContent } from '#components/layouts/MainContent.tsx';
 import { AgentDetailView } from '#modules/agents/detail/AgentDetailView.tsx';
 import { routes } from '#utils/router.ts';
 import { useNavigate, useParams } from 'react-router';
@@ -33,8 +34,10 @@ export function Agent() {
   }
 
   return (
-    <Container>
-      <AgentDetailView name={agentName} />
-    </Container>
+    <MainContent>
+      <Container>
+        <AgentDetailView name={agentName} />
+      </Container>
+    </MainContent>
   );
 }

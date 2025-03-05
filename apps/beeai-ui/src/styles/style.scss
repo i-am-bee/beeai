@@ -45,3 +45,7 @@ a {
     border-radius: $spacing-02;
   }
 }
+
+h1 {
+  @include h1();
+}

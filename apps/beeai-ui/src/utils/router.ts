@@ -17,14 +17,19 @@
 export const routeDefinitions = {
   home: () => '/' as const,
   notFound: () => '/not-found' as const,
-  agents: () => '/agents' as const,
-  agentDetail: () => '/agents/:agentName' as const,
-  agentRun: () => '/run/:agentName' as const,
+  agents: () => `/${sections.agents}` as const,
+  agentRun: () => `/${sections.agents}/run/:agentName` as const,
+  agentDetail: () => `/${sections.agents}/:agentName` as const,
+  compose: () => `/${sections.compose}` as const,
+  composeSequential: () => `/${sections.compose}/sequential` as const,
   settings: () => '/settings' as const,
 };
 
 export const routes = {
   ...routeDefinitions,
-  agentDetail: ({ name }: { name: string }) => `/agents/${name}`,
-  agentRun: ({ name }: { name: string }) => `/run/${name}`,
+  agentDetail: ({ name }: { name: string }) => `/${sections.agents}/${name}`,
+  agentRun: ({ name }: { name: string }) => `/${sections.agents}/run/${name}`,
 };
+
+export const sections = { agents: 'agents', compose: 'compose' } as const;
+export type NavSectionName = (typeof sections)[keyof typeof sections];

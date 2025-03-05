@@ -32,7 +32,7 @@ import { AgentLaunchButton } from '../detail/AgentLaunchButton';
 import { getAgentTitle } from '../utils';
 import classes from './AgentDetail.module.scss';
 import { AgentDetailSection } from './AgentDetailSection';
-import { AgentExampleRequests } from './AgentExampleRequests';
+// import { AgentExampleRequests } from './AgentExampleRequests';
 import { AgentMetadata } from './AgentMetadata';
 import { AgentTags } from './AgentTags';
 import { BeeBadge } from './BeeBadge';
@@ -75,11 +75,11 @@ export function AgentDetail({ agent, buttons }: Props) {
         />
       )}
 
-      {exampleInput && (
-        <AgentDetailSection title="Example requests">
-          <AgentExampleRequests cli={commands.beeai.run(name, exampleInput)} />
-        </AgentDetailSection>
-      )}
+      {/*{exampleInput && (*/}
+      {/*  <AgentDetailSection title="Example requests">*/}
+      {/*    <AgentExampleRequests cli={commands.beeai.run(name, exampleInput)} />*/}
+      {/*  </AgentDetailSection>*/}
+      {/*)}*/}
 
       {fullDescription && (
         <AgentDetailSection title="Description" titleSpacing="large">

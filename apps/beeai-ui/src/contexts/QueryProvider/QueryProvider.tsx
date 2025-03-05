@@ -14,16 +14,33 @@
  * limitations under the License.
  */
 
+import type { PropsWithChildren } from 'react';
+import { matchQuery, MutationCache, QueryCache, QueryClient } from '@tanstack/react-query';
+import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister';
+import { type PersistQueryClientProviderProps, PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
+import { gitHubRepoKeys } from '#modules/home/api/key.ts';
 import { useHandleError } from '#hooks/useHandleError.ts';
-import { matchQuery, MutationCache, QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { PropsWithChildren } from 'react';
-import { HandleError } from './types';
+import type { HandleError } from './types';
+
+const localStoragePersister = createSyncStoragePersister({
+  storage: window.localStorage,
+});
+
+const persistOptions: PersistQueryClientProviderProps['persistOptions'] = {
+  persister: localStoragePersister,
+  dehydrateOptions: {
+    shouldDehydrateQuery(query) {
+      return query.queryKey[0] === gitHubRepoKeys.all()[0];
+    },
+  },
+};
 
 const createQueryClient = ({ handleError }: { handleError: HandleError }) => {
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
-        staleTime: 60 * 1000,
+        staleTime: 1000 * 60, // 60 seconds
+        gcTime: 1000 * 60 * 60 * 24, // 24 hours
       },
     },
     queryCache: new QueryCache({
@@ -55,5 +72,9 @@ export function QueryProvider({ children }: PropsWithChildren) {
   const handleError = useHandleError();
   const queryClient = createQueryClient({ handleError });
 
-  return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+  return (
+    <PersistQueryClientProvider client={queryClient} persistOptions={persistOptions}>
+      {children}
+    </PersistQueryClientProvider>
+  );
 }

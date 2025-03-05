@@ -19,7 +19,7 @@ const run = async (
   }: {
     params: { input: z.infer<typeof inputSchema> };
   },
-  { signal }: { signal?: AbortSignal }
+  { signal }: { signal?: AbortSignal },
 ) => {
   const { text } = params.input;
 
@@ -69,37 +69,9 @@ The agent returns a structured JSON list representing the podcast conversation:
 - **Speaker Role Differentiation** – Ensures Speaker 1 leads the discussion while Speaker 2 maintains curiosity and engagement.
 
 ## Use Cases
-
 - **Podcast Automation** – Converts written content into structured dialogue for AI-generated podcasts.
 - **Text-to-Speech Enhancement** – Creates AI-friendly scripts with proper pacing and interruptions.
 - **Conversational Content Adaptation** – Reformats structured information into engaging discussions.
-
-## Example Usage
-
-### Example: Converting an Article into a Podcast
-
-#### CLI:
-\`\`\`bash
-beeai run podcast-creator '{
-  text:
-    "Artificial intelligence is revolutionizing industries by automating complex tasks, improving efficiency, and enabling data-driven decision-making. In healthcare, AI is helping doctors diagnose diseases earlier and personalize treatments...",
-}'
-\`\`\`
-
-#### Processing Steps:
-1. Extracts key concepts from the content.
-2. Reformats it into a structured conversation where Speaker 1 explains ideas and Speaker 2 reacts, asks questions, and introduces clarifications.
-3. Dramatises the content and outputs a structured dialogue suitable for AI voice synthesis.
-
-#### Output:
-\`\`\`json
-[
-  {"speaker": 1, "text": "Artificial intelligence is changing how industries operate by automating complex tasks and improving efficiency."},
-  {"speaker": 2, "text": "Whoa, that’s huge! Umm... but what exactly do you mean by automating complex tasks?"},
-  {"speaker": 1, "text": "Good question! Take healthcare, for example. AI helps doctors diagnose diseases earlier and personalize treatments based on patient data."},
-  {"speaker": 2, "text": "[laughs] That’s pretty wild! So, does that mean AI will replace doctors?"},
-  {"speaker": 1, "text": "Not quite! AI is more like an assistant, helping doctors make better decisions rather than replacing them."}
-]
 \`\`\``),
       new UserMessage(text),
     ],
@@ -108,9 +80,7 @@ beeai run podcast-creator '{
     abortSignal: signal,
   });
 
-  return {
-    text: response.getTextContent(),
-  };
+  return outputSchema.parse({ text: response.getTextContent() });
 };
 
 const agentName = "agent-docs-creator";
@@ -128,6 +98,11 @@ const exampleOutput: Output = {
   text: exampleOutputText,
   logs: [],
 };
+const processingSteps = [
+  "Analyzes the provided source code to extract key features and functionality",
+  "Formats the extracted information into a structured documentation template",
+  "Simulates an interactive discussion to ensure the output adheres to the documentation standards",
+];
 
 export const agent = {
   name: agentName,
@@ -162,23 +137,33 @@ The agent returns an object with the following structure:
 - **AI Agent Cataloging** – Streamlines the creation of documentation for AI agents to be included in catalogs or repositories.
 - **Source Code Analysis** – Provides insights into the functionality and features of AI agents by examining their source code.
 - **Technical Documentation Enhancement** – Enhances the quality and clarity of technical documentation for AI solutions.
-
-## Example Usage
-
-### Example 1: Documenting an AI Agent
-
-### CLI:
-\`\`\`bash
-beeai run ${agentName} "${exampleInputText}"
-\`\`\`
-
-### Processing Steps:
-1. Analyzes the provided source code to extract key features and functionality.
-2. Formats the extracted information into a structured documentation template.
-3. Simulates an interactive discussion to ensure the output adheres to the documentation standards.`,
+`,
     framework: "BeeAI",
     license: "Apache 2.0",
     languages: ["TypeScript"],
+    examples: {
+      cli: [
+        {
+          command: `beeai run ${agentName} "function exampleAgent() { /* AI agent source code here */ }"`,
+          name: "Insert code directly",
+          description: "Provide the entire source code on the command line",
+          output: exampleOutputText,
+          processingSteps,
+        },
+        {
+          command: `cat /path/to/agent/source.py | beeai run ${agentName}"`,
+          name: "Pipe file content to the agent",
+          description:
+            "Use bash features to find and pipe source code to the agent stdin.",
+          output: exampleOutputText,
+          processingSteps,
+        },
+      ],
+    },
+    ui: {
+      type: "single-prompt",
+      userGreeting: "Provide source code of the AI agent you want to document.",
+    },
     githubUrl:
       "https://github.com/i-am-bee/beeai/blob/main/agents/official/agent-docs-creator",
     exampleInput: exampleInputText,

@@ -33,6 +33,7 @@ class SilentOTLPSpanExporter(OTLPSpanExporter):
 
 
 async def run_agent_provider(server: Server):
+    server.settings.host = os.getenv("HOST", "127.0.0.1")
     server.settings.port = int(os.getenv("PORT", "8000"))
     trace.set_tracer_provider(
         tracer_provider=TracerProvider(

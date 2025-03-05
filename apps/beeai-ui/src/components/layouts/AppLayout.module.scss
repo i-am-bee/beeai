@@ -29,12 +29,9 @@
 }
 
 .main {
-  @include scrollbar();
-  padding-block: $spacing-09;
-  overflow-x: hidden;
-  overflow-y: auto;
-  scrollbar-gutter: stable;
   grid-area: main;
+  display: flex;
+  overflow: hidden;
   view-transition-name: main;
 }
 

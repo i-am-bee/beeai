@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
+import { MainContent } from "@/components/layouts/MainContent";
 import { GettingStarted } from "@i-am-bee/beeai-ui";
 
 export default function Home() {
-  return <GettingStarted />;
+  return (
+    <MainContent>
+      <GettingStarted />
+    </MainContent>
+  );
 }

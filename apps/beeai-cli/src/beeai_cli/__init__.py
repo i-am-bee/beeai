@@ -44,5 +44,19 @@ async def serve():
     beeai_server.serve()
 
 
+@app.command("ui")
+async def ui():
+    import webbrowser
+    import httpx
+
+    host_url = str(Configuration().host)
+
+    # Failure here will trigger the automatic service start mechanism
+    async with httpx.AsyncClient() as client:
+        await client.head(host_url)
+
+    webbrowser.open(host_url)
+
+
 if __name__ == "__main__":
     app()

@@ -18,17 +18,24 @@ import { useCreateMCPClient } from '#api/mcp-client/useCreateMCPClient.ts';
 import { Agent } from '@i-am-bee/acp-sdk/types.js';
 import { useMutation } from '@tanstack/react-query';
 import z, { ZodLiteral, ZodObject } from 'zod';
+import { QueryMetadata } from '#contexts/QueryProvider/types.ts';
 
 interface Props<
   NotificationsSchema extends ZodObject<{
     method: ZodLiteral<string>;
   }>,
 > {
-  agent: Agent;
   notifications?: {
     schema: NotificationsSchema;
     handler: (notification: z.infer<NotificationsSchema>) => void | Promise<void>;
   };
+  queryMetadata?: QueryMetadata;
+}
+
+interface RunMutationProps<Input extends { [x: string]: unknown }> {
+  agent: Agent;
+  input: Input;
+  abortController?: AbortController;
 }
 
 export function useRunAgent<
@@ -36,11 +43,11 @@ export function useRunAgent<
   NotificationsSchema extends ZodObject<{
     method: ZodLiteral<string>;
   }>,
->({ agent, notifications }: Props<NotificationsSchema>) {
+>({ notifications, queryMetadata }: Props<NotificationsSchema>) {
   const createClient = useCreateMCPClient();
 
   const { mutateAsync, isPending } = useMutation({
-    mutationFn: async ({ input, abortController }: { input: Input; abortController?: AbortController }) => {
+    mutationFn: async ({ agent, input, abortController }: RunMutationProps<Input>) => {
       const client = await createClient();
       if (!client) throw new Error('Connecting to MCP server failed.');
 
@@ -59,6 +66,12 @@ export function useRunAgent<
           signal: abortController?.signal,
         },
       );
+    },
+    meta: queryMetadata ?? {
+      errorToast: {
+        title: 'Agent run failed',
+        includeErrorMessage: true,
+      },
     },
   });
 

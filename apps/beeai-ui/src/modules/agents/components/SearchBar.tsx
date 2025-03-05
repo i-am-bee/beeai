@@ -16,7 +16,6 @@
 
 import { Search } from '@carbon/react';
 import { useId } from 'react';
-import classes from './SearchBar.module.scss';
 
 interface Props {
   search: string;
@@ -27,7 +26,7 @@ export function SearchBar({ search, onSearchChange }: Props) {
   const id = useId();
 
   return (
-    <div className={classes.root}>
+    <div>
       <Search
         id={id}
         labelText="Search"

@@ -6,7 +6,7 @@ from gpt_researcher import GPTResearcher
 from acp.server.highlevel import Server
 from beeai_sdk.providers.agent import run_agent_provider
 from beeai_sdk.schemas.base import Log
-from beeai_sdk.schemas.metadata import Metadata
+from beeai_sdk.schemas.metadata import Metadata, Examples, CliExample, UiDefinition, UiType
 from beeai_sdk.schemas.text import TextInput, TextOutput
 from gpt_researcher_agent.configuration import load_env
 
@@ -14,9 +14,22 @@ load_env()  # GPT Researchers uses env variables for configuration
 
 agentName = "gpt-researcher"
 
-exampleInputText = "Impact of climate change on global agriculture"
+examples = Examples(
+    cli=[
+        CliExample(
+            command=f'beeai run {agentName} "Impact of climate change on global agriculture"',
+            description="Conducting Research on Climate Change",
+            processingSteps=[
+                "Initializes task-specific agents to interpret the query",
+                "Generates a series of questions to form an objective opinion on the topic",
+                "Uses a crawler agent to gather and summarize information for each question",
+                "Aggregates and filters these summaries into a final comprehensive report",
+            ],
+        )
+    ]
+)
 
-fullDescription = f"""
+fullDescription = """
 The agent is an autonomous system designed to perform detailed research on any specified topic, leveraging both web and local resources. It generates a long, factual report complete with citations, striving to provide unbiased and accurate information. Drawing inspiration from recent advancements in AI-driven research methodologies, the agent addresses common challenges like misinformation and the limits of traditional LLMs, offering robust performance through parallel processing.
 
 ## How It Works
@@ -36,22 +49,8 @@ The GPT Researcher agent operates by deploying a 'planner' to generate relevant 
 - **Bias Reduction** – Cross-references data from various platforms to minimize misinformation and bias.
 - **High Performance** – Utilizes parallelized processes for efficient and swift report generation.
 - **Customizable** – Offers customization options to tailor research for specific domains or tasks.
-
-## Example Usage
-
-### Example: Conducting Research on Climate Change
-
-#### CLI:
-```bash
-beeai run {agentName} "{exampleInputText}"
-```
-
-#### Processing Steps:
-1. Initializes task-specific agents to interpret the query.
-2. Generates a series of questions to form an objective opinion on the topic.
-3. Uses a crawler agent to gather and summarize information for each question.
-4. Aggregates and filters these summaries into a final comprehensive report.
 """
+
 
 async def register_agent() -> int:
     server = Server("researcher-agent")
@@ -68,7 +67,8 @@ async def register_agent() -> int:
             githubUrl="https://github.com/i-am-bee/beeai/tree/main/agents/community/gpt-researcher-agent/gpt_researcher_agent",
             avgRunTimeSeconds=2.1,
             avgRunTokens=111,
-            exampleInput=exampleInputText,
+            ui=UiDefinition(type=UiType.hands_off, userGreeting="What topic do you want to research?"),
+            examples=examples,
             fullDescription=fullDescription,
         ).model_dump(),
     )
@@ -80,7 +80,7 @@ async def register_agent() -> int:
                 match data.get("type"):
                     case "logs":
                         log = Log(
-                            message=f"[{data.get('content', 'log')}] {data.get('output')}",
+                            message=data.get("output", ""),
                             metadata=data.get("metadata", None),
                         )
                         output.logs.append(log)

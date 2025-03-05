@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+@use 'styles/common' as *;
+
+.cds--inline-loading__checkmark-container {
+  fill: $background-inverse;
+}
+
 .cds--inline-loading {
   min-block-size: 0;
 }

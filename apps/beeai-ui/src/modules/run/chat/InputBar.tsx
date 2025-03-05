@@ -61,14 +61,7 @@ export const InputBar = memo(function InputBar({ onMessageSubmit }: Props) {
     }
   }, []);
 
-  // const handleAfterRemoveSentMessage = useCallback(
-  //   (message: UserChatMessage) => {
-  //     setValue('input', message.content, { shouldValidate: true });
-  //   },
-  //   [setValue],
-  // );
-
-  const isPending = isSubmitting; // status !== 'ready';
+  const isPending = isSubmitting;
   const inputValue = watch('input');
 
   const { ref: inputFormRef, ...inputFormProps } = register('input', {

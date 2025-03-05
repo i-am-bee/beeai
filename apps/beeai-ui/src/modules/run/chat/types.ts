@@ -14,17 +14,7 @@
  * limitations under the License.
  */
 
-import { AgentRunProgressNotificationSchema, RunAgentResultSchema } from '@i-am-bee/acp-sdk/types.js';
-import { MessageInput, messageOutputSchema } from '@i-am-bee/beeai-sdk/schemas/message';
-import { z } from 'zod';
-
-export const messagesNotificationsSchema = AgentRunProgressNotificationSchema.extend({
-  params: z.object({ delta: messageOutputSchema }),
-});
-export type MessagesNotifications = typeof messagesNotificationsSchema;
-
-export const messagesResultSchema = RunAgentResultSchema.extend({ output: messageOutputSchema });
-export type MessagesResult = z.infer<typeof messagesResultSchema>;
+import { MessageInput } from '@i-am-bee/beeai-sdk/schemas/message';
 
 export interface MessageBase {
   key: string;

@@ -14,16 +14,20 @@
  * limitations under the License.
  */
 
-import { routes } from '#utils/router.ts';
+import { routes, sections } from '#utils/router.ts';
 import classes from './MainNav.module.scss';
 import { TransitionLink } from '../TransitionLink/TransitionLink';
+import { useIsNavSectionActive } from '#hooks/useIsNavSectionActive.ts';
+import clsx from 'clsx';
 
 export function MainNav() {
+  const isSectionActive = useIsNavSectionActive();
+
   return (
     <nav>
       <ul className={classes.list}>
-        {NAV_ITEMS.map(({ label, to }, idx) => (
-          <li key={idx}>
+        {NAV_ITEMS.map(({ label, to, section }, idx) => (
+          <li key={idx} className={clsx({ [classes.active]: section && isSectionActive(section) })}>
             <TransitionLink to={to} className={classes.link}>
               {label}
             </TransitionLink>
@@ -42,5 +46,11 @@ const NAV_ITEMS = [
   {
     label: 'Agents',
     to: routes.agents(),
+    section: sections.agents,
+  },
+  {
+    label: 'Compose playground',
+    to: routes.compose(),
+    section: sections.compose,
   },
 ];

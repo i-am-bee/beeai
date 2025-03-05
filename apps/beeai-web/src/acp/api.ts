@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { unstable_cache } from "next/cache";
+import { cache } from "react";
 import { getAcpClient } from "./client";
 
-export const getAgentsList = unstable_cache(
+export const getAgentsList = cache(
   async () => {
     let client: Awaited<ReturnType<typeof getAcpClient>> | undefined;
     try {
@@ -28,7 +28,4 @@ export const getAgentsList = unstable_cache(
       await client?.close();
     }
   },
-  undefined
-  // ISR can be added like this
-  // { revalidate: 30 }
 );

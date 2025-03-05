@@ -1,10 +1,9 @@
 import asyncio
-import json
 
 
 from acp.server.highlevel import Context, Server
 from beeai_sdk.providers.agent import run_agent_provider
-from beeai_sdk.schemas.metadata import Metadata
+from beeai_sdk.schemas.metadata import Metadata, Examples, CliExample, UiDefinition, UiType
 from beeai_sdk.schemas.text import TextOutput, TextInput
 from beeai_sdk.schemas.base import Log
 
@@ -16,9 +15,24 @@ load_env()
 
 agentName = "ollama-deep-researcher"
 
-exampleInputText = "Advancements in quantum computing"
+examples = Examples(
+    cli=[
+        CliExample(
+            command=f'beeai run {agentName} "Advancements in quantum computing"',
+            description="Running a Research Query",
+            processingSteps=[
+                'Generates a query: "Recent breakthroughs in quantum computing hardware"',
+                "Searches the web using Tavily",
+                "Summarizes retrieved data",
+                'Reflects on missing insights, generating a follow-up query: "How do quantum error correction techniques improve stability?"',
+                "Repeats the search-summarization cycle until the iteration limit is reached",
+                "Outputs a structured summary with cited sources",
+            ],
+        )
+    ]
+)
 
-fullDescription = f"""
+fullDescription = """
 This agent automates deep web research by generating queries, gathering relevant sources, summarizing key information, and iterating on knowledge gaps to refine the results. It enables structured, efficient research through a configurable workflow.
 
 ## How It Works
@@ -46,23 +60,6 @@ The agent loops through steps 2–4 until the research loop limit is reached.
 - **Academic Research** – Summarizes recent findings on a specific topic.
 - **Content Creation** – Gathers background information for articles, blogs, and reports.
 - **Technical Deep Dives** – Explores emerging technologies with structured, iterative research.
-
-## Example Usage
-
-### Example: Running a Research Query
-
-#### CLI:
-```bash
-beeai run {agentName} "{exampleInputText}"
-```
-
-#### Processing Steps:
-1. Generates a query: "Recent breakthroughs in quantum computing hardware"
-2. Searches the web using Tavily.
-3. Summarizes retrieved data.
-4. Reflects on missing insights, generating a follow-up query: "How do quantum error correction techniques improve stability?"
-5. Repeats the search-summarization cycle until the iteration limit is reached.
-6. Outputs a structured summary with cited sources.
 """
 
 
@@ -79,7 +76,8 @@ async def run():
             license="Apache 2.0",
             languages=["Python"],
             githubUrl="https://github.com/i-am-bee/beeai/tree/main/agents/community/langgraph-agents/src/langgraph_agents/ollama_deep_researcher",
-            exampleInput=exampleInputText,
+            examples=examples,
+            ui=UiDefinition(type=UiType.single_prompt, userGreeting="What topic do you want to research?"),
             fullDescription=fullDescription,
         ).model_dump(),
     )

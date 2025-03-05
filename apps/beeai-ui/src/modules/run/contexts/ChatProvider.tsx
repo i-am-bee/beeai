@@ -20,15 +20,9 @@ import { MessageInput } from '@i-am-bee/beeai-sdk/schemas/message';
 import { PropsWithChildren, useCallback, useMemo, useRef } from 'react';
 import { v4 as uuid } from 'uuid';
 import { useRunAgent } from '../api/mutations/useRunAgent';
-import {
-  AgentMessage,
-  ChatMessage,
-  MessagesNotifications,
-  messagesNotificationsSchema,
-  MessagesResult,
-  SendMessageParams,
-} from '../chat/types';
+import { AgentMessage, ChatMessage, SendMessageParams } from '../chat/types';
 import { ChatContext, ChatMessagesContext } from './chat-context';
+import { MessagesNotifications, messagesNotificationsSchema, MessagesResult } from '../api/types';
 
 interface Props {
   agent: Agent;
@@ -52,7 +46,6 @@ export function ChatProvider({ agent, children }: PropsWithChildren<Props>) {
   );
 
   const { runAgent, isPending } = useRunAgent<MessageInput, MessagesNotifications>({
-    agent,
     notifications: {
       schema: messagesNotificationsSchema,
       handler: (notification) => {
@@ -91,6 +84,7 @@ export function ChatProvider({ agent, children }: PropsWithChildren<Props>) {
         abortControllerRef.current = abortController;
 
         const response = (await runAgent({
+          agent,
           input: {
             messages: getInputMessages(),
             config,
@@ -111,7 +105,7 @@ export function ChatProvider({ agent, children }: PropsWithChildren<Props>) {
         });
       }
     },
-    [getInputMessages, runAgent, setMessages, updateLastAgentMessage],
+    [agent, getInputMessages, runAgent, setMessages, updateLastAgentMessage],
   );
 
   const handleCancel = useCallback(() => {
