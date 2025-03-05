@@ -27,7 +27,8 @@ export type LogLevel = z.input<typeof logLevelSchema>;
 
 export const logSchema = z
   .object({ level: logLevelSchema.default("info"), message: z.string() })
-  .passthrough();
+  .passthrough()
+  .nullable();
 export type Log = z.input<typeof logSchema>;
 
 export const configSchema = z.object({ tools: z.array(z.string()).optional() });
