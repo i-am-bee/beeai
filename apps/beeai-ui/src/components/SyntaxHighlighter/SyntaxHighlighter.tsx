@@ -16,8 +16,8 @@
 
 import { Light as Highlighter } from 'react-syntax-highlighter';
 import { style, customStyle } from './theme';
-import classes from './SyntaxHighlighter.module.scss';
 import { registerLanguages } from './languages';
+import classes from './SyntaxHighlighter.module.scss';
 
 interface Props {
   language: string;

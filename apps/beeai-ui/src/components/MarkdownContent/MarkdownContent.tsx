@@ -16,8 +16,8 @@
 
 import Markdown from 'react-markdown';
 import clsx from 'clsx';
-import classes from './MarkdownContent.module.scss';
 import { components } from './components';
+import classes from './MarkdownContent.module.scss';
 
 interface Props {
   children?: string;
