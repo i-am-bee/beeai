@@ -16,7 +16,7 @@ The **Agent Context Protocol (ACP)** extends the Model Context Protocol (MCP) by
 
 ACP maintains the fundamental client-server architecture from MCP, allowing clients to interact with multiple servers seamlessly.
 
-- **Hosts**: Applications or environments (IDEs, development tools, AI systems) that utilize ACP to access data and services through agents. A good example of a host is BeeAI UI that can be invoked by `beeai ui`.
+- **Hosts**: Applications or environments (IDEs, development tools, AI systems) that utilize ACP to access data and services through agents. A good example of a host is BeeAI UI, which can be invoked with the command `beeai ui`.
 - **Clients**: Protocol clients maintaining direct connections with ACP servers, exchanging requests and responses via [JSON-RPC](https://www.jsonrpc.org).
 - **Servers**: Servers providing specialized capabilities via agents, responding to client requests, and managing interactions with local or remote data sources.
 
@@ -24,7 +24,7 @@ ACP maintains the fundamental client-server architecture from MCP, allowing clie
 
 ### Protocol Layer
 
-ACP utilizes [JSON-RPC 2.0](https://www.jsonrpc.org/specification), that standardizes way to invoke functions on a remote server using JSON messages. JSON-RPC is a protocol specifically desinged for remote procderu calls (RPC) and dictates message format and request-response handling (making it explicitly a Layer 7 protocol).
+ACP utilizes [JSON-RPC 2.0](https://www.jsonrpc.org/specification), a standardized protocol for invoking remote server functions using JSON messages. JSON-RPC is specifically designed for Remote Procedure Calls (RPC). It defines message formats and request-response handling, explicitly making it a Layer 7 protocol.
 
 JSON-RPC message example:
 
@@ -49,7 +49,7 @@ ACP inherits the [message types from MCP](https://modelcontextprotocol.io/docs/c
 ### Communication Layer
 
 <Note>
-  We are implemneting a support for natural language interaction with agents in
+  We are implementing a support for natural language interaction with agents in
   [ACP Alpha](/acp/alpha).
 </Note>
 
@@ -96,15 +96,15 @@ The Communication Layer provides optional schemas for JSON-RPC communication. Ag
 
 This layer manages how JSON-RPC messages are physically exchanged. Supported transport methods include:
 
-- (Preferred) HTTP with Server-Sent Events (SSE): Optimal for remote transfer.
-- Stdio: Optimal for local processes.
-- (Under development) WebSockets: Optimal for bi-directional remote communication.
+- **HTTP with Server-Sent Events (SSE)** (preferred): Optimal for remote transfer.
+- **Stdio**: Optimal for local process communication.
+- **WebSockets** (under development): Optimal for bi-directional remote communication.
 
 ## ACP in OSI Model
 
-Following is an example where ACP fits withing the Open Systems Interconnection (OSI) model. This is a simplified representation, showcasing the recommended use of ACP through HTTP with SSE.
+The following example illustrates where ACP fits within the Open Systems Interconnection (OSI) model. This is a simplified representation showcasing the recommended usage of ACP through HTTP with SSE.
 
-Both ACP and JSON-RPC fit above the Applicaiton layer, mainly because it manages higher-level interactions.
+Both ACP and JSON-RPC operate above the Application layer, as they manage higher-level interactions.
 
 <img
   className="block mx-auto max-h-[648px] dark:hidden"

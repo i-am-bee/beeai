@@ -15,22 +15,22 @@
         "groups": [
           {
             "group": "Get Started",
-            "pages": ["/get-started/introduction", "/get-started/quickstart"]
+            "pages": ["/get-started/quickstart"]
           },
           {
-            "group": "Create Agents",
+            "group": "Agents",
             "pages": [
-              "/create-agents/overview",
-              "/create-agents/beeai",
-              "/create-agents/crewai"
+              "/agents/official-list",
+              "/agents/community-list",
+              "/agents/contribute"
             ]
           },
           {
-            "group": "ACP Alpha",
+            "group": "ACP Protocol Alpha",
             "pages": ["/acp/alpha/introduction", "/acp/alpha/architecture"]
           },
           {
-            "group": "ACP Pre-alpha",
+            "group": "ACP Protocol Pre-alpha",
             "pages": [
               "/acp/pre-alpha/introduction",
               "/acp/pre-alpha/architecture",
@@ -56,8 +56,8 @@
     }
   },
   "logo": {
-    "light": "/logo/logo.svg",
-    "dark": "/logo/logo.svg"
+    "light": "/logo/beeai_logo_black.svg",
+    "dark": "/logo/beeai_logo_white.svg"
   },
   "navbar": {
     "primary": {
