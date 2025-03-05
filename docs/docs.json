@@ -15,17 +15,13 @@
         "groups": [
           {
             "group": "Get Started",
-            "pages": [
-              "/get-started/introduction",
-              "/get-started/quickstart",
-              "/get-started/installation"
-            ]
+            "pages": ["/get-started/introduction", "/get-started/quickstart"]
           },
           {
             "group": "Create Agents",
             "pages": [
               "/create-agents/overview",
-              "/create-agents/beeai-framework",
+              "/create-agents/beeai",
               "/create-agents/crewai"
             ]
           },
@@ -35,15 +31,11 @@
           },
           {
             "group": "ACP Pre-alpha",
-            "pages": ["/acp/pre-alpha/introduction", {
-              "group": "Concepts",
-              "icon": "lightbulb",
-              "pages": [
-                "/acp/pre-alpha/concepts-agents",
-                "/acp/pre-alpha/concepts-tools",
-                "/acp/pre-alpha/concepts-providers"
-              ]
-            }, "/acp/pre-alpha/architecture", "/acp/pre-alpha/sdk"]
+            "pages": [
+              "/acp/pre-alpha/introduction",
+              "/acp/pre-alpha/architecture",
+              "/acp/pre-alpha/sdk"
+            ]
           }
         ]
       }
