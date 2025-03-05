@@ -19,20 +19,18 @@ import { Client } from "@i-am-bee/acp-sdk/client/index.js";
 import type { ServerCapabilities } from "@i-am-bee/acp-sdk/types.js";
 import { SSEClientTransport } from "@i-am-bee/acp-sdk/client/sse.js";
 import { BEEAI_HOST } from "@/constants";
+import { getNativeFetch } from "./native-fetch";
 
 export async function getAcpClient() {
   if (!ACP_SSE_TRANSPORT_URL) {
     throw new Error("ACP Transport has not been set");
   }
+
   const transport = new SSEClientTransport(ACP_SSE_TRANSPORT_URL, {
     eventSourceInit: {
-      fetch: (url, init) => {
-        // SSEClientTransport adds `cache: 'no-store'` to the fetch, that causes error during nextjs SSG
-        if (init != null && init.cache != null) {
-          delete init.cache;
-        }
-        return fetch(url, init);
-      },
+      // Use native nodejs fetch instead of nextjs patched one, we don't want
+      // any nextjs caching/deduping behaviour here.
+      fetch: getNativeFetch(),
     },
   });
   const client = new Client(ACP_EXAMPLE_AGENT_CONFIG, ACP_EXAMPLE_AGENT_PARAMS);
