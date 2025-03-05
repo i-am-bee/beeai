@@ -161,7 +161,7 @@ The agent returns an object with the following structure:
       ],
     },
     ui: {
-      type: "single-prompt",
+      type: "hands-off",
       userGreeting: "Provide source code of the AI agent you want to document.",
     },
     githubUrl:

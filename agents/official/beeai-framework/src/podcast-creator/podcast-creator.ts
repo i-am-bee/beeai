@@ -226,7 +226,7 @@ ${exampleOutput}
       ],
     },
     ui: {
-      type: "single-prompt",
+      type: "hands-off",
       userGreeting: "Provide article that should be converted to a podcast.",
     },
     avgRunTimeSeconds: 19,

@@ -195,7 +195,7 @@ async def run(
     user_greeting = ui.get("userGreeting", None) or "How can I help you?"
     config = {}
     if not input:
-        if ui_type not in {UiType.chat, UiType.single_prompt}:
+        if ui_type not in {UiType.chat, UiType.hands_off}:
             raise BadParameter(
                 f"Agent {name} requires a JSON input according to the schema:\n"
                 f"{json.dumps(omit(agent.inputSchema, '$defs'), indent=2)}"
@@ -231,7 +231,7 @@ async def run(
                     messages = new_messages
                 input = _handle_input(config_schema, config)
 
-        if ui_type == UiType.single_prompt:
+        if ui_type == UiType.hands_off:
             user_greeting = ui.get("userGreeting", None) or "Enter your instructions."
             console.print(f"🤖 {user_greeting}")
             input = _handle_input(config_schema, config)
@@ -241,7 +241,7 @@ async def run(
         try:
             input = check_json(input)
         except BadParameter:
-            if ui_type == UiType.single_prompt:
+            if ui_type == UiType.hands_off:
                 input = {"text": input}
             elif ui_type == UiType.chat:
                 input = {"messages": [{"role": "user", "content": input}]}
