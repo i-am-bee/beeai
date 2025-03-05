@@ -23,6 +23,7 @@ import typer
 from click import BadParameter
 from rich.markdown import Markdown
 from rich.table import Column
+from rich.text import Text
 
 from acp import types, ServerNotification, RunAgentResult, McpError, ErrorData
 from acp.types import AgentRunProgressNotification, AgentRunProgressNotificationParams, Agent
@@ -69,11 +70,6 @@ async def _run_agent(name: str, input: dict[str, Any]) -> RunAgentResult:
                     console.print()
                 return result
     raise RuntimeError(f"Agent {name} did not produce a result")
-
-
-def _render_config_schema(config_schema: dict[str, Any]) -> None:
-    for keys in config_schema:
-        ...
 
 
 def _handle_command(command: str, config_schema: dict[str, Any] | None, config: dict[str, Any]):
@@ -148,9 +144,10 @@ async def run(
 ) -> None:
     """Call an agent with a given input."""
     agent = await _get_agent(name)
-    ui_type = agent.model_extra.get("ui", {}).get("type", None)
+    ui = agent.model_extra.get("ui", {}) or {}
+    ui_type = ui.get("type", None)
+    user_greeting = ui.get("userGreeting", None) or "How can I help you?"
     config = {}
-    user_greeting = agent.model_extra.get("greeting", "How can I help you?")
     if not input:
         if ui_type not in {UiType.chat, UiType.single_prompt}:
             raise BadParameter(
@@ -159,7 +156,10 @@ async def run(
             )
         console.print(Markdown(f"# {agent.name}  \n{agent.description}"))
 
-        if config_schema := agent.inputSchema.get("properties", {}).get("config", None):
+        config_schema = agent.inputSchema.get("properties", {}).get("config", None)
+        if not config_schema or "properties" not in config_schema:
+            config_schema = None
+        if config_schema:
             _handle_command("show-config", config_schema, config)
 
         console.print("\nRunning in interactive mode, use '/?' for help, [red]type '/q' to quit.[/red]", style="bold")
@@ -184,6 +184,8 @@ async def run(
                 input = _handle_input(config_schema, config)
 
         if ui_type == UiType.single_prompt:
+            user_greeting = ui.get("userGreeting", None) or "Enter your instructions."
+            console.print(f"🤖 {user_greeting}")
             input = _handle_input(config_schema, config)
             console.print("\n🤖 Agent:")
             await _run_agent(name, {"text": input, "config": config})
@@ -196,10 +198,13 @@ async def run(
             elif ui_type == UiType.chat:
                 input = {"messages": [{"role": "user", "content": input}]}
             else:
-                raise ValueError(
-                    f"Agent {name} does not support plaintext input, "
-                    f"please provide a json input with this schema:\n{json.dumps(agent.inputSchema, indent=2)}"
+                err_console.print(
+                    f"💥 [red][bold]Error[/red][/bold]: Agent {name} does not support plaintext input. See the following examples and agent schema:"
                 )
+                err_console.print(_render_examples(agent))
+                err_console.print(Markdown("## Schema"), "")
+                err_console.print(_render_schema(agent.inputSchema))
+                exit(1)
         await _run_agent(name, input)
 
 
@@ -229,6 +234,38 @@ def _render_schema(schema: dict[str, Any] | None):
     return "No schema provided." if not schema else rich.json.JSON.from_data(schema)
 
 
+def _render_examples(agent: Agent):
+    if not (examples := (agent.model_extra.get("examples", {}) or {}).get("cli", []) or []):
+        return Text()
+    md = "## Examples"
+    for i, example in enumerate(examples):
+        processing_steps = "\n".join(
+            f"{i + 1}. {step}" for i, step in enumerate((example.get("processingSteps", []) or []))
+        )
+        name = example.get("name", None) or f"Example #{i + 1}"
+        output = f"""
+### Output
+```
+{example.get("output", "")}
+```
+"""
+        md += f"""
+### {name}
+{example.get("description", None) or ""}
+
+#### Command
+```sh
+{example["command"]}
+```
+{output if example.get("output", None) else ""}
+
+#### Processing steps
+{processing_steps}
+"""
+
+    return Markdown(md)
+
+
 @app.command("info")
 async def agent_detail(
     name: str = typer.Argument(help="Name of agent tool to show"),
@@ -248,9 +285,12 @@ async def agent_detail(
 
     console.print(Markdown(basic_info))
     console.print(Markdown(agent_dict.get("fullDescription", None) or ""))
+    console.print(_render_examples(agent))
 
-    with create_table("Key", "Value", title="Extra information") as table:
-        for key, value in omit(agent.model_extra, {"fullDescription", "inputSchema", "outputSchema"}).items():
+    with create_table(Column("Key", ratio=1), Column("Value", ratio=5), title="Extra information") as table:
+        for key, value in omit(
+            agent.model_extra, {"fullDescription", "inputSchema", "outputSchema", "examples"}
+        ).items():
             table.add_row(key, str(value))
     console.print()
     console.print(table)

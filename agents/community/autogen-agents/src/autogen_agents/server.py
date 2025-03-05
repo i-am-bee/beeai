@@ -22,7 +22,7 @@ examples = Examples(
         CliExample(
             command=(
                 f"beeai run {agentName} "
-                '"AI applications in healthcare, focusing on diagnostic tools and patient data management.'
+                '"AI applications in healthcare, focusing on diagnostic tools and patient data management."'
             ),
             description="Conducting a Literature Review on AI in Healthcare",
             processingSteps=[

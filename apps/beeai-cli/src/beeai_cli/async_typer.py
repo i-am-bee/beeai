@@ -21,7 +21,8 @@ from typing import Iterator
 import rich.text
 import typer
 from httpx import ConnectError
-from rich.console import Console
+from rich.console import Console, RenderResult
+from rich.markdown import Heading, Markdown
 from rich.table import Table
 
 from beeai_cli.api import resolve_connection_error
@@ -32,6 +33,17 @@ DEBUG = Configuration().debug
 
 err_console = Console(stderr=True)
 console = Console()
+
+
+class _LeftAlignedHeading(Heading):
+    def __rich_console__(self, *args, **kwargs) -> RenderResult:
+        for elem in super().__rich_console__(*args, **kwargs):
+            if isinstance(elem, rich.text.Text):
+                elem.justify = "left"
+            yield elem
+
+
+Markdown.elements["heading_open"] = _LeftAlignedHeading
 
 
 @contextmanager
