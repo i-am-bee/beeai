@@ -75,16 +75,22 @@ export function AgentDetail({ agent, buttons }: Props) {
         />
       )}
 
-      {/*{exampleInput && (*/}
-      {/*  <AgentDetailSection title="Example requests">*/}
-      {/*    <AgentExampleRequests cli={commands.beeai.run(name, exampleInput)} />*/}
-      {/*  </AgentDetailSection>*/}
-      {/*)}*/}
+      {/* {exampleInput && (
+        <motion.div {...fadeInPropsWithMarginShift({
+          end: { from: spacing[7], to: spacing[6] },
+        })}>
+        <AgentDetailSection title="Example requests">
+          <AgentExampleRequests cli={commands.beeai.run(name, exampleInput)} />
+        </AgentDetailSection>
+        </motion.div>
+      )} */}
 
       {fullDescription && (
-        <AgentDetailSection title="Description" titleSpacing="large">
-          <MarkdownContent className={classes.fullDescription}>{fullDescription}</MarkdownContent>
-        </AgentDetailSection>
+        <motion.div {...fadeInPropsWithMarginShift()}>
+          <AgentDetailSection title="Description" titleSpacing="large">
+            <MarkdownContent className={classes.fullDescription}>{fullDescription}</MarkdownContent>
+          </AgentDetailSection>
+        </motion.div>
       )}
     </div>
   );
@@ -123,7 +129,7 @@ function fadeInPropsWithMarginShift({
 }: {
   start?: { from: string; to?: string };
   end?: { from: string; to?: string };
-}) {
+} = {}) {
   return fadeProps({
     hidden: {
       marginBlockStart: start ? start.from : undefined,

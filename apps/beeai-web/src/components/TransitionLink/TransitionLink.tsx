@@ -14,21 +14,32 @@
  * limitations under the License.
  */
 
-"use client";
-
+import { useViewTransition } from "@/contexts/TransitionContext";
+import Link, { LinkProps } from "next/link";
 import { PropsWithChildren } from "react";
-import { getQueryClient } from "./get-query-client";
-import { QueryClientProvider } from "@tanstack/react-query";
-import { ViewTransitionProvider } from "@/contexts/TransitionContext/ViewTransitionProvider";
-import { ProgressBarProvider } from "@/contexts/ProgressBar/ProgressBarProvider";
 
-export default function Providers({ children }: PropsWithChildren) {
-  const queryClient = getQueryClient();
+interface Props extends LinkProps {
+  className?: string;
+}
+
+export function TransitionLink({
+  href,
+  children,
+  ...props
+}: PropsWithChildren<Props>) {
+  const { transitionTo } = useViewTransition();
+
   return (
-    <QueryClientProvider client={queryClient}>
-      <ProgressBarProvider>
-        <ViewTransitionProvider>{children}</ViewTransitionProvider>
-      </ProgressBarProvider>
-    </QueryClientProvider>
+    <Link
+      href={href}
+      prefetch={true}
+      {...props}
+      onClick={(e) => {
+        e.preventDefault();
+        transitionTo(String(href), { scroll: props.scroll });
+      }}
+    >
+      {children}
+    </Link>
   );
 }

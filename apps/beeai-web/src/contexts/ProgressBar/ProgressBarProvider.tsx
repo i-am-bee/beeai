@@ -14,13 +14,20 @@
  * limitations under the License.
  */
 
-.root {
-  inline-size: 100%;
-  @include scrollbar();
-  padding-block: $spacing-09;
-  overflow-x: hidden;
-  overflow-y: auto;
-  scrollbar-gutter: stable;
-  grid-area: main;
-  scroll-behavior: smooth;
+"use client";
+
+import { PropsWithChildren } from "react";
+import { ProgressProvider } from "@bprogress/next/app";
+
+export function ProgressBarProvider({ children }: PropsWithChildren) {
+  return (
+    <ProgressProvider
+      color="#0f62fe"
+      height="3px"
+      options={{ showSpinner: true }}
+      shallowRouting
+    >
+      {children}
+    </ProgressProvider>
+  );
 }

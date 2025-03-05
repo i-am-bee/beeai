@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-.root {
-  inline-size: 100%;
-  @include scrollbar();
-  padding-block: $spacing-09;
-  overflow-x: hidden;
-  overflow-y: auto;
-  scrollbar-gutter: stable;
-  grid-area: main;
-  scroll-behavior: smooth;
+import { use } from "react";
+import { ViewTransitionContext } from "./context";
+
+export function useViewTransition() {
+  const context = use(ViewTransitionContext);
+
+  if (!context) {
+    throw new Error(
+      "useViewTransition must be used within a ViewTransitionProvider"
+    );
+  }
+
+  return context;
 }

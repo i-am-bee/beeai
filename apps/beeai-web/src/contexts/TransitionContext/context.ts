@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-.root {
-  inline-size: 100%;
-  @include scrollbar();
-  padding-block: $spacing-09;
-  overflow-x: hidden;
-  overflow-y: auto;
-  scrollbar-gutter: stable;
-  grid-area: main;
-  scroll-behavior: smooth;
+import { NavigateOptions } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import { createContext } from "react";
+
+interface ViewTransitionContextValue {
+  transitionTo: (href: string, options: NavigateOptions) => Promise<void>;
 }
+
+export const ViewTransitionContext = createContext<ViewTransitionContextValue>(
+  null as unknown as ViewTransitionContextValue
+);
