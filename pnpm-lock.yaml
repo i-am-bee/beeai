@@ -95,8 +95,8 @@ importers:
         specifier: 0.0.4
         version: 0.0.4
       '@i-am-bee/beeai-sdk':
-        specifier: 0.0.6
-        version: 0.0.6
+        specifier: 0.0.11
+        version: 0.0.11
       '@i-am-bee/beeai-supervisor':
         specifier: 0.0.4
         version: 0.0.4(@ai-sdk/openai@1.1.14(zod@3.24.2))(@eslint/js@9.21.0)(@i-am-bee/acp-sdk@0.0.4)(@opentelemetry/api@1.9.0)(@types/debug@4.1.12)(@types/node@22.13.5)(bee-agent-framework@0.0.61(@aws-sdk/client-bedrock-runtime@3.751.0)(@google-cloud/vertexai@1.9.3)(@grpc/grpc-js@1.12.6)(@grpc/proto-loader@0.7.13)(@modelcontextprotocol/sdk@1.6.0)(google-auth-library@9.15.1)(ollama@0.5.14)(openai-chat-tokens@0.2.8)(openai@4.86.1(ws@8.18.0)(zod@3.24.2))(yaml@2.7.0))(beeai-framework@0.1.2(@ai-sdk/openai@1.1.14(zod@3.24.2))(@aws-sdk/client-bedrock-runtime@3.751.0)(@modelcontextprotocol/sdk@1.6.0)(ollama-ai-provider@1.2.0(zod@3.24.2))(react@19.0.0)(yaml@2.7.0))(sass-embedded@1.85.1)(sass@1.85.0)(tsx@4.19.3)(typescript@5.7.3)(vite@6.2.0(@types/node@22.13.5)(sass-embedded@1.85.1)(sass@1.85.0)(tsx@4.19.3)(yaml@2.7.0))(ws@8.18.0)(yaml@2.7.0)
@@ -1749,9 +1749,6 @@ packages:
 
   '@i-am-bee/beeai-sdk@0.0.11':
     resolution: {integrity: sha512-FPGx+BbbFMrI/FntP5dW1g4fgy/SKZLQ2/ZaH4nuGugWkZoklYE52SyG+AoKhcai6wGUY0Y7YGfklQxf6oyJkw==}
-
-  '@i-am-bee/beeai-sdk@0.0.6':
-    resolution: {integrity: sha512-+bOZVZWy740GUshx9y//Bv5CA3Dhtd7iHYJKqqUsMwkqWWry8Ij1Xux3cM1dA1CXFJz5keNfaEONFYmC2+hXxA==}
 
   '@i-am-bee/beeai-supervisor@0.0.4':
     resolution: {integrity: sha512-J55pzuSbcy62LSLRUsD/uk2fp+0xnO+j3CQImzf6AlMg9eBeI6LrcnkA5iNPeUrrMM9D7a7qkNEy+oe1snIcUA==}
@@ -10172,19 +10169,6 @@ snapshots:
       zod-to-json-schema: 3.24.3(zod@3.24.2)
 
   '@i-am-bee/beeai-sdk@0.0.11':
-    dependencies:
-      '@i-am-bee/acp-sdk': 0.0.4
-      '@opentelemetry/api': 1.9.0
-      '@opentelemetry/sdk-node': 0.57.2(@opentelemetry/api@1.9.0)
-      '@opentelemetry/semantic-conventions': 1.30.0
-      '@types/stoppable': 1.1.3
-      express: 4.21.2
-      stoppable: 1.1.0
-      zod: 3.24.2
-    transitivePeerDependencies:
-      - supports-color
-
-  '@i-am-bee/beeai-sdk@0.0.6':
     dependencies:
       '@i-am-bee/acp-sdk': 0.0.4
       '@opentelemetry/api': 1.9.0
