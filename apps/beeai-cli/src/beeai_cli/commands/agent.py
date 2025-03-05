@@ -73,13 +73,7 @@ async def _run_agent(name: str, input: dict[str, Any], dump_files_path: Path | N
                     console.print(delta)
             case RunAgentResult() as result:
                 output_dict: dict = result.model_dump().get("output", {})
-                if not last_was_stream:
-                    if text := output_dict.get("text", None):
-                        console.print(text)
-                    else:
-                        console.print(result)
-                else:
-                    console.print()
+                console.print(output_dict.get("text", result) if not last_was_stream else "")
 
                 if dump_files_path is not None and (files := output_dict.get("files", {})):
                     files: dict[str, str]
