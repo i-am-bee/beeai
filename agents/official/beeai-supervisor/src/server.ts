@@ -1,4 +1,4 @@
-#!/usr/bin/env BEE_FRAMEWORK_INSTRUMENTATION_ENABLED=true npx -y tsx@latest
+#!/usr/bin/env BEE_FRAMEWORK_INSTRUMENTATION_ENABLED=true npx -y tsx@latest --inspect
 
 import "dotenv/config";
 
@@ -14,7 +14,7 @@ async function registerAgents(server: AcpServer) {
     supervisor.description,
     supervisor.inputSchema,
     supervisor.outputSchema,
-    supervisor.run,
+    supervisor.run(server),
     supervisor.metadata
   );
 }

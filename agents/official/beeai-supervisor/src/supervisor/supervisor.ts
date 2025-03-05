@@ -1,84 +1,105 @@
+import { AcpServer } from "@i-am-bee/acp-sdk/server/acp.js";
+import { MessageOutput } from "@i-am-bee/beeai-sdk/schemas/message";
 import { Metadata } from "@i-am-bee/beeai-sdk/schemas/metadata";
 import {
-  promptInputSchema,
-  promptOutputSchema,
-} from "@i-am-bee/beeai-sdk/schemas/prompt";
-import { z } from "zod";
-import { PlatformSdk } from "./platform-sdk.js";
-import { AgentFactory } from "./agent-factory.js";
+  textInputSchema,
+  textOutputSchema,
+} from "@i-am-bee/beeai-sdk/schemas/text";
 import { createBeeSupervisor } from "@i-am-bee/beeai-supervisor";
 import { CreateAgentConfig } from "@i-am-bee/beeai-supervisor/agents/registry/registry.js";
+import { z } from "zod";
+import { AgentFactory } from "./agent-factory.js";
+import { PlatformSdk } from "./platform-sdk.js";
 
-const inputSchema = promptInputSchema.extend({
+const inputSchema = textInputSchema.extend({
   availableAgents: z.array(z.string()),
 });
 type Input = z.infer<typeof inputSchema>;
-const outputSchema = promptOutputSchema;
+const outputSchema = textOutputSchema;
 
-const run = async (
-  {
-    params,
-  }: {
-    params: { input: z.infer<typeof inputSchema> };
-  },
-  { signal }: { signal?: AbortSignal }
-) => {
-  // ****************************************************************************************************
-  // Connect platform
-  // ****************************************************************************************************
-  const platformSdk = PlatformSdk.getInstance();
-  await platformSdk.init(
-    params.input.availableAgents.map((a) => a.toLocaleLowerCase())
-  );
-  const listedPlatformAgents = await platformSdk.listAgents();
-  const agentConfigFixtures = listedPlatformAgents.map(
-    ({ beeAiAgentId, description }) =>
-      ({
-        agentKind: "operator",
-        agentConfigVersion: 1,
-        agentType: beeAiAgentId,
-        description: description,
-        autoPopulatePool: false,
-        instructions: "Not used",
-        tools: [],
-        maxPoolSize: 10,
-      }) as CreateAgentConfig
-  );
-
-  const supervisorAgent = await createBeeSupervisor({
-    agentConfigFixtures,
-    agentFactory: new AgentFactory(),
-    switches: {
-      agentRegistry: {
-        mutableAgentConfigs: false,
-        restoration: false,
-      },
-      taskManager: {
-        restoration: false,
-      },
-    },
-    workspace: "beeai",
-    outputDirPath: "./output",
-  });
-
-  const response = await supervisorAgent.run(
+const run =
+  (server: AcpServer) =>
+  async (
     {
-      prompt: params.input.prompt,
+      params: { input, _meta },
+    }: {
+      params: {
+        input: Input;
+        _meta?: { progressToken?: string | number };
+      };
     },
-    {
-      execution: {
-        maxIterations: 100,
-        maxRetriesPerStep: 2,
-        totalMaxRetries: 10,
-      },
-      signal,
-    }
-  );
+    { signal }: { signal?: AbortSignal }
+  ) => {
+    // ****************************************************************************************************
+    // Connect platform
+    // ****************************************************************************************************
+    const platformSdk = PlatformSdk.getInstance();
+    await platformSdk.init(
+      input.availableAgents.map((a) => a.toLocaleLowerCase())
+    );
+    const listedPlatformAgents = await platformSdk.listAgents();
+    const agentConfigFixtures = listedPlatformAgents.map(
+      ({ beeAiAgentId, description }) =>
+        ({
+          agentKind: "operator",
+          agentConfigVersion: 1,
+          agentType: beeAiAgentId,
+          description: description,
+          autoPopulatePool: false,
+          instructions: "Not used",
+          tools: [],
+          maxPoolSize: 10,
+        } as CreateAgentConfig)
+    );
 
-  return {
-    text: response.result.text,
+    const supervisorAgent = await createBeeSupervisor({
+      agentConfigFixtures,
+      agentFactory: new AgentFactory(),
+      switches: {
+        agentRegistry: {
+          mutableAgentConfigs: false,
+          restoration: false,
+        },
+        taskManager: {
+          restoration: false,
+        },
+      },
+      workspace: "beeai",
+      outputDirPath: "./output",
+    });
+
+    const response = await supervisorAgent
+      .run(
+        {
+          prompt: input.text,
+        },
+        {
+          execution: {
+            maxIterations: 100,
+            maxRetriesPerStep: 2,
+            totalMaxRetries: 10,
+          },
+          signal,
+        }
+      )
+      .observe((emitter) => {
+        emitter.on("partialUpdate", async ({ update }) => {
+          if (_meta?.progressToken && update.key === "final_answer") {
+            await server.server.sendAgentRunProgress({
+              progressToken: _meta.progressToken,
+              delta: {
+                messages: [{ role: "assistant", content: update.value }],
+              } as MessageOutput,
+            });
+          }
+        });
+      });
+
+    return {
+      text: response.result.text,
+      logs: [],
+    };
   };
-};
 
 export const agent = {
   name: "supervisor",
