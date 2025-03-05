@@ -14,20 +14,9 @@
  * limitations under the License.
  */
 
-import Markdown from 'react-markdown';
-import clsx from 'clsx';
-import classes from './MarkdownContent.module.scss';
-import { components } from './components';
+import type { Components } from 'react-markdown';
+import { code } from './code';
 
-interface Props {
-  children?: string;
-  className?: string;
-}
-
-export function MarkdownContent({ className, children }: Props) {
-  return (
-    <Markdown className={clsx(classes.root, className)} components={components}>
-      {children}
-    </Markdown>
-  );
-}
+export const components: Components = {
+  code,
+};
