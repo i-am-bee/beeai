@@ -14,6 +14,7 @@
 
 import contextlib
 import json
+import random
 from enum import StrEnum
 
 from prompt_toolkit.completion import NestedCompleter, Completer
@@ -45,13 +46,36 @@ from beeai_cli.utils import check_json, generate_schema_example, omit, prompt_us
 
 app = AsyncTyper()
 
+processing_messages = [
+    "Buzzing with ideas...",
+    "Pollinating thoughts...",
+    "Honey of an answer coming up...",
+    "Swarming through data...",
+    "Bee-processing your request...",
+    "Hive mind activating...",
+    "Making cognitive honey...",
+    "Waggle dancing for answers...",
+    "Bee right back...",
+    "Extracting knowledge nectar...",
+]
+
 
 async def _run_agent(name: str, input: dict[str, Any], dump_files_path: Path | None = None) -> RunAgentResult:
+    status = console.status(random.choice(processing_messages), spinner="dots")
+    status.start()
+
     last_was_stream = False
+    status_stopped = False
+
     async for message in send_request_with_notifications(
         types.RunAgentRequest(method="agents/run", params=types.RunAgentRequestParams(name=name, input=input)),
         types.RunAgentResult,
     ):
+        if not status_stopped:
+            status_stopped = True
+            status.stop()
+            console.print("🐝 Agent: ")
+
         match message:
             case ServerNotification(
                 root=AgentRunProgressNotification(params=AgentRunProgressNotificationParams(delta=delta))
@@ -73,8 +97,14 @@ async def _run_agent(name: str, input: dict[str, Any], dump_files_path: Path | N
                     console.print(delta)
             case RunAgentResult() as result:
                 output_dict: dict = result.model_dump().get("output", {})
-                console.print(output_dict.get("text", result) if not last_was_stream else "")
-
+                if not last_was_stream:
+                    if "text" in output_dict:
+                        console.print(output_dict["text"], end="")
+                    elif messages := output_dict.get("messages", None):
+                        console.print(messages[-1]["content"], end="")
+                    else:
+                        console.print(result.model_dump())
+                console.print("\n")
                 if dump_files_path is not None and (files := output_dict.get("files", {})):
                     files: dict[str, str]
                     dump_files_path.mkdir(parents=True, exist_ok=True)
@@ -87,7 +117,6 @@ async def _run_agent(name: str, input: dict[str, Any], dump_files_path: Path | N
                             full_path.write_text(content)
 
                     console.print(f"📁 Saved {len(files)} files to {dump_files_path}.")
-
                 return result
     raise RuntimeError(f"Agent {name} did not produce a result")
 
@@ -176,6 +205,8 @@ def _handle_input(config_schema: dict[str, Any] | None, config: dict[str, Any]) 
             return input
         except ValueError as exc:
             err_console.print(str(exc))
+        except EOFError:
+            raise KeyboardInterrupt
 
 
 @app.command("run")
@@ -218,11 +249,11 @@ async def run(
         console.print()
         if ui_type == UiType.chat:
             messages = []
-            console.print(f"🤖 Agent: {user_greeting}")
+            console.print(f"🐝 Agent: {user_greeting}\n")
             input = _handle_input(config_schema, config)
             while True:
+                console.print()
                 messages.append({"role": "user", "content": input})
-                console.print("\n🤖 Agent: ", end=None)
                 result = await _run_agent(
                     name, {"messages": messages, **({"config": config} if config else {})}, dump_files_path=dump_files
                 )
@@ -236,9 +267,9 @@ async def run(
 
         if ui_type == UiType.hands_off:
             user_greeting = ui.get("userGreeting", None) or "Enter your instructions."
-            console.print(f"🤖 {user_greeting}")
+            console.print(f"🐝 {user_greeting}\n")
             input = _handle_input(config_schema, config)
-            console.print("\n🤖 Agent:")
+            console.print()
             await _run_agent(name, {"text": input, "config": config}, dump_files_path=dump_files)
     else:
         try:
