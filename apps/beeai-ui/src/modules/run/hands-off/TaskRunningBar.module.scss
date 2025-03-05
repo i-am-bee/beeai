@@ -14,27 +14,27 @@
  * limitations under the License.
  */
 
-import { MainContent } from '#components/layouts/MainContent.tsx';
-import { AgentRun } from '#modules/run/components/AgentRun.tsx';
-import { routes } from '#utils/router.ts';
-import { useNavigate, useParams } from 'react-router';
+.root {
+  box-shadow: $box-shadow;
+  border-radius: $border-radius;
+  padding: $spacing-03 $spacing-04;
+  background-color: $layer;
+  display: flex;
+  justify-content: space-between;
+  column-gap: $spacing-04;
+  margin-block-start: auto;
+  position: sticky;
+  inset-block-end: 0;
+  z-index: 1;
+}
 
-type Params = {
-  agentName: string;
-};
-
-export function AgentRunPage() {
-  const { agentName } = useParams<Params>();
-  const navigate = useNavigate();
-
-  if (!agentName) {
-    navigate(routes.notFound(), { replace: true });
-    return null;
-  }
-
-  return (
-    <MainContent>
-      <AgentRun name={agentName} />
-    </MainContent>
-  );
+.label {
+  display: flex;
+  align-items: center;
+  column-gap: $spacing-04;
+  font-size: rem(14px);
+  line-height: math.div(18, 14);
+  letter-spacing: $letter-spacing;
+  padding-block: rem(6px);
+  padding-inline-start: $spacing-02;
 }

@@ -14,27 +14,12 @@
  * limitations under the License.
  */
 
-import { MainContent } from '#components/layouts/MainContent.tsx';
-import { AgentRun } from '#modules/run/components/AgentRun.tsx';
-import { routes } from '#utils/router.ts';
-import { useNavigate, useParams } from 'react-router';
+export enum UiType {
+  Chat = 'chat',
+  HandsOff = 'hands-off',
+}
 
-type Params = {
-  agentName: string;
-};
-
-export function AgentRunPage() {
-  const { agentName } = useParams<Params>();
-  const navigate = useNavigate();
-
-  if (!agentName) {
-    navigate(routes.notFound(), { replace: true });
-    return null;
-  }
-
-  return (
-    <MainContent>
-      <AgentRun name={agentName} />
-    </MainContent>
-  );
+export interface RunStats {
+  startTime?: number;
+  endTime?: number;
 }

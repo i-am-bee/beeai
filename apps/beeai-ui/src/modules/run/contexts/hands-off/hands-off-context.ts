@@ -14,27 +14,21 @@
  * limitations under the License.
  */
 
-import { MainContent } from '#components/layouts/MainContent.tsx';
-import { AgentRun } from '#modules/run/components/AgentRun.tsx';
-import { routes } from '#utils/router.ts';
-import { useNavigate, useParams } from 'react-router';
+import { RunStats } from '#modules/run/types.ts';
+import { Agent } from '@i-am-bee/acp-sdk/types.js';
+import { TextInput, TextOutput } from '@i-am-bee/beeai-sdk/schemas/text';
+import { createContext } from 'react';
 
-type Params = {
-  agentName: string;
-};
+export const HandsOffContext = createContext<HandsOffContextValue | undefined>(undefined);
 
-export function AgentRunPage() {
-  const { agentName } = useParams<Params>();
-  const navigate = useNavigate();
-
-  if (!agentName) {
-    navigate(routes.notFound(), { replace: true });
-    return null;
-  }
-
-  return (
-    <MainContent>
-      <AgentRun name={agentName} />
-    </MainContent>
-  );
+interface HandsOffContextValue {
+  agent: Agent;
+  input?: TextInput;
+  output?: TextOutput;
+  stats?: RunStats;
+  isPending: boolean;
+  onSubmit: (input: string) => Promise<void>;
+  onCancel: () => void;
+  onReset: () => void;
+  onClear: () => void;
 }

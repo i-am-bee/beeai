@@ -16,13 +16,13 @@
 
 import { useImmerWithGetter } from '#hooks/useImmerWithGetter.ts';
 import { Agent } from '#modules/agents/api/types.ts';
+import { useRunAgent } from '#modules/run/api/mutations/useRunAgent.tsx';
+import { MessagesNotificationSchema, MessagesResult } from '#modules/run/api/types.ts';
+import { AgentMessage, ChatMessage, SendMessageParams } from '#modules/run/chat/types.ts';
 import { MessageInput } from '@i-am-bee/beeai-sdk/schemas/message';
 import { PropsWithChildren, useCallback, useMemo, useRef } from 'react';
 import { v4 as uuid } from 'uuid';
-import { useRunAgent } from '../api/mutations/useRunAgent';
-import { AgentMessage, ChatMessage, SendMessageParams } from '../chat/types';
 import { ChatContext, ChatMessagesContext } from './chat-context';
-import { MessagesNotifications, messagesNotificationsSchema, MessagesResult } from '../api/types';
 
 interface Props {
   agent: Agent;
@@ -45,9 +45,8 @@ export function ChatProvider({ agent, children }: PropsWithChildren<Props>) {
     [setMessages],
   );
 
-  const { runAgent, isPending } = useRunAgent<MessageInput, MessagesNotifications>({
+  const { runAgent, isPending } = useRunAgent<MessageInput, MessagesNotificationSchema>({
     notifications: {
-      schema: messagesNotificationsSchema,
       handler: (notification) => {
         const text = String(notification.params.delta.messages.at(-1)?.content);
         updateLastAgentMessage((message) => {

@@ -43,4 +43,12 @@
       fill: currentColor !important;
     }
   }
+
+  &.center {
+    block-size: 1.25rem;
+    &,
+    .content {
+      transform: none;
+    }
+  }
 }

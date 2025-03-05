@@ -14,13 +14,6 @@
  * limitations under the License.
  */
 
-import Bee from '#svgs/Bee.svg';
-import classes from './AgentIcon.module.scss';
-
-export function AgentIcon() {
-  return (
-    <div className={classes.root}>
-      <Bee />
-    </div>
-  );
+.root {
+  white-space: nowrap;
 }

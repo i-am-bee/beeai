@@ -1,5 +1,5 @@
-import { ZodLiteral, ZodObject, ZodType, z } from "zod";
 import { context, propagation, SpanKind, trace } from "@opentelemetry/api";
+import { z, ZodLiteral, ZodObject, ZodType } from "zod";
 import {
   CancelledNotificationSchema,
   ClientCapabilities,

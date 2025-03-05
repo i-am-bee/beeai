@@ -14,27 +14,22 @@
  * limitations under the License.
  */
 
-import { MainContent } from '#components/layouts/MainContent.tsx';
-import { AgentRun } from '#modules/run/components/AgentRun.tsx';
-import { routes } from '#utils/router.ts';
-import { useNavigate, useParams } from 'react-router';
+import humanizeDuration from 'humanize-duration';
 
-type Params = {
-  agentName: string;
+humanizeDuration.languages.shortEn = {
+  h: () => 'h',
+  m: () => 'min',
+  s: () => 's',
 };
 
-export function AgentRunPage() {
-  const { agentName } = useParams<Params>();
-  const navigate = useNavigate();
+export function runDuration(ms: number) {
+  const duration = humanizeDuration(ms, {
+    units: ['h', 'm', 's'],
+    round: true,
+    delimiter: ' ',
+    spacer: '',
+    language: 'shortEn',
+  });
 
-  if (!agentName) {
-    navigate(routes.notFound(), { replace: true });
-    return null;
-  }
-
-  return (
-    <MainContent>
-      <AgentRun name={agentName} />
-    </MainContent>
-  );
+  return duration;
 }

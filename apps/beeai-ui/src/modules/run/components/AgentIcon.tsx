@@ -14,27 +14,13 @@
  * limitations under the License.
  */
 
-import { MainContent } from '#components/layouts/MainContent.tsx';
-import { AgentRun } from '#modules/run/components/AgentRun.tsx';
-import { routes } from '#utils/router.ts';
-import { useNavigate, useParams } from 'react-router';
+import Bee from '#svgs/Bee.svg';
+import classes from './AgentIcon.module.scss';
 
-type Params = {
-  agentName: string;
-};
-
-export function AgentRunPage() {
-  const { agentName } = useParams<Params>();
-  const navigate = useNavigate();
-
-  if (!agentName) {
-    navigate(routes.notFound(), { replace: true });
-    return null;
-  }
-
+export function AgentIcon() {
   return (
-    <MainContent>
-      <AgentRun name={agentName} />
-    </MainContent>
+    <span className={classes.root}>
+      <Bee />
+    </span>
   );
 }

@@ -16,12 +16,15 @@
 
 import { ErrorMessage } from '#components/ErrorMessage/ErrorMessage.tsx';
 import { Container } from '#components/layouts/Container.tsx';
+import { Agent } from '#modules/agents/api/types.ts';
 import { Loading } from '@carbon/react';
-import { useAgent } from '../agents/api/queries/useAgent';
-import { getAgentTitle } from '../agents/utils';
+import { useAgent } from '../../agents/api/queries/useAgent';
+import { Chat } from '../chat/Chat';
+import { ChatProvider } from '../contexts/chat/ChatProvider';
+import { HandsOffProvider } from '../contexts/hands-off/HandsOffProvider';
+import { HandsOff } from '../hands-off/HandsOff';
+import { UiType } from '../types';
 import classes from './AgentRun.module.scss';
-import { Chat } from './chat/Chat';
-import { ChatProvider } from './contexts/ChatProvider';
 
 interface Props {
   name: string;
@@ -32,20 +35,7 @@ export function AgentRun({ name }: Props) {
 
   return !isPending ? (
     agent ? (
-      agent.ui?.type === 'chat' ? (
-        <ChatProvider agent={agent}>
-          <Chat />
-        </ChatProvider>
-      ) : (
-        <Container size="sm">
-          <h1>{getAgentTitle(agent)}</h1>
-          <div className={classes.uiNotAvailable}>
-            {agent.ui?.type
-              ? `The UI requested by the agent is not available: '${agent.ui.type}'`
-              : `The agent doesn’t have a defined UI.`}
-          </div>
-        </Container>
-      )
+      renderUi({ agent })
     ) : (
       <Container size="sm">
         <ErrorMessage
@@ -62,3 +52,33 @@ export function AgentRun({ name }: Props) {
     </div>
   );
 }
+
+const renderUi = ({ agent }: { agent: Agent }) => {
+  const type = agent.ui?.type;
+
+  switch (type) {
+    case UiType.Chat:
+      return (
+        <ChatProvider agent={agent}>
+          <Chat />
+        </ChatProvider>
+      );
+    case UiType.HandsOff:
+      return (
+        <HandsOffProvider agent={agent}>
+          <HandsOff />
+        </HandsOffProvider>
+      );
+    default:
+      return (
+        <Container size="sm">
+          <h1>{agent.name}</h1>
+          <div className={classes.uiNotAvailable}>
+            {type
+              ? `The UI requested by the agent is not available: '${type}'`
+              : `The agent doesn’t have a defined UI.`}
+          </div>
+        </Container>
+      );
+  }
+};

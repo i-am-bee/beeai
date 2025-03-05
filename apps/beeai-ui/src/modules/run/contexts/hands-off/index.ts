@@ -14,27 +14,15 @@
  * limitations under the License.
  */
 
-import { MainContent } from '#components/layouts/MainContent.tsx';
-import { AgentRun } from '#modules/run/components/AgentRun.tsx';
-import { routes } from '#utils/router.ts';
-import { useNavigate, useParams } from 'react-router';
+import { use } from 'react';
+import { HandsOffContext } from './hands-off-context';
 
-type Params = {
-  agentName: string;
-};
+export function useHandsOff() {
+  const context = use(HandsOffContext);
 
-export function AgentRunPage() {
-  const { agentName } = useParams<Params>();
-  const navigate = useNavigate();
-
-  if (!agentName) {
-    navigate(routes.notFound(), { replace: true });
-    return null;
+  if (!context) {
+    throw new Error('useHandsOff must be used within a HandsOffProvider');
   }
 
-  return (
-    <MainContent>
-      <AgentRun name={agentName} />
-    </MainContent>
-  );
+  return context;
 }

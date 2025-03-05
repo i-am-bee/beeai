@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-import { Agent } from '#modules/agents/api/types.ts';
-import classes from './AgentListOption.module.scss';
-import { getAgentTitle } from '#modules/agents/utils.ts';
 import { MarkdownContent } from '#components/MarkdownContent/MarkdownContent.tsx';
+import { TagsList } from '#components/TagsList/TagsList.tsx';
+import { Agent } from '#modules/agents/api/types.ts';
 import { AgentTags } from '#modules/agents/components/AgentTags.tsx';
 import { SkeletonText } from '@carbon/react';
-import { TagsList } from '#components/TagsList/TagsList.tsx';
-import { MouseEvent } from 'react';
 import clsx from 'clsx';
+import { MouseEvent } from 'react';
+import classes from './AgentListOption.module.scss';
 
 interface Props {
   agent: Agent;
@@ -34,7 +33,7 @@ export function AgentListOption({ agent, onClick }: Props) {
   return (
     <li className={classes.root} role="option" onClick={onClick}>
       <div className={classes.content}>
-        <span className={classes.name}>{getAgentTitle(agent)}</span>
+        <span className={classes.name}>{agent.name}</span>
         {description && <MarkdownContent className={classes.description}>{description}</MarkdownContent>}
 
         <AgentTags agent={agent} size="sm" />
