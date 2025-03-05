@@ -15,7 +15,7 @@
   "dependencies": {
     "@ai-sdk/openai": "^1.1.14",
     "@i-am-bee/acp-sdk": "0.0.4",
-    "@i-am-bee/beeai-sdk": "0.0.10",
+    "@i-am-bee/beeai-sdk": "0.0.11",
     "beeai-framework": "^0.1.2",
     "ollama-ai-provider": "^1.2.0",
     "tsx": "^4.19.3",
