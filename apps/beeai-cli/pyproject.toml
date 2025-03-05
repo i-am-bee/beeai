@@ -14,6 +14,10 @@ dependencies = [
     "pydantic-settings>=2.7.1",
     "requests>=2.32.3",
     "jsonschema>=4.23.0",
+    "jsf>=0.11.2",
+    "gnureadline>=8.2.13",
+    "prompt-toolkit>=3.0.50",
+    "cachetools>=5.5.2",
 ]
 
 [tool.uv.sources]
