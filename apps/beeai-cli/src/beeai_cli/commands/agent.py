@@ -16,7 +16,7 @@ import contextlib
 import json
 from enum import StrEnum
 
-from prompt_toolkit.completion import NestedCompleter
+from prompt_toolkit.completion import NestedCompleter, Completer
 
 try:
     # This is necessary for proper handling of arrow keys in interactive input
@@ -153,18 +153,17 @@ def _handle_command(command: str, config_schema: dict[str, Any] | None, config: 
             raise ValueError(f"Invalid command: {command}")
 
 
-def _create_completer(config_schema: dict[str, Any]):
-    return NestedCompleter.from_nested_dict(
-        {
-            f"/{Command.help}": None,
-            f"/{Command.quit}": None,
-            f"/{Command.show_config}": None,
-            f"/{Command.set}": {
-                key: {json.dumps(generate_schema_example(schema))}
-                for key, schema in config_schema["properties"].items()
-            },
+def _create_completer(config_schema: dict[str, Any] | None = None) -> Completer:
+    completions = {
+        f"/{Command.help}": None,
+        f"/{Command.quit}": None,
+        f"/{Command.show_config}": None,
+    }
+    if config_schema:
+        completions[f"/{Command.set}"] = {
+            key: {json.dumps(generate_schema_example(schema))} for key, schema in config_schema["properties"].items()
         }
-    )
+    return NestedCompleter.from_nested_dict(completions)
 
 
 def _handle_input(config_schema: dict[str, Any] | None, config: dict[str, Any]) -> str:
@@ -196,10 +195,14 @@ async def run(
     config = {}
     if not input:
         if ui_type not in {UiType.chat, UiType.hands_off}:
-            raise BadParameter(
-                f"Agent {name} requires a JSON input according to the schema:\n"
-                f"{json.dumps(omit(agent.inputSchema, '$defs'), indent=2)}"
+            err_console.print(
+                f"💥 [red][bold]Error[/red][/bold]: Agent {name} does not use any supported UIs.\n"
+                f"Please use the agent according to the following examples and schema:"
             )
+            err_console.print(_render_examples(agent))
+            err_console.print(Markdown("## Schema"), "")
+            err_console.print(_render_schema(agent.inputSchema))
+            exit(1)
         console.print(Markdown(f"# {agent.name}  \n{agent.description}"))
 
         config_schema = agent.inputSchema.get("properties", {}).get("config", None)
