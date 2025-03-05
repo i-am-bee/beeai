@@ -1,23 +1,22 @@
 ---
 title: Introduction
-description: "Get to know the Agent Communication Protocol"
+description: "Get to know the Agent Communication Protocol (ACP)"
+icon: "rocket"
 ---
 
 <Warning>
-  **Fundamental breaking changes are happening now**, affecting protocol,
-  transport, and APIs. Consider this version experimental. Join [Alpha
-  discussions](/acp/alpha/roadmap#discussions) to help shape it.
+  Fundamental breaking changes are happening now, affecting protocol, transport,
+  and APIs. Consider this version experimental. Join [Alpha
+  discussions](/acp/alpha/architecture#discussions) to help shape it.
 </Warning>
-
-## What is ACP?
 
 The **Agent Communication Protocol (ACP)** is a protocol designed to standardize how agents communicate, enabling automation, agent-to-agent collaboration, UI integration, and developer tooling.
 
-In its Pre-alpha version, ACP extends the [Model Context Protocol (MCP)](https://modelcontextprotocol.io/introduction), leveraging the simplicity and versatility of [JSON-RPC](https://www.jsonrpc.org/specification). This structure offers flexible and efficient interactions between agents, platforms, and external services.
+In its **Pre-alpha** version, ACP extends the [Model Context Protocol (MCP)](https://modelcontextprotocol.io/introduction), leveraging the simplicity and versatility of [JSON-RPC](https://www.jsonrpc.org/specification). This structure offers flexible and efficient interactions between agents, platforms, and external services.
 
 Rather than imposing strict specifications immediately, ACP emphasizes practical, useful features first. Standardization occurs once features demonstrate value, ensuring broader adoption and long-term compatibility.
 
-### Motivation
+## Motivation
 
 Current agent systems often use diverse communication standards, causing complexity, integration difficulties, and vendor lock-in. ACP addresses these issues uniquely by standardizing interactions tailored specifically for agents that handle natural language inputs and depend on externally hosted models.
 
@@ -30,11 +29,6 @@ Standardization allows practical features to become reliable and broadly adopted
 - **Interoperability**: Seamless interaction across agents and systems.
 - **Simplified Development**: Less overhead, enabling developers to focus on innovation.
 - **Reuse and Efficiency**: Reduced duplication through reuse of proven solutions.
-
-Additionally, ACP introduces specific enhancements tailored uniquely for agent-based systems:
-
-- **Natural Language Flexibility**: Designed explicitly for agents handling fuzzy or ambiguous natural-language inputs, enabling robust and intuitive interactions.
-- **Model Dependency Management**:  Simplifies integration and management of externally hosted models, improving resource management.
 
 ## Relationship with MCP
 

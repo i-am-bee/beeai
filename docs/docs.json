@@ -30,22 +30,20 @@
             ]
           },
           {
-            "group": "Agent Communication Protocol",
-            "pages": [
-              {
-                "group": "Alpha",
-                "icon": "tag",
-                "pages": ["/acp/alpha/introduction", "/acp/alpha/roadmap"]
-              },
-              {
-                "group": "Pre-alpha",
-                "icon": "tag",
-                "pages": [
-                  "/acp/pre-alpha/introduction",
-                  "/acp/pre-alpha/concepts"
-                ]
-              }
-            ]
+            "group": "ACP Alpha",
+            "pages": ["/acp/alpha/introduction", "/acp/alpha/architecture"]
+          },
+          {
+            "group": "ACP Pre-alpha",
+            "pages": ["/acp/pre-alpha/introduction", {
+              "group": "Concepts",
+              "icon": "lightbulb",
+              "pages": [
+                "/acp/pre-alpha/concepts-agents",
+                "/acp/pre-alpha/concepts-tools",
+                "/acp/pre-alpha/concepts-providers"
+              ]
+            }, "/acp/pre-alpha/architecture", "/acp/pre-alpha/sdk"]
           }
         ]
       }
