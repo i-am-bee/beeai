@@ -73,13 +73,20 @@
     }
   }
 
+  hr {
+    background: $border-subtle-00;
+    height: 1px;
+    border: none;
+  }
+
   pre {
     white-space: pre-wrap;
   }
 
-  code {
+  code:not([class*='language-']) {
+    @include type-style(label-01);
+
     background-color: $layer-02;
-    font-size: math.div(16em, 18);
     padding-inline: $spacing-02;
     border-radius: $spacing-02;
   }

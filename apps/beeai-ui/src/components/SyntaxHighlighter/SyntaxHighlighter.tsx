@@ -14,25 +14,24 @@
  * limitations under the License.
  */
 
-import { Tabs, TabList, Tab, TabPanels, TabPanel } from '@carbon/react';
-import { MarkdownContent } from '#components/MarkdownContent/MarkdownContent.tsx';
-import { createCodeBlock } from '#utils/markdown.ts';
+import { Light as Highlighter } from 'react-syntax-highlighter';
+import { style, customStyle } from './theme';
+import { registerLanguages } from './languages';
+import classes from './SyntaxHighlighter.module.scss';
 
 interface Props {
-  cli: string;
+  language: string;
+  children: string;
 }
 
-export function AgentExampleRequests({ cli }: Props) {
+export function SyntaxHighlighter({ language, children }: Props) {
   return (
-    <Tabs>
-      <TabList>
-        <Tab>CLI</Tab>
-      </TabList>
-      <TabPanels>
-        <TabPanel tabIndex={-1}>
-          <MarkdownContent>{createCodeBlock('bash', cli)}</MarkdownContent>
-        </TabPanel>
-      </TabPanels>
-    </Tabs>
+    <div className={classes.container}>
+      <Highlighter style={style} customStyle={customStyle} language={language} wrapLongLines>
+        {children}
+      </Highlighter>
+    </div>
   );
 }
+
+registerLanguages(Highlighter);

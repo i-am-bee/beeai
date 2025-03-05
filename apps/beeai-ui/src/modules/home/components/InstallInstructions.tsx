@@ -30,7 +30,7 @@ export function InstallInstructions() {
 
   return (
     <div className={classes.root}>
-      <CopySnippet snippet={command} />
+      <CopySnippet>{command}</CopySnippet>
 
       <button type="button" onClick={switchLanguage} className={classes.button}>
         Or get started with {switchToLabel}
