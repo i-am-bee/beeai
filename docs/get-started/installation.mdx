@@ -3,11 +3,13 @@ title: 'Installation'
 description: 'How to install BeeAI'
 ---
 
-The BeeAI CLI can be installed through Homebrew (on both Mac and Linux), and also from PyPI.
+The BeeAI platform can be installed on Mac or Linux. We support two installation methods: through Homebrew (on both Mac and Linux), and also from PyPI.
 
-We **recommend Homebrew** since it supports background service management -- you won't need to keep the server running in a terminal window.
+We **recommend [Homebrew](https://brew.sh/)** since it supports background service management -- you won't need to keep the server running in a terminal window. This applies to both Mac and Linux.
 
 ### Homebrew
+
+Homebrew itself can be installed using the installation script provided on the [homepage](https://brew.sh/).
 
 Install BeeAI CLI with:
 
@@ -37,10 +39,7 @@ To open the web interfaces, visit:
 
 ### PyPI
 
-<Note>
-  We recommend using [pipx](https://pipx.pypa.io/stable/) to make `beeai` command globally available on your machine.
-  Follow the installation instructions to set it up.
-</Note>
+BeeAI can alternatively be installed as a Python package from PyPI. While you may install using `pip` in a separate virtual environment, we recommend using [pipx](https://pipx.pypa.io/stable/) to make `beeai` command globally available on your machine. `pipx` is readily available from most package managers (`apt`, `dnf`, `brew` etc.).
 
 Install BeeAI CLI with:
 
@@ -55,12 +54,12 @@ If you want Arize Phoenix, install it with:
 
 ```sh
 # run once to install
-uv tool install arize-phoenix
+pipx install arize-phoenix
 # keep running in a separate terminal
 phoenix serve
 ```
 
-This variant does not manage background services -- the `beeai serve` and `phoenix serve` commands need to be kept running in order to use the platform.
+With this installation method, the BeeAI (and Phoenix) services won't be automatically started and managed. You will need to keep `beeai serve` (and optionally `phoenix serve`) running in a separate terminal in order to use the platform.
 
 To open the web interfaces, visit:
 
