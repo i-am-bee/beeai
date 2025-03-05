@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import contextlib
 import json
 from enum import StrEnum
 
@@ -24,7 +25,8 @@ except ImportError:
     import readline  # noqa: F401
 
 import sys
-from typing import Any
+from pathlib import Path
+from typing import Any, Optional
 
 import jsonschema
 import rich.json
@@ -44,7 +46,7 @@ from beeai_cli.utils import check_json, generate_schema_example, omit, prompt_us
 app = AsyncTyper()
 
 
-async def _run_agent(name: str, input: dict[str, Any]) -> RunAgentResult:
+async def _run_agent(name: str, input: dict[str, Any], dump_files_path: Path | None = None) -> RunAgentResult:
     last_was_stream = False
     async for message in send_request_with_notifications(
         types.RunAgentRequest(method="agents/run", params=types.RunAgentRequestParams(name=name, input=input)),
@@ -70,13 +72,22 @@ async def _run_agent(name: str, input: dict[str, Any]) -> RunAgentResult:
                     last_was_stream = True
                     console.print(delta)
             case RunAgentResult() as result:
-                if not last_was_stream:
-                    if text := result.model_dump().get("output", {}).get("text", None):
-                        console.print(text)
-                    else:
-                        console.print(result)
-                else:
-                    console.print()
+                output_dict: dict = result.model_dump().get("output", {})
+                console.print(output_dict.get("text", result) if not last_was_stream else "")
+
+                if dump_files_path is not None and (files := output_dict.get("files", {})):
+                    files: dict[str, str]
+                    dump_files_path.mkdir(parents=True, exist_ok=True)
+
+                    for file_path, content in files.items():
+                        full_path = dump_files_path / file_path
+                        with contextlib.suppress(ValueError):
+                            full_path.resolve().relative_to(dump_files_path.resolve())  # throws if outside folder
+                            full_path.parent.mkdir(parents=True, exist_ok=True)
+                            full_path.write_text(content)
+
+                    console.print(f"📁 Saved {len(files)} files to {dump_files_path}.")
+
                 return result
     raise RuntimeError(f"Agent {name} did not produce a result")
 
@@ -175,6 +186,7 @@ async def run(
         None if sys.stdin.isatty() else sys.stdin.read(),
         help="Agent input as text or JSON",
     ),
+    dump_files: Optional[Path] = typer.Option(None, help="Folder path to save any files returned by the agent"),
 ) -> None:
     """Call an agent with a given input."""
     agent = await _get_agent(name)
@@ -208,7 +220,9 @@ async def run(
             while True:
                 messages.append({"role": "user", "content": input})
                 console.print("\n🤖 Agent: ", end=None)
-                result = await _run_agent(name, {"messages": messages, **({"config": config} if config else {})})
+                result = await _run_agent(
+                    name, {"messages": messages, **({"config": config} if config else {})}, dump_files_path=dump_files
+                )
                 if not (new_messages := result.output.get("messages", None)):
                     raise ValueError("Agent did not return messages in the output")
                 if all([message["role"] == "assistant" for message in new_messages]):
@@ -222,7 +236,7 @@ async def run(
             console.print(f"🤖 {user_greeting}")
             input = _handle_input(config_schema, config)
             console.print("\n🤖 Agent:")
-            await _run_agent(name, {"text": input, "config": config})
+            await _run_agent(name, {"text": input, "config": config}, dump_files_path=dump_files)
     else:
         try:
             input = check_json(input)
@@ -239,7 +253,7 @@ async def run(
                 err_console.print(Markdown("## Schema"), "")
                 err_console.print(_render_schema(agent.inputSchema))
                 exit(1)
-        await _run_agent(name, input)
+        await _run_agent(name, input, dump_files_path=dump_files)
 
 
 @app.command("list")

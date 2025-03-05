@@ -137,7 +137,7 @@ async def register_agent() -> int:
                     return output
 
                 for file_path in tmp_path.rglob("*"):
-                    if any(part in [".aider", "node_modules", ".venv"] for part in file_path.parts):
+                    if any(part in ["node_modules", ".venv"] or part.startswith(".aider.") for part in file_path.parts):
                         continue
                     if file_path.is_file():
                         try:
