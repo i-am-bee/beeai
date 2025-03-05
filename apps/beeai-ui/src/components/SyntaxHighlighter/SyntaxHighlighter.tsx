@@ -23,6 +23,7 @@ import javascript from 'react-syntax-highlighter/dist/esm/languages/hljs/javascr
 import typescript from 'react-syntax-highlighter/dist/esm/languages/hljs/typescript';
 import python from 'react-syntax-highlighter/dist/esm/languages/hljs/python';
 import { style, customStyle } from './theme';
+import classes from './SyntaxHighlighter.module.scss';
 
 interface Props {
   language: string;
@@ -31,9 +32,11 @@ interface Props {
 
 export function SyntaxHighlighter({ language, children }: Props) {
   return (
-    <Highlighter style={style} customStyle={customStyle} language={language} wrapLongLines>
-      {children}
-    </Highlighter>
+    <div className={classes.container}>
+      <Highlighter style={style} customStyle={customStyle} language={language} wrapLongLines>
+        {children}
+      </Highlighter>
+    </div>
   );
 }
 

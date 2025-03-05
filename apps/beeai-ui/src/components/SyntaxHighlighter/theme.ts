@@ -18,5 +18,5 @@ export { atomOneLight as style } from 'react-syntax-highlighter/dist/esm/styles/
 
 export const customStyle: React.CSSProperties = {
   padding: '1rem',
-  background: 'transparent',
+  background: 'var(--cds-layer)',
 };
