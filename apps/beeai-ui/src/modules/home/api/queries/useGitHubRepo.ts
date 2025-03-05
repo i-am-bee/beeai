@@ -15,15 +15,15 @@
  */
 
 import { useQuery } from '@tanstack/react-query';
-import { fetchGitHubRepo } from '..';
+import type { GitHubRepoParams } from '../types';
 import { gitHubRepoKeys } from '../key';
-import { GitHubRepoParams } from '../types';
+import { fetchGitHubRepo } from '..';
 
 export function useGitHubRepo(params: GitHubRepoParams) {
   const query = useQuery({
     queryKey: gitHubRepoKeys.detail(params),
     queryFn: () => fetchGitHubRepo(params),
-    staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 60 * 2, // 2 hours
     retry: 1,
     meta: {
       errorToast: false,
