@@ -103,6 +103,7 @@ async def register_agent() -> int:
                     "--no-analytics",
                     "--no-restore-chat-history",
                     "--no-show-model-warnings",
+                    "--no-detect-urls",
                     "--message",
                     input.text,
                     cwd=tmp_dir,
