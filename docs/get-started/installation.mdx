@@ -34,7 +34,7 @@ Install from **PyPI**: Python-native way of installing. This method is less pref
     - _JavaScript / TypeScript_: BeeAI uses `npx`, part of [Node.js](https://nodejs.org/), to manage JS/TS environments. Install `node` using your OS's package manager, or follow the [official installation instructions](https://nodejs.org/en/download).
     - _Docker_: (optional: no built-in agents use this runtime) BeeAI uses the `docker` CLI to manage agent containers. If you are unsure how to setup a container runtime on your machine, we recommend [Rancher Desktop](https://rancherdesktop.io/).
 5. Open a new terminal window and run `beeai serve`. This will start the BeeAI service, and show you the logs. Keep this terminal window running in order to use the platform.
-6. (optional) Open a new terminal window and run `phoenix serve` to run the Arize Phoenix UI. Also keep this terminal window open and running.
+6. (optional) Open a new terminal window and run `PHOENIX_GRPC_PORT=8336 phoenix serve` to run the Arize Phoenix UI. Also keep this terminal window open and running.
 7. Installation complete! Move to the next section to set up agent providers.
 
 ---
