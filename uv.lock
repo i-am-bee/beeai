@@ -273,7 +273,7 @@ requires-dist = [
 
 [[package]]
 name = "beeai-server"
-version = "0.0.2"
+version = "0.0.3"
 source = { editable = "apps/beeai-server" }
 dependencies = [
     { name = "acp-sdk" },
