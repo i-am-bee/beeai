@@ -15,15 +15,18 @@
  */
 
 import { routes } from '#utils/router.js';
+import clsx from 'clsx';
 import { PropsWithChildren, UIEventHandler, useCallback, useRef, useState } from 'react';
 import { useLocation } from 'react-router';
 import { ToTopButton } from '../ToTopButton/ToTopButton';
 import classes from './MainContent.module.scss';
-import clsx from 'clsx';
 
-const SCROLLED_OFFSET = 48;
+interface Props {
+  spacing?: 'md' | 'lg' | false;
+  className?: string;
+}
 
-export function MainContent({ className, children }: PropsWithChildren<{ className?: string }>) {
+export function MainContent({ spacing = 'lg', className, children }: PropsWithChildren<Props>) {
   const mainRef = useRef<HTMLDivElement>(null);
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -45,10 +48,12 @@ export function MainContent({ className, children }: PropsWithChildren<{ classNa
   }, []);
 
   return (
-    <div ref={mainRef} className={clsx(classes.root, className)} onScroll={handleScroll}>
+    <div ref={mainRef} className={clsx(classes.root, spacing && classes[spacing], className)} onScroll={handleScroll}>
       {children}
 
       {isAgentsRoute && isScrolled && <ToTopButton onClick={handleToTopClick} />}
     </div>
   );
 }
+
+const SCROLLED_OFFSET = 48;

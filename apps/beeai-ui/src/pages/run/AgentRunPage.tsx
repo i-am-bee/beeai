@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { MainContent } from '#components/layouts/MainContent.tsx';
 import { AgentRun } from '#modules/run/components/AgentRun.tsx';
 import { routes } from '#utils/router.ts';
 import { useNavigate, useParams } from 'react-router';
@@ -32,9 +31,5 @@ export function AgentRunPage() {
     return null;
   }
 
-  return (
-    <MainContent>
-      <AgentRun name={agentName} />
-    </MainContent>
-  );
+  return <AgentRun name={agentName} />;
 }

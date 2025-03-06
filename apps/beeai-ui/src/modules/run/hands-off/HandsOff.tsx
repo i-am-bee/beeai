@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import { Container } from '#components/layouts/Container.tsx';
 import clsx from 'clsx';
 import { AgentHeader } from '../components/AgentHeader';
 import { AgentRunLogs } from '../components/AgentRunLogs';
 import { useHandsOff } from '../contexts/hands-off';
 import classes from './HandsOff.module.scss';
 import { HandsOffInput } from './HandsOffInput';
-import { HandsOffText } from './HandsOffText';
+import { HandsOffView } from './HandsOffView';
 import { TaskCompleted } from './TaskCompleted';
 import { TaskRunningBar } from './TaskRunningBar';
 
@@ -29,25 +28,20 @@ export function HandsOff() {
   const { agent, logs, text, isPending, onClear } = useHandsOff();
 
   const isPendingOrText = Boolean(isPending || text);
-  const isFinal = Boolean(text && !isPending);
 
   return (
-    <div className={clsx(classes.root, { [classes.isPendingOrText]: isPendingOrText })}>
-      <Container size="sm">
-        <div className={classes.holder}>
-          <AgentHeader agent={agent} onNewSessionClick={isPendingOrText ? onClear : undefined} />
+    <HandsOffView>
+      <div className={clsx(classes.root, { [classes.isPendingOrText]: isPendingOrText })}>
+        <AgentHeader agent={agent} onNewSessionClick={isPendingOrText ? onClear : undefined} />
 
-          <HandsOffInput />
+        <HandsOffInput />
 
-          <TaskCompleted />
+        <TaskCompleted />
 
-          <HandsOffText />
+        {logs && <AgentRunLogs logs={logs} toggleable={Boolean(text)} />}
 
-          {logs && <AgentRunLogs logs={logs} toggleable={isFinal} />}
-
-          <TaskRunningBar />
-        </div>
-      </Container>
-    </div>
+        <TaskRunningBar />
+      </div>
+    </HandsOffView>
   );
 }
