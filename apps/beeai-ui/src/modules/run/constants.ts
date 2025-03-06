@@ -14,14 +14,6 @@
  * limitations under the License.
  */
 
-.root {
-  min-block-size: 100%;
-  display: flex;
-  flex-direction: column;
-  row-gap: $spacing-04;
-  justify-content: center;
-  &.isPendingOrText {
-    justify-content: flex-start;
-    row-gap: $spacing-07;
-  }
-}
+import { UiType } from './types';
+
+export const SupportedUis: UiType[] = [UiType.Chat, UiType.HandsOff];
