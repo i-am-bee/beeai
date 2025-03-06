@@ -68,7 +68,7 @@ beeai run chat
 
 ## Documentation
 
-Visit https://docs.beeai.dev to view the full documentation.
+Visit [docs.beeai.dev](https://docs.beeai.dev) to view the full documentation.
 
 ## Agent library
 

@@ -26,15 +26,22 @@
             ]
           },
           {
-            "group": "ACP Protocol Alpha",
-            "pages": ["/acp/alpha/introduction", "/acp/alpha/architecture"]
-          },
-          {
-            "group": "ACP Protocol Pre-alpha",
+            "group": "Agent Communication Protocol",
             "pages": [
-              "/acp/pre-alpha/introduction",
-              "/acp/pre-alpha/architecture",
-              "/acp/pre-alpha/sdk"
+              {
+                "group": "Alpha",
+                "icon": "tag",
+                "pages": ["/acp/alpha/introduction", "/acp/alpha/architecture"]
+              },
+              {
+                "group": "Pre-alpha",
+                "icon": "tag",
+                "pages": [
+                  "/acp/pre-alpha/introduction",
+                  "/acp/pre-alpha/architecture",
+                  "/acp/pre-alpha/sdk"
+                ]
+              }
             ]
           }
         ]
