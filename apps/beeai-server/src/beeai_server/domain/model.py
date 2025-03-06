@@ -148,7 +148,7 @@ class ManagedProvider(BaseProvider, abc.ABC):
 
 class NodeJsProvider(ManagedProvider):
     driver: Literal[ProviderDriver.nodejs] = ProviderDriver.nodejs
-    command: list[str] = Field(default_factory=list, description="Command with arguments to run")
+    command: list[str] = Field(default_factory=list, description="Command with arguments to run", min_length=1)
     package: str = Field(
         default=None,
         description='NPM package or "git+https://..." URL, or "file://..." URL (not allowed in remote manifests)',
@@ -193,7 +193,7 @@ class NodeJsProvider(ManagedProvider):
         except ValueError:
             package = self.package
         async with super()._get_mcp_client(
-            command=["npx", "-y", package, *self.command], env=env, with_dummy_env=with_dummy_env
+            command=["npx", "-y", "--prefix", package, *self.command], env=env, with_dummy_env=with_dummy_env
         ) as client:
             yield client
 

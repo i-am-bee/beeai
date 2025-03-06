@@ -1,6 +1,6 @@
 {
   "name": "beeai-framework",
-  "version": "0.0.12",
+  "version": "0.0.34",
   "bin": {
     "server": "./src/server.ts"
   },
