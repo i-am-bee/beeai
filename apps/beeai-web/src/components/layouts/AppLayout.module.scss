@@ -39,10 +39,10 @@
   inline-size: 100%;
   transition: opacity $duration-moderate-02;
 
-  &[data-transition-view="out"] {
+  &[data-route-transition="out"] {
     opacity: 0;
   }
-  &[data-transition-view="in"] {
+  &[data-route-transition="in"] {
     opacity: 1;
   }
 }

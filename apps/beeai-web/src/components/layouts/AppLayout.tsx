@@ -27,7 +27,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
         <Navigation />
       </AppHeader>
 
-      <main className={classes.main} data-transition-view>
+      <main className={classes.main} data-route-transition>
         {children}
       </main>
 

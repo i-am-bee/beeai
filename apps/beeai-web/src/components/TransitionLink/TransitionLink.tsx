@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useViewTransition } from "@/contexts/TransitionContext";
+import { useRouteTransition } from "@/contexts/TransitionContext";
 import Link, { LinkProps } from "next/link";
 import { PropsWithChildren } from "react";
 
@@ -27,7 +27,7 @@ export function TransitionLink({
   children,
   ...props
 }: PropsWithChildren<Props>) {
-  const { transitionTo } = useViewTransition();
+  const { transitionTo } = useRouteTransition();
 
   return (
     <Link

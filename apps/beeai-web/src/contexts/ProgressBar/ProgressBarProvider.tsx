@@ -24,7 +24,7 @@ export function ProgressBarProvider({ children }: PropsWithChildren) {
     <ProgressProvider
       color="#0f62fe"
       height="3px"
-      options={{ showSpinner: true }}
+      options={{ showSpinner: false }}
       shallowRouting
     >
       {children}

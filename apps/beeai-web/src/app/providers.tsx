@@ -19,7 +19,7 @@
 import { PropsWithChildren } from "react";
 import { getQueryClient } from "./get-query-client";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { ViewTransitionProvider } from "@/contexts/TransitionContext/ViewTransitionProvider";
+import { RouteTransitionProvider } from "@/contexts/TransitionContext/RouteTransitionProvider";
 import { ProgressBarProvider } from "@/contexts/ProgressBar/ProgressBarProvider";
 
 export default function Providers({ children }: PropsWithChildren) {
@@ -27,7 +27,7 @@ export default function Providers({ children }: PropsWithChildren) {
   return (
     <QueryClientProvider client={queryClient}>
       <ProgressBarProvider>
-        <ViewTransitionProvider>{children}</ViewTransitionProvider>
+        <RouteTransitionProvider>{children}</RouteTransitionProvider>
       </ProgressBarProvider>
     </QueryClientProvider>
   );

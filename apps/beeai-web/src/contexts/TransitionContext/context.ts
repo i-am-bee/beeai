@@ -17,10 +17,11 @@
 import { NavigateOptions } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { createContext } from "react";
 
-interface ViewTransitionContextValue {
+interface RouteTransitionContextValue {
   transitionTo: (href: string, options: NavigateOptions) => Promise<void>;
 }
 
-export const ViewTransitionContext = createContext<ViewTransitionContextValue>(
-  null as unknown as ViewTransitionContextValue
-);
+export const RouteTransitionContext =
+  createContext<RouteTransitionContextValue>(
+    null as unknown as RouteTransitionContextValue
+  );

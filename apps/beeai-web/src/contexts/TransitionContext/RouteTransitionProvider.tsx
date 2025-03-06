@@ -21,13 +21,13 @@ import {
   useMemo,
   useRef,
 } from "react";
-import { ViewTransitionContext } from "./context";
+import { RouteTransitionContext } from "./context";
 import { usePathname } from "next/navigation";
 import { NavigateOptions } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { moderate02 } from "@carbon/motion";
 import { useRouter } from "@bprogress/next/app";
 
-export function ViewTransitionProvider({ children }: PropsWithChildren) {
+export function RouteTransitionProvider({ children }: PropsWithChildren) {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -44,7 +44,7 @@ export function ViewTransitionProvider({ children }: PropsWithChildren) {
   useEffect(() => {
     if (transitionControlRef.current) {
       transitionControlRef.current.element.setAttribute(
-        "data-transition-view",
+        "data-route-transition",
         "in"
       );
       transitionControlRef.current = null;
@@ -53,22 +53,19 @@ export function ViewTransitionProvider({ children }: PropsWithChildren) {
 
   const transitionTo = useCallback(
     async (href: string, options: NavigateOptions) => {
-      const element = document.querySelector("[data-transition-view]");
-      if (!element) {
+      const element = document.querySelector("[data-route-transition]");
+      if (!element || href === pathnameRef.current) {
         router.push(href, options);
         return;
       }
 
-      element.setAttribute("data-transition-view", "out");
+      element.setAttribute("data-route-transition", "out");
       const sourcePathname = pathnameRef.current;
       setTimeout(() => {
         router.push(href, options);
 
-        if (
-          sourcePathname !== pathnameRef.current ||
-          href === pathnameRef.current
-        ) {
-          element.setAttribute("data-transition-view", "in");
+        if (sourcePathname !== pathnameRef.current) {
+          element.setAttribute("data-route-transition", "in");
         } else {
           transitionControlRef.current = {
             sourcePath: sourcePathname,
@@ -83,9 +80,9 @@ export function ViewTransitionProvider({ children }: PropsWithChildren) {
   const value = useMemo(() => ({ transitionTo }), [transitionTo]);
 
   return (
-    <ViewTransitionContext.Provider value={value}>
+    <RouteTransitionContext.Provider value={value}>
       {children}
-    </ViewTransitionContext.Provider>
+    </RouteTransitionContext.Provider>
   );
 }
 
