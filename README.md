@@ -19,9 +19,9 @@
     <a href="#agent-library">Agent Library</a>
 </p>
 
-BeeAI is an open platform designed to help you discover, run, and compose AI agents from any framework and language. Whether you’re building your own agents or looking for powerful existing solutions, BeeAI makes it easy to find, connect, and orchestrate AI agents seamlessly.
-
 [VIDEO GOES HERE]
+
+BeeAI is an open platform designed to help you discover, run, and compose AI agents from any framework and language. Whether you’re building your own agents or looking for powerful existing solutions, BeeAI makes it easy to find, connect, and orchestrate AI agents seamlessly.
 
 ## Key Features
 
@@ -94,7 +94,7 @@ Special thanks to our contributors for helping us improve BeeAI.
 
 ## Acknowledgements
 
-A big thank you to these briliant projects that fueled the inspiration.
+A big thank you to these briliant projects that directly contributed or fueled the inspiration.
 
 - [Model Context Protocol](https://github.com/modelcontextprotocol)
 - [Language Server Protocol](https://github.com/microsoft/language-server-protocol)
