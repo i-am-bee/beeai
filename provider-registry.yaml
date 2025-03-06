@@ -3,7 +3,7 @@ providers:
   - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.33#path=/agents/official/composition
   - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.34#path=/agents/official/beeai-framework
   - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.34#path=/agents/official/agent-docs-creator
-  - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.35#path=/agents/official/beeai-supervisor
+  - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.36#path=/agents/official/beeai-supervisor
   # Community
   - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.33#path=/agents/community/gpt-researcher-agent
   - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.33#path=/agents/community/crewai-agents
