@@ -14,25 +14,9 @@
  * limitations under the License.
  */
 
-import { Tabs, TabList, Tab, TabPanels, TabPanel } from '@carbon/react';
-import { MarkdownContent } from '#components/MarkdownContent/MarkdownContent.tsx';
-import { createCodeBlock } from '#utils/markdown.ts';
+export { atomOneLight as style } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 
-interface Props {
-  cli: string;
-}
-
-export function AgentExampleRequests({ cli }: Props) {
-  return (
-    <Tabs>
-      <TabList>
-        <Tab>CLI</Tab>
-      </TabList>
-      <TabPanels>
-        <TabPanel tabIndex={-1}>
-          <MarkdownContent>{createCodeBlock('bash', cli)}</MarkdownContent>
-        </TabPanel>
-      </TabPanels>
-    </Tabs>
-  );
-}
+export const customStyle: React.CSSProperties = {
+  padding: '1rem',
+  background: 'var(--cds-layer)',
+};

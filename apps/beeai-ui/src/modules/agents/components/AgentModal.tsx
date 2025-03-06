@@ -45,7 +45,7 @@ export function AgentModal({ agent, onRequestClose, ...modalProps }: Props) {
           <AgentTags agent={agent} />
         </div>
         <div className={classes.runAgent}>
-          <CopySnippet snippet={runCommand} />
+          <CopySnippet>{runCommand}</CopySnippet>
 
           <Button kind="primary" renderIcon={ArrowUpRight} size="md">
             Try this agent

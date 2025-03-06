@@ -31,7 +31,7 @@ import type { Agent } from '../api/types';
 import { AgentLaunchButton } from '../detail/AgentLaunchButton';
 import classes from './AgentDetail.module.scss';
 import { AgentDetailSection } from './AgentDetailSection';
-// import { AgentExampleRequests } from './AgentExampleRequests';
+import { AgentExampleRequests } from './AgentExampleRequests';
 import { AgentMetadata } from './AgentMetadata';
 import { AgentTags } from './AgentTags';
 import { BeeBadge } from './BeeBadge';
@@ -42,7 +42,9 @@ interface Props {
 }
 
 export function AgentDetail({ agent, buttons }: Props) {
-  const { name, exampleInput, description, fullDescription } = agent;
+  const { name, description, fullDescription, examples } = agent;
+  const firstCliExample = examples?.cli?.at(0);
+
   return (
     <div className={classes.root}>
       <motion.h1 {...fadeInPropsWithMarginShift({ start: { from: spacing[4] } })} className={classes.name}>
@@ -61,10 +63,10 @@ export function AgentDetail({ agent, buttons }: Props) {
         className={classes.buttons}
       >
         {buttons}
-        <CopySnippet snippet={commands.beeai.run(name)} className={classes.copySnippet} />
+        <CopySnippet className={classes.copySnippet}>{commands.beeai.run(name)}</CopySnippet>
       </motion.div>
 
-      {(exampleInput || fullDescription) && (
+      {(firstCliExample || fullDescription) && (
         <motion.hr
           {...fadeInPropsWithMarginShift({
             start: { from: spacing[7], to: spacing[6] },
@@ -74,11 +76,11 @@ export function AgentDetail({ agent, buttons }: Props) {
         />
       )}
 
-      {/*{exampleInput && (*/}
-      {/*  <AgentDetailSection title="Example requests">*/}
-      {/*    <AgentExampleRequests cli={commands.beeai.run(name, exampleInput)} />*/}
-      {/*  </AgentDetailSection>*/}
-      {/*)}*/}
+      {firstCliExample && (
+        <AgentDetailSection title="Example requests">
+          <AgentExampleRequests cli={firstCliExample.command} />
+        </AgentDetailSection>
+      )}
 
       {fullDescription && (
         <AgentDetailSection title="Description" titleSpacing="large">

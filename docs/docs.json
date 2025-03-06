@@ -1,53 +1,54 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "mint",
+  "theme": "willow",
   "name": "BeeAI",
   "colors": {
-    "primary": "#F3C622",
-    "light": "#F3C622",
-    "dark": "#F3C622"
+    "primary": "#0f62fe",
+    "light": "#0f62fe",
+    "dark": "#0f62fe"
   },
   "favicon": "/favicon.svg",
   "navigation": {
-    "tabs": [
+    "anchors": [
       {
-        "tab": "Guides",
+        "anchor": "Documentation",
         "groups": [
           {
             "group": "Get Started",
+            "pages": ["/get-started/quickstart"]
+          },
+          {
+            "group": "Agents",
             "pages": [
-              "get-started/introduction",
-              "get-started/quickstart",
-              "get-started/installation"
+              "/agents/official-list",
+              "/agents/community-list",
+              "/agents/contribute"
             ]
           },
           {
-            "group": "Create Agents",
+            "group": "ACP Protocol Alpha",
+            "pages": ["/acp/alpha/introduction", "/acp/alpha/architecture"]
+          },
+          {
+            "group": "ACP Protocol Pre-alpha",
             "pages": [
-              "create-agents/overview",
-              "create-agents/beeai-framework",
-              "create-agents/crewai"
+              "/acp/pre-alpha/introduction",
+              "/acp/pre-alpha/architecture",
+              "/acp/pre-alpha/sdk"
             ]
           }
         ]
-      },
-      {
-        "tab": "API Reference",
-        "openapi": {
-          "source": "api-reference/openapi.json",
-          "directory": "api-reference"
-        }
       }
     ],
     "global": {
       "anchors": [
         {
-          "anchor": "BeeAI website",
-          "href": "https://beeai.dev/",
-          "icon": "globe-pointer"
+          "anchor": "GitHub",
+          "href": "https://github.com/i-am-bee/beeai",
+          "icon": "github"
         },
         {
-          "anchor": "Community",
+          "anchor": "Discord",
           "href": "https://discord.gg/AZFrp3UF5k",
           "icon": "discord"
         }
@@ -55,13 +56,12 @@
     }
   },
   "logo": {
-    "light": "/logo/logo.svg",
-    "dark": "/logo/logo.svg"
+    "light": "/logo/beeai_logo_black.svg",
+    "dark": "/logo/beeai_logo_white.svg"
   },
   "navbar": {
     "primary": {
-      "type": "button",
-      "label": "GitHub",
+      "type": "github",
       "href": "https://github.com/i-am-bee/beeai"
     }
   },

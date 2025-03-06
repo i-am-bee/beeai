@@ -14,25 +14,10 @@
  * limitations under the License.
  */
 
-import { Tabs, TabList, Tab, TabPanels, TabPanel } from '@carbon/react';
-import { MarkdownContent } from '#components/MarkdownContent/MarkdownContent.tsx';
-import { createCodeBlock } from '#utils/markdown.ts';
+.container {
+  @include type-style(label-01);
 
-interface Props {
-  cli: string;
-}
+  --cds-layer: #{$layer-02};
 
-export function AgentExampleRequests({ cli }: Props) {
-  return (
-    <Tabs>
-      <TabList>
-        <Tab>CLI</Tab>
-      </TabList>
-      <TabPanels>
-        <TabPanel tabIndex={-1}>
-          <MarkdownContent>{createCodeBlock('bash', cli)}</MarkdownContent>
-        </TabPanel>
-      </TabPanels>
-    </Tabs>
-  );
+  min-block-size: rem(48px);
 }
