@@ -20,7 +20,13 @@ import yaml
 from anyio import Path as AsyncPath
 from pydantic import BaseModel, ValidationError, RootModel
 
-from beeai_server.adapters.interface import IProviderRepository, IEnvVariableRepository, NOT_SET
+from beeai_server.adapters.interface import (
+    IProviderRepository,
+    IEnvVariableRepository,
+    ITelemetryRepository,
+    TelemetryConfig,
+    NOT_SET,
+)
 from beeai_server.domain.model import Provider
 from beeai_server.utils.utils import filter_dict
 
@@ -118,3 +124,39 @@ class FilesystemEnvVariableRepository(IEnvVariableRepository):
     async def update(self, update: dict[str, str | None]) -> None:
         env = filter_dict({**await self.get_all(), **update})
         await self._write_config(env)
+
+
+class FilesystemTelemetryRepository(ITelemetryRepository):
+    def __init__(self, telemetry_config_path: Path):
+        self._config_path = AsyncPath(telemetry_config_path)
+        self._config: TelemetryConfig | None = None
+
+    async def _write_config(self) -> None:
+        # Ensure that path exists
+        await self._config_path.parent.mkdir(parents=True, exist_ok=True)
+        config = yaml.dump(self._config.model_dump(mode="json"), indent=2)
+        # We do not handle conflicts - if the file was updated in the meantime, we override it with new values
+        await self._config_path.write_text(config)
+
+    async def sync(self) -> None:
+        if not await self._config_path.exists():
+            if not self._config:
+                self._config = TelemetryConfig()
+            return
+
+        config = await self._config_path.read_text()
+        try:
+            self._config = TelemetryConfig.model_validate(yaml.safe_load(config))
+        except ValidationError as ex:
+            backup = self._config_path.parent / f"{self._config_path.name}.bak.{uuid4().hex[:6]}"
+            logging.error(f"Invalid collector config file, renaming to {backup}. {ex!r}")
+            await self._config_path.rename(backup)
+
+    async def set(self, *, config: TelemetryConfig) -> None:
+        self._config = config
+        await self._write_config()
+
+    async def get(self) -> TelemetryConfig:
+        if not self._config:
+            await self.sync()
+        return self._config

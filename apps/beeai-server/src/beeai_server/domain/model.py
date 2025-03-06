@@ -20,6 +20,7 @@ from typing import Literal
 
 import anyio
 import anyio.to_thread
+from beeai_server.telemetry import OTEL_HTTP_ENDPOINT
 import httpx
 import yaml
 from anyio import Path, CancelScope
@@ -113,7 +114,7 @@ class ManagedProvider(BaseProvider, abc.ABC):
 
     @property
     def _global_env(self) -> dict[str, str]:
-        return {"OTEL_EXPORTER_OTLP_ENDPOINT": "http://localhost:6006"}
+        return {"OTEL_EXPORTER_OTLP_ENDPOINT": OTEL_HTTP_ENDPOINT}
 
     @asynccontextmanager
     async def _get_mcp_client(

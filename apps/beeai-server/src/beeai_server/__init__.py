@@ -24,6 +24,10 @@ from beeai_server.logging_config import configure_logging
 
 configure_logging()
 
+from beeai_server.telemetry import configure_telemetry  # noqa: E402
+
+configure_telemetry()
+
 logger = logging.getLogger(__name__)
 
 

@@ -1,0 +1,29 @@
+receivers:
+  otlp:
+    protocols:
+      http:
+        endpoint: 0.0.0.0:4318 # overriden by the server
+
+exporters:
+  debug: {}
+  otlp/phoenix:
+    endpoint: 0.0.0.0:8336
+    tls:
+      insecure: true
+
+processors:
+  memory_limiter:
+    check_interval: 1s
+    limit_mib: 1000
+  batch:
+
+extensions:
+  health_check:
+
+service:
+  extensions: [health_check]
+  pipelines:
+    traces/phoenix:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [otlp/phoenix]

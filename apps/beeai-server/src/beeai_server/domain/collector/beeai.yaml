@@ -1,0 +1,15 @@
+exporters:
+  otlp/beeai:
+    endpoint: collector.telemetry.beeai.dev:443
+
+processors:
+  memory_limiter/beeai:
+    check_interval: 1s
+    limit_mib: 2000
+
+service:
+  pipelines:
+    metrics/beeai:
+      receivers: [otlp]
+      processors: [memory_limiter/beeai, batch]
+      exporters: [otlp/beeai]
