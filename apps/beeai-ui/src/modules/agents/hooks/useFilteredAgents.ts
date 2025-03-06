@@ -15,8 +15,9 @@
  */
 
 import { useMemo } from 'react';
-import { Agent } from '../api/types';
-import { AgentsFiltersParams } from '../providers/AgentsFiltersProvider';
+import type { Agent } from '../api/types';
+import type { AgentsFiltersParams } from '../providers/AgentsFiltersProvider';
+import { intersection } from 'lodash';
 
 interface Props {
   agents: Agent[];
@@ -25,14 +26,22 @@ interface Props {
 
 export function useFilteredAgents({ agents, filters }: Props) {
   const filteredAgents = useMemo(() => {
-    const { framework, search } = filters;
+    const { search, frameworks, languages, licenses } = filters;
 
     const searchQuery = search?.trim().toLowerCase();
     const searchRegex = searchQuery ? new RegExp(searchQuery, 'i') : null;
 
     return agents
       ?.filter((agent) => {
-        if (framework && framework !== agent.framework) {
+        if (frameworks && !frameworks.includes(agent.framework ?? '')) {
+          return false;
+        }
+
+        if (languages && !intersection(languages, agent.languages ?? []).length) {
+          return false;
+        }
+
+        if (licenses && !licenses.includes(agent.license ?? '')) {
           return false;
         }
 

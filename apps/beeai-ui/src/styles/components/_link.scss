@@ -14,20 +14,10 @@
  * limitations under the License.
  */
 
-import type { PropsWithChildren } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
+.cds--link {
+  text-decoration: none;
 
-export interface AgentsFiltersParams {
-  search?: string;
-  frameworks?: string[] | null;
-  languages?: string[] | null;
-  licenses?: string[] | null;
-}
-
-export function AgentsFiltersProvider({ children }: PropsWithChildren) {
-  const formReturn = useForm<AgentsFiltersParams>({
-    mode: 'onBlur',
-  });
-
-  return <FormProvider {...formReturn}>{children}</FormProvider>;
+  &:hover {
+    text-decoration: underline;
+  }
 }
