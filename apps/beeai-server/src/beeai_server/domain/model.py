@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import abc
+import pathlib
 import uuid
 from contextlib import asynccontextmanager
 from enum import StrEnum
@@ -20,6 +21,7 @@ from typing import Literal
 
 import anyio
 import anyio.to_thread
+from beeai_server.telemetry import OTEL_HTTP_ENDPOINT
 import httpx
 import yaml
 from anyio import Path, CancelScope
@@ -113,11 +115,16 @@ class ManagedProvider(BaseProvider, abc.ABC):
 
     @property
     def _global_env(self) -> dict[str, str]:
-        return {"OTEL_EXPORTER_OTLP_ENDPOINT": "http://localhost:6006"}
+        return {"OTEL_EXPORTER_OTLP_ENDPOINT": OTEL_HTTP_ENDPOINT}
 
     @asynccontextmanager
     async def _get_mcp_client(
-        self, *, command: list[str], env: dict[str, str] | None = None, with_dummy_env: bool = True
+        self,
+        *,
+        command: list[str],
+        cwd: Path | None = None,
+        env: dict[str, str] | None = None,
+        with_dummy_env: bool = True,
     ) -> McpClient:
         declared_env_vars = {var.name for var in self.env}
         required_env_vars = {var.name for var in self.env if var.required}
@@ -136,6 +143,7 @@ class ManagedProvider(BaseProvider, abc.ABC):
                 params = ManagedServerParameters(
                     command=command,
                     args=args,
+                    cwd=pathlib.Path(cwd) if cwd else None,
                     endpoint=self.mcpEndpoint,
                     env={**env, **get_default_environment()},
                 )
@@ -147,7 +155,7 @@ class ManagedProvider(BaseProvider, abc.ABC):
 
 class NodeJsProvider(ManagedProvider):
     driver: Literal[ProviderDriver.nodejs] = ProviderDriver.nodejs
-    command: list[str] = Field(default_factory=list, description="Command with arguments to run")
+    command: list[str] = Field(default_factory=list, description="Command with arguments to run", min_length=1)
     package: str = Field(
         default=None,
         description='NPM package or "git+https://..." URL, or "file://..." URL (not allowed in remote manifests)',
@@ -188,11 +196,14 @@ class NodeJsProvider(ManagedProvider):
             repo_path = await download_repo(configuration.cache_dir / "github_npm", github_url)
             package_path = repo_path / (github_url.path or "")
             await anyio.run_process(["npm", "install"], cwd=package_path)
-            package = str(package_path)
+            package = package_path
         except ValueError:
-            package = self.package
+            package = None
         async with super()._get_mcp_client(
-            command=["npx", "-y", package, *self.command], env=env, with_dummy_env=with_dummy_env
+            command=["npx", "-y", *self.command],
+            cwd=None if not package else package_path,
+            env=env,
+            with_dummy_env=with_dummy_env,
         ) as client:
             yield client
 

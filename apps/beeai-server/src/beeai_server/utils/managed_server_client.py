@@ -15,6 +15,7 @@
 import asyncio
 import logging
 import os
+from pathlib import Path
 import signal
 from contextlib import asynccontextmanager, suppress
 from typing import Any
@@ -49,6 +50,8 @@ class ManagedServerParameters(BaseModel):
     If not specified, the result of get_default_environment() will be used.
     """
 
+    cwd: Path | None = None
+
     headers: dict[str, Any] | None = (None,)
     timeout: float = 5
     sse_read_timeout: float = 60 * 5
@@ -72,6 +75,7 @@ async def managed_sse_client(server: ManagedServerParameters) -> McpClient:
 
     process = await anyio.open_process(
         [server.command, *server.args],
+        cwd=server.cwd,
         env={"PORT": str(port), **(server.env if server.env is not None else get_default_environment())},
         start_new_session=True,
     )
