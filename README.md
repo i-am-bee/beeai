@@ -2,7 +2,7 @@
   <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/i-am-bee/beeai/master/docs/logo/beeai_logo_white.svg">
   <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/i-am-bee/beeai/master/docs/logo/beeai_logo_black.svg">
-  <img alt="BeeAI" width="100">
+  <img alt="BeeAI" src="https://raw.githubusercontent.com/i-am-bee/beeai/master/docs/logo/beeai_logo_black.svg" width="60">
 </picture>
   <br><br>
   BeeAI
@@ -23,13 +23,15 @@ https://github.com/user-attachments/assets/01399875-e92d-428c-82ca-afaca677d185
 
 BeeAI is an open platform designed to help you discover, run, and compose AI agents from any framework and language. Whether you’re building your own agents or looking for powerful existing solutions, BeeAI makes it easy to find, connect, and orchestrate AI agents seamlessly.
 
+**For example, effortlessly combine Deep Research agents with Coding agents to transform research papers directly into working applications.**
+
 ## Key Features
 
-[KEY FEATURES]
+- 🌐 Framework Agnostic: Integrate AI agents regardless of language or platform.
+- ⚙️ Simple Orchestration: Compose complex workflows from simple building blocks.
+- 🔍 Discoverability: Powerful agent catalog with integrated search.
 
 ## Installation
-
-[PREREQUISITES - HomeBrew]
 
 ```sh
 brew install i-am-bee/beeai/beeai
@@ -42,9 +44,7 @@ Additional installation methods are available [here](https://docs.beeai.dev/get-
 
 ### Web Interface
 
-[MENTION ADDRESS]
-
-To open the web interface:
+Launch the BeeAI web interface at http://localhost:8333:
 
 ```sh
 beeai ui
@@ -52,18 +52,16 @@ beeai ui
 
 ### CLI
 
-[CLI USAGE GOES HERE]
-
 To list all available agents:
 
 ```sh
 beeai list
 ```
 
-To run a `chat` agent with a given input:
+To run a `chat` agent:
 
 ```sh
-beeai run chat "Hello"
+beeai run chat
 ```
 
 ## Documentation
@@ -76,9 +74,9 @@ A complete list of reference agent implementations is available at [beeai.dev/ag
 
 ## Community
 
-The BeeAI community can be found on [GitHub Discussions](https://github.com/i-am-bee/beeai/discussions) where you can ask questions, voice ideas, and share your projects with other people.
+The BeeAI community is active on [GitHub Discussions](https://github.com/i-am-bee/beeai/discussions) where you can ask questions, voice ideas, and share your projects.
 
-To chat with other community members you can join the BeeAI [Discord](https://discord.gg/AZFrp3UF5k) server.
+To chat with other community members, you can join the BeeAI [Discord](https://discord.gg/AZFrp3UF5k) server.
 
 Do note that our [Code of Conduct](./CODE_OF_CONDUCT.md) applies to all BeeAI community channels. Users are highly encouraged to read and adhere to them to avoid repercussions.
 
@@ -94,7 +92,7 @@ Special thanks to our contributors for helping us improve BeeAI.
 
 ## Acknowledgements
 
-A big thank you to these briliant projects that directly contributed or fueled the inspiration.
+A big thank you to these brilliant projects that directly contributed or fueled the inspiration.
 
 - [Model Context Protocol](https://github.com/modelcontextprotocol)
 - [Language Server Protocol](https://github.com/microsoft/language-server-protocol)
