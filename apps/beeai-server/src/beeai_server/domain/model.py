@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import abc
+import pathlib
 import uuid
 from contextlib import asynccontextmanager
 from enum import StrEnum
@@ -118,7 +119,12 @@ class ManagedProvider(BaseProvider, abc.ABC):
 
     @asynccontextmanager
     async def _get_mcp_client(
-        self, *, command: list[str], env: dict[str, str] | None = None, with_dummy_env: bool = True
+        self,
+        *,
+        command: list[str],
+        cwd: Path | None = None,
+        env: dict[str, str] | None = None,
+        with_dummy_env: bool = True,
     ) -> McpClient:
         declared_env_vars = {var.name for var in self.env}
         required_env_vars = {var.name for var in self.env if var.required}
@@ -137,6 +143,7 @@ class ManagedProvider(BaseProvider, abc.ABC):
                 params = ManagedServerParameters(
                     command=command,
                     args=args,
+                    cwd=pathlib.Path(cwd),
                     endpoint=self.mcpEndpoint,
                     env={**env, **get_default_environment()},
                 )
@@ -189,11 +196,14 @@ class NodeJsProvider(ManagedProvider):
             repo_path = await download_repo(configuration.cache_dir / "github_npm", github_url)
             package_path = repo_path / (github_url.path or "")
             await anyio.run_process(["npm", "install"], cwd=package_path)
-            package = str(package_path)
+            package = package_path
         except ValueError:
-            package = self.package
+            package = None
         async with super()._get_mcp_client(
-            command=["npx", "-y", "--prefix", package, *self.command], env=env, with_dummy_env=with_dummy_env
+            command=["npx", "-y", *self.command],
+            cwd=None if not package else package_path,
+            env=env,
+            with_dummy_env=with_dummy_env,
         ) as client:
             yield client
 
