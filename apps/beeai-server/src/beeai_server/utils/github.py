@@ -16,6 +16,7 @@ import logging
 import pathlib
 import re
 import shutil
+from collections import defaultdict
 from enum import StrEnum
 from os import PathLike
 from backports.tarfile import ExtractError
@@ -163,31 +164,38 @@ def extract_targz_safe(tar_path: PathLike | Path, extract_path: PathLike | Path)
         tar.extractall(path=extract_path, members=members, filter="data")
 
 
-async def download_repo(directory: Path | pathlib.Path, github_url: GithubUrl) -> Path:
-    repo_path = Path(directory) / f"{github_url.org}_{github_url.repo}_{github_url.version}"
-    if await repo_path.is_dir():
-        return repo_path
-    try:
-        tmp_path = repo_path.parent / f"{repo_path.name}_tmp"
-        if await tmp_path.is_dir():
-            await anyio.to_thread.run_sync(shutil.rmtree, str(tmp_path))
-        await tmp_path.mkdir(parents=True)
-        download_link = str(github_url.get_tgz_link())
-        tar_path = tmp_path / "repo.tar.gz"
-        await github_url.resolve_version()
-        async with httpx.AsyncClient(follow_redirects=True) as client:
-            async with client.stream("GET", download_link) as response:
-                response.raise_for_status()
-                async with await anyio.open_file(tar_path, "wb") as f:
-                    async for chunk in response.aiter_bytes():
-                        await f.write(chunk)
+_repo_download_locks: dict[str, anyio.Lock] = defaultdict(anyio.Lock)
 
-        await anyio.to_thread.run_sync(extract_targz_safe, tar_path, tmp_path)
-        await tar_path.unlink()
-        [extracted_dir] = [d async for d in tmp_path.iterdir()]
-        await anyio.to_thread.run_sync(shutil.move, str(extracted_dir), repo_path)
-        await tmp_path.rmdir()
-        return repo_path
-    except Exception as exc:
-        logger.error(f"Failed to download repo: {github_url}: {exc!r}")
-        raise
+
+async def download_repo(directory: Path | pathlib.Path, github_url: GithubUrl) -> Path:
+    repo_id = f"{github_url.org}_{github_url.repo}_{github_url.version}"
+    repo_path = Path(directory) / repo_id
+
+    async with _repo_download_locks[repo_id]:
+        if await repo_path.is_dir():
+            return repo_path
+
+        try:
+            tmp_path = repo_path.parent / f"{repo_path.name}_tmp"
+            if await tmp_path.is_dir():
+                await anyio.to_thread.run_sync(shutil.rmtree, str(tmp_path))
+            await tmp_path.mkdir(parents=True)
+            download_link = str(github_url.get_tgz_link())
+            tar_path = tmp_path / "repo.tar.gz"
+            await github_url.resolve_version()
+            async with httpx.AsyncClient(follow_redirects=True) as client:
+                async with client.stream("GET", download_link) as response:
+                    response.raise_for_status()
+                    async with await anyio.open_file(tar_path, "wb") as f:
+                        async for chunk in response.aiter_bytes():
+                            await f.write(chunk)
+
+            await anyio.to_thread.run_sync(extract_targz_safe, tar_path, tmp_path)
+            await tar_path.unlink()
+            [extracted_dir] = [d async for d in tmp_path.iterdir()]
+            await anyio.to_thread.run_sync(shutil.move, str(extracted_dir), repo_path)
+            await tmp_path.rmdir()
+            return repo_path
+        except Exception as exc:
+            logger.error(f"Failed to download repo: {github_url}: {exc!r}")
+            raise
