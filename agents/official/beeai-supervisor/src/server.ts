@@ -1,4 +1,4 @@
-#!/usr/bin/env BEE_FRAMEWORK_INSTRUMENTATION_ENABLED=true npx -y tsx@latest --inspect
+#!/usr/bin/env -S BEE_FRAMEWORK_INSTRUMENTATION_ENABLED=true npx -y tsx@latest --inspect
 
 import "dotenv/config";
 

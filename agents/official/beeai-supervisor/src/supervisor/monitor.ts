@@ -1,4 +1,4 @@
-#!/usr/bin/env npx -y tsx@latest
+#!/usr/bin/env -S npx -y tsx@latest
 
 import { Monitor } from "@i-am-bee/beeai-supervisor/ui/monitor.js";
 
