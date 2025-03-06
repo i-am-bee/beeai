@@ -32,7 +32,7 @@ BeeAI is an open platform designed to help you discover, run, and compose AI age
 - 🌐 **Framework Agnostic**: Integrate AI agents regardless of language or platform.
 - ⚙️ **Simple Orchestration**: Compose complex workflows from simple building blocks.
 - 🔍 **Discoverability**: Powerful agent catalog with integrated search.
-- 🐝 **BeeAI Ecosystem:** First-class support for [Python](https://github.com/i-am-bee/beeai-framework/tree/main/python) and [TypeScript](https://github.com/i-am-bee/beeai-framework/tree/main/typecript) agent developers through [BeeAI Framework](https://github.com/i-am-bee/beeai-framework).
+- 🐝 **BeeAI Ecosystem:** First-class support for [Python](https://github.com/i-am-bee/beeai-framework/tree/main/python) and [TypeScript](https://github.com/i-am-bee/beeai-framework/tree/main/typecript) agent developers via [BeeAI Framework](https://github.com/i-am-bee/beeai-framework).
 
 
 ## Installation
