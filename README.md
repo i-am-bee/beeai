@@ -19,7 +19,7 @@
     <a href="#agent-library">Agent Library</a>
 </p>
 
-[VIDEO GOES HERE]
+https://github.com/user-attachments/assets/01399875-e92d-428c-82ca-afaca677d185
 
 BeeAI is an open platform designed to help you discover, run, and compose AI agents from any framework and language. Whether you’re building your own agents or looking for powerful existing solutions, BeeAI makes it easy to find, connect, and orchestrate AI agents seamlessly.
 
@@ -36,7 +36,7 @@ brew install i-am-bee/beeai/beeai
 brew services start beeai
 ```
 
-Additional installation methods are available [here](./docs/get-started/installation.mdx).
+Additional installation methods are available [here](https://docs.beeai.dev/get-started/installation).
 
 ## How To Use
 
