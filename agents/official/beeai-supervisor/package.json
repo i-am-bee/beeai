@@ -1,6 +1,6 @@
 {
-  "name": "beeai-framework",
-  "version": "0.0.12",
+  "name": "beeai-supervisor",
+  "version": "0.0.39",
   "bin": {
     "server": "./src/server.ts"
   },
@@ -16,7 +16,7 @@
   "dependencies": {
     "@ai-sdk/openai": "^1.1.13",
     "@i-am-bee/acp-sdk": "0.0.4",
-    "@i-am-bee/beeai-sdk": "0.0.11",
+    "@i-am-bee/beeai-sdk": "0.0.12",
     "@i-am-bee/beeai-supervisor": "0.0.5",
     "beeai-framework": "^0.1.2",
     "dotenv": "^16.4.7",
