@@ -37,6 +37,10 @@ class ListEnvSchema(BaseModel):
     env: dict[str, str]
 
 
+class UpdateTelemetryConfigRequest(BaseModel):
+    sharing_enabled: bool
+
+
 RunAgentInput = RootModel[dict[str, Any]]
 
 

@@ -48,7 +48,7 @@ Additional installation methods are available [here](https://docs.beeai.dev/get-
 
 ### Web Interface
 
-Launch the BeeAI web interface at http://localhost:8333:
+Launch http://localhost:8333 in your browser.
 
 ```sh
 beeai ui

@@ -12,11 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from beeai_server.domain.telemetry import TelemetryCollectorManager
 from kink import di
 from acp.server.sse import SseServerTransport
 
-from beeai_server.adapters.filesystem import FilesystemProviderRepository, FilesystemEnvVariableRepository
-from beeai_server.adapters.interface import IProviderRepository, IEnvVariableRepository
+from beeai_server.adapters.filesystem import (
+    FilesystemProviderRepository,
+    FilesystemEnvVariableRepository,
+    FilesystemTelemetryRepository,
+)
+from beeai_server.adapters.interface import ITelemetryRepository, IProviderRepository, IEnvVariableRepository
 from beeai_server.configuration import Configuration, get_configuration
 from beeai_server.services.mcp_proxy.provider import ProviderContainer
 from beeai_server.utils.periodic import register_all_crons
@@ -28,8 +33,12 @@ def bootstrap_dependencies():
     di[Configuration] = get_configuration()
     di[IProviderRepository] = FilesystemProviderRepository(provider_config_path=di[Configuration].provider_config_path)
     di[IEnvVariableRepository] = FilesystemEnvVariableRepository(env_variable_path=di[Configuration].env_path)
+    di[ITelemetryRepository] = FilesystemTelemetryRepository(
+        telemetry_config_path=di[Configuration].telemetry_config_path
+    )
     di[SseServerTransport] = SseServerTransport("/mcp/messages/")  # global SSE transport
     di[ProviderContainer] = ProviderContainer()
+    di[TelemetryCollectorManager] = TelemetryCollectorManager()
 
     # Ensure cache directory
     di[Configuration].cache_dir.mkdir(parents=True, exist_ok=True)
