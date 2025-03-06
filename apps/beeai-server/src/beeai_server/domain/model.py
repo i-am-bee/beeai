@@ -143,7 +143,7 @@ class ManagedProvider(BaseProvider, abc.ABC):
                 params = ManagedServerParameters(
                     command=command,
                     args=args,
-                    cwd=pathlib.Path(cwd),
+                    cwd=pathlib.Path(cwd) if cwd else None,
                     endpoint=self.mcpEndpoint,
                     env={**env, **get_default_environment()},
                 )
