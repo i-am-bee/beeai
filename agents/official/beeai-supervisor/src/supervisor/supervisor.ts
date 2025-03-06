@@ -83,7 +83,7 @@ const run =
         await server.server.sendAgentRunProgress({
           progressToken: _meta.progressToken,
           delta: {
-            text: `${role} ${output.text}`,
+            text: `${role} ${output.text}\n\n`,
           },
         });
       }

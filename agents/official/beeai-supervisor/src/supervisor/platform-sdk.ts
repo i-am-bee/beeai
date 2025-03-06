@@ -1,5 +1,5 @@
-import { SSEClientTransport } from "@i-am-bee/acp-sdk/client/sse.js";
 import { Client as MCPClient } from "@i-am-bee/acp-sdk/client/index.js";
+import { SSEClientTransport } from "@i-am-bee/acp-sdk/client/sse.js";
 import { Logger } from "beeai-framework";
 
 export class PlatformSdk {
@@ -105,7 +105,10 @@ export class PlatformSdk {
     }
 
     return this.client.runAgent(
-      { name: beeAiAgentId, input: { text: prompt } },
+      {
+        name: beeAiAgentId,
+        input: { text: prompt },
+      },
       { timeout: 10000000 }
     );
   }

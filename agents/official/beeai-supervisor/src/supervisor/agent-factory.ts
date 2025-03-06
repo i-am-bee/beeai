@@ -72,18 +72,28 @@ export class AgentFactory extends BaseAgentFactory<AgentType> {
         throw new Error(`Undefined agent kind agentKind:${input.agentKind}`);
     }
   }
-  async runAgent(agent: AgentType, prompt: string) {
+  async runAgent(
+    agent: AgentType,
+    prompt: string,
+    onUpdate: (key: string, value: string) => void,
+  ) {
     if (agent instanceof BeeAgent) {
-      const resp = await agent.run(
-        { prompt },
-        {
-          execution: {
-            maxIterations: 8,
-            maxRetriesPerStep: 2,
-            totalMaxRetries: 10,
-          },
-        }
-      );
+      const resp = await agent
+        .run(
+          { prompt },
+          {
+            execution: {
+              maxIterations: 100,
+              maxRetriesPerStep: 2,
+              totalMaxRetries: 10,
+            },
+          }
+        )
+        .observe((emitter) => {
+          emitter.on("update", async ({ update }) => {
+            onUpdate(update.key, update.value);
+          });
+        });
 
       return resp.result.text;
     }
@@ -93,6 +103,8 @@ export class AgentFactory extends BaseAgentFactory<AgentType> {
         agent.beeAiAgentId,
         prompt
       );
+
+      // TODO Emit progress
       return String(resp.output.text);
     }
 
