@@ -126,7 +126,7 @@ export function ComposeProvider({ children }: PropsWithChildren) {
 
         setAgents((agents) =>
           agents.map((instance, index) => ({
-            ...instance,
+            data: instance.data,
             isPending: index === 0,
             logs: [],
             stats:

@@ -172,7 +172,7 @@ const exampleInputDocuments: Input = {
   text: "How does quantum computing impact cryptography?",
   documents: [
     "Quantum computing poses a significant threat to classical encryption methods due to its ability to solve complex mathematical problems exponentially faster...",
-    "Current cryptographic standards, such as RSA, rely on integer factorization, which quantum algorithms like Shor’s algorithm can efficiently break...",
+    "Current cryptographic standards, such as RSA, rely on integer factorization, which quantum algorithms like Shor\\'s algorithm can efficiently break...",
     "Quantum computing will not significantly impact modern cryptography for at least another 50 years...",
   ],
   agents: ["gpt-researcher", "ollama-deep-researcher"],
@@ -199,7 +199,7 @@ export const agent = {
     examples: {
       cli: [
         {
-          command: `beeai run ${agentName} '${JSON.stringify(exampleInputAgents)}'`,
+          command: `beeai run ${agentName} '${JSON.stringify(exampleInputAgents, null, 2)}'`,
           name: "AI Content Refinement",
           description:
             "Provide agent names that will generate the content to compare.",
@@ -211,7 +211,7 @@ export const agent = {
           ],
         },
         {
-          command: `beeai run ${agentName} '${JSON.stringify(exampleInputDocuments)}'`,
+          command: `beeai run ${agentName} '${JSON.stringify(exampleInputDocuments, null, 2)}'`,
           name: "Research Validation",
           description: "Provide existing documents to compare.",
           processingSteps: [

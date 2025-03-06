@@ -81,7 +81,7 @@ async def register_agent() -> int:
             languages=["Python"],
             githubUrl="https://github.com/i-am-bee/beeai/tree/main/agents/community/aider-agent",
             examples=examples,
-            ui=UiDefinition(type=UiType.single_prompt, userGreeting="Define your programming task."),
+            ui=UiDefinition(type=UiType.hands_off, userGreeting="Define your programming task."),
             fullDescription=fullDescription,
             avgRunTimeSeconds=5.0,
             avgRunTokens=5000,

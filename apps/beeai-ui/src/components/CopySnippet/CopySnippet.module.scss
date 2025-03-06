@@ -23,10 +23,9 @@
   border-radius: $border-radius;
   background-color: $layer;
 
-  &.multi {
-    --cds-layer: #{$cool-gray-10};
+  &.block {
+    --cds-layer: #{$layer-02};
 
-    align-items: center;
     min-block-size: rem(48px);
     border: none;
     border-radius: 0;
@@ -35,10 +34,15 @@
 
 .content {
   @include type-style(label-01);
+
   white-space: pre-wrap;
   word-break: break-word;
   padding: rem(11px) rem(15px);
   flex-grow: 1;
+
+  .block & {
+    padding: unset;
+  }
 }
 
 .button {
@@ -47,14 +51,9 @@
   align-items: center;
   border-inline-start: 1px solid $text-dark;
 
-  .multi & {
+  .block & {
     border: none;
     margin: rem(8px) rem(8px) auto 0;
-  }
-
-  .multi.oneline & {
-    min-block-size: rem(48px);
-    margin: 0 rem(8px) 0 0;
   }
 
   > div,
@@ -65,20 +64,26 @@
 
   :global(.cds--btn) {
     --cds-icon-primary: currentColor;
+
     border-radius: 0 $border-radius $border-radius 0;
     inline-size: rem(40px);
     block-size: calc(100% + 2px);
     margin: -1px;
-    .multi & {
+
+    .block & {
       border-radius: $border-radius;
       inline-size: rem(32px);
       min-block-size: rem(32px);
+      margin: 0;
     }
+
     &:disabled {
       color: currentColor;
     }
+
     &:hover {
       --cds-icon-primary: #{$text-inverse};
+
       background-color: $text-dark;
     }
   }

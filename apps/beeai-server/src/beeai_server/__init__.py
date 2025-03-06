@@ -39,8 +39,8 @@ def serve():
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         try:
             sock.bind((host, config.port))
-        except OSError as exc:  # pragma: full coverage
-            logger.error(exc)
+        except OSError:  # pragma: full coverage
+            logger.error(f"Port {config.port} already in use, is another instance of beeai-server running?")
             return
 
     os.execv(

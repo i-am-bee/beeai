@@ -14,34 +14,40 @@
  * limitations under the License.
  */
 
-import { useState } from 'react';
+import { type ReactElement, useState, useRef } from 'react';
 import { IconButton } from '@carbon/react';
 import { Checkmark, Copy } from '@carbon/icons-react';
 import clsx from 'clsx';
 import classes from './CopySnippet.module.scss';
 
 interface Props {
-  type?: 'single' | 'multi';
-  snippet: string;
+  children: string | ReactElement;
   className?: string;
 }
 
-export function CopySnippet({ type = 'single', snippet, className }: Props) {
+export function CopySnippet({ children: snippet, className }: Props) {
+  const ref = useRef<HTMLDivElement>(null);
   const [copied, setCopied] = useState(false);
 
   const handleCopyClick = () => {
-    navigator.clipboard.writeText(snippet);
+    const text = ref.current?.innerText.trim();
+    if (!text) {
+      return;
+    }
+
+    navigator.clipboard.writeText(text);
 
     setCopied(true);
-
     setTimeout(() => {
       setCopied(false);
     }, 2000);
   };
 
   return (
-    <div className={clsx(classes.root, classes[type], { [classes.oneline]: isOneline(snippet) }, className)}>
-      <code className={classes.content}>{snippet}</code>
+    <div className={clsx(classes.root, { [classes.block]: typeof snippet !== 'string' }, className)}>
+      <div ref={ref} className={classes.content}>
+        {typeof snippet === 'string' ? <code>{snippet}</code> : snippet}
+      </div>
 
       <div className={classes.button}>
         <IconButton label="Copy" kind="ghost" size="md" onClick={handleCopyClick} disabled={copied}>
@@ -50,8 +56,4 @@ export function CopySnippet({ type = 'single', snippet, className }: Props) {
       </div>
     </div>
   );
-}
-
-function isOneline(snippet: string): boolean {
-  return snippet.indexOf('\n') === -1;
 }

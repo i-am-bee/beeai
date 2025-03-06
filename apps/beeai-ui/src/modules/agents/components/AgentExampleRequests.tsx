@@ -15,7 +15,8 @@
  */
 
 import { Tabs, TabList, Tab, TabPanels, TabPanel } from '@carbon/react';
-import { CopySnippet } from '#components/CopySnippet/CopySnippet.tsx';
+import { MarkdownContent } from '#components/MarkdownContent/MarkdownContent.tsx';
+import { createCodeBlock } from '#utils/markdown.ts';
 
 interface Props {
   cli: string;
@@ -28,8 +29,8 @@ export function AgentExampleRequests({ cli }: Props) {
         <Tab>CLI</Tab>
       </TabList>
       <TabPanels>
-        <TabPanel>
-          <CopySnippet type="multi" snippet={cli} />
+        <TabPanel tabIndex={-1}>
+          <MarkdownContent>{createCodeBlock('bash', cli)}</MarkdownContent>
         </TabPanel>
       </TabPanels>
     </Tabs>

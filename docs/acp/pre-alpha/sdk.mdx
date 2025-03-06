@@ -1,0 +1,186 @@
+---
+title: SDK
+description: "Introduction to the Agent Communication Protocol (ACP) SDK"
+icon: "code"
+---
+
+<Warning>
+  Fundamental breaking changes are happening now, affecting protocol, transport,
+  and APIs. Consider this version experimental. Join [Alpha
+  discussions](/acp/alpha/architecture#discussions) to help shape it.
+</Warning>
+
+The Python and TypeScript SDKs for the Agent Communication Protocol (ACP) provide standardized and simplified integration for communication between clients, agents, and tools. These SDKs streamline the process of building, discovering, and invoking agents, enabling developers to easily create robust and interoperable agent-based solutions.
+
+## Overview
+
+This guide provides practical examples for server and client developers to quickly start using ACP SDKs.
+
+## Features
+
+- **ACP Client and ACP Server implementations** supporting:
+  - **Agent discovery**
+  - **Agent invocation**
+  - **List change notifications**
+- Fully compatible with all features (such as tools) enabled by [MCP](https://modelcontextprotocol.io/docs).
+- Built-in support for OpenTelemetry instrumentation.
+
+## Creating an ACP Server
+
+In this example, you'll learn how to extend the ACP server by adding a simple "Hello World" agent.
+
+For clarity, these examples intentionally omit advanced topics such as comprehensive error handling, request timeouts, and abort signal propagation. In a production environment, ensure these considerations are properly addressed.
+
+<Tabs>
+    <Tab title="Python">
+Install the required libraries:
+
+<Note>
+  Currently, you must install both `acp-sdk` (core ACP protocol implementation)
+  and `beeai-sdk` (BeeAI-specific utilities and schemas). In [ACP
+  Alpha](/acp/alpha), these will be merged into a single library
+  `acp-sdk`.
+</Note>
+
+```bash
+uv add acp-sdk
+uv add beeai-sdk
+```
+
+Next, implement a simple server:
+
+```python
+import asyncio
+
+from acp.server.highlevel import Server
+from beeai_sdk.providers.agent import run_agent_provider
+from beeai_sdk.schemas.text import TextOutput, TextInput
+
+async def run_server():
+    server = Server("my-server")
+
+    @server.agent(
+        "hello-world", # Agent identifier
+        "This is my Hello World agent", # Human-readable description
+        input=TextInput,
+        output=TextOutput,
+    )
+    async def run_agent(input: TextInput) -> TextOutput:
+        # Core logic for the "hello-world" agent
+        return TextOutput(text=f"Hi there {input.text}")
+
+    await run_agent_provider(server)
+
+
+def main():
+    asyncio.run(run_server())
+```
+
+    </Tab>
+    <Tab title="TypeScript">
+
+Install the required libraries:
+
+<Note>
+  Currently, you must install both `@i-am-bee/acp-sdk` (core ACP protocol
+  implementation) and `@i-am-bee/beeai-sdk` (BeeAI-specific utilities and
+  schemas). In [ACP Alpha](/acp/alpha), these will be merged into a
+  single library `@i-am-bee/acp-sdk`.
+</Note>
+
+```bash
+npm install @i-am-bee/acp-sdk
+npm install @i-am-bee/beeai-sdk
+```
+
+Next, implement a simple server:
+
+```typescript
+import { AcpServer } from "@i-am-bee/acp-sdk/server/acp.js";
+import { runAgentProvider } from "@i-am-bee/beeai-sdk/providers/agent";
+import {
+  textInputSchema,
+  textOutputSchema,
+} from "@i-am-bee/beeai-sdk/schemas/text";
+
+async function createServer() {
+  // Initialize the ACP server with a name and version
+  const server = new AcpServer({
+    name: "my-server",
+    version: "1.0.0",
+  });
+
+  // Register a new agent called "hello-world"
+  server.agent(
+    "hello-world", // Agent identifier
+    "This is my Hello World agent", // Human-readable description
+    textInputSchema, // Schema for agent input validation
+    textOutputSchema, // Schema for agent output validation
+    async ({ params }) => {
+      // Core logic for the "hello-world" agent
+      return textOutputSchema.parse({
+        text: `Hi there ${params.input.text}!`,
+      });
+    }
+  );
+
+  return server;
+}
+
+const server = await createServer();
+await runAgentProvider(server);
+```
+
+    </Tab>
+
+</Tabs>
+
+## Using the ACP Client
+
+In this example, you'll learn how to use the ACP client to discover and invoke an agent created on the ACP server. Clients typically invoke agents to perform tasks, request data, or trigger automated workflows.
+
+<Tabs>
+
+    <Tab title="Python">
+        TBD
+    </Tab>
+
+    <Tab title="TypeScript">
+
+Install the required libraries:
+
+```bash
+npm install @i-am-bee/acp-sdk
+```
+
+Next, implement a simple client:
+
+```typescript
+import { Client as ACPClient } from "@i-am-bee/acp-sdk/client/index.js";
+import { SSEClientTransport } from "@i-am-bee/acp-sdk/client/sse.js";
+
+const client = new ACPClient({
+  name: "my-client",
+  version: "1.0.0",
+});
+
+// Set up SSE transport to connect to ACP server
+const transport = new SSEClientTransport(
+  new URL("/mcp/sse", "http://localhost:8333")
+);
+
+await client.connect(transport);
+
+// Fetch a list of available agents from the server
+const { agents } = await client.listAgents();
+
+// Invoke 'hello-world' agent with sample input
+await client.runAgent({
+  name: "hello-world",
+  input: { text: "John Doe" },
+});
+```
+
+    </Tab>
+
+</Tabs>
