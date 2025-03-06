@@ -196,12 +196,15 @@ class NodeJsProvider(ManagedProvider):
             repo_path = await download_repo(configuration.cache_dir / "github_npm", github_url)
             package_path = repo_path / (github_url.path or "")
             await anyio.run_process(["npm", "install"], cwd=package_path)
-            package = package_path
+            command = ["npm", "run", *self.command]
+            cwd = package_path
         except ValueError:
-            package = None
+            command = ["npx", "-y", "--prefix", self.package, *self.command]
+            cwd = None
+
         async with super()._get_mcp_client(
-            command=["npx", "-y", *self.command],
-            cwd=None if not package else package_path,
+            command=command,
+            cwd=cwd,
             env=env,
             with_dummy_env=with_dummy_env,
         ) as client:
