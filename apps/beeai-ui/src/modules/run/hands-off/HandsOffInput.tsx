@@ -23,7 +23,7 @@ import { useHandsOff } from '../contexts/hands-off';
 import classes from './HandsOffInput.module.scss';
 
 export function HandsOffInput() {
-  const { onSubmit, input, output, isPending } = useHandsOff();
+  const { onSubmit, input, text, isPending } = useHandsOff();
 
   const form = useForm<FormValues>({
     mode: 'onChange',
@@ -38,13 +38,14 @@ export function HandsOffInput() {
   } = form;
 
   const isSubmitDisabled = isSubmitting;
-  const isPendingOrOutput = isPending || output;
+  const isPendingOrText = Boolean(isPending || text);
+  const isFinal = Boolean(text && !isPending);
 
   return (
-    <div className={clsx(classes.root, { [classes.isPendingOrOutput]: isPendingOrOutput })}>
-      <h2 className={classes.heading}>What is your research task?</h2>
+    <div className={clsx(classes.root, { [classes.isPendingOrText]: isPendingOrText })}>
+      <h2 className={classes.heading}>{isFinal ? 'Task input:' : 'What is your research task?'}</h2>
 
-      {isPendingOrOutput ? (
+      {isPendingOrText ? (
         <h2 className={classes.input}>{input?.text}</h2>
       ) : (
         <InputBar

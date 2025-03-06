@@ -14,19 +14,30 @@
  * limitations under the License.
  */
 
-.root {
-  min-block-size: 100%;
-  display: flex;
+import { Download } from '@carbon/icons-react';
+import { Button } from '@carbon/react';
+
+interface Props {
+  filename: string;
+  content: string;
 }
 
-.holder {
-  min-block-size: 100%;
-  display: flex;
-  flex-direction: column;
-  row-gap: $spacing-04;
-  justify-content: center;
-  .root.isPendingOrText & {
-    justify-content: stretch;
-    row-gap: $spacing-07;
-  }
+export function DownloadButton({ filename, content }: Props) {
+  const blob = new Blob([content], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+
+  return (
+    <Button
+      as="a"
+      download={filename}
+      href={url}
+      target="_blank"
+      kind="ghost"
+      size="md"
+      hasIconOnly
+      iconDescription="Download"
+    >
+      <Download />
+    </Button>
+  );
 }

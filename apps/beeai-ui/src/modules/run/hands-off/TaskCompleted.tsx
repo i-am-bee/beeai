@@ -14,19 +14,16 @@
  * limitations under the License.
  */
 
-.root {
-  min-block-size: 100%;
-  display: flex;
-}
+import { ElapsedTime } from '../components/ElapsedTime';
+import { useHandsOff } from '../contexts/hands-off';
+import classes from './TaskCompleted.module.scss';
 
-.holder {
-  min-block-size: 100%;
-  display: flex;
-  flex-direction: column;
-  row-gap: $spacing-04;
-  justify-content: center;
-  .root.isPendingOrText & {
-    justify-content: stretch;
-    row-gap: $spacing-07;
-  }
+export function TaskCompleted() {
+  const { stats, isPending } = useHandsOff();
+
+  return stats && !isPending ? (
+    <p className={classes.root}>
+      Task completed in <ElapsedTime stats={stats} />
+    </p>
+  ) : null;
 }

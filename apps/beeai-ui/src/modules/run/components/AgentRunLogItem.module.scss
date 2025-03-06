@@ -15,18 +15,33 @@
  */
 
 .root {
-  min-block-size: 100%;
+  border-block-end: 1px solid $border-subtle-00;
+  padding-block: $spacing-03;
   display: flex;
+  align-items: flex-start;
+  column-gap: $spacing-03;
 }
 
 .holder {
-  min-block-size: 100%;
-  display: flex;
-  flex-direction: column;
-  row-gap: $spacing-04;
-  justify-content: center;
-  .root.isPendingOrText & {
-    justify-content: stretch;
-    row-gap: $spacing-07;
+  flex-grow: 1;
+}
+
+.content {
+  font-size: rem(14px);
+  line-height: math.div(20, 14);
+  letter-spacing: $letter-spacing;
+}
+
+.clamped {
+  @include line-clamp();
+}
+
+.toggle {
+  margin-block: rem(-6px);
+  &.toggled :global(.cds--btn) svg {
+    transform: scaleY(-1);
+  }
+  :global(.cds--popover) {
+    display: none;
   }
 }

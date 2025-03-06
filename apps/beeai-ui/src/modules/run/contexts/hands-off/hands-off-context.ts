@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
+import { TextNotificationLogs } from '#modules/run/api/types.ts';
 import { RunStats } from '#modules/run/types.ts';
 import { Agent } from '@i-am-bee/acp-sdk/types.js';
-import { TextInput, TextOutput } from '@i-am-bee/beeai-sdk/schemas/text';
+import { TextInput } from '@i-am-bee/beeai-sdk/schemas/text';
 import { createContext } from 'react';
 
 export const HandsOffContext = createContext<HandsOffContextValue | undefined>(undefined);
@@ -24,8 +25,9 @@ export const HandsOffContext = createContext<HandsOffContextValue | undefined>(u
 interface HandsOffContextValue {
   agent: Agent;
   input?: TextInput;
-  output?: TextOutput;
   stats?: RunStats;
+  logs?: TextNotificationLogs;
+  text?: string;
   isPending: boolean;
   onSubmit: (input: string) => Promise<void>;
   onCancel: () => void;

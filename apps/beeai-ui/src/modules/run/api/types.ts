@@ -24,6 +24,7 @@ export const textNotificationSchema = AgentRunProgressNotificationSchema.extend(
 });
 export type TextNotificationSchema = typeof textNotificationSchema;
 export type TextNotification = z.infer<TextNotificationSchema>;
+export type TextNotificationLogs = TextNotification['params']['delta']['logs'];
 
 export const textResultSchema = RunAgentResultSchema.extend({ output: textOutputSchema });
 export type TextResult = z.infer<typeof textResultSchema>;

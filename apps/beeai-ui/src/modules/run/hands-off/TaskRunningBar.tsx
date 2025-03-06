@@ -26,9 +26,9 @@ interface Props {
 }
 
 export function TaskRunningBar({ onStopClick }: Props) {
-  const { stats } = useHandsOff();
+  const { stats, isPending } = useHandsOff();
 
-  return (
+  return isPending ? (
     <div className={classes.root}>
       <div className={classes.label}>
         <Spinner center />
@@ -43,5 +43,5 @@ export function TaskRunningBar({ onStopClick }: Props) {
         </Button>
       )}
     </div>
-  );
+  ) : null;
 }

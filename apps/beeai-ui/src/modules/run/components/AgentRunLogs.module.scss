@@ -15,18 +15,35 @@
  */
 
 .root {
-  min-block-size: 100%;
-  display: flex;
-}
-
-.holder {
-  min-block-size: 100%;
   display: flex;
   flex-direction: column;
-  row-gap: $spacing-04;
-  justify-content: center;
-  .root.isPendingOrText & {
-    justify-content: stretch;
-    row-gap: $spacing-07;
+  row-gap: $spacing-02;
+}
+
+.toggle {
+  padding: 0;
+  border: 0;
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  column-gap: $spacing-04;
+  cursor: pointer;
+  color: $text-secondary;
+  border-radius: $spacing-02;
+  max-inline-size: max-content;
+  font-size: rem(14px);
+  line-height: math.div(20, 14);
+  padding-block: rem(6px);
+  svg {
+    color: $text-primary;
+  }
+  &:hover {
+    color: $text-primary;
+  }
+  &:focus-visible {
+    @include focus-outline('outline');
+  }
+  &.isExpanded svg {
+    transform: scaleY(-1);
   }
 }

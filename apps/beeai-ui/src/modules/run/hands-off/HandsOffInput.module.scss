@@ -19,9 +19,10 @@
   line-height: math.div(46, 42);
   font-weight: 300;
   margin-block-end: $spacing-06;
-  .root.isPendingOrOutput & {
+  .root.isPendingOrText & {
     font-size: rem(14px);
     line-height: math.div(18, 14);
+    font-weight: normal;
     margin-block-end: $spacing-03;
     color: $text-secondary;
   }
