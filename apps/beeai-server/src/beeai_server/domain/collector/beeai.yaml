@@ -1,6 +1,6 @@
 exporters:
-  otlp/beeai:
-    endpoint: collector.telemetry.beeai.dev:443
+  otlphttp/beeai:
+    endpoint: https://collector.telemetry.beeai.dev
 
 processors:
   memory_limiter/beeai:
@@ -12,4 +12,4 @@ service:
     metrics/beeai:
       receivers: [otlp]
       processors: [memory_limiter/beeai, batch]
-      exporters: [otlp/beeai]
+      exporters: [otlphttp/beeai]
