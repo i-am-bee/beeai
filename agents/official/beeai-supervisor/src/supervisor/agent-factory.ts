@@ -75,7 +75,7 @@ export class AgentFactory extends BaseAgentFactory<AgentType> {
   async runAgent(
     agent: AgentType,
     prompt: string,
-    onUpdate: (key: string, value: string) => void,
+    onUpdate: (key: string, value: string) => void
   ) {
     if (agent instanceof BeeAgent) {
       const resp = await agent
@@ -101,7 +101,18 @@ export class AgentFactory extends BaseAgentFactory<AgentType> {
     if (agent instanceof BeeAiAgent) {
       const resp = await PlatformSdk.getInstance().runAgent(
         agent.beeAiAgentId,
-        prompt
+        prompt,
+        (notification) => {
+          const logs = (
+            notification.params.delta.logs as ({
+              level: string;
+              message: string;
+            } | null)[]
+          ).filter((it) => it != null);
+          logs.forEach((log) => {
+            onUpdate('thought', log.message);
+          });
+        }
       );
 
       // TODO Emit progress

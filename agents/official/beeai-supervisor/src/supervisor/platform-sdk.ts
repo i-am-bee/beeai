@@ -1,6 +1,10 @@
 import { Client as MCPClient } from "@i-am-bee/acp-sdk/client/index.js";
 import { SSEClientTransport } from "@i-am-bee/acp-sdk/client/sse.js";
+import {
+  AgentRunProgressNotificationSchema
+} from "@i-am-bee/acp-sdk/types.js";
 import { Logger } from "beeai-framework";
+import { z } from "zod";
 
 export class PlatformSdk {
   private static instance: PlatformSdk;
@@ -91,7 +95,13 @@ export class PlatformSdk {
       }));
   }
 
-  async runAgent(beeAiAgentId: string, prompt: string) {
+  async runAgent(
+    beeAiAgentId: string,
+    prompt: string,
+    notificationHandler: (
+      notification: z.infer<typeof AgentRunProgressNotificationSchema>
+    ) => void | Promise<void>
+  ) {
     this.logger.info({ beeAiAgentId, prompt }, `Running agent`);
     this.validate();
 
@@ -103,6 +113,11 @@ export class PlatformSdk {
         `Agent ${beeAiAgentId} is not registered in the platform`
       );
     }
+
+    this.client.setNotificationHandler(
+      AgentRunProgressNotificationSchema,
+      notificationHandler
+    );
 
     return this.client.runAgent(
       {

@@ -201,3 +201,6 @@ cython_debug/
 
 # Mise
 mise.local.toml
+
+# Supervisor output
+/output
