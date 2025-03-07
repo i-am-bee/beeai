@@ -8,6 +8,6 @@ providers:
   - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.33#path=/agents/community/gpt-researcher-agent
   - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.33#path=/agents/community/crewai-agents
   - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.33#path=/agents/community/langgraph-agents
-  - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.33#path=/agents/community/aider-agent
+  - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.40#path=/agents/community/aider-agent
   - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.33#path=/agents/community/autogen-agents
   

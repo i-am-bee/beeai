@@ -107,6 +107,7 @@ async def register_agent() -> int:
                     "--no-detect-urls",
                     "--no-auto-lint",
                     "--no-auto-test",
+                    "--no-check-update",
                     "--message",
                     input.text,
                     cwd=tmp_dir,
