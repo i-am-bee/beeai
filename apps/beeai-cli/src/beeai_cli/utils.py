@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import json
-from concurrent.futures import ThreadPoolExecutor
 from copy import deepcopy
 from typing import Any, TypeVar, Iterable
 
@@ -97,19 +96,28 @@ prompt_session = PromptSession()
 
 
 def prompt_user(
-    prompt: str | None = None, completer: Completer | None = None, validator: Validator | None = None
+    prompt: str | None = None,
+    completer: Completer | None = None,
+    validator: Validator | None = None,
+    open_autocomplete_by_default=False,
 ) -> str:
     # This is necessary because we are in a weird sync-under-async situation and the PromptSession
     # tries calling asyncio.run
-    with ThreadPoolExecutor(max_workers=1) as executor:
-        future = executor.submit(
-            prompt_session.prompt,
-            prompt or ">>> ",
-            auto_suggest=AutoSuggestFromHistory(),
-            completer=completer or DummyCompleter(),
-            complete_while_typing=True,
-            validator=validator or DummyValidator(),
-        )
+    from prompt_toolkit.application.current import get_app
 
-        result = future.result()
-        return result
+    def prompt_autocomplete():
+        buffer = get_app().current_buffer
+        if buffer.complete_state:
+            buffer.complete_next()
+        else:
+            buffer.start_completion(select_first=False)
+
+    return prompt_session.prompt(
+        prompt or ">>> ",
+        auto_suggest=AutoSuggestFromHistory(),
+        completer=completer or DummyCompleter(),
+        pre_run=prompt_autocomplete if open_autocomplete_by_default else None,
+        complete_while_typing=True,
+        validator=validator or DummyValidator(),
+        in_thread=True,
+    )

@@ -257,6 +257,7 @@ def _create_input_handler(
     commands: list[InteractiveCommand],
     prompt: str | None = None,
     choice: list[str] | None = None,
+    optional: bool = False,
 ) -> Callable:
     choice = choice or []
     commands = [cmd for cmd in commands if cmd.enabled]
@@ -268,14 +269,21 @@ def _create_input_handler(
         **{opt: None for opt in choice},
     }
 
+    valid_options = set(choice) | commands_router.keys()
+
+    def validate(text: str):
+        if optional and not text:
+            return True
+        return text in valid_options if choice else bool(text)
+
     def handler():
         while True:
             try:
-                valid_options = set(choice) | commands_router.keys()
                 input = prompt_user(
                     prompt=prompt,
                     completer=NestedCompleter.from_nested_dict(completer),
-                    validator=None if not choice else Validator.from_callable(lambda text: text in valid_options),
+                    validator=Validator.from_callable(validate),
+                    open_autocomplete_by_default=bool(choice),
                 )
                 if input.startswith("/"):
                     command, *arg_str = input.split(" ", maxsplit=1)
@@ -292,9 +300,7 @@ def _create_input_handler(
     return handler
 
 
-def _setup_sequential_workflow(
-    splash_screen: ConsoleRenderable, agents_by_name: dict[str, Agent], require_prompts: bool = True
-):
+def _setup_sequential_workflow(splash_screen: ConsoleRenderable, agents_by_name: dict[str, Agent]):
     prompt_agents = {
         name: agent
         for name, agent in agents_by_name.items()
@@ -308,24 +314,33 @@ def _setup_sequential_workflow(
     console.print(screen)
 
     handle_input = _create_input_handler([], prompt="Add an agent: ", choice=list(prompt_agents))
+    handle_instruction_input = _create_input_handler([], prompt="Enter agent instruction: ")
 
     while True:
         if not (agent := handle_input()):
             break
+        instruction = handle_instruction_input()
 
         if not steps:
             # change prompt for other passes
             handle_input = _create_input_handler(
-                [], prompt="Add an agent [leave empty to stop]: ", choice=list(prompt_agents) + [""]
+                [],
+                prompt="Add an agent [leave empty to execute]: ",
+                choice=list(prompt_agents),
+                optional=True,
+            )
+            handle_instruction_input = _create_input_handler(
+                [],
+                prompt="Enter agent instruction [leave empty to pass raw output from previous agent]: ",
+                optional=True,
             )
 
-        instruction = prompt_user("Set agent instruction: ") if require_prompts else None
         steps.append({"agent": agent, "instruction": instruction})
         tree.add(
             Panel(
                 Group(
                     console.render_str(f"[b]Agent[/b]: {agent}"),
-                    *([console.render_str(f"[b]Prompt[/b]: {instruction}")] if require_prompts else []),
+                    console.render_str(f"[b]Prompt[/b]: {instruction or '<raw-previous-output>'}"),
                 )
             )
         )
@@ -348,10 +363,7 @@ async def run_agent(
     agent = await _get_agent(name, agents_by_name)
     ui = agent.model_extra.get("ui", {}) or {}
     ui_type = ui.get("type", None)
-    is_sequential_workflow = agent.name in {
-        "sequential-workflow",
-        "prompted-sequential-workflow",
-    }
+    is_sequential_workflow = agent.name in {"prompted-sequential-workflow"}
 
     user_greeting = ui.get("userGreeting", None) or "How can I help you?"
     config = {}
@@ -380,12 +392,6 @@ async def run_agent(
             config_schema = None
 
         console.print(splash_screen)
-
-        workflow_steps = {}
-        if is_sequential_workflow:
-            workflow_steps = _setup_sequential_workflow(
-                splash_screen, agents_by_name, require_prompts=agent.name == "prompted-sequential-workflow"
-            )
 
         if config_schema:
             console.print(config_schema)
@@ -418,15 +424,12 @@ async def run_agent(
             console.print(f"🐝 {user_greeting}\n")
             input = handle_input()
             console.print()
-            await _run_agent(name, {"text": input, "config": config, **workflow_steps}, dump_files_path=dump_files)
+            await _run_agent(name, {"text": input, "config": config}, dump_files_path=dump_files)
         elif is_sequential_workflow:
-            user_greeting = ui.get("userGreeting", None) or "Enter your instructions."
-            console.print(f"🐝 {user_greeting}\n")
-            input = handle_input()
+            workflow_steps = _setup_sequential_workflow(splash_screen, agents_by_name)
             console.print()
             input = filter_dict(
                 {
-                    "input": {"text": input} if agent.name == "sequential-workflow" else input,
                     **config,
                     "steps": workflow_steps if agent.name != "sequential-workflow" else None,
                     "agents": [s["agent"] for s in workflow_steps] if agent.name == "sequential-workflow" else None,
