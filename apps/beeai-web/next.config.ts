@@ -42,6 +42,26 @@ const nextConfig: NextConfig = {
 
     return config;
   },
+  experimental: {
+    // Disable CSS chunking due to persistent nextjs bug with ordering of css and this seems to help partially.
+    // Nextjs in production build only! puts global styles last so it messes up css specificity.
+    //
+    // We get css modules styles twice but atleast the second css file overwrites them in correct order.
+    //
+    // I think it's actually two issues, first is with sideEffects and external packages, because beeai-ui doesn't
+    // have `sideEffects: false` in package.json and I don't wanna add it because it's vite app, not a library
+    // and we have single `index.ts` in it that exports everything, nextjs bundler doesn't tree shake and sees
+    // all styles as required in a root layout. Having separate exports in package.json helps but doesn't mitigrate
+    // the issue completely see second issue bellow.
+    //
+    // The second issue is IMHO when the same component is imported from the page and layout and from RSC and from
+    // client component simultaneously, this breaks nextjs and as a result puts global styles after css modules styles.
+    // In our codebase it's a case of a Container component. I wasn't able to refactor this cleanly hence this workaround
+    //
+    // https://github.com/vercel/next.js/issues/68207
+    // https://github.com/vercel/next.js/issues/64921
+    cssChunking: false
+  }
 };
 
 export default nextConfig;
