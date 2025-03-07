@@ -26,6 +26,8 @@ import {
 } from "@opentelemetry/semantic-conventions";
 import stoppable from "stoppable";
 
+const ATTR_SERVICE_NAMESPACE = "service.namespace";
+
 export async function runAgentProvider(
   acpServer: AcpServer,
   opentelemetrySdk?: NodeSDK,
@@ -37,6 +39,7 @@ export async function runAgentProvider(
     opentelemetrySdk ??
     new NodeSDK({
       resource: new resources.Resource({
+        [ATTR_SERVICE_NAMESPACE]: "beeai-agent-provider",
         [ATTR_SERVICE_NAME]: name,
         [ATTR_SERVICE_VERSION]: version,
       }),

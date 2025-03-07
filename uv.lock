@@ -1,5 +1,4 @@
 version = 1
-revision = 1
 requires-python = ">=3.11, <4.0"
 
 [manifest]
@@ -69,7 +68,6 @@ requires-dist = [
     { name = "typer", marker = "extra == 'cli'", specifier = ">=0.12.4" },
     { name = "uvicorn", specifier = ">=0.23.1" },
 ]
-provides-extras = ["rich", "cli"]
 
 [package.metadata.requires-dev]
 dev = [
@@ -254,7 +252,7 @@ requires-dist = [
 
 [[package]]
 name = "beeai-sdk"
-version = "0.0.12"
+version = "0.0.13"
 source = { editable = "packages/beeai-sdk" }
 dependencies = [
     { name = "acp-sdk" },
