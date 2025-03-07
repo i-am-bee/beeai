@@ -14,12 +14,14 @@
 
 import logging
 from copy import deepcopy
-from beeai_cli.async_typer import AsyncTyper
+
+import beeai_cli.commands.agent
+import beeai_cli.commands.compose
+import beeai_cli.commands.env
+import beeai_cli.commands.provider
 import beeai_cli.commands.telemetry
 import beeai_cli.commands.tool
-import beeai_cli.commands.env
-import beeai_cli.commands.agent
-import beeai_cli.commands.provider
+from beeai_cli.async_typer import AsyncTyper
 from beeai_cli.configuration import Configuration
 
 logging.basicConfig(level=logging.INFO if Configuration().debug else logging.FATAL)
@@ -30,6 +32,7 @@ app.add_typer(beeai_cli.commands.env.app, name="env", no_args_is_help=True)
 app.add_typer(beeai_cli.commands.provider.app, name="provider", no_args_is_help=True)
 app.add_typer(beeai_cli.commands.agent.app, name="agent", no_args_is_help=True)
 app.add_typer(beeai_cli.commands.telemetry.app, name="telemetry", no_args_is_help=True)
+app.add_typer(beeai_cli.commands.compose.app, name="compose", no_args_is_help=True)
 
 
 agent_alias = deepcopy(beeai_cli.commands.agent.app)
