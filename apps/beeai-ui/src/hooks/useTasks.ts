@@ -14,11 +14,30 @@
  * limitations under the License.
  */
 
-import { ListAgentsParams } from './types';
+const tasks = new Map<string, NodeJS.Timeout>();
 
-export const agentKeys = {
-  all: () => ['agents'] as const,
-  lists: () => [...agentKeys.all(), 'list'] as const,
-  list: ({ params, provider }: { params?: ListAgentsParams; provider?: string } = {}) =>
-    [...agentKeys.lists(), { params, provider }] as const,
-};
+export function useTasks() {
+  const addTask = ({ id, task, delay }: { id: string; task: () => void; delay: number }) => {
+    if (tasks.has(id)) return;
+
+    const intervalId = setInterval(task, delay);
+
+    tasks.set(id, intervalId);
+  };
+
+  const removeTask = ({ id }: { id: string }) => {
+    if (!tasks.has(id)) return;
+
+    const intervalId = tasks.get(id);
+
+    clearInterval(intervalId);
+
+    tasks.delete(id);
+  };
+
+  return {
+    tasks,
+    addTask,
+    removeTask,
+  };
+}
