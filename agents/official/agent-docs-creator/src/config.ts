@@ -1,10 +1,3 @@
-import { parseModel } from "beeai-framework/backend/utils";
-
-function parseChatModel(chatModel: string) {
-  const { providerId, modelId } = parseModel(chatModel);
-  return `${providerId}:${modelId}` as const;
-}
-
-export const CHAT_MODEL = process.env.CHAT_MODEL
-  ? parseChatModel(process.env.CHAT_MODEL)
-  : "openai:gpt-4o";
+export const MODEL = process.env.MODEL ?? "gpt-4o";
+export const API_BASE = process.env.API_BASE ?? "https://api.openai.com/v1";
+export const API_KEY = process.env.API_KEY;
