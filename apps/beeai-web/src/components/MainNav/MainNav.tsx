@@ -14,15 +14,25 @@
  * limitations under the License.
  */
 
+"use client";
+
+import clsx from "clsx";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import classes from "./MainNav.module.scss";
 
 export function MainNav() {
+  const pathname = usePathname();
   return (
     <nav>
       <ul className={classes.list}>
-        {NAV_ITEMS.map(({ label, href }, idx) => (
-          <li key={idx}>
+        {NAV_ITEMS.map(({ label, href, isSection }, idx) => (
+          <li
+            key={idx}
+            className={clsx({
+              [classes.active]: isSection && pathname.startsWith(href),
+            })}
+          >
             <Link href={href} className={classes.link}>
               {label}
             </Link>
@@ -39,7 +49,8 @@ const NAV_ITEMS = [
     href: "/",
   },
   {
-    label: 'Agents',
-    href: '/agents',
-  }
+    label: "Agents",
+    href: "/agents",
+    isSection: true,
+  },
 ];
