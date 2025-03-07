@@ -29,11 +29,11 @@ export function HandsOffView({ children }: PropsWithChildren) {
     <Container size="max">
       <div className={clsx(classes.root, classes.split)}>
         <div className={classes.leftPane}>
-          <div className={classes.scrollContent}>{children}</div>
+          <div className={clsx(classes.content, classes.scrollable)}>{children}</div>
         </div>
 
         <div className={classes.rightPane}>
-          <div className={classes.scrollContent}>
+          <div className={classes.content}>
             <HandsOffText />
           </div>
         </div>

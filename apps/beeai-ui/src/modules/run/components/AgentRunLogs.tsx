@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { isNotNull } from '#utils/helpers.ts';
 import { ChevronDown } from '@carbon/icons-react';
 import clsx from 'clsx';
 import { useState } from 'react';
@@ -29,9 +28,8 @@ interface Props {
 
 export function AgentRunLogs({ logs, toggleable }: Props) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const filteredLogs = logs.filter(isNotNull);
 
-  return filteredLogs.length > 0 ? (
+  return logs.length > 0 ? (
     <div className={classes.root}>
       {toggleable && (
         <button
@@ -47,7 +45,7 @@ export function AgentRunLogs({ logs, toggleable }: Props) {
 
       {(!toggleable || (toggleable && isExpanded)) && (
         <ul>
-          {filteredLogs.map(({ message }, idx) => (
+          {logs.map(({ message }, idx) => (
             <li key={idx}>
               <AgentRunLogItem>{message}</AgentRunLogItem>
             </li>

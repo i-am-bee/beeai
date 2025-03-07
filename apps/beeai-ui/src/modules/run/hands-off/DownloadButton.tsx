@@ -36,6 +36,7 @@ export function DownloadButton({ filename, content }: Props) {
       size="md"
       hasIconOnly
       iconDescription="Download"
+      tooltipPosition="left"
     >
       <Download />
     </Button>

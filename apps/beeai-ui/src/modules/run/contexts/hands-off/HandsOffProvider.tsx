@@ -45,7 +45,10 @@ export function HandsOffProvider({ agent, children }: PropsWithChildren<Props>) 
   const handleNotification = useCallback((notification: TextNotification) => {
     const { logs: logsDelta, text: textDelta } = notification.params.delta;
 
-    setLogs((logs) => [...logs, ...logsDelta.filter(isNotNull)]);
+    setLogs((logs) => [
+      ...logs,
+      ...logsDelta.filter((log): log is NonNullable<typeof log> => isNotNull(log) && log.message !== ''),
+    ]);
     setText((text) => text.concat(textDelta));
   }, []);
 

@@ -48,9 +48,7 @@ export const ChatInput = memo(function ChatInput({ onMessageSubmit }: Props) {
   } = form;
 
   const resetForm = useCallback(() => {
-    {
-      formRef.current?.resetForm();
-    }
+    formRef.current?.resetForm();
   }, []);
 
   const isPending = isSubmitting;

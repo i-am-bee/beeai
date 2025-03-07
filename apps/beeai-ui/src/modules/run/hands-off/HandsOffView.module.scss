@@ -56,9 +56,11 @@
   }
 }
 
-.scrollContent {
-  @include scrollbar();
-  overflow-y: auto;
+.content {
   padding: $grid-margin;
   block-size: 100%;
+  &.scrollable {
+    @include scrollbar();
+    overflow-y: auto;
+  }
 }

@@ -27,7 +27,7 @@ export function HandsOffText() {
     <div className={classes.root}>
       {!isPending && (
         <div className={classes.actions}>
-          <CopyButton kind="ghost" align="top" onClick={() => navigator.clipboard.writeText(text)} />
+          <CopyButton kind="ghost" align="left" onClick={() => navigator.clipboard.writeText(text)} />
 
           <DownloadButton filename={`${agent.name}-output.txt`} content={text} />
         </div>
