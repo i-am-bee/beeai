@@ -8,7 +8,7 @@ catalogs:
   default:
     '@eslint/js':
       specifier: ^9.20.0
-      version: 9.20.0
+      version: 9.21.0
     eslint:
       specifier: ^9.17.0
       version: 9.20.1
@@ -98,8 +98,8 @@ importers:
         specifier: 0.0.12
         version: 0.0.12
       '@i-am-bee/beeai-supervisor':
-        specifier: 0.0.5
-        version: 0.0.5(@ai-sdk/openai@1.1.14(zod@3.24.2))(@eslint/js@9.21.0)(@i-am-bee/acp-sdk@0.0.4)(@opentelemetry/api@1.9.0)(@types/debug@4.1.12)(@types/node@22.13.5)(bee-agent-framework@0.0.61(@aws-sdk/client-bedrock-runtime@3.751.0)(@google-cloud/vertexai@1.9.3)(@grpc/grpc-js@1.12.6)(@grpc/proto-loader@0.7.13)(@modelcontextprotocol/sdk@1.6.1)(google-auth-library@9.15.1)(ollama@0.5.14)(openai-chat-tokens@0.2.8)(openai@4.86.2(ws@8.18.0)(zod@3.24.2))(yaml@2.7.0))(beeai-framework@0.1.2(@ai-sdk/openai@1.1.14(zod@3.24.2))(@aws-sdk/client-bedrock-runtime@3.751.0)(@modelcontextprotocol/sdk@1.6.1)(ollama-ai-provider@1.2.0(zod@3.24.2))(react@19.0.0)(yaml@2.7.0))(sass-embedded@1.85.1)(sass@1.85.0)(tsx@4.19.3)(typescript@5.7.3)(vite@6.2.0(@types/node@22.13.5)(sass-embedded@1.85.1)(sass@1.85.0)(tsx@4.19.3)(yaml@2.7.0))(ws@8.18.0)(yaml@2.7.0)
+        specifier: 0.0.6
+        version: 0.0.6(@ai-sdk/openai@1.1.14(zod@3.24.2))(@eslint/js@9.21.0)(@i-am-bee/acp-sdk@0.0.4)(@opentelemetry/api@1.9.0)(@types/debug@4.1.12)(@types/node@22.13.5)(bee-agent-framework@0.0.61(@aws-sdk/client-bedrock-runtime@3.751.0)(@google-cloud/vertexai@1.9.3)(@grpc/grpc-js@1.12.6)(@grpc/proto-loader@0.7.13)(@modelcontextprotocol/sdk@1.6.1)(google-auth-library@9.15.1)(ollama@0.5.14)(openai-chat-tokens@0.2.8)(openai@4.86.2(ws@8.18.0)(zod@3.24.2))(yaml@2.7.0))(beeai-framework@0.1.2(@ai-sdk/openai@1.1.14(zod@3.24.2))(@aws-sdk/client-bedrock-runtime@3.751.0)(@modelcontextprotocol/sdk@1.6.1)(ollama-ai-provider@1.2.0(zod@3.24.2))(react@19.0.0)(yaml@2.7.0))(sass-embedded@1.85.1)(sass@1.85.0)(tsx@4.19.3)(typescript@5.7.3)(vite@6.2.0(@types/node@22.13.5)(sass-embedded@1.85.1)(sass@1.85.0)(tsx@4.19.3)(yaml@2.7.0))(ws@8.18.0)(yaml@2.7.0)
       beeai-framework:
         specifier: ^0.1.2
         version: 0.1.2(@ai-sdk/openai@1.1.14(zod@3.24.2))(@aws-sdk/client-bedrock-runtime@3.751.0)(@modelcontextprotocol/sdk@1.6.1)(ollama-ai-provider@1.2.0(zod@3.24.2))(react@19.0.0)(yaml@2.7.0)
@@ -509,7 +509,7 @@ importers:
     devDependencies:
       '@eslint/js':
         specifier: 'catalog:'
-        version: 9.20.0
+        version: 9.21.0
       '@swc/core':
         specifier: ^1.10.16
         version: 1.11.1(@swc/helpers@0.5.15)
@@ -1755,8 +1755,8 @@ packages:
   '@i-am-bee/beeai-sdk@0.0.13':
     resolution: {integrity: sha512-lCBIUancXcHY0D/YM0RzOJQYgkD6rZPG8F/XxLA2TBWtIfSEAik6Eaohk75fOw/JVcvQB8FgkCHEBPlOw43k5g==}
 
-  '@i-am-bee/beeai-supervisor@0.0.5':
-    resolution: {integrity: sha512-SRO/RnNZN3JpKs0up1q0+qdI/B7OOQd/AX720FOIvK8eINdD3eibGU3QnnQD5UXrVW6Q7+476rxF9uFCNTkcNA==}
+  '@i-am-bee/beeai-supervisor@0.0.6':
+    resolution: {integrity: sha512-Jbv84Xu/IXdKh+wv+gdOmHyI1Piry9eFlt1ktbK1e0OQMEtinFIcNI3e9AnXdF4tW4nrh/YOSDllZhPctH/uUw==}
     engines: {node: '>=22.2.0', pnpm: '>=10.4.1'}
     peerDependencies:
       '@ai-sdk/openai': ^1.1.14
@@ -3682,6 +3682,7 @@ packages:
 
   bee-agent-framework@0.0.61:
     resolution: {integrity: sha512-SnKlcPgBMQ9pJ83yso6CLnODme3Pzsu3Yc3fFlOalPRRfxgz75yo9+wIiCUQFFcGgx7UDBB4N44Bl5mfYdSk6w==}
+    deprecated: 'WARNING: This project has been renamed to beeai-framework. Install using beeai-framework instead.'
     peerDependencies:
       '@aws-sdk/client-bedrock-runtime': ^3.687.0
       '@elastic/elasticsearch': ^8.0.0
@@ -10198,7 +10199,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@i-am-bee/beeai-supervisor@0.0.5(@ai-sdk/openai@1.1.14(zod@3.24.2))(@eslint/js@9.21.0)(@i-am-bee/acp-sdk@0.0.4)(@opentelemetry/api@1.9.0)(@types/debug@4.1.12)(@types/node@22.13.5)(bee-agent-framework@0.0.61(@aws-sdk/client-bedrock-runtime@3.751.0)(@google-cloud/vertexai@1.9.3)(@grpc/grpc-js@1.12.6)(@grpc/proto-loader@0.7.13)(@modelcontextprotocol/sdk@1.6.1)(google-auth-library@9.15.1)(ollama@0.5.14)(openai-chat-tokens@0.2.8)(openai@4.86.2(ws@8.18.0)(zod@3.24.2))(yaml@2.7.0))(beeai-framework@0.1.2(@ai-sdk/openai@1.1.14(zod@3.24.2))(@aws-sdk/client-bedrock-runtime@3.751.0)(@modelcontextprotocol/sdk@1.6.1)(ollama-ai-provider@1.2.0(zod@3.24.2))(react@19.0.0)(yaml@2.7.0))(sass-embedded@1.85.1)(sass@1.85.0)(tsx@4.19.3)(typescript@5.7.3)(vite@6.2.0(@types/node@22.13.5)(sass-embedded@1.85.1)(sass@1.85.0)(tsx@4.19.3)(yaml@2.7.0))(ws@8.18.0)(yaml@2.7.0)':
+  '@i-am-bee/beeai-supervisor@0.0.6(@ai-sdk/openai@1.1.14(zod@3.24.2))(@eslint/js@9.21.0)(@i-am-bee/acp-sdk@0.0.4)(@opentelemetry/api@1.9.0)(@types/debug@4.1.12)(@types/node@22.13.5)(bee-agent-framework@0.0.61(@aws-sdk/client-bedrock-runtime@3.751.0)(@google-cloud/vertexai@1.9.3)(@grpc/grpc-js@1.12.6)(@grpc/proto-loader@0.7.13)(@modelcontextprotocol/sdk@1.6.1)(google-auth-library@9.15.1)(ollama@0.5.14)(openai-chat-tokens@0.2.8)(openai@4.86.2(ws@8.18.0)(zod@3.24.2))(yaml@2.7.0))(beeai-framework@0.1.2(@ai-sdk/openai@1.1.14(zod@3.24.2))(@aws-sdk/client-bedrock-runtime@3.751.0)(@modelcontextprotocol/sdk@1.6.1)(ollama-ai-provider@1.2.0(zod@3.24.2))(react@19.0.0)(yaml@2.7.0))(sass-embedded@1.85.1)(sass@1.85.0)(tsx@4.19.3)(typescript@5.7.3)(vite@6.2.0(@types/node@22.13.5)(sass-embedded@1.85.1)(sass@1.85.0)(tsx@4.19.3)(yaml@2.7.0))(ws@8.18.0)(yaml@2.7.0)':
     dependencies:
       '@ai-sdk/openai': 1.1.14(zod@3.24.2)
       '@eslint/js': 9.21.0
@@ -13595,8 +13596,8 @@ snapshots:
       '@typescript-eslint/parser': 8.24.1(eslint@9.20.1)(typescript@5.7.3)
       eslint: 9.20.1
       eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.8.3(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.24.1(eslint@9.20.1)(typescript@5.7.3))(eslint@9.20.1))(eslint@9.20.1)
-      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@8.24.1(eslint@9.20.1)(typescript@5.7.3))(eslint-import-resolver-typescript@3.8.3(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.24.1(eslint@9.20.1)(typescript@5.7.3))(eslint@9.20.1))(eslint@9.20.1))(eslint@9.20.1)
+      eslint-import-resolver-typescript: 3.8.3(eslint-plugin-import@2.31.0)(eslint@9.20.1)
+      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@8.24.1(eslint@9.20.1)(typescript@5.7.3))(eslint-import-resolver-typescript@3.8.3)(eslint@9.20.1)
       eslint-plugin-jsx-a11y: 6.10.2(eslint@9.20.1)
       eslint-plugin-react: 7.37.4(eslint@9.20.1)
       eslint-plugin-react-hooks: 5.1.0(eslint@9.20.1)
@@ -13615,7 +13616,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-import-resolver-typescript@3.8.3(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.24.1(eslint@9.20.1)(typescript@5.7.3))(eslint@9.20.1))(eslint@9.20.1):
+  eslint-import-resolver-typescript@3.8.3(eslint-plugin-import@2.31.0)(eslint@9.20.1):
     dependencies:
       '@nolyfill/is-core-module': 1.0.39
       debug: 4.4.0
@@ -13626,22 +13627,22 @@ snapshots:
       stable-hash: 0.0.4
       tinyglobby: 0.2.12
     optionalDependencies:
-      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@8.24.1(eslint@9.20.1)(typescript@5.7.3))(eslint-import-resolver-typescript@3.8.3(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.24.1(eslint@9.20.1)(typescript@5.7.3))(eslint@9.20.1))(eslint@9.20.1))(eslint@9.20.1)
+      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@8.24.1(eslint@9.20.1)(typescript@5.7.3))(eslint-import-resolver-typescript@3.8.3)(eslint@9.20.1)
     transitivePeerDependencies:
       - supports-color
 
-  eslint-module-utils@2.12.0(@typescript-eslint/parser@8.24.1(eslint@9.20.1)(typescript@5.7.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.8.3(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.24.1(eslint@9.20.1)(typescript@5.7.3))(eslint@9.20.1))(eslint@9.20.1))(eslint@9.20.1):
+  eslint-module-utils@2.12.0(@typescript-eslint/parser@8.24.1(eslint@9.20.1)(typescript@5.7.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.8.3)(eslint@9.20.1):
     dependencies:
       debug: 3.2.7
     optionalDependencies:
       '@typescript-eslint/parser': 8.24.1(eslint@9.20.1)(typescript@5.7.3)
       eslint: 9.20.1
       eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.8.3(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.24.1(eslint@9.20.1)(typescript@5.7.3))(eslint@9.20.1))(eslint@9.20.1)
+      eslint-import-resolver-typescript: 3.8.3(eslint-plugin-import@2.31.0)(eslint@9.20.1)
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.24.1(eslint@9.20.1)(typescript@5.7.3))(eslint-import-resolver-typescript@3.8.3(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.24.1(eslint@9.20.1)(typescript@5.7.3))(eslint@9.20.1))(eslint@9.20.1))(eslint@9.20.1):
+  eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.24.1(eslint@9.20.1)(typescript@5.7.3))(eslint-import-resolver-typescript@3.8.3)(eslint@9.20.1):
     dependencies:
       '@rtsao/scc': 1.1.0
       array-includes: 3.1.8
@@ -13652,7 +13653,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 9.20.1
       eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.12.0(@typescript-eslint/parser@8.24.1(eslint@9.20.1)(typescript@5.7.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.8.3(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.24.1(eslint@9.20.1)(typescript@5.7.3))(eslint@9.20.1))(eslint@9.20.1))(eslint@9.20.1)
+      eslint-module-utils: 2.12.0(@typescript-eslint/parser@8.24.1(eslint@9.20.1)(typescript@5.7.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.8.3)(eslint@9.20.1)
       hasown: 2.0.2
       is-core-module: 2.16.1
       is-glob: 4.0.3

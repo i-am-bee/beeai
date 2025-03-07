@@ -17,7 +17,7 @@
     "@ai-sdk/openai": "^1.1.13",
     "@i-am-bee/acp-sdk": "0.0.4",
     "@i-am-bee/beeai-sdk": "0.0.12",
-    "@i-am-bee/beeai-supervisor": "0.0.5",
+    "@i-am-bee/beeai-supervisor": "0.0.6",
     "beeai-framework": "^0.1.2",
     "dotenv": "^16.4.7",
     "ollama-ai-provider": "^1.2.0",

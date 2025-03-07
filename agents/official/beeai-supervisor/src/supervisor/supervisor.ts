@@ -20,6 +20,8 @@ const inputSchema = textInputSchema.extend({
 type Input = z.infer<typeof inputSchema>;
 const outputSchema = textOutputSchema;
 
+export const OUTPUT_DIR = `./beeai-supervisor-output`
+
 const run =
   (server: AcpServer) =>
   async (
@@ -68,7 +70,7 @@ const run =
         },
       },
       workspace: "beeai",
-      outputDirPath: "./output",
+      outputDirPath: OUTPUT_DIR,
     });
 
     const output: RuntimeOutputMethod = async (output) => {
