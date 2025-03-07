@@ -16,6 +16,10 @@ processors:
     check_interval: 1s
     limit_mib: 1000
   batch:
+  filter/phoenix:
+    traces:
+      span:
+        - 'resource.attributes["service.namespace"] != "beeai-agent-provider"'
 
 extensions:
   health_check:
@@ -25,5 +29,5 @@ service:
   pipelines:
     traces/phoenix:
       receivers: [otlp]
-      processors: [memory_limiter, batch]
+      processors: [memory_limiter, filter/phoenix, batch]
       exporters: [otlp/phoenix]
