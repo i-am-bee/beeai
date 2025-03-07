@@ -2,6 +2,16 @@
 
 import "dotenv/config";
 
+process.env.OPENAI_API_KEY ??= process.env.API_KEY;
+process.env.OPENAI_MODEL_SUPERVISOR ??=
+  process.env.MODEL_SUPERVISOR ?? process.env.MODEL ?? "gpt-4o";
+process.env.OPENAI_MODEL_OPERATOR ??=
+  process.env.MODEL_OPERATOR ?? process.env.MODEL ?? "gpt-4o";
+process.env.OPENAI_API_ENDPOINT ??=
+  process.env.OPENAI_API_BASE ??
+  process.env.API_BASE ??
+  "https://api.openai.com/v1";
+
 import { AcpServer } from "@i-am-bee/acp-sdk/server/acp.js";
 
 import { Version } from "beeai-framework";
