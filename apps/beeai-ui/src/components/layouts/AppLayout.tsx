@@ -33,7 +33,7 @@ export function AppLayout() {
         <UserNav />
       </AppHeader>
 
-      <main className={classes.main}>
+      <main className={classes.main} data-transition>
         <Outlet />
       </main>
 

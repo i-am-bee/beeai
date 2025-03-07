@@ -26,7 +26,11 @@ export default function AppLayout({ children }: PropsWithChildren) {
       <AppHeader className={classes.header}>
         <Navigation />
       </AppHeader>
-      {children}
+
+      <main className={classes.main} data-route-transition>
+        {children}
+      </main>
+
       <Footer className={classes.footer} />
     </div>
   );

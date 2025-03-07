@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import Link from "next/link";
 import classes from "./MainNav.module.scss";
+import { TransitionLink } from "../TransitionLink/TransitionLink";
 
 export function MainNav() {
   return (
@@ -23,9 +23,9 @@ export function MainNav() {
       <ul className={classes.list}>
         {NAV_ITEMS.map(({ label, href }, idx) => (
           <li key={idx}>
-            <Link href={href} className={classes.link}>
+            <TransitionLink href={href} className={classes.link}>
               {label}
-            </Link>
+            </TransitionLink>
           </li>
         ))}
       </ul>
@@ -39,7 +39,7 @@ const NAV_ITEMS = [
     href: "/",
   },
   {
-    label: 'Agents',
-    href: '/agents',
-  }
+    label: "Agents",
+    href: "/agents",
+  },
 ];

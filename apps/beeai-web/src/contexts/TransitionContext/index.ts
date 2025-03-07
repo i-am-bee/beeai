@@ -14,22 +14,17 @@
  * limitations under the License.
  */
 
-.section {
-  &:not(:last-child) {
-    margin-bottom: rem(48px);
-  }
-}
+import { use } from "react";
+import { RouteTransitionContext } from "./context";
 
-.title {
-  font-size: rem(18px);
-  font-weight: 600;
-  line-height: 1.3;
+export function useRouteTransition() {
+  const context = use(RouteTransitionContext);
 
-  &.defaultSpacing {
-    margin-bottom: rem(10px);
+  if (!context) {
+    throw new Error(
+      "useRouteTransition must be used within a RouteTransitionProvider"
+    );
   }
 
-  &.largeSpacing {
-    margin-bottom: $spacing-05;
-  }
+  return context;
 }
