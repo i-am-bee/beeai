@@ -1,8 +1,7 @@
 import { z, ZodRawShape } from "zod";
 import { Metadata } from "@i-am-bee/beeai-sdk/schemas/metadata";
 import { Message } from "beeai-framework/backend/message";
-import { CHAT_MODEL } from "../config.js";
-import { ChatModel } from "beeai-framework/backend/chat";
+import { API_BASE, API_KEY, MODEL } from "../config.js";
 import {
   messageInputSchema,
   MessageOutput,
@@ -14,6 +13,7 @@ import { DuckDuckGoSearchTool } from "beeai-framework/tools/search/duckDuckGoSea
 import { WikipediaTool } from "beeai-framework/tools/search/wikipedia";
 import { OpenMeteoTool } from "beeai-framework/tools/weather/openMeteo";
 import { AcpServer } from "@i-am-bee/acp-sdk/server/acp.js";
+import { OpenAIChatModel } from "beeai-framework/adapters/openai/backend/chat";
 
 const SupportedTool = {
   Search: "search",
@@ -54,15 +54,19 @@ const run =
         _meta?: { progressToken?: string | number };
       };
     },
-    { signal }: { signal?: AbortSignal },
+    { signal }: { signal?: AbortSignal }
   ) => {
     const { messages, config } = input;
     const memory = new UnconstrainedMemory();
     await memory.addMany(
-      messages.map(({ role, content }) => Message.of({ role, text: content })),
+      messages.map(({ role, content }) => Message.of({ role, text: content }))
     );
     const agent = new BeeAgent({
-      llm: await ChatModel.fromName(CHAT_MODEL),
+      llm: new OpenAIChatModel(
+        MODEL,
+        {},
+        { baseURL: API_BASE, apiKey: API_KEY, compatibility: "compatible" }
+      ),
       memory: memory ?? new UnconstrainedMemory(),
       tools: config?.tools?.map(createTool) ?? [],
     });
