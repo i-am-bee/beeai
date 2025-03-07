@@ -24,9 +24,9 @@ agentName = "prompted-sequential-workflow"
 exampleInput = {
     "steps": [
         {"agent": "text-summarizer", "instruction": "Summarize the following text:"},
-        {"agent": "text-analyzer", "instruction": "Analyze the sentiment and key themes of this summary:"}
+        {"agent": "text-analyzer", "instruction": "Analyze the sentiment and key themes of this summary:"},
     ],
-    "input": "Long article text here..."
+    "input": "Long article text here...",
 }
 exampleInputStr = yaml.dump(exampleInput, allow_unicode=True)
 
@@ -51,9 +51,11 @@ Each subsequent agent receives its instruction followed by the YAML-formatted ou
 ```
 """
 
+
 class WorkflowStep(BaseModel):
     agent: str
     instruction: str
+
 
 class PromptedSequentialWorkflowInput(Input):
     steps: list[WorkflowStep] = Field(min_length=1)
@@ -67,21 +69,21 @@ def validate_agents(input: PromptedSequentialWorkflowInput, server_agents: dict[
         agent = server_agents[agent_name]
         input_schema = agent.inputSchema
         required_input_properties = set(input_schema.get("required", []))
-        
+
         if required_input_properties != {"text"}:
             raise ValueError(
                 f"Agent '{agent_name}' has incompatible input schema. Expected {{'text': str}}, "
                 f"got required properties: {required_input_properties}"
             )
 
+
 def format_agent_input(instruction: str, previous_output: dict[str, Any] | str) -> str:
     if not previous_output:
         return instruction
     return f"""{instruction}\n---\n{
-        previous_output
-        if isinstance(previous_output, str)
-        else yaml.dump(previous_output, allow_unicode=True)
+        previous_output if isinstance(previous_output, str) else yaml.dump(previous_output, allow_unicode=True)
     }"""
+
 
 def add_prompted_sequential_workflow_agent(server: Server):
     @server.agent(
@@ -118,8 +120,7 @@ def add_prompted_sequential_workflow_agent(server: Server):
                         req=RunAgentRequest(
                             method="agents/run",
                             params=RunAgentRequestParams(
-                                name=step.agent,
-                                input={"text": format_agent_input(step.instruction, previous_output)}
+                                name=step.agent, input={"text": format_agent_input(step.instruction, previous_output)}
                             ),
                         ),
                         result_type=RunAgentResult,
@@ -142,9 +143,15 @@ def add_prompted_sequential_workflow_agent(server: Server):
                                     output = output_delta
                                     break
 
-                                previous_output = getattr(output_delta, "text", output_delta.model_dump(exclude=["logs"]))
-                                
-                                message = str(previous_output)[:100] + "..." if len(str(previous_output)) > 100 else str(previous_output)
+                                previous_output = getattr(
+                                    output_delta, "text", output_delta.model_dump(exclude=["logs"])
+                                )
+
+                                message = (
+                                    str(previous_output)[:100] + "..."
+                                    if len(str(previous_output)) > 100
+                                    else str(previous_output)
+                                )
                                 await ctx.report_agent_run_progress(
                                     delta=Output(
                                         logs=[

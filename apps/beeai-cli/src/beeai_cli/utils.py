@@ -23,7 +23,8 @@ from cachetools import cached
 from jsf import JSF
 from prompt_toolkit import PromptSession
 from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
-from prompt_toolkit.completion import Completer
+from prompt_toolkit.completion import Completer, DummyCompleter
+from prompt_toolkit.validation import Validator, DummyValidator
 from pydantic import BaseModel
 
 
@@ -64,6 +65,15 @@ def omit(dict: DictType, keys: Iterable[str]) -> DictType:
     return {key: value for key, value in dict.items() if key not in keys}
 
 
+T = TypeVar("T")
+V = TypeVar("V")
+
+
+def filter_dict(map: dict[str, T | V], value_to_exclude: V = None) -> dict[str, V]:
+    """Remove entries with unwanted values (None by default) from dictionary."""
+    return {filter: value for filter, value in map.items() if value is not value_to_exclude}
+
+
 @cached(cache={}, key=json.dumps)
 def generate_schema_example(json_schema: dict[str, Any]) -> dict[str, Any]:
     json_schema = deepcopy(json_schema)
@@ -86,7 +96,9 @@ def generate_schema_example(json_schema: dict[str, Any]) -> dict[str, Any]:
 prompt_session = PromptSession()
 
 
-def prompt_user(prompt: str | None = None, completer: Completer | None = None) -> str:
+def prompt_user(
+    prompt: str | None = None, completer: Completer | None = None, validator: Validator | None = None
+) -> str:
     # This is necessary because we are in a weird sync-under-async situation and the PromptSession
     # tries calling asyncio.run
     with ThreadPoolExecutor(max_workers=1) as executor:
@@ -94,7 +106,10 @@ def prompt_user(prompt: str | None = None, completer: Completer | None = None) -
             prompt_session.prompt,
             prompt or ">>> ",
             auto_suggest=AutoSuggestFromHistory(),
-            completer=completer,
+            completer=completer or DummyCompleter(),
             complete_while_typing=True,
+            validator=validator or DummyValidator(),
         )
-        return future.result()
+
+        result = future.result()
+        return result

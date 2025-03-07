@@ -12,12 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import abc
 import contextlib
+import inspect
 import json
 import random
-from enum import StrEnum
 
-from prompt_toolkit.completion import NestedCompleter, Completer
+from prompt_toolkit.completion import NestedCompleter
+from prompt_toolkit.validation import Validator
+from rich.box import HORIZONTALS
+from rich.console import ConsoleRenderable, Group, NewLine
+from rich.panel import Panel
+from rich.rule import Rule
+from rich.text import Text
+from rich.tree import Tree
 
 try:
     # This is necessary for proper handling of arrow keys in interactive input
@@ -27,7 +35,7 @@ except ImportError:
 
 import sys
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Optional, Callable
 
 import jsonschema
 import rich.json
@@ -38,11 +46,10 @@ from beeai_sdk.schemas.metadata import UiType
 from click import BadParameter
 from rich.markdown import Markdown
 from rich.table import Column
-from rich.text import Text
 
 from beeai_cli.api import send_request, send_request_with_notifications
 from beeai_cli.async_typer import AsyncTyper, console, create_table, err_console
-from beeai_cli.utils import check_json, generate_schema_example, omit, prompt_user
+from beeai_cli.utils import check_json, generate_schema_example, omit, prompt_user, filter_dict
 
 app = AsyncTyper()
 
@@ -121,96 +128,214 @@ async def _run_agent(name: str, input: dict[str, Any], dump_files_path: Path | N
     raise RuntimeError(f"Agent {name} did not produce a result")
 
 
-class Command(StrEnum):
-    quit = "q"
-    set = "set"
-    show_config = "show-config"
-    help = "?"
+class InteractiveCommand(abc.ABC):
+    args: list[str] = []
+    command: str
+
+    @abc.abstractmethod
+    def handle(self, args_str: str | None = None): ...
+
+    @property
+    def enabled(self) -> bool:
+        return True
+
+    def completion_opts(self) -> dict[str, Any | None] | None:
+        return None
 
 
-def _handle_command(command: str, config_schema: dict[str, Any] | None, config: dict[str, Any]):
-    [args_str] = command.split(" ", maxsplit=1)[1:] or [None]
-    match command.split(" ", maxsplit=1):
-        case [Command.set, *_rest]:
-            if not args_str:
-                raise ValueError("Please provide a config key to update")
-            key, value = args_str.split(" ", maxsplit=1)
-            if not config_schema:
-                raise ValueError("This agent can't be configured")
-            if key not in config_schema["properties"]:
-                raise ValueError(f"Unknown option {key}")
-            try:
-                if value.strip("\"'") == value and not value.startswith("{") and not value.startswith("["):
-                    value = f'"{value}"'
-                json_value = json.loads(value)
-                tmp_config = {**config, key: json_value}
-                jsonschema.validate(tmp_config, config_schema)
-                config[key] = json_value
-                console.print("Config:", config)
-            except json.JSONDecodeError:
-                raise ValueError(f"The provided value cannot be parsed into JSON: {value}")
-            except jsonschema.ValidationError as ex:
-                err_console.print(json.dumps(generate_schema_example(config_schema["properties"][key])))
-                raise ValueError(f"Invalid value for key {key}: {ex}")
-        case [Command.show_config]:
-            if not config_schema:
-                console.print("This agent can't be configured")
-            console.print(Markdown("## Configuration schema"))
-            with create_table(Column("Key", ratio=1), Column("Type", ratio=3), Column("Example", ratio=2)) as table:
-                for prop, schema in config_schema["properties"].items():
-                    table.add_row(prop, json.dumps(schema), json.dumps(generate_schema_example(schema)))
-            console.print(table)
-            if config:
-                console.print(Markdown("## Current configuration"))
-                with create_table(Column("Key", ratio=1), Column("Value", ratio=5)) as table:
-                    for key, value in config.items():
-                        table.add_row(key, json.dumps(value))
-                console.print(table)
-        case [Command.help]:
-            with create_table("command", "arguments", "description") as table:
-                table.add_row("/q", "n/a", "Quit.")
-                table.add_row("/?", "n/a", "Show this help.")
-                table.add_row(
-                    "/set", "<key> <value>", "Set agent configuration value. Use JSON syntax for more complex objects"
-                )
-                table.add_row("/show-config", "n/a", "Show available and currently set configuration options")
-            console.print(table)
+class Quit(InteractiveCommand):
+    """Quit"""
 
-        case ["q"]:
-            sys.exit(0)
-        case _:
-            raise ValueError(f"Invalid command: {command}")
+    command = "q"
+
+    def handle(self, *_any):
+        sys.exit(0)
 
 
-def _create_completer(config_schema: dict[str, Any] | None = None) -> Completer:
-    completions = {
-        f"/{Command.help}": None,
-        f"/{Command.quit}": None,
-        f"/{Command.show_config}": None,
-    }
-    if config_schema:
-        completions[f"/{Command.set}"] = {
-            key: {json.dumps(generate_schema_example(schema))} for key, schema in config_schema["properties"].items()
-        }
-    return NestedCompleter.from_nested_dict(completions)
+class ShowConfig(InteractiveCommand):
+    """Show available and currently set configuration options"""
+
+    command = "show-config"
+
+    def __init__(self, config_schema: dict[str, Any] | None, config: dict[str, Any]):
+        self.config_schema = config_schema
+        self.config = config
+
+    @property
+    def enabled(self) -> bool:
+        return bool(self.config_schema)
+
+    def handle(self, *_any):
+        with create_table(Column("Key", ratio=1), Column("Type", ratio=3), Column("Example", ratio=2)) as schema_table:
+            for prop, schema in self.config_schema["properties"].items():
+                schema_table.add_row(prop, json.dumps(schema), json.dumps(generate_schema_example(schema)))
+
+        renderables = [
+            NewLine(),
+            Panel(schema_table, title="Configuration schema", title_align="left"),
+        ]
+
+        if self.config:
+            with create_table(Column("Key", ratio=1), Column("Value", ratio=5)) as config_table:
+                for key, value in self.config.items():
+                    config_table.add_row(key, json.dumps(value))
+            renderables += [
+                NewLine(),
+                Panel(config_table, title="Current configuration", title_align="left"),
+            ]
+        panel = Panel(
+            Group(
+                *renderables,
+                NewLine(),
+                console.render_str("[b]Hint[/b]: Use /set <key> <value> to set an agent configuration property."),
+            ),
+            title="Agent configuration",
+            box=HORIZONTALS,
+        )
+        console.print(panel)
 
 
-def _handle_input(config_schema: dict[str, Any] | None, config: dict[str, Any]) -> str:
-    while True:
+class Set(InteractiveCommand):
+    """Set agent configuration value. Use JSON syntax for more complex objects"""
+
+    args: list[str] = ["<key>", "<value>"]
+    command = "set"
+
+    def __init__(self, config_schema: dict[str, Any] | None, config: dict[str, Any]):
+        self.config_schema = config_schema
+        self.config = config
+
+    @property
+    def enabled(self) -> bool:
+        return bool(self.config_schema)
+
+    def handle(self, args_str: str | None = None):
+        args_str = args_str or ""
+        args = args_str.split(" ", maxsplit=1)
+        if not args_str or len(args) != 2:
+            raise ValueError(f"The command {self.command} takes exactly two arguments: <key> and <value>.")
+        key, value = args
+        if key not in self.config_schema["properties"]:
+            raise ValueError(f"Unknown option {key}")
         try:
-            input = prompt_user(completer=_create_completer(config_schema))
-            if input.startswith("/"):
-                _handle_command(input.lstrip("/"), config_schema, config)
-                continue
-            return input
-        except ValueError as exc:
-            err_console.print(str(exc))
-        except EOFError:
-            raise KeyboardInterrupt
+            if value.strip("\"'") == value and not value.startswith("{") and not value.startswith("["):
+                value = f'"{value}"'
+            json_value = json.loads(value)
+            tmp_config = {**self.config, key: json_value}
+            jsonschema.validate(tmp_config, self.config_schema)
+            self.config[key] = json_value
+            console.print("Config:", self.config)
+        except json.JSONDecodeError:
+            raise ValueError(f"The provided value cannot be parsed into JSON: {value}")
+        except jsonschema.ValidationError as ex:
+            err_console.print(json.dumps(generate_schema_example(self.config_schema["properties"][key])))
+            raise ValueError(f"Invalid value for key {key}: {ex}")
+
+    def completion_opts(self) -> dict[str, Any | None] | None:
+        return {
+            key: {json.dumps(generate_schema_example(schema))}
+            for key, schema in self.config_schema["properties"].items()
+        }
+
+
+class Help(InteractiveCommand):
+    """Show this help"""
+
+    command = "?"
+
+    def __init__(self, commands: list[InteractiveCommand]):
+        self.commands = [self, *commands]
+
+    def handle(self, *_any):
+        with create_table("command", "arguments", "description") as table:
+            for command in self.commands:
+                table.add_row(f"/{command.command}", " ".join(command.args or ["n/a"]), inspect.getdoc(command))
+        console.print(table)
+
+
+def _create_input_handler(
+    commands: list[InteractiveCommand],
+    prompt: str | None = None,
+    choice: list[str] | None = None,
+) -> Callable:
+    choice = choice or []
+    commands = [cmd for cmd in commands if cmd.enabled]
+    commands = [Quit(), *commands]
+    commands = [Help(commands), *commands]
+    commands_router = {f"/{cmd.command}": cmd for cmd in commands}
+    completer = {
+        **{f"/{cmd.command}": cmd.completion_opts() for cmd in commands},
+        **{opt: None for opt in choice},
+    }
+
+    def handler():
+        while True:
+            try:
+                valid_options = set(choice) | commands_router.keys()
+                input = prompt_user(
+                    prompt=prompt,
+                    completer=NestedCompleter.from_nested_dict(completer),
+                    validator=None if not choice else Validator.from_callable(lambda text: text in valid_options),
+                )
+                if input.startswith("/"):
+                    command, *arg_str = input.split(" ", maxsplit=1)
+                    if command not in commands_router:
+                        raise ValueError(f"Unknown command: {command}")
+                    commands_router[command].handle(*arg_str)
+                    continue
+                return input
+            except ValueError as exc:
+                err_console.print(str(exc))
+            except EOFError:
+                raise KeyboardInterrupt
+
+    return handler
+
+
+def _setup_sequential_workflow(
+    splash_screen: ConsoleRenderable, agents_by_name: dict[str, Agent], require_prompts: bool = True
+):
+    prompt_agents = {
+        name: agent
+        for name, agent in agents_by_name.items()
+        if (agent.model_extra.get("ui", {}) or {}).get("type", None) == UiType.hands_off
+    }
+    steps = []
+
+    tree = Tree(label="")
+    screen = Group(splash_screen, Rule(title="Configure Workflow", style="yellow"), tree)
+    console.clear()
+    console.print(screen)
+
+    handle_input = _create_input_handler([], prompt="Add an agent: ", choice=list(prompt_agents))
+
+    while True:
+        if not (agent := handle_input()):
+            break
+
+        if not steps:
+            # change prompt for other passes
+            handle_input = _create_input_handler(
+                [], prompt="Add an agent [leave empty to stop]: ", choice=list(prompt_agents) + [""]
+            )
+
+        instruction = prompt_user("Set agent instruction: ") if require_prompts else None
+        steps.append({"agent": agent, "instruction": instruction})
+        tree.add(
+            Panel(
+                Group(
+                    console.render_str(f"[b]Agent[/b]: {agent}"),
+                    *([console.render_str(f"[b]Prompt[/b]: {instruction}")] if require_prompts else []),
+                )
+            )
+        )
+        console.clear()
+        console.print(screen)
+    return steps
 
 
 @app.command("run")
-async def run(
+async def run_agent(
     name: str = typer.Argument(help="Name of the agent to call"),
     input: str = typer.Argument(
         None if sys.stdin.isatty() else sys.stdin.read(),
@@ -219,38 +344,61 @@ async def run(
     dump_files: Optional[Path] = typer.Option(None, help="Folder path to save any files returned by the agent"),
 ) -> None:
     """Call an agent with a given input."""
-    agent = await _get_agent(name)
+    agents_by_name = await _get_agents()
+    agent = await _get_agent(name, agents_by_name)
     ui = agent.model_extra.get("ui", {}) or {}
     ui_type = ui.get("type", None)
+    is_sequential_workflow = agent.name in {
+        "sequential-workflow",
+        "prompted-sequential-workflow",
+    }
+
     user_greeting = ui.get("userGreeting", None) or "How can I help you?"
     config = {}
+
     if not input:
-        if ui_type not in {UiType.chat, UiType.hands_off}:
+        if ui_type not in {UiType.chat, UiType.hands_off} and not is_sequential_workflow:
             err_console.print(
-                f"💥 [red][bold]Error[/red][/bold]: Agent {name} does not use any supported UIs.\n"
+                f"💥 [red][b]Error[/red][/b]: Agent {name} does not use any supported UIs.\n"
                 f"Please use the agent according to the following examples and schema:"
             )
             err_console.print(_render_examples(agent))
             err_console.print(Markdown("## Schema"), "")
             err_console.print(_render_schema(agent.inputSchema))
             exit(1)
-        console.print(Markdown(f"# {agent.name}  \n{agent.description}"))
+        console.clear()
+
+        splash_screen = Group(
+            Markdown(f"# {agent.name}  \n{agent.description}"),
+            NewLine(),
+            console.render_str("[b]Running in interactive mode, use '/?' for help, [red]type '/q' to quit.[/red][/b]"),
+            NewLine(),
+        )
 
         config_schema = agent.inputSchema.get("properties", {}).get("config", None)
         if not config_schema or "properties" not in config_schema:
             config_schema = None
-        if config_schema:
-            _handle_command("show-config", config_schema, config)
 
-        console.print("\nRunning in interactive mode, use '/?' for help, [red]type '/q' to quit.[/red]", style="bold")
+        console.print(splash_screen)
+
+        workflow_steps = {}
+        if is_sequential_workflow:
+            workflow_steps = _setup_sequential_workflow(
+                splash_screen, agents_by_name, require_prompts=agent.name == "prompted-sequential-workflow"
+            )
+
         if config_schema:
-            console.print("Hint: Use /set <key> <value> to set an agent configuration property.")
+            console.print(config_schema)
+            ShowConfig(config_schema, config).handle()
+
+        handle_input = _create_input_handler([ShowConfig(config_schema, config), Set(config_schema, config)])
 
         console.print()
+
         if ui_type == UiType.chat:
             messages = []
             console.print(f"🐝 Agent: {user_greeting}\n")
-            input = _handle_input(config_schema, config)
+            input = handle_input()
             while True:
                 console.print()
                 messages.append({"role": "user", "content": input})
@@ -263,14 +411,29 @@ async def run(
                     messages.extend(new_messages)
                 else:
                     messages = new_messages
-                input = _handle_input(config_schema, config)
+                input = handle_input()
 
-        if ui_type == UiType.hands_off:
+        elif ui_type == UiType.hands_off:
             user_greeting = ui.get("userGreeting", None) or "Enter your instructions."
             console.print(f"🐝 {user_greeting}\n")
-            input = _handle_input(config_schema, config)
+            input = handle_input()
             console.print()
-            await _run_agent(name, {"text": input, "config": config}, dump_files_path=dump_files)
+            await _run_agent(name, {"text": input, "config": config, **workflow_steps}, dump_files_path=dump_files)
+        elif is_sequential_workflow:
+            user_greeting = ui.get("userGreeting", None) or "Enter your instructions."
+            console.print(f"🐝 {user_greeting}\n")
+            input = handle_input()
+            console.print()
+            input = filter_dict(
+                {
+                    "input": {"text": input} if agent.name == "sequential-workflow" else input,
+                    **config,
+                    "steps": workflow_steps if agent.name != "sequential-workflow" else None,
+                    "agents": [s["agent"] for s in workflow_steps] if agent.name == "sequential-workflow" else None,
+                }
+            )
+            await _run_agent(name, input, dump_files_path=dump_files)
+
     else:
         try:
             input = check_json(input)
@@ -304,9 +467,15 @@ async def list_agents():
     console.print(table)
 
 
-async def _get_agent(name: str) -> Agent:
+async def _get_agents() -> dict[str, Agent]:
     result = await send_request(types.ListAgentsRequest(method="agents/list"), types.ListAgentsResult)
     agents_by_name = {agent.name: agent for agent in result.agents}
+    return agents_by_name
+
+
+async def _get_agent(name: str, agents_by_name: dict[str, Agent] | None = None) -> Agent:
+    if not agents_by_name:
+        agents_by_name = await _get_agents()
     if agent := agents_by_name.get(name, None):
         return agent
     raise McpError(error=ErrorData(code=404, message=f"agent/{name} not found in any provider"))
