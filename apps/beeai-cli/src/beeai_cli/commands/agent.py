@@ -394,7 +394,6 @@ async def run_agent(
         console.print(splash_screen)
 
         if config_schema:
-            console.print(config_schema)
             ShowConfig(config_schema, config).handle()
 
         handle_input = _create_input_handler([ShowConfig(config_schema, config), Set(config_schema, config)])
