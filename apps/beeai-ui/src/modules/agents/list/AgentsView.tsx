@@ -26,7 +26,6 @@ import { AgentsFilters } from '../components/AgentsFilters';
 import { AgentsList } from '../components/AgentsList';
 import { ImportAgents } from '../components/ImportAgents';
 import { AgentsFiltersParams } from '../providers/AgentsFiltersProvider';
-import { getAgentTitle } from '../utils';
 
 export function AgentsView() {
   const { data, isPending, error, refetch, isRefetching } = useListAgents();
@@ -80,7 +79,7 @@ const renderAgentTitle = ({ className, agent }: { className: string; agent: Agen
   const route = routes.agentDetail({ name: agent.name });
   return (
     <TransitionLink className={className} to={route}>
-      {getAgentTitle(agent)}
+      {agent.name}
     </TransitionLink>
   );
 };

@@ -18,8 +18,13 @@
   @include scrollbar();
   block-size: 100%;
   inline-size: 100%;
-  padding-block: $spacing-09;
   overflow-x: hidden;
   overflow-y: auto;
   scrollbar-gutter: stable;
+  &.md {
+    padding-block: $spacing-07;
+  }
+  &.lg {
+    padding-block: $spacing-09;
+  }
 }

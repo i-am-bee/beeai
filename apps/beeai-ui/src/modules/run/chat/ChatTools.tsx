@@ -19,8 +19,8 @@ import { SkeletonItems } from '#components/SkeletonItems/SkeletonItems.tsx';
 import { useListTools } from '#modules/tools/api/queries/useListTools.ts';
 import { useCallback } from 'react';
 import { useFormContext } from 'react-hook-form';
+import { ChatFormValues } from './ChatInput';
 import classes from './ChatTools.module.scss';
-import { ChatFormValues } from './InputBar';
 import { ToolToggle } from './ToolToggle';
 import { ChatSupportedTools } from './constants';
 

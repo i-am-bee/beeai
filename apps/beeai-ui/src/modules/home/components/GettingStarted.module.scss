@@ -60,7 +60,7 @@
 .link {
   font-size: rem(12px);
   line-height: math.div(18, 12);
-  letter-spacing: rem(0.16px);
+  letter-spacing: $letter-spacing;
   max-inline-size: max-content;
   text-decoration: none;
   color: $text-secondary;

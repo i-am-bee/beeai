@@ -8,7 +8,7 @@ catalogs:
   default:
     '@eslint/js':
       specifier: ^9.20.0
-      version: 9.21.0
+      version: 9.20.0
     eslint:
       specifier: ^9.17.0
       version: 9.20.1
@@ -46,7 +46,7 @@ importers:
         version: 0.0.12
       beeai-framework:
         specifier: ^0.1.2
-        version: 0.1.2(@ai-sdk/openai@1.1.13(zod@3.24.2))(@aws-sdk/client-bedrock-runtime@3.751.0)(@modelcontextprotocol/sdk@1.6.0)(ollama-ai-provider@1.2.0(zod@3.24.2))(react@19.0.0)(yaml@2.7.0)
+        version: 0.1.2(@ai-sdk/openai@1.1.13(zod@3.24.2))(@aws-sdk/client-bedrock-runtime@3.751.0)(@modelcontextprotocol/sdk@1.6.1)(ollama-ai-provider@1.2.0(zod@3.24.2))(react@19.0.0)(yaml@2.7.0)
       tsx:
         specifier: ^4.19.2
         version: 4.19.3
@@ -71,7 +71,7 @@ importers:
         version: 0.0.12
       beeai-framework:
         specifier: ^0.1.2
-        version: 0.1.2(@ai-sdk/openai@1.1.14(zod@3.24.2))(@aws-sdk/client-bedrock-runtime@3.751.0)(@modelcontextprotocol/sdk@1.6.0)(ollama-ai-provider@1.2.0(zod@3.24.2))(react@19.0.0)(yaml@2.7.0)
+        version: 0.1.2(@ai-sdk/openai@1.1.14(zod@3.24.2))(@aws-sdk/client-bedrock-runtime@3.751.0)(@modelcontextprotocol/sdk@1.6.1)(ollama-ai-provider@1.2.0(zod@3.24.2))(react@19.0.0)(yaml@2.7.0)
       ollama-ai-provider:
         specifier: ^1.2.0
         version: 1.2.0(zod@3.24.2)
@@ -99,10 +99,10 @@ importers:
         version: 0.0.12
       '@i-am-bee/beeai-supervisor':
         specifier: 0.0.5
-        version: 0.0.5(@ai-sdk/openai@1.1.14(zod@3.24.2))(@eslint/js@9.21.0)(@i-am-bee/acp-sdk@0.0.4)(@opentelemetry/api@1.9.0)(@types/debug@4.1.12)(@types/node@22.13.5)(bee-agent-framework@0.0.61(@aws-sdk/client-bedrock-runtime@3.751.0)(@google-cloud/vertexai@1.9.3)(@grpc/grpc-js@1.12.6)(@grpc/proto-loader@0.7.13)(@modelcontextprotocol/sdk@1.6.0)(google-auth-library@9.15.1)(ollama@0.5.14)(openai-chat-tokens@0.2.8)(openai@4.86.1(ws@8.18.0)(zod@3.24.2))(yaml@2.7.0))(beeai-framework@0.1.2(@ai-sdk/openai@1.1.14(zod@3.24.2))(@aws-sdk/client-bedrock-runtime@3.751.0)(@modelcontextprotocol/sdk@1.6.0)(ollama-ai-provider@1.2.0(zod@3.24.2))(react@19.0.0)(yaml@2.7.0))(sass-embedded@1.85.1)(sass@1.85.0)(tsx@4.19.3)(typescript@5.7.3)(vite@6.2.0(@types/node@22.13.5)(sass-embedded@1.85.1)(sass@1.85.0)(tsx@4.19.3)(yaml@2.7.0))(ws@8.18.0)(yaml@2.7.0)
+        version: 0.0.5(@ai-sdk/openai@1.1.14(zod@3.24.2))(@eslint/js@9.21.0)(@i-am-bee/acp-sdk@0.0.4)(@opentelemetry/api@1.9.0)(@types/debug@4.1.12)(@types/node@22.13.5)(bee-agent-framework@0.0.61(@aws-sdk/client-bedrock-runtime@3.751.0)(@google-cloud/vertexai@1.9.3)(@grpc/grpc-js@1.12.6)(@grpc/proto-loader@0.7.13)(@modelcontextprotocol/sdk@1.6.1)(google-auth-library@9.15.1)(ollama@0.5.14)(openai-chat-tokens@0.2.8)(openai@4.86.2(ws@8.18.0)(zod@3.24.2))(yaml@2.7.0))(beeai-framework@0.1.2(@ai-sdk/openai@1.1.14(zod@3.24.2))(@aws-sdk/client-bedrock-runtime@3.751.0)(@modelcontextprotocol/sdk@1.6.1)(ollama-ai-provider@1.2.0(zod@3.24.2))(react@19.0.0)(yaml@2.7.0))(sass-embedded@1.85.1)(sass@1.85.0)(tsx@4.19.3)(typescript@5.7.3)(vite@6.2.0(@types/node@22.13.5)(sass-embedded@1.85.1)(sass@1.85.0)(tsx@4.19.3)(yaml@2.7.0))(ws@8.18.0)(yaml@2.7.0)
       beeai-framework:
         specifier: ^0.1.2
-        version: 0.1.2(@ai-sdk/openai@1.1.14(zod@3.24.2))(@aws-sdk/client-bedrock-runtime@3.751.0)(@modelcontextprotocol/sdk@1.6.0)(ollama-ai-provider@1.2.0(zod@3.24.2))(react@19.0.0)(yaml@2.7.0)
+        version: 0.1.2(@ai-sdk/openai@1.1.14(zod@3.24.2))(@aws-sdk/client-bedrock-runtime@3.751.0)(@modelcontextprotocol/sdk@1.6.1)(ollama-ai-provider@1.2.0(zod@3.24.2))(react@19.0.0)(yaml@2.7.0)
       dotenv:
         specifier: ^16.4.7
         version: 16.4.7
@@ -150,8 +150,8 @@ importers:
         specifier: ^0.27.4
         version: 0.27.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@i-am-bee/acp-sdk':
-        specifier: 0.0.3
-        version: 0.0.3
+        specifier: workspace:*
+        version: link:../../packages/acp-typescript-sdk
       '@i-am-bee/beeai-sdk':
         specifier: workspace:*
         version: link:../../packages/beeai-sdk
@@ -182,6 +182,9 @@ importers:
       framer-motion:
         specifier: ^12.4.7
         version: 12.4.7(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      humanize-duration:
+        specifier: ^3.32.1
+        version: 3.32.1
       immer:
         specifier: ^10.1.1
         version: 10.1.1
@@ -270,6 +273,9 @@ importers:
       '@types/hast':
         specifier: ^3.0.4
         version: 3.0.4
+      '@types/humanize-duration':
+        specifier: ^3.27.4
+        version: 3.27.4
       '@types/lodash':
         specifier: ^4.17.15
         version: 4.17.15
@@ -503,7 +509,7 @@ importers:
     devDependencies:
       '@eslint/js':
         specifier: 'catalog:'
-        version: 9.21.0
+        version: 9.20.0
       '@swc/core':
         specifier: ^1.10.16
         version: 1.11.1(@swc/helpers@0.5.15)
@@ -1739,10 +1745,6 @@ packages:
     resolution: {integrity: sha512-xeO57FpIu4p1Ri3Jq/EXq4ClRm86dVF2z/+kvFnyqVYRavTZmaFaUBbWCOuuTh0o/g7DSsk6kc2vrS4Vl5oPOQ==}
     engines: {node: '>=18.18'}
 
-  '@i-am-bee/acp-sdk@0.0.3':
-    resolution: {integrity: sha512-x9++3Sbu0UAZsiifLPlFPLG0tLFzYmGGZ8w4EU5meBZ6I2dxowwUO8DGl89qoHib0GaZddre9qT/zJyhWZW4vw==}
-    engines: {node: '>=18'}
-
   '@i-am-bee/acp-sdk@0.0.4':
     resolution: {integrity: sha512-bp0Nx1SibAeq+QbmavYf4cOBzW98crtn8gXfq4VCo0Vm7VIHEC0IGA40g+iFHx+OTAyAN/he0PAme2pGyGseXw==}
     engines: {node: '>=18'}
@@ -2189,8 +2191,8 @@ packages:
   '@mixmark-io/domino@2.2.0':
     resolution: {integrity: sha512-Y28PR25bHXUg88kCV7nivXrP2Nj2RueZ3/l/jdx6J9f8J4nsEGcgX0Qe6lt7Pa+J79+kPiJU3LguR6O/6zrLOw==}
 
-  '@modelcontextprotocol/sdk@1.6.0':
-    resolution: {integrity: sha512-585s8g+jzuGBomzgzDeP5l8gEyiSs+KhoAHbA2ZZ24Zgm83IZsyCLl/fmWhPHbfYsuLG8NE6SWGZA5ZBql8jSw==}
+  '@modelcontextprotocol/sdk@1.6.1':
+    resolution: {integrity: sha512-oxzMzYCkZHMntzuyerehK3fV6A2Kwh5BD6CGEJSVDU2QNEhfLOptf2X7esQgaHZXHZY0oHmMsOtIDLP71UJXgA==}
     engines: {node: '>=18'}
 
   '@next/env@15.1.7':
@@ -3158,6 +3160,9 @@ packages:
 
   '@types/http-errors@2.0.4':
     resolution: {integrity: sha512-D0CFMMtydbJAegzOyHjtiKPLlvnm3iTZyZRSZoLq2mRhDdmLfIWOCYPfQJ4cu2erKghU++QvjcUjp/5h7hESpA==}
+
+  '@types/humanize-duration@3.27.4':
+    resolution: {integrity: sha512-yaf7kan2Sq0goxpbcwTQ+8E9RP6HutFBPv74T/IA/ojcHKhuKVlk2YFYyHhWZeLvZPzzLE3aatuQB4h0iqyyUA==}
 
   '@types/istanbul-lib-coverage@2.0.6':
     resolution: {integrity: sha512-2QF/t/auWm0lsy8XtKVPG19v3sSOQlJe/YHZgfjb/KBBHOGSV+J2q/S671rcq9uTBrLAXmZpqJiaQbMT+zNU1w==}
@@ -4885,8 +4890,8 @@ packages:
     resolution: {integrity: sha512-6BN9trH7bp3qvnrRyzsBz+g3lZxTNZTbVO2EV1CS0WIcDbawYVdYvGflME/9QP0h0pYlCDBCTjYa9nZzMDpyxQ==}
     engines: {node: '>= 0.8'}
 
-  finalhandler@2.0.0:
-    resolution: {integrity: sha512-MX6Zo2adDViYh+GcxxB1dpO43eypOGUOL12rLCOTMQv/DfIbpSJUy4oQIIZhVZkH9e+bZWKMon0XHFEju16tkQ==}
+  finalhandler@2.1.0:
+    resolution: {integrity: sha512-/t88Ty3d5JWQbWYgaOGCCYfXRwV1+be02WqYYlL6h0lEiUAMPM8o8qKGO01YIkOHzka2up08wvgYD0mDiI+q3Q==}
     engines: {node: '>= 0.8'}
 
   find-root@1.1.0:
@@ -5300,6 +5305,9 @@ packages:
   human-signals@2.1.0:
     resolution: {integrity: sha512-B4FFZ6q/T2jhhksgkbEW3HBvWIfDW85snkQgawt07S7J5QXTk6BkNV+0yAeZrM5QpMAdYlocGoljn0sJ/WQkFw==}
     engines: {node: '>=10.17.0'}
+
+  humanize-duration@3.32.1:
+    resolution: {integrity: sha512-inh5wue5XdfObhu/IGEMiA1nUXigSGcaKNemcbLRKa7jXYGDZXr3LoT9pTIzq2hPEbld7w/qv9h+ikWGz8fL1g==}
 
   humanize-ms@1.2.1:
     resolution: {integrity: sha512-Fl70vYtsAFb/C06PTS9dZBo7ihau+Tu/DNCk/OyHhea07S+aeMWpFFkUaXRa8fI+ScZbEI8dfSxwY7gxZ9SAVQ==}
@@ -6544,8 +6552,8 @@ packages:
   openai-chat-tokens@0.2.8:
     resolution: {integrity: sha512-nW7QdFDIZlAYe6jsCT/VPJ/Lam3/w2DX9oxf/5wHpebBT49KI3TN43PPhYlq1klq2ajzXWKNOLY6U4FNZM7AoA==}
 
-  openai@4.86.1:
-    resolution: {integrity: sha512-x3iCLyaC3yegFVZaxOmrYJjitKxZ9hpVbLi+ZlT5UHuHTMlEQEbKXkGOM78z9qm2T5GF+XRUZCP2/aV4UPFPJQ==}
+  openai@4.86.2:
+    resolution: {integrity: sha512-nvYeFjmjdSu6/msld+22JoUlCICNk/lUFpSMmc6KNhpeNLpqL70TqbD/8Vura/tFmYqHKW0trcjgPwUpKSPwaA==}
     hasBin: true
     peerDependencies:
       ws: ^8.18.0
@@ -7714,8 +7722,11 @@ packages:
     resolution: {integrity: sha512-6fPc+R4ihwqP6N/aIv2f1gMH8lOVtWQHoqC4yK6oSDVVocumAsfCqjkXnqiYMhmMwS/mEHLp7Vehlt3ql6lEig==}
     engines: {node: '>=8'}
 
-  strnum@1.1.1:
-    resolution: {integrity: sha512-O7aCHfYCamLCctjAiaucmE+fHf2DYHkus2OKCn4Wv03sykfFtgeECn505X6K4mPl8CRNd/qurC9guq+ynoN4pw==}
+  strnum@1.0.5:
+    resolution: {integrity: sha512-J8bbNyKKXl5qYcR36TIO8W3mVGVHrmmxsd5PAItGkmyzwJvybiw2IVq5nqd0i4LSNSkB/sx9VHllbfFdr9k1JA==}
+
+  strnum@1.1.2:
+    resolution: {integrity: sha512-vrN+B7DBIoTTZjnPNewwhx6cBA/H+IS7rfW68n7XxC1y7uoiGQBxaKzqucGUgavX15dJgiGztLJ8vxuEzwqBdA==}
 
   style-to-object@1.0.8:
     resolution: {integrity: sha512-xT47I/Eo0rwJmaXC4oilDGDWLohVhR6o/xAQcPQN8q6QBuZVL8qMYL85kLmST5cPjAorwvqIA4qXTRQoYHaL6g==}
@@ -10150,15 +10161,6 @@ snapshots:
 
   '@humanwhocodes/retry@0.4.2': {}
 
-  '@i-am-bee/acp-sdk@0.0.3':
-    dependencies:
-      '@opentelemetry/api': 1.9.0
-      content-type: 1.0.5
-      eventsource: 3.0.5
-      raw-body: 3.0.0
-      zod: 3.24.2
-      zod-to-json-schema: 3.24.3(zod@3.24.2)
-
   '@i-am-bee/acp-sdk@0.0.4':
     dependencies:
       '@opentelemetry/api': 1.9.0
@@ -10181,22 +10183,22 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@i-am-bee/beeai-supervisor@0.0.5(@ai-sdk/openai@1.1.14(zod@3.24.2))(@eslint/js@9.21.0)(@i-am-bee/acp-sdk@0.0.4)(@opentelemetry/api@1.9.0)(@types/debug@4.1.12)(@types/node@22.13.5)(bee-agent-framework@0.0.61(@aws-sdk/client-bedrock-runtime@3.751.0)(@google-cloud/vertexai@1.9.3)(@grpc/grpc-js@1.12.6)(@grpc/proto-loader@0.7.13)(@modelcontextprotocol/sdk@1.6.0)(google-auth-library@9.15.1)(ollama@0.5.14)(openai-chat-tokens@0.2.8)(openai@4.86.1(ws@8.18.0)(zod@3.24.2))(yaml@2.7.0))(beeai-framework@0.1.2(@ai-sdk/openai@1.1.14(zod@3.24.2))(@aws-sdk/client-bedrock-runtime@3.751.0)(@modelcontextprotocol/sdk@1.6.0)(ollama-ai-provider@1.2.0(zod@3.24.2))(react@19.0.0)(yaml@2.7.0))(sass-embedded@1.85.1)(sass@1.85.0)(tsx@4.19.3)(typescript@5.7.3)(vite@6.2.0(@types/node@22.13.5)(sass-embedded@1.85.1)(sass@1.85.0)(tsx@4.19.3)(yaml@2.7.0))(ws@8.18.0)(yaml@2.7.0)':
+  '@i-am-bee/beeai-supervisor@0.0.5(@ai-sdk/openai@1.1.14(zod@3.24.2))(@eslint/js@9.21.0)(@i-am-bee/acp-sdk@0.0.4)(@opentelemetry/api@1.9.0)(@types/debug@4.1.12)(@types/node@22.13.5)(bee-agent-framework@0.0.61(@aws-sdk/client-bedrock-runtime@3.751.0)(@google-cloud/vertexai@1.9.3)(@grpc/grpc-js@1.12.6)(@grpc/proto-loader@0.7.13)(@modelcontextprotocol/sdk@1.6.1)(google-auth-library@9.15.1)(ollama@0.5.14)(openai-chat-tokens@0.2.8)(openai@4.86.2(ws@8.18.0)(zod@3.24.2))(yaml@2.7.0))(beeai-framework@0.1.2(@ai-sdk/openai@1.1.14(zod@3.24.2))(@aws-sdk/client-bedrock-runtime@3.751.0)(@modelcontextprotocol/sdk@1.6.1)(ollama-ai-provider@1.2.0(zod@3.24.2))(react@19.0.0)(yaml@2.7.0))(sass-embedded@1.85.1)(sass@1.85.0)(tsx@4.19.3)(typescript@5.7.3)(vite@6.2.0(@types/node@22.13.5)(sass-embedded@1.85.1)(sass@1.85.0)(tsx@4.19.3)(yaml@2.7.0))(ws@8.18.0)(yaml@2.7.0)':
     dependencies:
       '@ai-sdk/openai': 1.1.14(zod@3.24.2)
       '@eslint/js': 9.21.0
       '@google-cloud/vertexai': 1.9.3
       '@i-am-bee/acp-sdk': 0.0.4
       '@ibm-generative-ai/node-sdk': 3.2.4
-      '@modelcontextprotocol/sdk': 1.6.0
+      '@modelcontextprotocol/sdk': 1.6.1
       '@opentelemetry/sdk-node': 0.57.2(@opentelemetry/api@1.9.0)
-      bee-observe-connector: 0.0.6(bee-agent-framework@0.0.61(@aws-sdk/client-bedrock-runtime@3.751.0)(@google-cloud/vertexai@1.9.3)(@grpc/grpc-js@1.12.6)(@grpc/proto-loader@0.7.13)(@modelcontextprotocol/sdk@1.6.0)(google-auth-library@9.15.1)(ollama@0.5.14)(openai-chat-tokens@0.2.8)(openai@4.86.1(ws@8.18.0)(zod@3.24.2))(yaml@2.7.0))
-      beeai-framework: 0.1.2(@ai-sdk/openai@1.1.14(zod@3.24.2))(@aws-sdk/client-bedrock-runtime@3.751.0)(@modelcontextprotocol/sdk@1.6.0)(ollama-ai-provider@1.2.0(zod@3.24.2))(react@19.0.0)(yaml@2.7.0)
+      bee-observe-connector: 0.0.6(bee-agent-framework@0.0.61(@aws-sdk/client-bedrock-runtime@3.751.0)(@google-cloud/vertexai@1.9.3)(@grpc/grpc-js@1.12.6)(@grpc/proto-loader@0.7.13)(@modelcontextprotocol/sdk@1.6.1)(google-auth-library@9.15.1)(ollama@0.5.14)(openai-chat-tokens@0.2.8)(openai@4.86.2(ws@8.18.0)(zod@3.24.2))(yaml@2.7.0))
+      beeai-framework: 0.1.2(@ai-sdk/openai@1.1.14(zod@3.24.2))(@aws-sdk/client-bedrock-runtime@3.751.0)(@modelcontextprotocol/sdk@1.6.1)(ollama-ai-provider@1.2.0(zod@3.24.2))(react@19.0.0)(yaml@2.7.0)
       chokidar: 4.0.3
       dotenv: 16.4.7
       neo-blessed: 0.2.0
       ollama: 0.5.14
-      openai: 4.86.1(ws@8.18.0)(zod@3.24.2)
+      openai: 4.86.2(ws@8.18.0)(zod@3.24.2)
       openai-chat-tokens: 0.2.8
       picocolors: 1.1.1
       pino: 9.6.0
@@ -10928,7 +10930,7 @@ snapshots:
 
   '@mixmark-io/domino@2.2.0': {}
 
-  '@modelcontextprotocol/sdk@1.6.0':
+  '@modelcontextprotocol/sdk@1.6.1':
     dependencies:
       content-type: 1.0.5
       cors: 2.8.5
@@ -12005,6 +12007,8 @@ snapshots:
 
   '@types/http-errors@2.0.4': {}
 
+  '@types/humanize-duration@3.27.4': {}
+
   '@types/istanbul-lib-coverage@2.0.6': {}
 
   '@types/istanbul-lib-report@3.0.3':
@@ -12599,7 +12603,7 @@ snapshots:
 
   basic-ftp@5.0.5: {}
 
-  bee-agent-framework@0.0.61(@aws-sdk/client-bedrock-runtime@3.751.0)(@google-cloud/vertexai@1.9.3)(@grpc/grpc-js@1.12.6)(@grpc/proto-loader@0.7.13)(@modelcontextprotocol/sdk@1.6.0)(google-auth-library@9.15.1)(ollama@0.5.14)(openai-chat-tokens@0.2.8)(openai@4.86.1(ws@8.18.0)(zod@3.24.2))(yaml@2.7.0):
+  bee-agent-framework@0.0.61(@aws-sdk/client-bedrock-runtime@3.751.0)(@google-cloud/vertexai@1.9.3)(@grpc/grpc-js@1.12.6)(@grpc/proto-loader@0.7.13)(@modelcontextprotocol/sdk@1.6.1)(google-auth-library@9.15.1)(ollama@0.5.14)(openai-chat-tokens@0.2.8)(openai@4.86.2(ws@8.18.0)(zod@3.24.2))(yaml@2.7.0):
     dependencies:
       '@ai-zen/node-fetch-event-source': 2.1.4
       '@opentelemetry/api': 1.9.0
@@ -12633,23 +12637,23 @@ snapshots:
       '@google-cloud/vertexai': 1.9.3
       '@grpc/grpc-js': 1.12.6
       '@grpc/proto-loader': 0.7.13
-      '@modelcontextprotocol/sdk': 1.6.0
+      '@modelcontextprotocol/sdk': 1.6.1
       google-auth-library: 9.15.1
       ollama: 0.5.14
-      openai: 4.86.1(ws@8.18.0)(zod@3.24.2)
+      openai: 4.86.2(ws@8.18.0)(zod@3.24.2)
       openai-chat-tokens: 0.2.8
       yaml: 2.7.0
     transitivePeerDependencies:
       - debug
       - encoding
 
-  bee-observe-connector@0.0.6(bee-agent-framework@0.0.61(@aws-sdk/client-bedrock-runtime@3.751.0)(@google-cloud/vertexai@1.9.3)(@grpc/grpc-js@1.12.6)(@grpc/proto-loader@0.7.13)(@modelcontextprotocol/sdk@1.6.0)(google-auth-library@9.15.1)(ollama@0.5.14)(openai-chat-tokens@0.2.8)(openai@4.86.1(ws@8.18.0)(zod@3.24.2))(yaml@2.7.0)):
+  bee-observe-connector@0.0.6(bee-agent-framework@0.0.61(@aws-sdk/client-bedrock-runtime@3.751.0)(@google-cloud/vertexai@1.9.3)(@grpc/grpc-js@1.12.6)(@grpc/proto-loader@0.7.13)(@modelcontextprotocol/sdk@1.6.1)(google-auth-library@9.15.1)(ollama@0.5.14)(openai-chat-tokens@0.2.8)(openai@4.86.2(ws@8.18.0)(zod@3.24.2))(yaml@2.7.0)):
     dependencies:
-      bee-agent-framework: 0.0.61(@aws-sdk/client-bedrock-runtime@3.751.0)(@google-cloud/vertexai@1.9.3)(@grpc/grpc-js@1.12.6)(@grpc/proto-loader@0.7.13)(@modelcontextprotocol/sdk@1.6.0)(google-auth-library@9.15.1)(ollama@0.5.14)(openai-chat-tokens@0.2.8)(openai@4.86.1(ws@8.18.0)(zod@3.24.2))(yaml@2.7.0)
+      bee-agent-framework: 0.0.61(@aws-sdk/client-bedrock-runtime@3.751.0)(@google-cloud/vertexai@1.9.3)(@grpc/grpc-js@1.12.6)(@grpc/proto-loader@0.7.13)(@modelcontextprotocol/sdk@1.6.1)(google-auth-library@9.15.1)(ollama@0.5.14)(openai-chat-tokens@0.2.8)(openai@4.86.2(ws@8.18.0)(zod@3.24.2))(yaml@2.7.0)
       openapi-fetch: 0.11.3
       remeda: 2.20.2
 
-  beeai-framework@0.1.2(@ai-sdk/openai@1.1.13(zod@3.24.2))(@aws-sdk/client-bedrock-runtime@3.751.0)(@modelcontextprotocol/sdk@1.6.0)(ollama-ai-provider@1.2.0(zod@3.24.2))(react@19.0.0)(yaml@2.7.0):
+  beeai-framework@0.1.2(@ai-sdk/openai@1.1.13(zod@3.24.2))(@aws-sdk/client-bedrock-runtime@3.751.0)(@modelcontextprotocol/sdk@1.6.1)(ollama-ai-provider@1.2.0(zod@3.24.2))(react@19.0.0)(yaml@2.7.0):
     dependencies:
       '@ai-zen/node-fetch-event-source': 2.1.4
       '@aws-sdk/client-bedrock-runtime': 3.751.0
@@ -12678,17 +12682,17 @@ snapshots:
       turndown: 7.2.0
       wikipedia: 2.1.2
       zod: 3.24.2
-      zod-to-json-schema: 3.24.3(zod@3.24.2)
+      zod-to-json-schema: 3.24.1(zod@3.24.2)
     optionalDependencies:
       '@ai-sdk/openai': 1.1.13(zod@3.24.2)
-      '@modelcontextprotocol/sdk': 1.6.0
+      '@modelcontextprotocol/sdk': 1.6.1
       yaml: 2.7.0
     transitivePeerDependencies:
       - debug
       - encoding
       - react
 
-  beeai-framework@0.1.2(@ai-sdk/openai@1.1.14(zod@3.24.2))(@aws-sdk/client-bedrock-runtime@3.751.0)(@modelcontextprotocol/sdk@1.6.0)(ollama-ai-provider@1.2.0(zod@3.24.2))(react@19.0.0)(yaml@2.7.0):
+  beeai-framework@0.1.2(@ai-sdk/openai@1.1.14(zod@3.24.2))(@aws-sdk/client-bedrock-runtime@3.751.0)(@modelcontextprotocol/sdk@1.6.1)(ollama-ai-provider@1.2.0(zod@3.24.2))(react@19.0.0)(yaml@2.7.0):
     dependencies:
       '@ai-zen/node-fetch-event-source': 2.1.4
       '@aws-sdk/client-bedrock-runtime': 3.751.0
@@ -12717,10 +12721,10 @@ snapshots:
       turndown: 7.2.0
       wikipedia: 2.1.2
       zod: 3.24.2
-      zod-to-json-schema: 3.24.3(zod@3.24.2)
+      zod-to-json-schema: 3.24.1(zod@3.24.2)
     optionalDependencies:
       '@ai-sdk/openai': 1.1.14(zod@3.24.2)
-      '@modelcontextprotocol/sdk': 1.6.0
+      '@modelcontextprotocol/sdk': 1.6.1
       yaml: 2.7.0
     transitivePeerDependencies:
       - debug
@@ -13892,7 +13896,7 @@ snapshots:
       encodeurl: 2.0.0
       escape-html: 1.0.3
       etag: 1.8.1
-      finalhandler: 2.0.0
+      finalhandler: 2.1.0
       fresh: 2.0.0
       http-errors: 2.0.0
       merge-descriptors: 2.0.0
@@ -13972,11 +13976,11 @@ snapshots:
 
   fast-xml-parser@4.4.1:
     dependencies:
-      strnum: 1.1.1
+      strnum: 1.1.2
 
   fast-xml-parser@4.5.2:
     dependencies:
-      strnum: 1.1.1
+      strnum: 1.0.5
 
   fastest-levenshtein@1.0.16: {}
 
@@ -14040,15 +14044,14 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  finalhandler@2.0.0:
+  finalhandler@2.1.0:
     dependencies:
-      debug: 2.6.9
-      encodeurl: 1.0.2
+      debug: 4.4.0
+      encodeurl: 2.0.0
       escape-html: 1.0.3
       on-finished: 2.4.1
       parseurl: 1.3.3
       statuses: 2.0.1
-      unpipe: 1.0.0
     transitivePeerDependencies:
       - supports-color
 
@@ -14626,6 +14629,8 @@ snapshots:
       - supports-color
 
   human-signals@2.1.0: {}
+
+  humanize-duration@3.32.1: {}
 
   humanize-ms@1.2.1:
     dependencies:
@@ -16329,7 +16334,7 @@ snapshots:
     dependencies:
       js-tiktoken: 1.0.19
 
-  openai@4.86.1(ws@8.18.0)(zod@3.24.2):
+  openai@4.86.2(ws@8.18.0)(zod@3.24.2):
     dependencies:
       '@types/node': 18.19.79
       '@types/node-fetch': 2.6.12
@@ -17784,7 +17789,9 @@ snapshots:
 
   strip-json-comments@3.1.1: {}
 
-  strnum@1.1.1: {}
+  strnum@1.0.5: {}
+
+  strnum@1.1.2: {}
 
   style-to-object@1.0.8:
     dependencies:

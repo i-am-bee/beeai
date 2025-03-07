@@ -14,23 +14,17 @@
  * limitations under the License.
  */
 
-import { PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { AgentInstance, ComposeContext } from './compose-context';
-import { useSearchParams } from 'react-router';
-import { useRunAgent } from '#modules/run/api/mutations/useRunAgent.tsx';
-import { useListAgents } from '#modules/agents/api/queries/useListAgents.ts';
-import { isNotNull } from '#utils/helpers.ts';
-import { getComposeDeltaResultText, getComposeResultText } from '../utils';
 import { useHandleError } from '#hooks/useHandleError.ts';
-import {
-  ComposeInput,
-  ComposeNotifications,
-  composeNotificationSchema,
-  ComposeNotificationsZod,
-  ComposeResult,
-} from '../types';
 import { usePrevious } from '#hooks/usePrevious.ts';
+import { useListAgents } from '#modules/agents/api/queries/useListAgents.ts';
+import { useRunAgent } from '#modules/run/api/mutations/useRunAgent.tsx';
+import { isNotNull } from '#utils/helpers.ts';
+import { PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router';
 import { getSequentialComposeAgent, SEQUENTIAL_COMPOSE_AGENT_NAME } from '../sequential-workflow';
+import { ComposeInput, ComposeNotificationDelta, ComposeNotificationSchema, ComposeResult } from '../types';
+import { getComposeDeltaResultText, getComposeResultText } from '../utils';
+import { AgentInstance, ComposeContext } from './compose-context';
 
 export function ComposeProvider({ children }: PropsWithChildren) {
   const { data: availableAgents } = useListAgents();
@@ -70,7 +64,7 @@ export function ComposeProvider({ children }: PropsWithChildren) {
     });
   }, [agents, availableAgents, previousAgents, setSearchParams]);
 
-  const handleRunDelta = useCallback((delta: ComposeNotifications['params']['delta']) => {
+  const handleRunDelta = useCallback((delta: ComposeNotificationDelta) => {
     if (delta.agent_idx === undefined) return;
 
     setAgents((agents) =>
@@ -101,9 +95,8 @@ export function ComposeProvider({ children }: PropsWithChildren) {
     );
   }, []);
 
-  const { runAgent } = useRunAgent<ComposeInput, ComposeNotificationsZod>({
+  const { runAgent } = useRunAgent<ComposeInput, ComposeNotificationSchema>({
     notifications: {
-      schema: composeNotificationSchema,
       handler: (notification) => {
         handleRunDelta(notification.params.delta);
       },

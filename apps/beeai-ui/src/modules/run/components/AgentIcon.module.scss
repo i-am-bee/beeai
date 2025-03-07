@@ -14,8 +14,19 @@
  * limitations under the License.
  */
 
-import { Agent } from './api/types';
+.root {
+  block-size: rem(32px);
+  inline-size: rem(32px);
+  border-radius: 50%;
+  background-color: $text-primary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: $box-shadow;
 
-export function getAgentTitle(agent: Agent) {
-  return agent.name;
+  svg {
+    fill: $background;
+    block-size: rem(16px);
+  }
 }

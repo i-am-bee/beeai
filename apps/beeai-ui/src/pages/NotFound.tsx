@@ -15,7 +15,12 @@
  */
 
 import { ErrorPage } from '#components/ErrorPage/ErrorPage.tsx';
+import { MainContent } from '#components/layouts/MainContent.tsx';
 
 export function NotFound() {
-  return <ErrorPage />;
+  return (
+    <MainContent>
+      <ErrorPage />
+    </MainContent>
+  );
 }

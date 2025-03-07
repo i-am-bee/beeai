@@ -15,16 +15,5 @@
  */
 
 .root {
-  block-size: rem(32px);
-  inline-size: rem(32px);
-  border-radius: 50%;
-  background-color: $text-primary;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  svg {
-    fill: $background;
-    block-size: rem(16px);
-  }
+  white-space: nowrap;
 }

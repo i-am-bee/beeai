@@ -165,4 +165,7 @@ $support-error-30: var(--cds-support-error-30);
 
 $modal-background: var(--cds-modal-background);
 
+$letter-spacing: 0.16px;
+$letter-spacing-lg: 0.32px;
+
 @forward '@carbon/styles/scss/theme';

@@ -21,11 +21,10 @@ import {
   AgentCard,
   AgentsFilters,
   AgentsFiltersParams,
-  AgentsList,
-  getAgentTitle,
+  AgentsList
 } from "@i-am-bee/beeai-ui";
 import Link from "next/link";
-import { useForm, FormProvider } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 
 interface Props {
   agents: Agent[];
@@ -62,6 +61,6 @@ const renderAgentTitle = ({
   agent: Agent;
 }) => (
   <Link href={`/agents/${agent.name}`} className={className}>
-    {getAgentTitle(agent)}
+    {agent.name}
   </Link>
 );
