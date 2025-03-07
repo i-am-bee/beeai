@@ -97,7 +97,7 @@ requires-dist = [
     { name = "arxiv", specifier = ">=2.1.3" },
     { name = "autogen-agentchat", specifier = ">=0.4.7" },
     { name = "autogen-ext", extras = ["openai"], specifier = ">=0.4.7" },
-    { name = "beeai-sdk", specifier = "==0.0.6" },
+    { name = "beeai-sdk", specifier = "==0.0.11" },
     { name = "bs4", specifier = ">=0.0.2" },
 ]
 
@@ -152,7 +152,7 @@ wheels = [
 
 [[package]]
 name = "beeai-sdk"
-version = "0.0.6"
+version = "0.0.11"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "acp-sdk" },
@@ -160,9 +160,9 @@ dependencies = [
     { name = "opentelemetry-sdk" },
     { name = "pydantic" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/d3/82/241f05c70976f475a97def0c0ea148432b51ad6b7a6ac4834cc9e1636d1b/beeai_sdk-0.0.6.tar.gz", hash = "sha256:b36c622fc6ba5df6133128b762d21ab7aaf092638ddf493a7e81cfa145385c82", size = 9184 }
+sdist = { url = "https://files.pythonhosted.org/packages/80/a0/3ea985eb5fc80b4c60eb039ea81de88462464869f3d423140483d0af0a38/beeai_sdk-0.0.11.tar.gz", hash = "sha256:b93bb0f4ce51de200fda2404af3d2973ba6998525b936e9798fa562cef47c8c2", size = 9445 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/53/a0/96f0ec4c3b6d04a5fc94f03d0986e75e99ca7e32f62007ece775a4e98efc/beeai_sdk-0.0.6-py3-none-any.whl", hash = "sha256:4bee25d7312a59d564c39442a7695a687b3ccc432eb71a35b0c9516f04503890", size = 11823 },
+    { url = "https://files.pythonhosted.org/packages/8c/8d/79452d611f09fb16c75a0d8ef8365cb62162f817a2b20c45ee3844f8ad21/beeai_sdk-0.0.11-py3-none-any.whl", hash = "sha256:302975c029345ba98b2b58f4da8817fe31ac8b57f9baa051385664489d1051bb", size = 12138 },
 ]
 
 [[package]]

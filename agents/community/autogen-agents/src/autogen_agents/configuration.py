@@ -4,9 +4,9 @@ from pydantic_settings import BaseSettings
 
 
 class Configuration(BaseSettings):
-    model: str = "ollama/llama3.1"
-    api_base: str = "http://localhost:11434/v1"
-    openai_api_key: str | None = None
+    model: str = "gpt-4o"
+    api_base: str = "https://api.openai.com/v1"
+    api_key: str | None = None
     google_api_key: str | None = None
     google_search_engine_id: str | None = None
 
