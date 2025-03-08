@@ -16,16 +16,17 @@
 
 'use client';
 
-import { TagsList } from '#components/TagsList/TagsList.tsx';
-import { BEE_AI_FRAMEWORK_TAG } from '#utils/constants.ts';
-import { isNotNull } from '#utils/helpers.ts';
-import { Search } from '@carbon/icons-react';
-import { OperationalTag, TextInput, TextInputSkeleton } from '@carbon/react';
-import clsx from 'clsx';
 import { useId, useMemo } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { AgentsFiltersParams } from '../providers/AgentsFiltersProvider';
-import { Agent } from '../api/types';
+import { OperationalTag, TextInput, TextInputSkeleton } from '@carbon/react';
+import { Search } from '@carbon/icons-react';
+import clsx from 'clsx';
+import { TagsList } from '#components/TagsList/TagsList.tsx';
+import { FiltersPopover, type Group } from '#components/FiltersPopover/FiltersPopover.tsx';
+import { isNotNull } from '#utils/helpers.ts';
+import { type AgentsCountedOccurrence, countOccurrences } from '#utils/agents/countOccurrences.ts';
+import type { Agent } from '../api/types';
+import type { AgentsFiltersParams } from '../providers/AgentsFiltersProvider';
 import classes from './AgentsFilters.module.scss';
 
 interface Props {
@@ -34,30 +35,15 @@ interface Props {
 
 export function AgentsFilters({ agents }: Props) {
   const id = useId();
+  const occurrences = useMemo(() => agents && countOccurrences(agents), [agents]);
   const { watch, setValue } = useFormContext<AgentsFiltersParams>();
-
-  const frameworks = useMemo(() => {
-    if (!agents) return [];
-
-    return [...new Set(agents.map(({ framework }) => framework))].filter(isNotNull).sort((a, b) => {
-      // BeeAI framework should be always first
-      if (a === BEE_AI_FRAMEWORK_TAG) return -1;
-      if (b === BEE_AI_FRAMEWORK_TAG) return 1;
-
-      return a.localeCompare(b);
-    });
-  }, [agents]);
-
-  const selectFramework = (framework: string | null) => {
-    setValue('framework', framework);
-  };
-
-  const selectedFramework = watch('framework');
+  const [selectedFrameworks, selectedLanguages, selectedLicenses] = watch(['frameworks', 'languages', 'licenses']);
+  const areArrayFiltersActive = Boolean(selectedFrameworks || selectedLanguages || selectedLicenses);
 
   return (
-    <div className={classes.root}>
+    <div className={clsx(classes.root, { [classes.arrayFiltersActive]: areArrayFiltersActive })}>
       <div className={classes.searchBar}>
-        <Search />
+        <Search className={classes.searchIcon} />
 
         <TextInput
           id={`${id}:search`}
@@ -66,25 +52,63 @@ export function AgentsFilters({ agents }: Props) {
           onChange={(event) => setValue('search', event.target.value)}
           hideLabel
         />
+
+        {occurrences && (
+          <div className={classes.popoverContainer}>
+            <FiltersPopover
+              groups={[
+                createGroup({
+                  label: 'Framework',
+                  occurrence: occurrences.frameworks,
+                  selected: selectedFrameworks,
+                  onChange: (value) => setValue('frameworks', value),
+                }),
+                createGroup({
+                  label: 'Language',
+                  occurrence: occurrences.languages,
+                  selected: selectedLanguages,
+                  onChange: (value) => setValue('languages', value),
+                }),
+                createGroup({
+                  label: 'License',
+                  occurrence: occurrences.licenses,
+                  selected: selectedLicenses,
+                  onChange: (value) => setValue('licenses', value),
+                }),
+              ]}
+              onClearAll={() => {
+                setValue('frameworks', null);
+                setValue('languages', null);
+                setValue('licenses', null);
+              }}
+              toggleButtonClassName={classes.toggleButton}
+            />
+          </div>
+        )}
       </div>
 
-      <TagsList
-        tags={[
-          <OperationalTag
-            onClick={() => selectFramework(null)}
-            text="All"
-            className={clsx(classes.frameworkAll, { selected: !isNotNull(selectedFramework) })}
-          />,
-          ...frameworks.map((framework) => (
+      {occurrences?.frameworks && (
+        <TagsList
+          tags={[
             <OperationalTag
-              key={framework}
-              onClick={() => selectFramework(framework)}
-              text={framework}
-              className={clsx({ selected: selectedFramework === framework })}
-            />
-          )),
-        ]}
-      />
+              key="all"
+              onClick={() => setValue('frameworks', null)}
+              text="All"
+              className={clsx(classes.frameworkAll, { selected: !isNotNull(selectedFrameworks) })}
+            />,
+            ...occurrences.frameworks.map(({ label: framework }) => (
+              <OperationalTag
+                key={framework}
+                onClick={() => {
+                  setValue('frameworks', createUpdatedArray(selectedFrameworks, framework));
+                }}
+                text={framework}
+                className={clsx({ selected: selectedFrameworks?.includes(framework) })}
+              />
+            )),
+          ]}
+        />
+      )}
     </div>
   );
 }
@@ -100,3 +124,34 @@ AgentsFilters.Skeleton = function AgentsFiltersSkeleton() {
     </div>
   );
 };
+
+interface CreateGroupProps {
+  label: string;
+  occurrence: AgentsCountedOccurrence;
+  selected: string[] | null | undefined;
+  onChange: (value: string[] | null | undefined) => void;
+}
+
+function createGroup({ label, occurrence, selected, onChange }: CreateGroupProps): Group {
+  return {
+    label,
+    options: occurrence.map((item) => ({
+      ...item,
+      checked: selected?.includes(item.label) ?? false,
+      onChange: () => onChange(createUpdatedArray(selected, item.label)),
+    })),
+  };
+}
+
+function createUpdatedArray(selected: string[] | null | undefined, value: string) {
+  if (!Array.isArray(selected)) {
+    return [value];
+  }
+
+  if (selected.includes(value)) {
+    const frameworks = selected.filter((item) => item !== value);
+    return frameworks.length ? frameworks : null;
+  }
+
+  return [...selected, value];
+}

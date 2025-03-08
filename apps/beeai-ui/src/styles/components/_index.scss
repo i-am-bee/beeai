@@ -22,7 +22,8 @@
 @forward '@carbon/styles/scss/components/button';
 @forward 'button';
 // @forward '@carbon/styles/scss/components/chat-button';
-// @forward '@carbon/styles/scss/components/checkbox';
+@forward '@carbon/styles/scss/components/checkbox';
+@forward 'checkbox';
 // @forward '@carbon/styles/scss/components/code-snippet';
 // @forward '@carbon/styles/scss/components/combo-box';
 // @forward '@carbon/styles/scss/components/combo-button';
@@ -53,7 +54,8 @@
 // @forward '@carbon/styles/scss/components/icon-indicator';
 @forward '@carbon/styles/scss/components/inline-loading';
 @forward 'inline-loading';
-// @forward '@carbon/styles/scss/components/link';
+@forward '@carbon/styles/scss/components/link';
+@forward 'link';
 @forward '@carbon/styles/scss/components/list';
 // @forward '@carbon/styles/scss/components/list-box';
 // @forward '@carbon/styles/scss/components/loading';
@@ -68,7 +70,8 @@
 @forward 'overflow-menu';
 // @forward '@carbon/styles/scss/components/pagination';
 // @forward '@carbon/styles/scss/components/pagination-nav';
-// @forward '@carbon/styles/scss/components/popover';
+@forward '@carbon/styles/scss/components/popover';
+@forward 'popover';
 // @forward '@carbon/styles/scss/components/progress-bar';
 // @forward '@carbon/styles/scss/components/progress-indicator';
 // @forward 'progress-bar';

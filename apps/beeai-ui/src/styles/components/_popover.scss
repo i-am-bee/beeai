@@ -14,20 +14,14 @@
  * limitations under the License.
  */
 
-import type { PropsWithChildren } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
+@use 'styles/common' as *;
 
-export interface AgentsFiltersParams {
-  search?: string;
-  frameworks?: string[] | null;
-  languages?: string[] | null;
-  licenses?: string[] | null;
+.cds--popover--tab-tip > .cds--popover > .cds--popover-content {
+  border-radius: $border-radius;
+  padding: 1rem;
 }
 
-export function AgentsFiltersProvider({ children }: PropsWithChildren) {
-  const formReturn = useForm<AgentsFiltersParams>({
-    mode: 'onBlur',
-  });
-
-  return <FormProvider {...formReturn}>{children}</FormProvider>;
+.cds--popover--drop-shadow .cds--popover > .cds--popover-content {
+  filter: none;
+  box-shadow: 0px 2px 8px 0px #c1c7cd73;
 }
