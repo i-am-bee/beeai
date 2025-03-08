@@ -17,17 +17,22 @@
 import { useQuery } from '@tanstack/react-query';
 import { getProviders } from '..';
 import { providerKeys } from '../keys';
+import { Provider, ProvidersList } from '../types';
 
 interface Props {
   id?: string;
+  refetchInterval?: (data?: Provider) => number | false;
 }
 
-export function useProvider({ id }: Props) {
+export function useProvider({ id, refetchInterval = () => false }: Props) {
+  const select = (data?: ProvidersList) => data?.items.find((item) => id === item.id);
+
   const query = useQuery({
     queryKey: providerKeys.list(),
     queryFn: () => getProviders(),
-    select: (data) => data?.items.find((item) => id === item.id),
+    select,
     enabled: Boolean(id),
+    refetchInterval: (query) => refetchInterval(select(query.state.data)),
   });
 
   return query;
