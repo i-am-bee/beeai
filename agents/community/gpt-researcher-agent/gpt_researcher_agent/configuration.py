@@ -5,9 +5,9 @@ from pydantic_settings import BaseSettings
 
 class Configuration(BaseSettings):
     retriever: str = "duckduckgo"
-    llm_api_base: str = "https://api.openai.com/v1"
+    llm_api_base: str = "https://localhost:11434/v1"
     llm_api_key: str = "dummy"
-    llm_model: str = "gpt-4o"
+    llm_model: str = "llama3.1"
     llm_model_fast: str | None = None
     llm_model_smart: str | None = None
     llm_model_strategic: str | None = None

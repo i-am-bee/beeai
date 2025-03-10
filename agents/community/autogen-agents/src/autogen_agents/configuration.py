@@ -4,9 +4,9 @@ from pydantic_settings import BaseSettings
 
 
 class Configuration(BaseSettings):
-    llm_model: str = "gpt-4o"
-    llm_api_base: str = "https://api.openai.com/v1"
-    llm_api_key: str | None = None
+    llm_model: str = "llama3.1"
+    llm_api_base: str = "https://localhost:11434/v1"
+    llm_api_key: str = "dummy"
     google_api_key: str | None = None
     google_search_engine_id: str | None = None
 

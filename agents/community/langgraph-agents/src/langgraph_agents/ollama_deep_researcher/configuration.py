@@ -17,9 +17,9 @@ class Configuration:
     """The configurable fields for the research assistant."""
 
     max_web_research_loops: int = 3
-    model: str = os.getenv("LLM_MODEL", "gpt-4o")
-    api_key: str = os.getenv("LLM_API_KEY", "")
-    api_base: str = os.getenv("LLM_API_BASE", "https://api.openai.com/v1")
+    model: str = os.getenv("LLM_MODEL", "llama3.1")
+    api_key: str = os.getenv("LLM_API_KEY", "dummy")
+    api_base: str = os.getenv("LLM_API_BASE", "https://localhost:11434/v1")
     search_api: SearchAPI = SearchAPI.DUCKDUCKGO
     fetch_full_page: bool = False
 

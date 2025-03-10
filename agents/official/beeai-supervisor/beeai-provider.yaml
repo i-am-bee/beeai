@@ -1,17 +1,17 @@
 manifestVersion: 1
 driver: nodejs
-package: "git+https://github.com/i-am-bee/beeai@agents-v0.0.44#path=agents/official/beeai-supervisor"
+package: "git+https://github.com/i-am-bee/beeai@agents-v0.0.45#path=agents/official/beeai-supervisor"
 serverType: http
 mcpTransport: sse
 mcpEndpoint: /sse
 command: ["server"]
 env:
 - name: LLM_MODEL
-  required: true
+  required: false
   description: "Model to use from the specified OpenAI-compatible API."
 - name: LLM_API_BASE
-  required: true
+  required: false
   description: "Base URL for OpenAI-compatible API endpoint"
 - name: LLM_API_KEY
-  required: true
+  required: false
   description: "API key for OpenAI-compatible API endpoint"
