@@ -11,6 +11,6 @@ class Configuration(BaseSettings):
 
 def load_env():
     config = Configuration()
-    os.environ.setdefault("MODEL", config.model)
-    os.environ.setdefault("API_BASE", config.api_base)
-    os.environ.setdefault("OPENAI_API_KEY", config.api_key)
+    os.environ.setdefault("MODEL", config.llm_model)
+    os.environ.setdefault("API_BASE", config.llm_api_base)
+    os.environ.setdefault("OPENAI_API_KEY", config.llm_api_key)
