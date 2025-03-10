@@ -14,22 +14,32 @@
  * limitations under the License.
  */
 
-.section {
-  &:not(:last-child) {
-    margin-bottom: rem(48px);
-  }
+import { useRouteTransition } from "@/contexts/TransitionContext";
+import Link, { LinkProps } from "next/link";
+import { PropsWithChildren } from "react";
+
+interface Props extends LinkProps {
+  className?: string;
 }
 
-.title {
-  font-size: rem(18px);
-  font-weight: 600;
-  line-height: 1.3;
+export function TransitionLink({
+  href,
+  children,
+  ...props
+}: PropsWithChildren<Props>) {
+  const { transitionTo } = useRouteTransition();
 
-  &.defaultSpacing {
-    margin-bottom: rem(10px);
-  }
-
-  &.largeSpacing {
-    margin-bottom: $spacing-05;
-  }
+  return (
+    <Link
+      href={href}
+      prefetch={true}
+      {...props}
+      onClick={(e) => {
+        e.preventDefault();
+        transitionTo(String(href), { scroll: props.scroll });
+      }}
+    >
+      {children}
+    </Link>
+  );
 }

@@ -14,22 +14,20 @@
  * limitations under the License.
  */
 
-.section {
-  &:not(:last-child) {
-    margin-bottom: rem(48px);
-  }
-}
+"use client";
 
-.title {
-  font-size: rem(18px);
-  font-weight: 600;
-  line-height: 1.3;
+import { PropsWithChildren } from "react";
+import { ProgressProvider } from "@bprogress/next/app";
 
-  &.defaultSpacing {
-    margin-bottom: rem(10px);
-  }
-
-  &.largeSpacing {
-    margin-bottom: $spacing-05;
-  }
+export function ProgressBarProvider({ children }: PropsWithChildren) {
+  return (
+    <ProgressProvider
+      color="#0f62fe"
+      height="3px"
+      options={{ showSpinner: false }}
+      shallowRouting
+    >
+      {children}
+    </ProgressProvider>
+  );
 }

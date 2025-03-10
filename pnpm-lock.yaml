@@ -345,6 +345,9 @@ importers:
       '@carbon/icons-react':
         specifier: '*'
         version: 11.56.0(react@19.0.0)
+      '@bprogress/next':
+        specifier: ^3.2.4
+        version: 3.2.4(next@15.1.7(@babel/core@7.26.9)(@opentelemetry/api@1.9.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(sass@1.85.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@i-am-bee/acp-sdk':
         specifier: workspace:*
         version: link:../../packages/acp-typescript-sdk
@@ -1355,6 +1358,22 @@ packages:
 
   '@bcoe/v8-coverage@0.2.3':
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
+
+  '@bprogress/core@1.2.4':
+    resolution: {integrity: sha512-dFhKl6MgwBgRZG7U9BbeDBMKjUgQ0s3JDCBwLBUZSZS/1wYGLkV9zl7T7wt4ddv49GWe358HyG3yQcsN+nJYig==}
+
+  '@bprogress/next@3.2.4':
+    resolution: {integrity: sha512-s3ScGO/OVedphwwvwRpILRg5kWjjQG3M42TeJZOyD/QPSqzyCO+5WEjvjjdtT2qHafDBeq351e446vbcLq6vYw==}
+    peerDependencies:
+      next: '>=13.0.0'
+      react: '>=18.0.0'
+      react-dom: '>=18.0.0'
+
+  '@bprogress/react@1.1.8':
+    resolution: {integrity: sha512-D2JOO45IWCnVxvIkCpNx2Qmrn7QtX3UIIaybOF763fezeD2YMDdk9zWx9Q6k+3XbJRbTo01n0coDDgBBNqDSaA==}
+    peerDependencies:
+      react: '>=18.0.0'
+      react-dom: '>=18.0.0'
 
   '@bufbuild/protobuf@2.2.3':
     resolution: {integrity: sha512-tFQoXHJdkEOSwj5tRIZSPNUuXK3RaR7T1nUrPgbYX1pUbvqqaaZAsfo+NXBPsz5rZMSKVFrgK1WL8Q/MSLvprg==}
@@ -9746,6 +9765,22 @@ snapshots:
       '@babel/helper-validator-identifier': 7.25.9
 
   '@bcoe/v8-coverage@0.2.3': {}
+
+  '@bprogress/core@1.2.4': {}
+
+  '@bprogress/next@3.2.4(next@15.1.7(@babel/core@7.26.9)(@opentelemetry/api@1.9.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(sass@1.85.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
+    dependencies:
+      '@bprogress/core': 1.2.4
+      '@bprogress/react': 1.1.8(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      next: 15.1.7(@babel/core@7.26.9)(@opentelemetry/api@1.9.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(sass@1.85.0)
+      react: 19.0.0
+      react-dom: 19.0.0(react@19.0.0)
+
+  '@bprogress/react@1.1.8(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
+    dependencies:
+      '@bprogress/core': 1.2.4
+      react: 19.0.0
+      react-dom: 19.0.0(react@19.0.0)
 
   '@bufbuild/protobuf@2.2.3': {}
 

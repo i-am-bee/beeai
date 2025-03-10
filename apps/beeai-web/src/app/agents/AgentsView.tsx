@@ -15,16 +15,15 @@
  */
 
 "use client";
-
+import { TransitionLink } from "@/components/TransitionLink/TransitionLink";
 import {
   Agent,
   AgentCard,
   AgentsFilters,
   AgentsFiltersParams,
-  AgentsList
+  AgentsList,
 } from "@i-am-bee/beeai-ui";
-import Link from "next/link";
-import { FormProvider, useForm } from "react-hook-form";
+import { useForm, FormProvider } from "react-hook-form";
 
 interface Props {
   agents: Agent[];
@@ -60,7 +59,7 @@ const renderAgentTitle = ({
   className: string;
   agent: Agent;
 }) => (
-  <Link href={`/agents/${agent.name}`} className={className}>
+  <TransitionLink href={`/agents/${agent.name}`} className={className}>
     {agent.name}
-  </Link>
+  </TransitionLink>
 );

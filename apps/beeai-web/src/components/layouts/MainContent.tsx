@@ -33,7 +33,7 @@ interface Props {
 }
 
 export function MainContent({ className, children }: PropsWithChildren<Props>) {
-  const mainRef = useRef<HTMLElement>(null);
+  const mainRef = useRef<HTMLDivElement>(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const pathname = usePathname();
   const isAgentsRoute = pathname === "/agents";
@@ -53,7 +53,7 @@ export function MainContent({ className, children }: PropsWithChildren<Props>) {
   }, []);
 
   return (
-    <main
+    <div
       ref={mainRef}
       className={clsx(classes.root, className)}
       onScroll={handleScroll}
@@ -62,7 +62,7 @@ export function MainContent({ className, children }: PropsWithChildren<Props>) {
       {isAgentsRoute && isScrolled && (
         <ToTopButton onClick={handleToTopClick} />
       )}
-    </main>
+    </div>
   );
 }
 

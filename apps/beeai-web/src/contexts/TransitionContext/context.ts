@@ -14,22 +14,14 @@
  * limitations under the License.
  */
 
-.section {
-  &:not(:last-child) {
-    margin-bottom: rem(48px);
-  }
+import { NavigateOptions } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import { createContext } from "react";
+
+interface RouteTransitionContextValue {
+  transitionTo: (href: string, options: NavigateOptions) => Promise<void>;
 }
 
-.title {
-  font-size: rem(18px);
-  font-weight: 600;
-  line-height: 1.3;
-
-  &.defaultSpacing {
-    margin-bottom: rem(10px);
-  }
-
-  &.largeSpacing {
-    margin-bottom: $spacing-05;
-  }
-}
+export const RouteTransitionContext =
+  createContext<RouteTransitionContextValue>(
+    null as unknown as RouteTransitionContextValue
+  );
