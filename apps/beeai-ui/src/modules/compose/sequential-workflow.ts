@@ -20,7 +20,7 @@ import { messageInputSchema, messageOutputSchema } from '@i-am-bee/beeai-sdk/sch
 import { textInputSchema, textOutputSchema } from '@i-am-bee/beeai-sdk/schemas/text';
 import zodToJsonSchema from 'zod-to-json-schema';
 
-export const SEQUENTIAL_COMPOSE_AGENT_NAME = 'sequential-workflow';
+export const SEQUENTIAL_COMPOSE_AGENT_NAME = 'prompted-sequential-workflow';
 
 export function getSequentialComposeAgent(agents?: Agent[]) {
   return agents?.find(({ name }) => name === SEQUENTIAL_COMPOSE_AGENT_NAME);

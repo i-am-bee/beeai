@@ -43,6 +43,15 @@
   margin-block-end: $spacing-03;
 }
 
+.textarea {
+  &::after,
+  textarea {
+    @include type-style('body-compact-01');
+    border: 1px solid $border-subtle;
+    border-radius: $border-radius;
+  }
+}
+
 .run {
   margin-block-start: $spacing-04;
 

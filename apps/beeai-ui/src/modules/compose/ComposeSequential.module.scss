@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import { ComposeTestView } from '#modules/compose/ComposeTestView.tsx';
-import { ComposeProvider } from '#modules/compose/contexts/ComposeProvider.tsx';
+.root {
+  display: grid;
+  grid-template-columns: minmax(rem(432px), 1fr) max-content;
+  inline-size: 100%;
 
-export function ComposeTestPage() {
-  return (
-    <ComposeProvider>
-      <ComposeTestView />
-    </ComposeProvider>
-  );
+  > div {
+    padding-block-start: $spacing-09;
+  }
 }

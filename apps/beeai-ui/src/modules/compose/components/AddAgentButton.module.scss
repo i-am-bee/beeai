@@ -32,7 +32,6 @@
   &,
   &:active,
   &:active:not(:focus) {
-    background-color: $layer-02;
     border: 1px dashed $text-placeholder;
   }
 }

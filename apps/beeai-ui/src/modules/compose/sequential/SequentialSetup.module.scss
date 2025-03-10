@@ -16,9 +16,8 @@
 
 .root {
   @include scrollbar();
-  background-color: $layer-02;
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   overflow-y: auto;
   block-size: 100%;
 
@@ -33,4 +32,13 @@
   flex-direction: column;
   gap: $spacing-06;
   padding-block-end: $spacing-06;
+}
+
+.buttons {
+  display: flex;
+  justify-content: flex-end;
+
+  button {
+    min-inline-size: rem(128px);
+  }
 }

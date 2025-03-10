@@ -19,18 +19,23 @@ import { ElapsedTime } from '#modules/run/components/ElapsedTime.tsx';
 import { Accordion, AccordionItem, InlineLoading, OverflowMenu, OverflowMenuItem } from '@carbon/react';
 import clsx from 'clsx';
 import ScrollToBottom from 'react-scroll-to-bottom';
-import { useCompose } from '../contexts';
-import { AgentInstance } from '../contexts/compose-context';
-import classes from './AgentInstanceListItem.module.scss';
+import { ComposeStep, SequentialFormValues } from '../contexts/compose-context';
+import classes from './ComposeStepListItem.module.scss';
+import { useFieldArray, useForm } from 'react-hook-form';
+import { TextAreaAutoHeight } from '#components/TextAreaAutoHeight/TextAreaAutoHeight.tsx';
 
 interface Props {
-  agent: AgentInstance;
+  agent: ComposeStep;
   idx: number;
 }
-export function AgentInstanceListItem({ agent: agentInstance, idx }: Props) {
-  const { setAgents, isPending: isRunPending } = useCompose();
-  const { data, isPending, logs, stats, result } = agentInstance;
-  const { name, description } = data;
+export function ComposeStepListItem({ agent: ComposeStep, idx }: Props) {
+  const {
+    register,
+    formState: { isSubmitting },
+  } = useForm<SequentialFormValues>();
+  const { remove } = useFieldArray<SequentialFormValues>({ name: 'steps' });
+  const { data, isPending, logs, stats, result } = ComposeStep;
+  const { name } = data;
 
   const isFinished = !isPending && result;
 
@@ -40,15 +45,22 @@ export function AgentInstanceListItem({ agent: agentInstance, idx }: Props) {
 
       <div className={classes.actions}>
         <OverflowMenu aria-label="Options" size="md">
-          <OverflowMenuItem
-            itemText="Remove"
-            disabled={isRunPending}
-            onClick={() => setAgents((agents) => agents.filter((_, index) => index !== idx))}
-          />
+          <OverflowMenuItem itemText="Remove" disabled={isSubmitting} onClick={() => remove(idx)} />
         </OverflowMenu>
       </div>
 
-      {description && <MarkdownContent className={classes.description}>{description}</MarkdownContent>}
+      <div className={classes.input}>
+        <TextAreaAutoHeight
+          className={classes.textarea}
+          rows={3}
+          placeholder="Write your entry here…"
+          disabled={isPending}
+          {...register(`steps.${idx}.instruction`, {
+            required: true,
+          })}
+        />
+      </div>
+
       {(isPending || stats || result) && (
         <div className={clsx(classes.run, { [classes.finished]: isFinished, [classes.pending]: isPending })}>
           <Accordion>

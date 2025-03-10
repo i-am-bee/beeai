@@ -17,7 +17,6 @@
 import { MessagesResult, TextResult } from '#modules/run/api/types.ts';
 import { AgentRunProgressNotificationSchema } from '@i-am-bee/acp-sdk/types.js';
 import { outputSchema } from '@i-am-bee/beeai-sdk/schemas/base';
-import { TextInput } from '@i-am-bee/beeai-sdk/schemas/text';
 import { z } from 'zod';
 
 export const composeNotificationSchema = AgentRunProgressNotificationSchema.extend({
@@ -37,9 +36,9 @@ export type ComposeNotificationSchema = typeof composeNotificationSchema;
 export type ComposeNotification = z.infer<ComposeNotificationSchema>;
 export type ComposeNotificationDelta = ComposeNotification['params']['delta'];
 
-export type ComposeInput = {
-  input: TextInput;
-  agents: string[];
+export type SequentialWorkflowInput = {
+  steps: { agent: string; instruction: string }[];
+  input?: string;
 };
 
 export type ComposeResult = TextResult | MessagesResult;

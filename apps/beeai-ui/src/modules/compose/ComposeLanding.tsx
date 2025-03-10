@@ -18,31 +18,49 @@ import { MainContent } from '#components/layouts/MainContent.tsx';
 import { Container } from '#components/layouts/Container.tsx';
 import classes from './ComposeLanding.module.scss';
 import { VersionTag } from '#components/VersionTag/VersionTag.tsx';
-import { AddAgentButton } from './components/AddAgentButton';
-import { useNavigate } from 'react-router';
-import { Agent } from '#modules/agents/api/types.ts';
 import { routes } from '#utils/router.ts';
+import { TransitionLink } from '#components/TransitionLink/TransitionLink.tsx';
+import SequentialIllustration from './assets/sequential.svg';
 
 export function ComposeLanding() {
-  const navigate = useNavigate();
-
   return (
-    <MainContent className={classes.main}>
-      <Container>
-        <h1>
-          Compose playground <VersionTag>alpha</VersionTag>
-        </h1>
-
-        <div className={classes.agents}>
-          <AddAgentButton
-            onSelectAgent={(agent: Agent) => {
-              const params = new URLSearchParams({ agents: agent.name });
-
-              navigate(`${routes.composeSequential()}?${params.toString()}`);
-            }}
-          />
+    <MainContent>
+      <Container size="sm">
+        <div className={classes.heading}>
+          <h1>
+            Compose playground <VersionTag>alpha</VersionTag>
+          </h1>
+          <p>Select a pattern to compose and test a multi-agent workflow</p>
         </div>
+
+        <ul className={classes.workflows}>
+          {WORKFLOWS.map(({ id, name, route, description, image: Image }) => (
+            <li key={id} className={classes.workflow} aria-disabled={!route}>
+              <div className={classes.workflowText}>
+                <TransitionLink to={route}>{name}</TransitionLink>
+                <p>{description}</p>
+              </div>
+              <Image />
+            </li>
+          ))}
+        </ul>
       </Container>
     </MainContent>
   );
 }
+
+const WORKFLOWS = [
+  {
+    id: 'sequential',
+    name: 'Sequential',
+    route: routes.composeSequential(),
+    description: 'Define your agents and the sequence that makes sense for your workflow',
+    image: SequentialIllustration,
+  },
+  {
+    id: 'supervisor',
+    name: 'Supervisor',
+    description: 'Choose a supervisor agent to structure and control tasks of other agents in your system',
+    image: SequentialIllustration,
+  },
+];

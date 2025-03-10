@@ -14,6 +14,60 @@
  * limitations under the License.
  */
 
-.main {
-  background-color: $layer-02;
+.heading {
+  margin-block-end: $spacing-08;
+
+  h1 {
+    margin-block-end: $spacing-02;
+  }
+  p {
+    color: $text-secondary;
+  }
+}
+
+.workflows {
+  display: flex;
+  gap: $spacing-07;
+  justify-content: stretch;
+  align-items: stretch;
+}
+
+.workflow {
+  background-color: $background;
+  box-shadow: $box-shadow;
+  inline-size: 100%;
+  padding: $spacing-05;
+  border: 2px solid transparent;
+  transition: border-color $duration-fast-01 ease-out;
+  border-radius: $border-radius;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: $spacing-05;
+
+  &:not([aria-disabled='true']):hover {
+    border-color: $text-primary;
+  }
+
+  a {
+    color: $text-primary;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: rem(18px);
+    line-height: 1em;
+    display: block;
+    margin-block-end: $spacing-05;
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+    }
+  }
+
+  p {
+    @include type-style('body-compact-01');
+    font-size: rem(16px);
+  }
 }

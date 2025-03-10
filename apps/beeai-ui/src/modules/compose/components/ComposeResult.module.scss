@@ -21,6 +21,8 @@
   padding-block-start: $spacing-05;
   padding-block-end: 0;
   overflow: hidden;
+  inline-size: 0;
+  background-color: $layer-02;
 
   > div {
     margin-inline: 0;
