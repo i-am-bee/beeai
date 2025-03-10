@@ -23,5 +23,5 @@
 
 .cds--popover--drop-shadow .cds--popover > .cds--popover-content {
   filter: none;
-  box-shadow: 0px 2px 8px 0px #c1c7cd73;
+  box-shadow: $box-shadow;
 }
