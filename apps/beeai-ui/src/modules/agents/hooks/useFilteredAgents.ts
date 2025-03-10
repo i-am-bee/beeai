@@ -28,20 +28,20 @@ export function useFilteredAgents({ agents, filters }: Props) {
   const filteredAgents = useMemo(() => {
     const { search, frameworks, languages, licenses } = filters;
 
-    const searchQuery = search?.trim().toLowerCase();
+    const searchQuery = search.trim().toLowerCase();
     const searchRegex = searchQuery ? new RegExp(searchQuery, 'i') : null;
 
     return agents
       ?.filter((agent) => {
-        if (frameworks && !frameworks.includes(agent.framework ?? '')) {
+        if (frameworks.length && !frameworks.includes(agent.framework ?? '')) {
           return false;
         }
 
-        if (languages && !intersection(languages, agent.languages ?? []).length) {
+        if (languages.length && !intersection(languages, agent.languages ?? []).length) {
           return false;
         }
 
-        if (licenses && !licenses.includes(agent.license ?? '')) {
+        if (licenses.length && !licenses.includes(agent.license ?? '')) {
           return false;
         }
 

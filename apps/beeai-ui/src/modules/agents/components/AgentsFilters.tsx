@@ -23,7 +23,8 @@ import { Search } from '@carbon/icons-react';
 import clsx from 'clsx';
 import { TagsList } from '#components/TagsList/TagsList.tsx';
 import { FiltersPopover, type Group } from '#components/FiltersPopover/FiltersPopover.tsx';
-import { isNotNull } from '#utils/helpers.ts';
+import isEmpty from 'lodash/isEmpty';
+import xor from 'lodash/xor';
 import { type AgentsCountedOccurrence, countOccurrences } from '#utils/agents/countOccurrences.ts';
 import type { Agent } from '../api/types';
 import type { AgentsFiltersParams } from '../providers/AgentsFiltersProvider';
@@ -38,7 +39,9 @@ export function AgentsFilters({ agents }: Props) {
   const occurrences = useMemo(() => agents && countOccurrences(agents), [agents]);
   const { watch, setValue } = useFormContext<AgentsFiltersParams>();
   const [selectedFrameworks, selectedLanguages, selectedLicenses] = watch(['frameworks', 'languages', 'licenses']);
-  const areArrayFiltersActive = Boolean(selectedFrameworks || selectedLanguages || selectedLicenses);
+  const areArrayFiltersActive = Boolean(
+    selectedFrameworks.length || selectedLanguages.length || selectedLicenses.length,
+  );
 
   return (
     <div className={clsx(classes.root, { [classes.arrayFiltersActive]: areArrayFiltersActive })}>
@@ -77,9 +80,9 @@ export function AgentsFilters({ agents }: Props) {
                 }),
               ]}
               onClearAll={() => {
-                setValue('frameworks', null);
-                setValue('languages', null);
-                setValue('licenses', null);
+                setValue('frameworks', []);
+                setValue('languages', []);
+                setValue('licenses', []);
               }}
               toggleButtonClassName={classes.toggleButton}
             />
@@ -92,18 +95,16 @@ export function AgentsFilters({ agents }: Props) {
           tags={[
             <OperationalTag
               key="all"
-              onClick={() => setValue('frameworks', null)}
               text="All"
-              className={clsx(classes.frameworkAll, { selected: !isNotNull(selectedFrameworks) })}
+              className={clsx(classes.frameworksAll, { selected: isEmpty(selectedFrameworks) })}
+              onClick={() => setValue('frameworks', [])}
             />,
             ...occurrences.frameworks.map(({ label: framework }) => (
               <OperationalTag
                 key={framework}
-                onClick={() => {
-                  setValue('frameworks', createUpdatedArray(selectedFrameworks, framework));
-                }}
                 text={framework}
-                className={clsx({ selected: selectedFrameworks?.includes(framework) })}
+                className={clsx({ selected: selectedFrameworks.includes(framework) })}
+                onClick={() => setValue('frameworks', xor(selectedFrameworks, [framework]))}
               />
             )),
           ]}
@@ -128,8 +129,8 @@ AgentsFilters.Skeleton = function AgentsFiltersSkeleton() {
 interface CreateGroupProps {
   label: string;
   occurrence: AgentsCountedOccurrence;
-  selected: string[] | null | undefined;
-  onChange: (value: string[] | null | undefined) => void;
+  selected: string[];
+  onChange: (value: string[]) => void;
 }
 
 function createGroup({ label, occurrence, selected, onChange }: CreateGroupProps): Group {
@@ -137,21 +138,8 @@ function createGroup({ label, occurrence, selected, onChange }: CreateGroupProps
     label,
     options: occurrence.map((item) => ({
       ...item,
-      checked: selected?.includes(item.label) ?? false,
-      onChange: () => onChange(createUpdatedArray(selected, item.label)),
+      checked: selected.includes(item.label),
+      onChange: () => onChange(xor(selected, [item.label])),
     })),
   };
-}
-
-function createUpdatedArray(selected: string[] | null | undefined, value: string) {
-  if (!Array.isArray(selected)) {
-    return [value];
-  }
-
-  if (selected.includes(value)) {
-    const frameworks = selected.filter((item) => item !== value);
-    return frameworks.length ? frameworks : null;
-  }
-
-  return [...selected, value];
 }

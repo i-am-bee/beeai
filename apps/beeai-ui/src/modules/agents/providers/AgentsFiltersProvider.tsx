@@ -18,15 +18,21 @@ import type { PropsWithChildren } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
 export interface AgentsFiltersParams {
-  search?: string;
-  frameworks?: string[] | null;
-  languages?: string[] | null;
-  licenses?: string[] | null;
+  search: string;
+  frameworks: string[];
+  languages: string[];
+  licenses: string[];
 }
 
 export function AgentsFiltersProvider({ children }: PropsWithChildren) {
   const formReturn = useForm<AgentsFiltersParams>({
     mode: 'onBlur',
+    defaultValues: {
+      search: '',
+      frameworks: [],
+      languages: [],
+      licenses: [],
+    },
   });
 
   return <FormProvider {...formReturn}>{children}</FormProvider>;
