@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export const MCP_CLIENT_SERVER_URL = process.env.MCP_CLIENT_SERVER_URL;
+export const ACP_CLIENT_SERVER_URL = process.env.ACP_CLIENT_SERVER_URL;

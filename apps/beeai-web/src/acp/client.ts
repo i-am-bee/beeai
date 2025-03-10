@@ -18,15 +18,15 @@ import "server-only";
 import { Client } from "@i-am-bee/acp-sdk/client/index.js";
 import type { ServerCapabilities } from "@i-am-bee/acp-sdk/types.js";
 import { SSEClientTransport } from "@i-am-bee/acp-sdk/client/sse.js";
-import { MCP_CLIENT_SERVER_URL } from "@/constants";
+import { ACP_CLIENT_SERVER_URL } from "@/constants";
 import { getNativeFetch } from "./native-fetch";
 
 export async function getAcpClient() {
-  if (!MCP_CLIENT_SERVER_URL) {
+  if (!ACP_CLIENT_SERVER_URL) {
     throw new Error("ACP Transport has not been set");
   }
 
-  const transport = new SSEClientTransport(new URL(MCP_CLIENT_SERVER_URL), {
+  const transport = new SSEClientTransport(new URL(ACP_CLIENT_SERVER_URL), {
     eventSourceInit: {
       // Use native nodejs fetch instead of nextjs patched one, we don't want
       // any nextjs caching/deduping behaviour here.
