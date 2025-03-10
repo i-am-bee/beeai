@@ -17,7 +17,7 @@
 import { useMemo } from 'react';
 import type { Agent } from '../api/types';
 import type { AgentsFiltersParams } from '../providers/AgentsFiltersProvider';
-import { intersection } from 'lodash';
+import intersection from 'lodash/intersection';
 
 interface Props {
   agents: Agent[];
