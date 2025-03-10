@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import { Agent } from '#modules/agents/api/types.ts';
 import { TextNotificationLogs } from '#modules/run/api/types.ts';
 import { RunStats } from '#modules/run/types.ts';
-import { Agent } from '@i-am-bee/acp-sdk/types.js';
 import { TextInput } from '@i-am-bee/beeai-sdk/schemas/text';
 import { createContext } from 'react';
 
