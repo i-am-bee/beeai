@@ -1,0 +1,184 @@
+---
+title: 'Agents'
+description: 'How agents are implemented in the beeai platform, their types and schemas'
+icon: 'browser'
+---
+
+Agent in the beeai platform is a stateless function that receives and input object that adheres to an input schema
+and returns an object compliant with the output schema. Optionally, agent can stream progress notifications during
+its execution. Agents are registered using the [Agent Communication Protocol](/acp/pre-alpha/introduction) SDK.
+
+Agent logic can be implemented using any framework of choice, for example:
+    - [LangGraph](https://www.langchain.com/langgraph)
+    - [crewAI](https://www.crewai.com/)
+    - [beeai-framework](https://i-am-bee.github.io/beeai-framework/)
+    - ...
+
+# Agent schema
+
+Each agent in the platform has an input and output schema (formal specification of communication with the agent).
+To achieve basic compatibility with the platform, the schema must extend the base in the `beeai-sdk` package:
+
+```python
+class Input(BaseModel, extra="allow"):
+    config: Config | None = None
+
+class Output(BaseModel, extra="allow"):
+    logs: list[Log | None] = Field(default_factory=list)
+```
+
+The `config` input field allows passing extra configuration at runtime, for example a list of tools the agent
+should work with.
+
+The `logs` can be used to stream progress (thoughts, action items, etc.) that are not part of the actual output, but
+are useful to inform the user about what is happening.
+
+## Streaming
+The agent can use the `ctx` object to stream intermediate steps during the agent run. The progress schema must be
+a subset of the output schema, the most useful field is `logs`. For example reporting events from langgraph:
+
+```python
+@server.agent(...)
+async def run_langgraph_agent(input: TextInput, ctx: Context) -> TextOutput:
+    inputs = SummaryStateInput(research_topic=input.text)
+    output = None
+    async for event in graph.astream(inputs, stream_mode="updates"):
+        log = Log(message=f"🚶‍♂️{key}: {value}" for key, value in event.items())
+        output = event
+        await ctx.report_agent_run_progress(
+            delta=TextOutput(logs=[None, log], text="")
+        )
+    output = output.get("finalize_summary", {}).get("running_summary", None)
+    return TextOutput(text=str(output))
+```
+
+# Standardized agent interfaces
+
+Agents are free to use any input/output schema they like by extending the base `Input` and `Output` schemas.
+However, if the author chooses to opt in into one of the standardized schemas, the agent will get a UI experience out
+of the box.
+
+## Chat agents
+Agents that implement the `chat` interface must declare this in their metadata during agent registration and use the
+`MessageInput` and `MessageOutput` schemas.
+
+<Note>
+    Chat agents are stateless and receive the entire conversation history on
+    input. This means that any state that the agent is keeping must be re-created on each invocation, for example by
+    setting
+    agent's memory.
+</Note>
+
+<Expandable title="Example chat agent implementation">
+
+```python
+import asyncio
+
+from acp.server.highlevel import Context, Server
+from beeai_sdk.providers.agent import run_agent_provider
+from beeai_sdk.schemas.message import (
+    MessageInput,
+    MessageOutput,
+    AssistantMessage
+)
+from beeai_sdk.schemas.metadata import (
+    Metadata,
+    Examples,
+    UiDefinition,
+    UiType
+)
+
+def main():
+    server = Server("chat-agents")
+    @server.agent(
+        "chat-example",
+        "Chat with the user",
+        input=MessageInput, # Chat input schema
+        output=MessageOutput, # Chat output schema
+        **Metadata(
+            framework="LangGraph",
+            license="Apache 2.0",
+            languages=["Python"],
+            examples=Examples(cli=[...]),
+            ui=UiDefinition(
+                type=UiType.chat, # Hands off UI type
+                userGreeting="Hello, how can I help you?"
+            ),
+            fullDescription="Chat with the user"
+        ).model_dump(),
+    )
+    def run_chat(input: MessageInput, ctx: Context) -> MessageOutput:
+        assistant_message = AssistantMessage(
+            role="assistant",
+            content=f"Hello {input.messages[0].content}"
+        )
+        return MessageOutput(messages=[assistant_message])
+
+    asyncio.run(run_agent_provider(server))
+```
+</Expandable>
+
+You can then use the agent interactively using the CLI:
+```
+> beeai run chat-example
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                              chat-example                                ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+Chat with the user
+
+Running in interactive mode, use '/?' for help, type '/q' to quit.
+
+🐝 Agent: Hello, How can I help you?
+
+>>>
+```
+
+Or you can chat with the agent in the browser at:
+
+http://localhost:8333/agents/chat-example
+
+## Hands-off agent
+Similarly, you can define an agent that will use the `TextInput` and `TextOutput` and declare the type as
+`UiType.hands_off`. This agent is for single-prompt tasks that the user will hand off and come back for results.
+
+
+<Expandable title="Example hands off agent implementation">
+```python
+import asyncio
+
+from acp.server.highlevel import Context, Server
+from beeai_sdk.providers.agent import run_agent_provider
+from beeai_sdk.schemas.text import TextInput, TextOutput
+from beeai_sdk.schemas.metadata import (
+    Metadata,
+    Examples,
+    UiDefinition,
+    UiType
+)
+
+def main():
+    server = Server("chat-agents")
+    @server.agent(
+        "chat-example",
+        "Chat with the user",
+        input=TextInput, # Text input schema
+        output=TextOutput, # Text output schema
+        **Metadata(
+            framework="LangGraph",
+            license="Apache 2.0",
+            languages=["Python"],
+            examples=Examples(cli=[...]),
+            ui=UiDefinition(
+                type=UiType.hands_off, # Chat UI type
+                userGreeting="Hello, how can I help you?"
+            ),
+            fullDescription="Chat with the user"
+        ).model_dump(),
+    )
+    def run_chat(input: TextInput, ctx: Context) -> TextOutput:
+        return TextOutput(text=f"Hello {input}!")
+
+    asyncio.run(run_agent_provider(server))
+```
+</Expandable>
