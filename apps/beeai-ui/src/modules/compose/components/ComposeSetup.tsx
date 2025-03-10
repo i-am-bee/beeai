@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import classes from './ComposeSetup.module.scss';
-import { AddAgentButton } from './AddAgentButton';
-import { useCompose } from '../contexts';
-import { AgentInstanceListItem } from './AgentInstanceListItem';
 import { Container } from '#components/layouts/Container.tsx';
 import { VersionTag } from '#components/VersionTag/VersionTag.tsx';
-import { Agent } from '@i-am-bee/acp-sdk/types.js';
+import { Agent } from '#modules/agents/api/types.ts';
+import { useCompose } from '../contexts';
+import { AddAgentButton } from './AddAgentButton';
+import { AgentInstanceListItem } from './AgentInstanceListItem';
+import classes from './ComposeSetup.module.scss';
 
 export function ComposeSetup() {
   const { agents, setAgents, isPending } = useCompose();
