@@ -38,7 +38,7 @@
   p {
     font-size: rem(14px);
     line-height: math.div(18, 14);
-    letter-spacing: rem(0.16px);
+    letter-spacing: $letter-spacing;
   }
 }
 
@@ -98,7 +98,7 @@
   margin: 0;
   font-size: rem(14px);
   line-height: math.div(20, 14);
-  letter-spacing: rem(0.16px);
+  letter-spacing: $letter-spacing;
 }
 
 .cds--toast-notification__details {
@@ -110,7 +110,7 @@
 .cds--toast-notification__caption {
   font-size: rem(12px);
   line-height: math.div(16, 12);
-  letter-spacing: rem(0.16px);
+  letter-spacing: $letter-spacing;
   padding-block: rem(2px);
   padding-inline: rem(28px) rem(32px);
   margin-block-start: rem(-28px);

@@ -14,13 +14,8 @@
  * limitations under the License.
  */
 
-import Bee from '#svgs/Bee.svg';
-import classes from './AgentIcon.module.scss';
-
-export function AgentIcon() {
-  return (
-    <div className={classes.root}>
-      <Bee />
-    </div>
-  );
+.root {
+  font-size: rem(14px);
+  line-height: math.div(18, 14);
+  color: $text-secondary;
 }

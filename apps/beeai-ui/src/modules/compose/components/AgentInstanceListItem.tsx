@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-import { getAgentTitle } from '#modules/agents/utils.ts';
 import { MarkdownContent } from '#components/MarkdownContent/MarkdownContent.tsx';
-import classes from './AgentInstanceListItem.module.scss';
-import { AgentInstance } from '../contexts/compose-context';
+import { ElapsedTime } from '#modules/run/components/ElapsedTime.tsx';
 import { Accordion, AccordionItem, InlineLoading, OverflowMenu, OverflowMenuItem } from '@carbon/react';
-import { useEffect, useState } from 'react';
-import { useCompose } from '../contexts';
-import ScrollToBottom from 'react-scroll-to-bottom';
 import clsx from 'clsx';
+import ScrollToBottom from 'react-scroll-to-bottom';
+import { useCompose } from '../contexts';
+import { AgentInstance } from '../contexts/compose-context';
+import classes from './AgentInstanceListItem.module.scss';
 
 interface Props {
   agent: AgentInstance;
@@ -31,13 +30,13 @@ interface Props {
 export function AgentInstanceListItem({ agent: agentInstance, idx }: Props) {
   const { setAgents, isPending: isRunPending } = useCompose();
   const { data, isPending, logs, stats, result } = agentInstance;
-  const { description } = data;
+  const { name, description } = data;
 
   const isFinished = !isPending && result;
 
   return (
     <div className={classes.root}>
-      <div className={classes.name}>{getAgentTitle(data)}</div>
+      <div className={classes.name}>{name}</div>
 
       <div className={classes.actions}>
         <OverflowMenu aria-label="Options" size="md">
@@ -73,7 +72,7 @@ export function AgentInstanceListItem({ agent: agentInstance, idx }: Props) {
                   <div className={classes.result}>
                     <div>{isFinished ? 'Output' : null}</div>
                     <div className={classes.loading}>
-                      <ElapsedTime stats={stats} />
+                      <ElapsedTime stats={stats} className={classes.elapsed} />
                       <InlineLoading status={isPending ? 'active' : 'finished'} />
                     </div>
                   </div>
@@ -87,24 +86,4 @@ export function AgentInstanceListItem({ agent: agentInstance, idx }: Props) {
       )}
     </div>
   );
-}
-
-function ElapsedTime({ stats }: { stats: AgentInstance['stats'] }) {
-  const [, forceRerender] = useState(0);
-
-  useEffect(() => {
-    if (!stats?.startTime || stats.endTime) return;
-
-    const interval = setInterval(() => {
-      forceRerender((prev) => prev + 1);
-    }, 1000 / 24); // refresh at standard frame rate for smooth increments
-
-    return () => clearInterval(interval);
-  }, [stats]);
-
-  if (!stats) return null;
-
-  const { startTime, endTime } = stats;
-
-  return <div className={classes.elapsed}>{Math.round(((endTime || Date.now()) - startTime) / 1000)}s</div>;
 }

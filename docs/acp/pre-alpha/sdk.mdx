@@ -1,7 +1,6 @@
 ---
 title: SDK
 description: "Introduction to the Agent Communication Protocol (ACP) SDK"
-icon: "code"
 ---
 
 <Warning>
@@ -36,14 +35,13 @@ For clarity, these examples intentionally omit advanced topics such as comprehen
 Install the required libraries:
 
 <Note>
-  Currently, you must install both `acp-sdk` (core ACP protocol implementation)
+  Currently, you must use both `acp-sdk` (core ACP protocol implementation)
   and `beeai-sdk` (BeeAI-specific utilities and schemas). In [ACP
   Alpha](/acp/alpha), these will be merged into a single library
   `acp-sdk`.
 </Note>
 
 ```bash
-uv add acp-sdk
 uv add beeai-sdk
 ```
 
@@ -52,7 +50,7 @@ Next, implement a simple server:
 ```python
 import asyncio
 
-from acp.server.highlevel import Server
+from acp.server.highlevel import Server, Context
 from beeai_sdk.providers.agent import run_agent_provider
 from beeai_sdk.schemas.text import TextOutput, TextInput
 
@@ -65,7 +63,7 @@ async def run_server():
         input=TextInput,
         output=TextOutput,
     )
-    async def run_agent(input: TextInput) -> TextOutput:
+    async def run_agent(input: TextInput, ctx: Context) -> TextOutput:
         # Core logic for the "hello-world" agent
         return TextOutput(text=f"Hi there {input.text}")
 
@@ -82,7 +80,7 @@ def main():
 Install the required libraries:
 
 <Note>
-  Currently, you must install both `@i-am-bee/acp-sdk` (core ACP protocol
+  Currently, you must use both `@i-am-bee/acp-sdk` (core ACP protocol
   implementation) and `@i-am-bee/beeai-sdk` (BeeAI-specific utilities and
   schemas). In [ACP Alpha](/acp/alpha), these will be merged into a
   single library `@i-am-bee/acp-sdk`.
@@ -142,7 +140,38 @@ In this example, you'll learn how to use the ACP client to discover and invoke a
 <Tabs>
 
     <Tab title="Python">
-        TBD
+Install the required libraries:
+
+```bash
+uv add acp-sdk
+```
+
+Next, implement a simple server:
+
+```python
+import asyncio
+
+from acp import ClientSession
+from acp.client.sse import sse_client
+
+
+async def run_client():
+    async with sse_client(url="http://localhost:8000/sse") as streams:
+        async with ClientSession(*streams) as session:
+            await session.initialize()
+
+            # List agents
+            resp = await session.list_agents()
+            print("Available agents:", [agent.name for agent in resp.agents])
+
+            # Run agent
+            resp = await session.run_agent("hello-world", {"text": "Bee"})
+            print("Agent:", resp.output["text"])
+
+
+asyncio.run(run_client())
+```
+
     </Tab>
 
     <Tab title="TypeScript">

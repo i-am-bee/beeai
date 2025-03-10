@@ -22,7 +22,6 @@ import {
   AgentsFilters,
   AgentsFiltersParams,
   AgentsList,
-  getAgentTitle,
 } from "@i-am-bee/beeai-ui";
 import { useForm, FormProvider } from "react-hook-form";
 
@@ -61,6 +60,6 @@ const renderAgentTitle = ({
   agent: Agent;
 }) => (
   <TransitionLink href={`/agents/${agent.name}`} className={className}>
-    {getAgentTitle(agent)}
+    {agent.name}
   </TransitionLink>
 );

@@ -1,0 +1,66 @@
+/**
+ * Copyright 2025 IBM Corp.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.root {
+  min-block-size: 100%;
+  display: flex;
+  &.split {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    block-size: 100%;
+  }
+}
+
+.leftPane,
+.rightPane {
+  min-inline-size: 0;
+  position: relative;
+  min-block-size: 0;
+  &::before {
+    content: '';
+    position: absolute;
+    inset-block: 0;
+    inline-size: 100vw;
+  }
+}
+
+.leftPane {
+  background-color: $layer;
+  border-inline-end: 1px solid $border-subtle-00;
+  margin-inline-start: calc($grid-margin * -1);
+  &::before {
+    inset-inline-end: 100%;
+    background-color: $layer;
+  }
+}
+
+.rightPane {
+  background-color: $layer-02;
+  margin-inline-end: calc($grid-margin * -1);
+  &::before {
+    inset-inline-start: 100%;
+    background-color: $layer-02;
+  }
+}
+
+.content {
+  padding: $grid-margin;
+  block-size: 100%;
+  &.scrollable {
+    @include scrollbar();
+    overflow-y: auto;
+  }
+}

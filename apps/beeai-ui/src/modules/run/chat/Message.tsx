@@ -16,10 +16,9 @@
 
 import { ErrorMessage } from '#components/ErrorMessage/ErrorMessage.tsx';
 import { Spinner } from '#components/Spinner/Spinner.tsx';
-import { getAgentTitle } from '#modules/agents/utils.ts';
 import clsx from 'clsx';
-import { useChat } from '../contexts';
-import { AgentIcon } from './AgentIcon';
+import { AgentIcon } from '../components/AgentIcon';
+import { useChat } from '../contexts/chat';
 import classes from './Message.module.scss';
 import { ChatMessage } from './types';
 import { UserIcon } from './UserIcon';
@@ -37,7 +36,7 @@ export function Message({ message }: Props) {
     <li className={clsx(classes.root)}>
       <div className={classes.sender}>
         <div className={classes.senderIcon}>{isUserMessage ? <UserIcon /> : <AgentIcon />}</div>
-        <div className={classes.senderName}>{isUserMessage ? 'User' : getAgentTitle(agent)}</div>
+        <div className={classes.senderName}>{isUserMessage ? 'User' : agent.name}</div>
       </div>
 
       <div className={classes.body}>

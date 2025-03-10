@@ -33,8 +33,9 @@ export const composeNotificationSchema = AgentRunProgressNotificationSchema.exte
     }),
   }),
 });
-export type ComposeNotificationsZod = typeof composeNotificationSchema;
-export type ComposeNotifications = z.infer<ComposeNotificationsZod>;
+export type ComposeNotificationSchema = typeof composeNotificationSchema;
+export type ComposeNotification = z.infer<ComposeNotificationSchema>;
+export type ComposeNotificationDelta = ComposeNotification['params']['delta'];
 
 export type ComposeInput = {
   input: TextInput;

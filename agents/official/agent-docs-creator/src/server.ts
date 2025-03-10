@@ -1,4 +1,4 @@
-#!/usr/bin/env npx -y tsx@latest
+#!/usr/bin/env -S npx -y tsx@latest
 
 import { AcpServer } from "@i-am-bee/acp-sdk/server/acp.js";
 

@@ -1,5 +1,4 @@
 version = 1
-revision = 1
 requires-python = ">=3.11, <4.0"
 
 [manifest]
@@ -69,7 +68,6 @@ requires-dist = [
     { name = "typer", marker = "extra == 'cli'", specifier = ">=0.12.4" },
     { name = "uvicorn", specifier = ">=0.23.1" },
 ]
-provides-extras = ["rich", "cli"]
 
 [package.metadata.requires-dev]
 dev = [
@@ -219,7 +217,7 @@ wheels = [
 
 [[package]]
 name = "beeai-cli"
-version = "0.0.3"
+version = "0.0.4"
 source = { editable = "apps/beeai-cli" }
 dependencies = [
     { name = "acp-sdk" },
@@ -254,7 +252,7 @@ requires-dist = [
 
 [[package]]
 name = "beeai-sdk"
-version = "0.0.11"
+version = "0.0.13"
 source = { editable = "packages/beeai-sdk" }
 dependencies = [
     { name = "acp-sdk" },
@@ -273,7 +271,7 @@ requires-dist = [
 
 [[package]]
 name = "beeai-server"
-version = "0.0.2"
+version = "0.0.3"
 source = { editable = "apps/beeai-server" }
 dependencies = [
     { name = "acp-sdk" },
@@ -285,6 +283,9 @@ dependencies = [
     { name = "fastapi", extra = ["standard"] },
     { name = "httpx" },
     { name = "kink" },
+    { name = "opentelemetry-api" },
+    { name = "opentelemetry-exporter-otlp-proto-http" },
+    { name = "opentelemetry-sdk" },
     { name = "orjson" },
     { name = "packaging" },
     { name = "psutil" },
@@ -312,6 +313,9 @@ requires-dist = [
     { name = "fastapi", extras = ["standard"], specifier = ">=0.115.7" },
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "kink", specifier = ">=0.8.1" },
+    { name = "opentelemetry-api", specifier = ">=1.30.0" },
+    { name = "opentelemetry-exporter-otlp-proto-http", specifier = ">=1.30.0" },
+    { name = "opentelemetry-sdk", specifier = ">=1.30.0" },
     { name = "orjson", specifier = ">=3.10.15" },
     { name = "packaging", specifier = ">=24.2" },
     { name = "psutil", specifier = ">=7.0.0" },

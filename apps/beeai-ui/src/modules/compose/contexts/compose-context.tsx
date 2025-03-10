@@ -15,6 +15,7 @@
  */
 
 import { Agent } from '#modules/agents/api/types.ts';
+import { RunStats } from '#modules/run/types.ts';
 import { createContext } from 'react';
 
 export const ComposeContext = createContext<ComposeContextValue | null>(null);
@@ -35,8 +36,5 @@ export interface AgentInstance {
   isPending?: boolean;
   logs?: string[];
   result?: string;
-  stats?: {
-    startTime: number;
-    endTime?: number;
-  };
+  stats?: RunStats;
 }

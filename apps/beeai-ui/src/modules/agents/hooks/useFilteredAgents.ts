@@ -16,7 +16,6 @@
 
 import { useMemo } from 'react';
 import { Agent } from '../api/types';
-import { getAgentTitle } from '../utils';
 import { AgentsFiltersParams } from '../providers/AgentsFiltersProvider';
 
 interface Props {
@@ -38,7 +37,7 @@ export function useFilteredAgents({ agents, filters }: Props) {
         }
 
         if (searchRegex) {
-          const nameMatch = searchRegex.test(getAgentTitle(agent));
+          const nameMatch = searchRegex.test(agent.name);
           const descriptionMatch = agent.description ? searchRegex.test(agent.description) : false;
           const fullDescriptionMatch = agent.fullDescription ? searchRegex.test(agent.fullDescription) : false;
 

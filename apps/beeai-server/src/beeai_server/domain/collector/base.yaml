@@ -1,0 +1,33 @@
+receivers:
+  otlp:
+    protocols:
+      http:
+        endpoint: 0.0.0.0:4318 # overriden by the server
+
+exporters:
+  debug: {}
+  otlp/phoenix:
+    endpoint: 0.0.0.0:8336
+    tls:
+      insecure: true
+
+processors:
+  memory_limiter:
+    check_interval: 1s
+    limit_mib: 1000
+  batch:
+  filter/phoenix:
+    traces:
+      span:
+        - 'resource.attributes["service.namespace"] != "beeai-agent-provider"'
+
+extensions:
+  health_check:
+
+service:
+  extensions: [health_check]
+  pipelines:
+    traces/phoenix:
+      receivers: [otlp]
+      processors: [memory_limiter, filter/phoenix, batch]
+      exporters: [otlp/phoenix]

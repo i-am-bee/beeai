@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export const BEEAI_HOST = process.env.BEEAI_HOST;
+export const ACP_CLIENT_SERVER_URL = process.env.ACP_CLIENT_SERVER_URL;

@@ -29,7 +29,6 @@ import { motion } from 'framer-motion';
 import type { ReactNode } from 'react';
 import type { Agent } from '../api/types';
 import { AgentLaunchButton } from '../detail/AgentLaunchButton';
-import { getAgentTitle } from '../utils';
 import classes from './AgentDetail.module.scss';
 import { AgentDetailSection } from './AgentDetailSection';
 import { AgentExampleRequests } from './AgentExampleRequests';
@@ -49,7 +48,7 @@ export function AgentDetail({ agent, buttons }: Props) {
   return (
     <div className={classes.root}>
       <motion.h1 {...fadeInPropsWithMarginShift({ start: { from: spacing[4] } })} className={classes.name}>
-        {getAgentTitle(agent)}
+        {agent.name}
         <BeeBadge agent={agent} size="lg" />
       </motion.h1>
 

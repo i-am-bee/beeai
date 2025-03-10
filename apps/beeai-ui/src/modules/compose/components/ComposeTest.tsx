@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import { TextAreaAutoHeight } from '#components/TextAreaAutoHeight/TextAreaAutoHeight.tsx';
-import { useForm } from 'react-hook-form';
-import { submitFormOnEnter } from '#utils/formUtils.ts';
-import classes from './ComposeTest.module.scss';
-import { Button } from '@carbon/react';
-import { ArrowRight, NewTab, StopOutlineFilled } from '@carbon/icons-react';
-import { useEffect, useRef } from 'react';
-import { useCompose } from '../contexts';
 import { MarkdownContent } from '#components/MarkdownContent/MarkdownContent.tsx';
+import { TextAreaAutoHeight } from '#components/TextAreaAutoHeight/TextAreaAutoHeight.tsx';
 import { Container } from '#components/layouts/Container.tsx';
+import { submitFormOnEnter } from '#utils/formUtils.ts';
+import { ArrowRight, NewTab, StopOutlineFilled } from '@carbon/icons-react';
+import { Button } from '@carbon/react';
+import { useEffect, useRef } from 'react';
+import { useForm } from 'react-hook-form';
+import { useCompose } from '../contexts';
+import classes from './ComposeTest.module.scss';
 
 export function ComposeTest() {
   const { result, onSubmit, onCancel, onReset, isPending } = useCompose();

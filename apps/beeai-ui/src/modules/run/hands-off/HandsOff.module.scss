@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import { MainContent } from '#components/layouts/MainContent.tsx';
-import { GettingStarted } from '#modules/home/components/GettingStarted.tsx';
-
-export function Home() {
-  return (
-    <MainContent>
-      <GettingStarted />
-    </MainContent>
-  );
+.root {
+  min-block-size: 100%;
+  display: flex;
+  flex-direction: column;
+  row-gap: $spacing-04;
+  justify-content: center;
+  &.isPendingOrText {
+    justify-content: flex-start;
+    row-gap: $spacing-07;
+  }
 }

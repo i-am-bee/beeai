@@ -16,7 +16,7 @@ import logging
 import os
 
 from opentelemetry import trace
-from opentelemetry.sdk.resources import Resource, SERVICE_NAME
+from opentelemetry.sdk.resources import Resource, SERVICE_NAME, SERVICE_NAMESPACE
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor, SpanExportResult
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
@@ -37,7 +37,7 @@ async def run_agent_provider(server: Server):
     server.settings.port = int(os.getenv("PORT", "8000"))
     trace.set_tracer_provider(
         tracer_provider=TracerProvider(
-            resource=Resource(attributes={SERVICE_NAME: server.name}),
+            resource=Resource(attributes={SERVICE_NAME: server.name, SERVICE_NAMESPACE: "beeai-agent-provider"}),
             active_span_processor=BatchSpanProcessor(SilentOTLPSpanExporter()),
         )
     )

@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
+import clsx from 'clsx';
 import Lottie from 'lottie-react';
 import SpinnerAnimation from './BouncingDotsAnimation.json';
 import classes from './Spinner.module.scss';
-import clsx from 'clsx';
 
 interface Props {
   size?: 'sm' | 'md';
+  center?: boolean;
 }
 
-export function Spinner({ size = 'md' }: Props) {
+export function Spinner({ size = 'md', center }: Props) {
   return (
-    <div className={clsx(classes.root, classes[`size-${size}`])}>
+    <div className={clsx(classes.root, classes[`size-${size}`], { [classes.center]: center })}>
       <Lottie className={classes.content} animationData={SpinnerAnimation} loop />
     </div>
   );

@@ -17,6 +17,8 @@
 import { TransitionLink } from '#components/TransitionLink/TransitionLink.tsx';
 import { useModal } from '#contexts/Modal/index.tsx';
 import { AddRequiredEnvsModal } from '#modules/envs/components/AddRequiredEnvsModal.tsx';
+import { SupportedUis } from '#modules/run/constants.ts';
+import { UiType } from '#modules/run/types.ts';
 import { routes } from '#utils/router.ts';
 import { ArrowRight } from '@carbon/icons-react';
 import { Button, ButtonSkeleton } from '@carbon/react';
@@ -33,8 +35,9 @@ interface Props {
 export function AgentLaunchButton({ agent }: Props) {
   const { openModal } = useModal();
   const { missingEnvs, isPending: isMissingEnvsPending } = useMissingEnvs({ agent });
+  const uiType = agent?.ui?.type;
 
-  return agent.ui?.type === 'chat' ? (
+  return uiType && SupportedUis.includes(uiType as UiType) ? (
     <Button
       kind="primary"
       renderIcon={ArrowRight}
