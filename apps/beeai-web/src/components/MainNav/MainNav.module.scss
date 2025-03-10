@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
- .list {
+.list {
   display: flex;
   column-gap: $spacing-05;
 
@@ -28,7 +28,8 @@
 
 .link {
   display: flex;
-  block-size: rem(48px);
+  block-size: $spacing-09;
+  column-gap: $spacing-03;
   align-items: center;
   padding-inline: $spacing-04;
   font-size: rem(14px);

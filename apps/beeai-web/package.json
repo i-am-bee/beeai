@@ -9,11 +9,12 @@
     "lint": "next lint"
   },
   "peerDependencies": {
+    "@carbon/icons-react": "*",
     "@tanstack/react-query": "*",
     "react": "*",
     "react-dom": "*",
-    "react-is": "*",
-    "react-hook-form": "*"
+    "react-hook-form": "*",
+    "react-is": "*"
   },
   "dependencies": {
     "@i-am-bee/acp-sdk": "workspace:*",

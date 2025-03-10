@@ -16,6 +16,8 @@
 
 "use client";
 
+import type { ReactNode } from "react";
+import { type CarbonIconType, ArrowUpRight } from '@carbon/icons-react';
 import clsx from "clsx";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -26,15 +28,17 @@ export function MainNav() {
   return (
     <nav>
       <ul className={classes.list}>
-        {NAV_ITEMS.map(({ label, href, isSection }, idx) => (
+        {NAV_ITEMS.map(({ label, href, isSection, Icon }) => (
           <li
-            key={idx}
+            key={href}
             className={clsx({
               [classes.active]: isSection && pathname.startsWith(href),
             })}
           >
             <Link href={href} className={classes.link}>
               {label}
+
+              {Icon && <Icon />}
             </Link>
           </li>
         ))}
@@ -43,7 +47,14 @@ export function MainNav() {
   );
 }
 
-const NAV_ITEMS = [
+interface NavItem {
+  label: ReactNode;
+  href: string;
+  isSection?: boolean;
+  Icon?: CarbonIconType;
+}
+
+const NAV_ITEMS: NavItem[] = [
   {
     label: <strong>BeeAI</strong>,
     href: "/",
@@ -53,4 +64,9 @@ const NAV_ITEMS = [
     href: "/agents",
     isSection: true,
   },
+  {
+    label: 'Docs',
+    href: 'https://docs.beeai.dev/',
+    Icon: ArrowUpRight,
+  }
 ];
