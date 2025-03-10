@@ -27,7 +27,7 @@ async function registerAgents(server: AcpServer) {
     contentJudge.description,
     contentJudge.inputSchema,
     contentJudge.outputSchema,
-    contentJudge.run,
+    contentJudge.run(server),
     contentJudge.metadata,
   );
 
@@ -36,7 +36,7 @@ async function registerAgents(server: AcpServer) {
     podcastCreator.description,
     podcastCreator.inputSchema,
     podcastCreator.outputSchema,
-    podcastCreator.run,
+    podcastCreator.run(server),
     podcastCreator.metadata,
   );
 }
