@@ -16,8 +16,9 @@ from importlib.metadata import version
 import logging
 
 from beeai_server.configuration import get_configuration
+from beeai_server.utils.id import generate_stable_id
 from opentelemetry import trace, metrics
-from opentelemetry.sdk.resources import Resource, SERVICE_NAME, SERVICE_VERSION
+from opentelemetry.sdk.resources import Resource, SERVICE_NAME, SERVICE_VERSION, SERVICE_INSTANCE_ID
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor, SpanExportResult
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
@@ -53,7 +54,13 @@ class SilentOTLPMetricExporter(OTLPMetricExporter):
 
 
 def configure_telemetry():
-    resource = Resource(attributes={SERVICE_NAME: "beeai-server", SERVICE_VERSION: version("beeai-server")})
+    resource = Resource(
+        attributes={
+            SERVICE_NAME: "beeai-server",
+            SERVICE_VERSION: version("beeai-server"),
+            SERVICE_INSTANCE_ID: generate_stable_id(),
+        }
+    )
     trace.set_tracer_provider(
         tracer_provider=TracerProvider(
             resource=resource,
