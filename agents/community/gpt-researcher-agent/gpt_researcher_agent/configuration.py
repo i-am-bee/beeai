@@ -5,7 +5,7 @@ from pydantic_settings import BaseSettings
 
 class Configuration(BaseSettings):
     retriever: str = "duckduckgo"
-    llm_api_base: str = "https://localhost:11434/v1"
+    llm_api_base: str = "http://localhost:11434/v1"
     llm_api_key: str = "dummy"
     llm_model: str = "llama3.1"
     llm_model_fast: str | None = None
