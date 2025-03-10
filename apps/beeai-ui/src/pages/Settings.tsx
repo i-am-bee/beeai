@@ -19,6 +19,8 @@ import { MainContent } from '#components/layouts/MainContent.tsx';
 import { ViewHeader } from '#components/ViewHeader/ViewHeader.tsx';
 import { ViewStack } from '#components/ViewStack/ViewStack.tsx';
 import { EnvsView } from '#modules/envs/components/EnvsView.tsx';
+import { ProvidersView } from '#modules/providers/components/ProvidersView.tsx';
+import { Tab, TabList, TabPanel, TabPanels, Tabs } from '@carbon/react';
 
 export function Settings() {
   return (
@@ -27,7 +29,23 @@ export function Settings() {
         <ViewStack>
           <ViewHeader heading="Settings" />
 
-          <EnvsView />
+          <Tabs>
+            <TabList>
+              <Tab>Agent providers</Tab>
+
+              <Tab>Environment variables</Tab>
+            </TabList>
+
+            <TabPanels>
+              <TabPanel>
+                <ProvidersView />
+              </TabPanel>
+
+              <TabPanel>
+                <EnvsView />
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
         </ViewStack>
       </Container>
     </MainContent>

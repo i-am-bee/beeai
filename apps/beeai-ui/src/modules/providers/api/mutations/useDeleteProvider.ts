@@ -14,27 +14,21 @@
  * limitations under the License.
  */
 
-.root {
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-03;
-}
+import { agentKeys } from '#modules/agents/api/keys.ts';
+import { providerKeys } from '#modules/providers/api/keys.ts';
+import { useMutation } from '@tanstack/react-query';
+import { deleteProvider } from '..';
 
-.body {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  column-gap: $gap;
-}
+export function useDeleteProvider() {
+  const mutation = useMutation({
+    mutationFn: deleteProvider,
+    meta: {
+      invalidates: [providerKeys.lists(), agentKeys.lists()],
+      errorToast: {
+        title: 'Failed to delete provider.',
+      },
+    },
+  });
 
-.heading {
-  font-size: rem(24px);
-  line-height: math.div(28, 24);
-  font-weight: normal;
-  color: $text-dark;
-  margin-block-end: 0;
-}
-
-.label {
-  inline-size: 100%;
+  return mutation;
 }

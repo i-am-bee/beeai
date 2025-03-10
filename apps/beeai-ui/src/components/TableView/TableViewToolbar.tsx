@@ -14,23 +14,28 @@
  * limitations under the License.
  */
 
-import { PropsWithChildren, ReactElement } from 'react';
-import classes from './ViewHeader.module.scss';
+import { Search } from '@carbon/icons-react';
+import { TextInput, TextInputProps } from '@carbon/react';
+import { ReactNode, useId } from 'react';
+import classes from './TableViewToolbar.module.scss';
 
 interface Props {
-  heading: string;
-  label?: ReactElement;
+  searchProps: Partial<Omit<TextInputProps, 'id' | 'size' | 'hideLabel'>>;
+  button: ReactNode;
 }
 
-export function ViewHeader({ heading, label, children }: PropsWithChildren<Props>) {
-  return (
-    <header className={classes.root}>
-      {label ? <div className={classes.label}>{label}</div> : null}
-      <div className={classes.body}>
-        <h1 className={classes.heading}>{heading}</h1>
+export function TableViewToolbar({ searchProps, button }: Props) {
+  const id = useId();
 
-        {children && <div>{children}</div>}
+  return (
+    <div className={classes.root}>
+      <div className={classes.search}>
+        <Search />
+
+        <TextInput labelText="Search" {...searchProps} id={`${id}:search`} size="lg" hideLabel />
       </div>
-    </header>
+
+      <div className={classes.button}>{button}</div>
+    </div>
   );
 }
