@@ -18,8 +18,9 @@
 
 import type { ReactNode } from "react";
 import { type CarbonIconType, ArrowUpRight } from "@carbon/icons-react";
-import clsx from "clsx";
+import { DOCUMENTATION_LINK } from "@i-am-bee/beeai-ui";
 import { usePathname } from "next/navigation";
+import clsx from "clsx";
 import classes from "./MainNav.module.scss";
 import { TransitionLink } from "../TransitionLink/TransitionLink";
 import Link from "next/link";
@@ -87,7 +88,7 @@ const NAV_ITEMS: NavItem[] = [
   },
   {
     label: "Docs",
-    href: "https://docs.beeai.dev/",
+    href: DOCUMENTATION_LINK,
     Icon: ArrowUpRight,
     isExternal: true,
   },

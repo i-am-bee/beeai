@@ -16,13 +16,12 @@
 
 'use client';
 
-import { Container } from '#components/layouts/Container.tsx';
+import { BREW_INSTALL_BEEAI } from '@i-am-bee/beeai-ui';
 import LogoBeeAI from '#svgs/LogoBeeAI.svg';
-import { GET_STARTED_PYTHON_LINK, GET_STARTED_TYPESCRIPT_LINK } from '#utils/constants.ts';
-import { ArrowUpRight } from '@carbon/icons-react';
-import { Button } from '@carbon/react';
-import classes from './GettingStarted.module.scss';
+import { Container } from '#components/layouts/Container.tsx';
+import { CopySnippet } from '#components/CopySnippet/CopySnippet.tsx';
 import { GitHubStarsButton } from './GitHubStarsButton';
+import classes from './GettingStarted.module.scss';
 
 export function GettingStarted() {
   return (
@@ -35,24 +34,7 @@ export function GettingStarted() {
         </p>
 
         <div className={classes.bottom}>
-          <div className={classes.buttons}>
-            <Button
-              as="a"
-              href={GET_STARTED_PYTHON_LINK}
-              target="_blank"
-              size="md"
-              kind="tertiary"
-              className={classes.button}
-              renderIcon={ArrowUpRight}
-            >
-              <span>Get started with Python</span>
-            </Button>
-
-            <a href={GET_STARTED_TYPESCRIPT_LINK} target="_blank" rel="noreferrer" className={classes.link}>
-              Or get started with Typescript
-            </a>
-          </div>
-
+          <CopySnippet className={classes.snippet}>{BREW_INSTALL_BEEAI}</CopySnippet>
           <GitHubStarsButton />
         </div>
       </Container>
