@@ -45,9 +45,9 @@ async def preview(
     location: str = typer.Argument(
         ...,
         help=(
-            "URL of the provider manifest"
-            "file://path/to/beeai-manifest.yaml"
-            "git+https://github.com/my-org/my-repo.git@2.0.0#path=/path/to/beeai-manifest.yaml ..."
+            "URL of the provider manifest, for example:\n\n"
+            "- file://path/to/beeai-manifest.yaml\n\n"
+            "- git+https://github.com/my-org/my-repo.git@2.0.0#path=/path/to/beeai-manifest.yaml\n\n"
         ),
     ),
 ) -> None:
@@ -62,9 +62,9 @@ async def add(
     location: str = typer.Argument(
         ...,
         help=(
-            "URL of the provider manifest"
-            "file://path/to/beeai-manifest.yaml"
-            "git+https://github.com/my-org/my-repo.git@2.0.0#path=/path/to/beeai-manifest.yaml ..."
+            "URL of the provider manifest, for example:\n\n"
+            "- file://path/to/beeai-manifest.yaml\n\n"
+            "- git+https://github.com/my-org/my-repo.git@2.0.0#path=/path/to/beeai-manifest.yaml\n\n"
         ),
     ),
 ) -> None:
