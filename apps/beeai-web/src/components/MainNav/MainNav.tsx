@@ -25,7 +25,6 @@ import { TransitionLink } from "../TransitionLink/TransitionLink";
 import Link from "next/link";
 
 export function MainNav() {
-  const pathname = usePathname();
   return (
     <nav>
       <ul className={classes.list}>
