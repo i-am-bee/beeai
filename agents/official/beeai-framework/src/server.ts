@@ -6,7 +6,8 @@ import { Version } from "beeai-framework";
 import { runAgentProvider } from "@i-am-bee/beeai-sdk/providers/agent";
 import { agent as chat } from "./chat/chat.js";
 import { agent as contentJudge } from "./content-judge/content-judge.js";
-import { agent as podcastCreator } from "./podcast-creator/podcast-creator.js";
+import { agent as podcastCreator } from "./podcast-creator/agent-info.js";
+import { runShim } from "./helpers.js";
 
 async function registerTools(server: AcpServer) {
   await chat.registerTools(server);
@@ -19,7 +20,7 @@ async function registerAgents(server: AcpServer) {
     chat.inputSchema,
     chat.outputSchema,
     chat.run(server),
-    chat.metadata,
+    chat.metadata
   );
 
   server.agent(
@@ -28,7 +29,7 @@ async function registerAgents(server: AcpServer) {
     contentJudge.inputSchema,
     contentJudge.outputSchema,
     contentJudge.run,
-    contentJudge.metadata,
+    contentJudge.metadata
   );
 
   server.agent(
@@ -36,8 +37,8 @@ async function registerAgents(server: AcpServer) {
     podcastCreator.description,
     podcastCreator.inputSchema,
     podcastCreator.outputSchema,
-    podcastCreator.run,
-    podcastCreator.metadata,
+    runShim(podcastCreator.run),
+    podcastCreator.metadata
   );
 }
 
