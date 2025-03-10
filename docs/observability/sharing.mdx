@@ -1,0 +1,31 @@
+---
+title: "Sharing"
+description: "Share telemetry data with BeeAI team to aid us in improving the platform"
+---
+
+The telemetry sharing functionality in the BeeAI platform collects metrics and operational data to provide insights into how the platform operates in real-world environments, it is **enabled** by default. This feature helps us:
+
+- Identify performance bottlenecks.
+- Improve platform stability and reliability.
+- Enhance user experience by understanding usage patterns.
+
+## Data Collected
+
+We value your privacy and ensure that **no sensitive data** is collected through telemetry sharing. The following types of information are gathered:
+
+- Platform version and runtime environment details.
+- Anonymized usage statistics for built-in features.
+
+## Disabling Telemetry Sharing
+
+We understand that not all users want to send telemetry data. You can easily disable this feature by with the following command:
+
+```sh
+beeai telemetry sharing --disable
+```
+
+To check whether telemetry sharing is enabled, simply run:
+
+```sh
+beeai telemetry sharing
+```

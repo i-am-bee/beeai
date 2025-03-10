@@ -43,6 +43,10 @@
                 ]
               }
             ]
+          },
+          {
+            "group": "Observability & Telemetry",
+            "pages": ["/observability/agents", "/observability/sharing"]
           }
         ]
       }

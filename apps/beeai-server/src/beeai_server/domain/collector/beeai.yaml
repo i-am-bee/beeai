@@ -6,10 +6,14 @@ processors:
   memory_limiter/beeai:
     check_interval: 1s
     limit_mib: 2000
+  filter/beeai:
+    traces:
+      span:
+        - 'resource.attributes["service.name"] != "beeai-server"'
 
 service:
   pipelines:
     metrics/beeai:
       receivers: [otlp]
-      processors: [memory_limiter/beeai, batch]
+      processors: [memory_limiter/beeai, filter/beeai, batch]
       exporters: [otlphttp/beeai]
