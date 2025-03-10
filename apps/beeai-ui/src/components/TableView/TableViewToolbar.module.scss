@@ -16,23 +16,9 @@
 
 .root {
   display: flex;
-  flex-direction: column;
-  row-gap: $spacing-07;
 }
 
-.heading {
-  @include type-style(heading-03);
-}
-
-.description {
-  @include type-style(body-01);
-}
-
-.toolbar {
-  display: flex;
-}
-
-.toolbarSearch {
+.search {
   flex-grow: 1;
   position: relative;
 
@@ -51,29 +37,8 @@
   }
 }
 
-.toolbarButton {
-  &:global(.cds--btn) {
+.button {
+  :global(.cds--btn) {
     border-radius: 0 $border-radius 0 0;
   }
-}
-
-.table {
-  :global(.cds--data-table) {
-    border-block-start: 0;
-    border-start-start-radius: 0;
-    border-start-end-radius: 0;
-    th,
-    td {
-      &:last-child {
-        inline-size: 0;
-      }
-    }
-    thead tr:first-child th {
-      border-radius: 0;
-    }
-  }
-}
-
-.tableActions {
-  margin: -$spacing-03;
 }

@@ -19,6 +19,9 @@ import { TableViewActions } from '#components/TableView/TableViewActions.tsx';
 import { TableViewToolbar } from '#components/TableView/TableViewToolbar.tsx';
 import { useModal } from '#contexts/Modal/index.tsx';
 import { useTableSearch } from '#hooks/useTableSearch.ts';
+import { useListAgents } from '#modules/agents/api/queries/useListAgents.ts';
+import { ImportAgentsModal } from '#modules/agents/components/ImportAgentsModal.tsx';
+import { getAgentsLanguages } from '#modules/agents/utils.ts';
 import { TrashCan } from '@carbon/icons-react';
 import {
   Button,
@@ -33,54 +36,60 @@ import {
   TableRow,
 } from '@carbon/react';
 import { useMemo } from 'react';
-import { useDeleteEnv } from '../api/mutations/useDeleteEnv';
-import { useListEnvs } from '../api/queries/useListEnvs';
-import { AddEnvModal } from './AddEnvModal';
+import { useDeleteProvider } from '../api/mutations/useDeleteProvider';
+import { useListProviders } from '../api/queries/useListProviders';
+import { getProviderSource, groupAgentsByProvider, stripProviderSourcePrefix } from '../utils';
 
-export function EnvsView() {
+export function ProvidersView() {
   const { openModal, openConfirmation } = useModal();
-  const { data, isPending } = useListEnvs();
-  const { mutate: deleteEnv } = useDeleteEnv();
+  const { data: providers, isPending: isProvidersPending } = useListProviders();
+  const { mutate: deleteProvider } = useDeleteProvider();
+  const { data: agents, isPending: isAgentsPending } = useListAgents();
+  const agentsByProvider = groupAgentsByProvider(agents);
   const entries = useMemo(
-    () => (data ? Object.entries(data.env).map(([name, value]) => ({ name, value })) : []),
-    [data],
-  );
-  const { items, onSearch } = useTableSearch({ entries, fields: ['name'] });
+    () =>
+      providers
+        ? providers.items.map(({ id }) => {
+            const agents = agentsByProvider[id];
+            const source = getProviderSource(id);
 
-  const rows = useMemo(() => {
-    return items.map(({ name, value }) => ({
-      id: name,
-      name,
-      value,
-      actions: (
-        <TableViewActions>
-          <IconButton
-            label="Delete"
-            kind="ghost"
-            size="sm"
-            onClick={() =>
-              openConfirmation({
-                title: `Delete '${name}'?`,
-                body: 'Are you sure you want to delete this environment variable? It can’t be undone.',
-                primaryButtonText: 'Delete',
-                danger: true,
-                onSubmit: () => deleteEnv({ name }),
-              })
-            }
-            align="left"
-          >
-            <TrashCan />
-          </IconButton>
-        </TableViewActions>
-      ),
-    }));
-  }, [items, deleteEnv, openConfirmation]);
+            return {
+              id,
+              url: stripProviderSourcePrefix(id),
+              source,
+              runtime: getAgentsLanguages(agents).join(', '),
+              agents: agents?.length ?? 0,
+              actions: (
+                <TableViewActions>
+                  <IconButton
+                    label="Remove from catalog"
+                    kind="ghost"
+                    size="sm"
+                    onClick={() =>
+                      openConfirmation({
+                        title: `Delete '${id}'?`,
+                        body: 'Are you sure you want to delete this provider? It can’t be undone.',
+                        primaryButtonText: 'Delete',
+                        danger: true,
+                        onSubmit: () => deleteProvider({ id }),
+                      })
+                    }
+                    align="left"
+                  >
+                    <TrashCan />
+                  </IconButton>
+                </TableViewActions>
+              ),
+            };
+          })
+        : [],
+    [providers, agentsByProvider, deleteProvider, openConfirmation],
+  );
+  const { items: rows, onSearch } = useTableSearch({ entries, fields: ['id', 'source', 'runtime'] });
+  const isPending = isProvidersPending || isAgentsPending;
 
   return (
-    <TableView
-      description="Your environment variables are sensitive information and should not be shared with anyone. Keep it secure to
-        prevent unauthorized access to your account."
-    >
+    <TableView>
       <DataTable headers={HEADERS} rows={rows}>
         {({ rows, headers, getTableProps, getHeaderProps, getRowProps }) => (
           <>
@@ -89,9 +98,7 @@ export function EnvsView() {
                 onChange: onSearch,
                 disabled: isPending,
               }}
-              button={
-                <Button onClick={() => openModal((props) => <AddEnvModal {...props} />)}>Add env variable</Button>
-              }
+              button={<Button onClick={() => openModal((props) => <ImportAgentsModal {...props} />)}>Import</Button>}
             />
 
             {isPending ? (
@@ -133,7 +140,9 @@ export function EnvsView() {
 }
 
 const HEADERS = [
-  { key: 'name', header: 'Name' },
-  { key: 'value', header: 'Value' },
+  { key: 'url', header: 'URL' },
+  { key: 'source', header: 'Source' },
+  { key: 'runtime', header: 'Runtime' },
+  { key: 'agents', header: <>#&nbsp;of&nbsp;agents</> },
   { key: 'actions', header: '' },
 ];

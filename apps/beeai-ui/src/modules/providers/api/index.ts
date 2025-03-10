@@ -27,6 +27,18 @@ export async function createProvider({ body }: { body: CreateProviderBody }) {
   return response.data;
 }
 
+export async function deleteProvider({ id }: { id: string }) {
+  const response = await api.POST('/api/v1/provider/delete', {
+    body: { location: id },
+  });
+
+  if (response.error) {
+    throw new Error('Failed to delete provider.');
+  }
+
+  return response.data;
+}
+
 export async function getProviders() {
   const response = await api.GET('/api/v1/provider');
 
