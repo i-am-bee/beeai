@@ -23,19 +23,44 @@
 .searchBar {
   position: relative;
 
-  > svg {
-    position: absolute;
-    inset-block-start: 50%;
-    inset-inline-start: $spacing-05;
-    transform: translateY(-50%);
-  }
-
   :global(.cds--text-input) {
     padding-inline-start: rem(47px);
   }
 }
 
-.frameworkAll {
+.searchIcon {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: $spacing-05;
+  transform: translateY(-50%);
+}
+
+.popoverContainer {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.toggleButton {
+  --cds-button-primary: var(--cds-background-inverse, #393939);
+
+  .searchBar:not(:focus-within) & {
+    outline-offset: -1px;
+    outline: 1px solid var(--cds-border-subtle-00, #e0e0e0);
+  }
+
+  .searchBar:focus-within & {
+    outline-offset: -2px;
+    outline: 2px solid var(--cds-button-primary);
+  }
+
+  .arrayFiltersActive &:global(.cds--btn--primary) {
+    outline-offset: -1px;
+    outline: 1px solid var(--cds-button-primary);
+  }
+}
+
+.frameworksAll {
   &:global(.cds--tag.cds--tag--operational.selected) {
     background-color: $layer-02;
     border-color: $layer-02;

@@ -14,26 +14,28 @@
  * limitations under the License.
  */
 
-import type { PropsWithChildren } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
+@use 'styles/common' as *;
 
-export interface AgentsFiltersParams {
-  search: string;
-  frameworks: string[];
-  languages: string[];
-  licenses: string[];
+.cds--checkbox-group {
+  box-sizing: content-box;
+  padding-inline: rem(12px);
+  min-width: rem(200px);
 }
 
-export function AgentsFiltersProvider({ children }: PropsWithChildren) {
-  const formReturn = useForm<AgentsFiltersParams>({
-    mode: 'onBlur',
-    defaultValues: {
-      search: '',
-      frameworks: [],
-      languages: [],
-      licenses: [],
-    },
-  });
+.cds--label + .cds--form-item.cds--checkbox-wrapper {
+  margin-block-start: 0;
+}
 
-  return <FormProvider {...formReturn}>{children}</FormProvider>;
+.cds--checkbox-label-text {
+  padding-inline-start: rem(8px);
+}
+
+.cds--form-item.cds--checkbox-wrapper {
+  margin-block-end: rem(8px);
+
+  // .cds--checkbox-group__validation-msg is the last child
+  // second-to-last child is the last .cds--form-item.cds--checkbox-wrapper
+  &:nth-last-child(2) {
+    margin-block-end: 0;
+  }
 }
