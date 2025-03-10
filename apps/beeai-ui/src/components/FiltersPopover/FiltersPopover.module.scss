@@ -17,11 +17,11 @@
 .container {
   --cds-label-01-font-size: #{rem(12px)};
   --cds-label-01-line-height: #{rem(16px)};
-  --cds-label-01-letter-spacing: #{rem(0.32px)};
+  --cds-label-01-letter-spacing: #{$letter-spacing-lg};
 
   --cds-body-compact-01-font-size: #{rem(12px)};
   --cds-body-compact-01-line-height: #{rem(18px)};
-  --cds-body-compact-01-letter-spacing: #{rem(0.16px)};
+  --cds-body-compact-01-letter-spacing: #{$letter-spacing};
 
   display: flex;
   flex-direction: column;
