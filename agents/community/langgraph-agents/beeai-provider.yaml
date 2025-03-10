@@ -6,3 +6,13 @@ serverType: http
 mcpTransport: sse
 mcpEndpoint: /sse
 command: ["langgraph-agents"]
+env:
+- name: LLM_MODEL
+  required: true
+  description: "Model to use from the specified OpenAI-compatible API."
+- name: LLM_API_BASE
+  required: true
+  description: "Base URL for OpenAI-compatible API endpoint"
+- name: LLM_API_KEY
+  required: true
+  description: "API key for OpenAI-compatible API endpoint"

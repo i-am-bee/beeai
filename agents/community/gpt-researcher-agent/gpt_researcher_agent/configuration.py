@@ -5,13 +5,22 @@ from pydantic_settings import BaseSettings
 
 class Configuration(BaseSettings):
     retriever: str = "duckduckgo"
-    ollama_base_url: str = "http://localhost:11434"
-    fast_llm: str = "ollama:llama3.1"
-    smart_llm: str = "ollama:llama3.1"
-    strategic: str = "ollama:llama3.1"
-    embedding: str = "ollama:nomic-embed-text"
+    llm_api_base: str = "https://api.openai.com/v1"
+    llm_api_key: str = "dummy"
+    llm_model: str = "gpt-4o"
+    llm_model_fast: str | None = None
+    llm_model_smart: str | None = None
+    llm_model_strategic: str | None = None
+    embedding: str | None = None
 
 
 def load_env():
-    for name, var in Configuration().model_dump().items():
-        os.environ.setdefault(name.upper(), var)
+    config = Configuration()
+    os.environ["RETRIEVER"] = config.retriever
+    os.environ["OPENAI_BASE_URL"] = config.llm_api_base
+    os.environ["OPENAI_API_KEY"] = config.llm_api_key
+    os.environ["FAST_LLM"] = f"openai:{config.llm_model_fast or config.llm_model}"
+    os.environ["SMART_LLM"] = f"openai:{config.llm_model_smart or config.llm_model}"
+    os.environ["STRATEGIC_LLM"] = f"openai:{config.llm_model_strategic or config.llm_model}"
+    if config.embedding:
+        os.environ["EMBEDDING"] = config.embedding

@@ -8,7 +8,8 @@ import {
 } from "@i-am-bee/beeai-sdk/schemas/text";
 import { Client as ACPClient } from "@i-am-bee/acp-sdk/client/index.js";
 import { SSEClientTransport } from "@i-am-bee/acp-sdk/client/sse.js";
-import { CHAT_MODEL } from "../config.js";
+import { MODEL, API_BASE, API_KEY } from "../config.js";
+import { OpenAIChatModel } from "beeai-framework/adapters/openai/backend/chat";
 
 const inputSchema = textInputSchema.extend({
   documents: z.array(z.string()).default([]).optional(),
@@ -29,7 +30,7 @@ type Criteria = (typeof criteria)[number];
 const structuredGenerationSchema = z.object(
   Object.fromEntries(criteria.map((c) => [c, z.number().min(0).max(1)])) as {
     [key in Criteria]: z.ZodNumber;
-  },
+  }
 );
 
 // Define weighting for each evaluation criterion (using weighted average),
@@ -51,7 +52,7 @@ const EVALUATION_PROMPT = `Evaluate the quality of the generated document based 
 const calculateScore = (result: Weights) =>
   // Multiply by 100 and round to avoid floating precision problem when comparing
   Math.round(
-    criteria.reduce((sum, key) => sum + result[key] * weights[key] * 100, 0),
+    criteria.reduce((sum, key) => sum + result[key] * weights[key] * 100, 0)
   );
 
 const retrieveDocuments = async ({
@@ -69,7 +70,7 @@ const retrieveDocuments = async ({
   });
   // TODO: Make this env-configurable.
   const transport = new SSEClientTransport(
-    new URL("/mcp/sse", "http://localhost:8333"),
+    new URL("/mcp/sse", "http://localhost:8333")
   );
 
   try {
@@ -99,13 +100,13 @@ const retrieveDocuments = async ({
           {
             timeout: 10 * 60 * 1000,
             signal,
-          },
-        ),
-      ),
+          }
+        )
+      )
     );
 
     return results.map(
-      (result) => (result.output.text as string) || "No document",
+      (result) => (result.output.text as string) || "No document"
     );
   } finally {
     await client.close();
@@ -118,7 +119,7 @@ const run = async (
   }: {
     params: { input: Input };
   },
-  { signal }: { signal?: AbortSignal },
+  { signal }: { signal?: AbortSignal }
 ): Promise<Output> => {
   const { text, documents, agents } = params.input;
   if (!documents?.length && !agents?.length)
@@ -132,7 +133,11 @@ const run = async (
     ];
   }
 
-  const model = await ChatModel.fromName(CHAT_MODEL);
+  const model = new OpenAIChatModel(
+    MODEL,
+    {},
+    { baseURL: API_BASE, apiKey: API_KEY, compatibility: "compatible" }
+  );
 
   const results = await Promise.all(
     finalDocuments.map((document) =>
@@ -145,14 +150,14 @@ const run = async (
           new UserMessage(`Research prompt: ${text}\n\n Document: ${document}`),
         ],
         abortSignal: signal,
-      }),
-    ),
+      })
+    )
   );
 
   const scores = results.map((result) => calculateScore(result.object));
   const highestValueIndex = scores.reduce(
     (maxIndex, score, index, arr) => (score > arr[maxIndex] ? index : maxIndex),
-    0,
+    0
   );
 
   return outputSchema.parse({ text: finalDocuments[highestValueIndex] });
