@@ -34,7 +34,7 @@ export function GettingStarted() {
         </p>
 
         <div className={classes.bottom}>
-          <CopySnippet className={classes.snippet}>{BREW_INSTALL_BEEAI}</CopySnippet>
+          <CopySnippet>{BREW_INSTALL_BEEAI}</CopySnippet>
           <GitHubButton />
         </div>
       </Container>
