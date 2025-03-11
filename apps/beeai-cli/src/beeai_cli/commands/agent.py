@@ -18,6 +18,7 @@ import inspect
 import json
 import random
 
+import jsonref
 from prompt_toolkit.completion import NestedCompleter
 from prompt_toolkit.validation import Validator
 from rich.box import HORIZONTALS
@@ -49,7 +50,7 @@ from rich.table import Column
 
 from beeai_cli.api import send_request, send_request_with_notifications
 from beeai_cli.async_typer import AsyncTyper, console, create_table, err_console
-from beeai_cli.utils import check_json, generate_schema_example, omit, prompt_user, filter_dict
+from beeai_cli.utils import check_json, generate_schema_example, omit, prompt_user, filter_dict, remove_nullable
 
 app = AsyncTyper()
 
@@ -168,7 +169,12 @@ class ShowConfig(InteractiveCommand):
     def handle(self, *_any):
         with create_table(Column("Key", ratio=1), Column("Type", ratio=3), Column("Example", ratio=2)) as schema_table:
             for prop, schema in self.config_schema["properties"].items():
-                schema_table.add_row(prop, json.dumps(schema), json.dumps(generate_schema_example(schema)))
+                required_schema = remove_nullable(schema)
+                schema_table.add_row(
+                    prop,
+                    json.dumps(required_schema),
+                    json.dumps(generate_schema_example(required_schema)),
+                )
 
         renderables = [
             NewLine(),
@@ -349,6 +355,20 @@ def _setup_sequential_workflow(splash_screen: ConsoleRenderable, agents_by_name:
     return steps
 
 
+def _get_config_schema(schema: dict[str, Any] | None) -> dict[str, Any] | None:
+    if not schema:
+        return None
+    schema = jsonref.replace_refs(schema, lazy_load=False)
+
+    if not (schema := schema.get("properties", {}).get("config", None)):
+        return None
+
+    schema = remove_nullable(schema)
+    if "properties" not in schema:
+        return None
+    return schema
+
+
 @app.command("run")
 async def run_agent(
     name: str = typer.Argument(help="Name of the agent to call"),
@@ -387,9 +407,7 @@ async def run_agent(
             NewLine(),
         )
 
-        config_schema = agent.inputSchema.get("properties", {}).get("config", None)
-        if not config_schema or "properties" not in config_schema:
-            config_schema = None
+        config_schema = _get_config_schema(agent.inputSchema)
 
         console.print(splash_screen)
 

@@ -75,7 +75,7 @@ def filter_dict(map: dict[str, T | V], value_to_exclude: V = None) -> dict[str, 
 
 @cached(cache={}, key=json.dumps)
 def generate_schema_example(json_schema: dict[str, Any]) -> dict[str, Any]:
-    json_schema = deepcopy(json_schema)
+    json_schema = deepcopy(remove_nullable(json_schema))
 
     def _make_fakes_better(schema: dict[str, Any] | None):
         match schema["type"]:
@@ -90,6 +90,22 @@ def generate_schema_example(json_schema: dict[str, Any]) -> dict[str, Any]:
 
     _make_fakes_better(json_schema)
     return JSF(json_schema, allow_none_optionals=0).generate()
+
+
+def remove_nullable(schema: dict[str, Any]) -> dict[str, Any]:
+    if "anyOf" not in schema and "oneOf" not in schema:
+        return schema
+    enum_discriminator = "anyOf" if "anyOf" in schema else "oneOf"
+    if len(schema[enum_discriminator]) == 2:
+        obj1, obj2 = schema[enum_discriminator]
+        match (obj1["type"], obj2["type"]):
+            case ("null", _):
+                return obj2
+            case (_, "null"):
+                return obj1
+            case _:
+                return schema
+    return schema
 
 
 prompt_session = PromptSession()
