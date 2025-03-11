@@ -29,36 +29,36 @@ BeeAI is an open platform designed to help you discover, run, and compose AI age
 - 🌐 **Framework agnostic**: Integrate AI agents seamlessly, no matter the language or platform.
 - ⚙️ **Composition**: Build complex, multi-agent workflows from simple building blocks.
 - 🔍 **Discoverability**: Explore a [powerful agent catalog](https://beeai.dev/agents) with integrated search.
-- 🐝 **BeeAI ecosystem:** First-class support for [Python](https://github.com/i-am-bee/beeai-framework/tree/main/python) and [TypeScript](https://github.com/i-am-bee/beeai-framework/tree/main/typecript) agent developers via [BeeAI Framework](https://github.com/i-am-bee/beeai-framework).
+- 🐝 **BeeAI ecosystem:** First-class support for [Python](https://github.com/i-am-bee/beeai-framework/tree/main/python) and [TypeScript](https://github.com/i-am-bee/beeai-framework/tree/main/typescript) agent developers via [BeeAI Framework](https://github.com/i-am-bee/beeai-framework).
 
 ## Get started
 
-1. Install and start BeeAI using [Homebrew](https://brew.sh/), run:
+1. **Install** BeeAI using [Homebrew](https://brew.sh/):
 
 ```sh
 brew install i-am-bee/beeai/beeai
 brew services start beeai
 ```
 
-For all installation options, check the [installation guide](https://docs.beeai.dev/get-started/installation).
+For other installation methods, see the [installation guide](https://docs.beeai.dev/get-started/installation).
 
-2. Launch web interface in your browser:
+2. **Launch** the web interface:
 
 ```sh
 beeai ui
 ```
 
-3. Use from terminal:
+3. **Use** from the terminal:
 
 ```sh
-# List all commands
+# List commands
 beeai --help
 
 # List all available agents
 beeai list
 
-# Run your first agent
-beeai run chat "Hi! How are you?"
+# Run the chat agent
+beeai run chat
 ```
 
 ## Documentation
@@ -75,11 +75,11 @@ The BeeAI community is active on [GitHub Discussions](https://github.com/i-am-be
 
 To chat with other community members, you can join the BeeAI [Discord](https://discord.gg/AZFrp3UF5k) server.
 
-Do note that our [Code of Conduct](./CODE_OF_CONDUCT.md) applies to all BeeAI community channels. Users are highly encouraged to read and adhere to them to avoid repercussions.
+Please note that our [Code of Conduct](./CODE_OF_CONDUCT.md) applies to all BeeAI community channels. We strongly encourage you to read and follow it.
 
 ## Contributing
 
-Contributions to BeeAI are welcome and highly appreciated. However, before you jump right into it, we would like you to review our [Contribution Guidelines](./CONTRIBUTING.md) to make sure you have a smooth experience contributing to BeeAI.
+Contributions to BeeAI are always welcome and greatly appreciated. Before contributing, please review our [Contribution Guidelines](./CONTRIBUTING.md) to ensure a smooth experience.
 
 Special thanks to our contributors for helping us improve BeeAI.
 
@@ -89,7 +89,7 @@ Special thanks to our contributors for helping us improve BeeAI.
 
 ## Acknowledgements
 
-A big thank you to these brilliant projects that directly contributed or fueled the inspiration:
+Special thanks to these outstanding projects for their inspiration and influence:
 
 - [Model Context Protocol](https://github.com/modelcontextprotocol)
 - [Language Server Protocol](https://github.com/microsoft/language-server-protocol)
