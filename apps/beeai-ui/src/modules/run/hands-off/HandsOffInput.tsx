@@ -23,7 +23,8 @@ import { useHandsOff } from '../contexts/hands-off';
 import classes from './HandsOffInput.module.scss';
 
 export function HandsOffInput() {
-  const { onSubmit, input, text, isPending } = useHandsOff();
+  const { agent, onSubmit, input, text, isPending } = useHandsOff();
+  const userGreeting = agent.ui?.userGreeting;
 
   const form = useForm<FormValues>({
     mode: 'onChange',
@@ -43,7 +44,7 @@ export function HandsOffInput() {
 
   return (
     <div className={clsx(classes.root, { [classes.isPendingOrText]: isPendingOrText })}>
-      <h2 className={classes.heading}>{isFinal ? 'Task input:' : 'What is your research task?'}</h2>
+      <h2 className={classes.heading}>{isFinal ? 'Task input:' : userGreeting || 'What is your task?'}</h2>
 
       {isPendingOrText ? (
         <h2 className={classes.input}>{input?.text}</h2>
@@ -58,7 +59,7 @@ export function HandsOffInput() {
           }}
           isSubmitDisabled={isSubmitDisabled}
           inputProps={{
-            placeholder: 'Write a research report about…',
+            placeholder: 'Write your entry here…',
             ...register('input', { required: true }),
           }}
         >

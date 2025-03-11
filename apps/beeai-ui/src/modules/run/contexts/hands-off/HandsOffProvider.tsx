@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import { Agent } from '#modules/agents/api/types.ts';
 import { useRunAgent } from '#modules/run/api/mutations/useRunAgent.tsx';
 import { TextNotification, TextNotificationLogs, TextNotificationSchema, TextResult } from '#modules/run/api/types.ts';
 import { RunStats } from '#modules/run/types.ts';
 import { isNotNull } from '#utils/helpers.ts';
-import { Agent } from '@i-am-bee/acp-sdk/types.js';
 import type { TextInput } from '@i-am-bee/beeai-sdk/schemas/text';
 import { PropsWithChildren, useCallback, useMemo, useRef, useState } from 'react';
 import { HandsOffContext } from './hands-off-context';

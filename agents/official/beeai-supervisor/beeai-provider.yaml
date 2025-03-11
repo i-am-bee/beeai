@@ -7,11 +7,11 @@ mcpEndpoint: /sse
 command: ["server"]
 env:
 - name: LLM_MODEL
-  required: true
+  required: false
   description: "Model to use from the specified OpenAI-compatible API."
 - name: LLM_API_BASE
-  required: true
+  required: false
   description: "Base URL for OpenAI-compatible API endpoint"
 - name: LLM_API_KEY
-  required: true
+  required: false
   description: "API key for OpenAI-compatible API endpoint"

@@ -16,7 +16,8 @@
 
 import { useCreateMCPClient } from '#api/mcp-client/useCreateMCPClient.ts';
 import { QueryMetadata } from '#contexts/QueryProvider/types.ts';
-import { Agent, AgentRunProgressNotificationSchema } from '@i-am-bee/acp-sdk/types.js';
+import { Agent } from '#modules/agents/api/types.ts';
+import { AgentRunProgressNotificationSchema } from '@i-am-bee/acp-sdk/types.js';
 import { useMutation } from '@tanstack/react-query';
 import z, { ZodLiteral, ZodObject } from 'zod';
 
