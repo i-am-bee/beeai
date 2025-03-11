@@ -78,9 +78,9 @@ export class PlatformSdk {
     }
   }
 
-  async listAgents() {
+  async listAgents(signal?: AbortSignal) {
     this.logger.debug(`Listing agents`);
-    const agents = await this.client.listAgents();
+    const agents = await this.client.listAgents({}, { signal });
 
     return agents.agents
       .filter(
@@ -123,7 +123,7 @@ export class PlatformSdk {
         name: beeAiAgentId,
         input: { text: prompt },
       },
-      { signal, timeout: 10 * 60 * 1000, }
+      { signal, timeout: 10 * 60 * 1000 }
     );
   }
 }
