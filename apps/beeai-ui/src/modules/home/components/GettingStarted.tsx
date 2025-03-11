@@ -28,32 +28,32 @@ export function GettingStarted() {
   return (
     <div className={classes.root}>
       <Container size="xs">
-        <div className={classes.holder}>
-          <LogoBeeAI />
+        <LogoBeeAI />
 
-          <p className={classes.description}>The open-source framework for building production-ready agents.</p>
+        <p className={classes.description}>
+          The open-source platform to discover, run, and&nbsp;compose AI&nbsp;agents from&nbsp;any&nbsp;framework
+        </p>
 
-          <div className={classes.bottom}>
-            <div className={classes.buttons}>
-              <Button
-                as="a"
-                href={GET_STARTED_PYTHON_LINK}
-                target="_blank"
-                size="md"
-                kind="tertiary"
-                className={classes.button}
-                renderIcon={ArrowUpRight}
-              >
-                <span>Get started with Python</span>
-              </Button>
+        <div className={classes.bottom}>
+          <div className={classes.buttons}>
+            <Button
+              as="a"
+              href={GET_STARTED_PYTHON_LINK}
+              target="_blank"
+              size="md"
+              kind="tertiary"
+              className={classes.button}
+              renderIcon={ArrowUpRight}
+            >
+              <span>Get started with Python</span>
+            </Button>
 
-              <a href={GET_STARTED_TYPESCRIPT_LINK} target="_blank" className={classes.link}>
-                Or get started with Typescript
-              </a>
-            </div>
-
-            <GitHubStarsButton />
+            <a href={GET_STARTED_TYPESCRIPT_LINK} target="_blank" rel="noreferrer" className={classes.link}>
+              Or get started with Typescript
+            </a>
           </div>
+
+          <GitHubStarsButton />
         </div>
       </Container>
     </div>

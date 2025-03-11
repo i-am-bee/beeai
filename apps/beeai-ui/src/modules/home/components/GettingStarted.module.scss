@@ -20,15 +20,12 @@
   align-items: center;
 }
 
-.holder {
-  max-inline-size: rem(400px);
-}
-
 .description {
   font-size: rem(24px);
   line-height: math.div(32, 24);
   color: $text-dark;
   margin-block-start: $spacing-08;
+  text-wrap: balance;
 }
 
 .bottom {
@@ -36,6 +33,7 @@
   align-items: flex-start;
   column-gap: $spacing-05;
   margin-block-start: $spacing-06;
+  max-inline-size: rem(400px);
 }
 
 .buttons {
