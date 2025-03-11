@@ -15,7 +15,7 @@
  */
 
 import { useToast } from '#contexts/Toast/index.ts';
-import { TaskPrefix, useTasks } from '#hooks/useTasks.ts';
+import { TaskType, useTasks } from '#hooks/useTasks.ts';
 import { agentKeys } from '#modules/agents/api/keys.ts';
 import { useListProviderAgents } from '#modules/agents/api/queries/useListProviderAgents.ts';
 import { useQueryClient } from '@tanstack/react-query';
@@ -64,7 +64,7 @@ export function useMonitorProvider({ id }: Props) {
 
     if (status === 'ready' || status === 'error') {
       if (id) {
-        removeTask({ id: `${TaskPrefix.ProviderStatusCheck}${id}` });
+        removeTask({ id, type: TaskType.ProviderStatusCheck });
       }
 
       setIsDone(true);
@@ -74,7 +74,8 @@ export function useMonitorProvider({ id }: Props) {
   useEffect(() => {
     if (id && !isDone) {
       addTask({
-        id: `${TaskPrefix.ProviderStatusCheck}${id}`,
+        id,
+        type: TaskType.ProviderStatusCheck,
         task: checkProvider,
         delay: CHECK_PROVIDER_STATUS_INTERVAL,
       });

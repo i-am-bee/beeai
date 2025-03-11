@@ -17,22 +17,26 @@
 const tasks = new Map<string, NodeJS.Timeout>();
 
 export function useTasks() {
-  const addTask = ({ id, task, delay }: { id: string; task: () => void; delay: number }) => {
-    if (tasks.has(id)) return;
+  const addTask = ({ id, type, task, delay }: { id: string; type: TaskType; task: () => void; delay: number }) => {
+    const taskId = getTaskId({ id, type });
+
+    if (tasks.has(taskId)) return;
 
     const intervalId = setInterval(task, delay);
 
-    tasks.set(id, intervalId);
+    tasks.set(taskId, intervalId);
   };
 
-  const removeTask = ({ id }: { id: string }) => {
-    if (!tasks.has(id)) return;
+  const removeTask = ({ id, type }: { id: string; type: TaskType }) => {
+    const taskId = getTaskId({ id, type });
 
-    const intervalId = tasks.get(id);
+    if (!tasks.has(taskId)) return;
+
+    const intervalId = tasks.get(taskId);
 
     clearInterval(intervalId);
 
-    tasks.delete(id);
+    tasks.delete(taskId);
   };
 
   return {
@@ -42,6 +46,10 @@ export function useTasks() {
   };
 }
 
-export enum TaskPrefix {
-  ProviderStatusCheck = 'ProviderStatusCheck_',
+export enum TaskType {
+  ProviderStatusCheck = 'ProviderStatusCheck',
+}
+
+function getTaskId({ id, type }: { id: string; type: TaskType }) {
+  return `${type}_${id}`;
 }
