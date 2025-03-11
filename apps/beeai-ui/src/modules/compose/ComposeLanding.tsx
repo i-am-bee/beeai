@@ -21,6 +21,7 @@ import { VersionTag } from '#components/VersionTag/VersionTag.tsx';
 import { routes } from '#utils/router.ts';
 import { TransitionLink } from '#components/TransitionLink/TransitionLink.tsx';
 import SequentialIllustration from './assets/sequential.svg';
+import SupervisorIllustration from './assets/supervisor.svg';
 import { useState } from 'react';
 import { Button } from '@carbon/react';
 import { ArrowRight } from '@carbon/icons-react';
@@ -83,7 +84,7 @@ const WORKFLOWS = [
     id: 'supervisor',
     name: 'Supervisor',
     description: 'Choose a supervisor agent to structure and control tasks of other agents in your system',
-    image: SequentialIllustration,
+    image: SupervisorIllustration,
   },
 ];
 type Workflow = (typeof WORKFLOWS)[number];
