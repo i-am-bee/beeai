@@ -64,3 +64,100 @@ async def sync():
     """Sync external changes to env configuration (if you modified ~/.beeai/.env manually)"""
     await api_request("put", "env/sync")
     console.print("Env updated")
+
+
+@app.command("check", help="Check if LLM env vars are set correctly")
+async def check():
+    required_vars = ["LLM_API_BASE", "LLM_API_KEY", "LLM_MODEL"]
+
+    env_vars = (await api_request("get", "env")).get("env", {})
+
+    statuses = {
+        var: {
+            "status": "missing" if var not in env_vars else "unknown",
+            "value": "Not set" if var not in env_vars else env_vars[var],
+        }
+        for var in required_vars
+    }
+
+    missing_vars = [var for var in required_vars if var not in env_vars]
+    if missing_vars:
+        console.print("[bold red]Error:[/bold red] The following required environment variables are not set:")
+        for var in missing_vars:
+            console.print(f"  - [yellow]{var}[/yellow]")
+        console.print("\nPlease set these variables using the [bold]beeai env add[/bold] command.")
+        console.print(
+            "[link=https://github.com/i-am-bee/beeai/blob/main/docs/get-started/installation.mdx#set-up-api-keys]See documentation for details[/link]"
+        )
+        print_var_statuses(statuses)
+        return
+
+    api_base, api_key, model = [env_vars[var] for var in required_vars]
+    try:
+        import httpx
+
+        headers = {"Authorization": f"Bearer {api_key}"}
+        async with httpx.AsyncClient() as client:
+            response = await client.get(f"{api_base}/models", headers=headers, timeout=10.0)
+        if response.status_code in (401, 403):
+            statuses["LLM_API_BASE"]["status"] = "good"
+            statuses["LLM_API_KEY"]["status"] = "bad"
+            console.print("[bold red]Error:[/bold red] API key was rejected. Please check your LLM_API_KEY.")
+        elif not response.is_success:
+            statuses["LLM_API_BASE"]["status"] = "bad"
+            if "11434" in api_base:
+                console.print(
+                    "[bold red]Error:[/bold red] Failed to connect to Ollama. Ensure that the Ollama service is running and reachable."
+                )
+            else:
+                console.print("[bold red]Error:[/bold red] Failed to connect to the LLM API. Is the URL correct?")
+        else:
+            statuses["LLM_API_BASE"]["status"] = "good"
+            statuses["LLM_API_KEY"]["status"] = "good"
+
+            available_models = [m.get("id", "") for m in response.json().get("data", [])]
+
+            if model not in available_models:
+                statuses["LLM_MODEL"]["status"] = "bad"
+                console.print(f"[bold red]Error:[/bold red] Model '{model}' not found in available models.")
+                console.print(
+                    "Available models:",
+                    ", ".join(available_models[:100])
+                    + (f"... and {len(available_models) - 100} more" if len(available_models) > 100 else ""),
+                )
+            else:
+                statuses["LLM_MODEL"]["status"] = "good"
+                console.print("[bold green]Success![/bold green] LLM environment is correctly configured.")
+
+    except httpx.ConnectError:
+        statuses["LLM_API_BASE"]["status"] = "bad"
+        console.print(f"[bold red]Error:[/bold red] Could not connect to {api_base}")
+        if "11434" in api_base:
+            console.print(
+                "[bold red]Error:[/bold red] Ollama appears to be not running or unreachable. Check that the service is active."
+            )
+        else:
+            console.print("[bold red]Error:[/bold red] Please check if the URL is correct and the service is running.")
+    except httpx.TimeoutException:
+        statuses["LLM_API_BASE"]["status"] = "bad"
+        console.print(f"[bold red]Error:[/bold red] Connection to {api_base} timed out.")
+    except Exception as e:
+        console.print(f"[bold red]Error:[/bold red] An unexpected error occurred: {str(e)}")
+
+    print_var_statuses(statuses)
+
+
+def print_var_statuses(statuses):
+    """Print the status of environment variables with appropriate formatting."""
+    status_formats = {
+        "good": {"symbol": "✓", "color": "green"},
+        "bad": {"symbol": "✗", "color": "red"},
+        "unknown": {"symbol": "?", "color": "yellow"},
+        "missing": {"symbol": "∅", "color": "blue"},
+    }
+
+    for var in ["LLM_API_BASE", "LLM_API_KEY", "LLM_MODEL"]:
+        if var in statuses:
+            status = statuses[var]["status"]
+            fmt = status_formats[status]
+            console.print(f"[{fmt['color']}]{fmt['symbol']} {var}: {statuses[var]['value']}[/{fmt['color']}]")
