@@ -10,7 +10,7 @@
 <h4 align="center">Discover, run, and compose AI agents from any framework</h4>
 
 <p align="center">
-    <a href="#key-features">Overview</a> •
+    <a href="#overview">Overview</a> •
     <a href="#key-features">Key features</a> •
     <a href="#example-use-cases">Example use cases</a> •
     <a href="#getting-started">Getting started</a> •
