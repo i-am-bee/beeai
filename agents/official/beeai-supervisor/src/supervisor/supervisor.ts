@@ -43,7 +43,7 @@ const run =
     await platformSdk.init(
       input.availableAgents.map((a) => a.toLocaleLowerCase())
     );
-    const listedPlatformAgents = await platformSdk.listAgents();
+    const listedPlatformAgents = await platformSdk.listAgents(signal);
     const agentConfigFixtures = listedPlatformAgents.map(
       ({ beeAiAgentId, description }) =>
         ({
@@ -102,7 +102,7 @@ const run =
   };
 
 export const agent = {
-  name: "supervisor",
+  name: "supervisor-local",
   description:
     "A supervisor agent that autonomously decomposes complex tasks, assigns them to the most suitable agents, and orchestrates execution within a multi-agent system. It iteratively evaluates results, determines follow-up tasks, and dynamically adapts workflows until an optimal solution is reached before responding to the user.",
   inputSchema,
