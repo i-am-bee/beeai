@@ -18,6 +18,7 @@ dependencies = [
     "gnureadline>=8.2.13",
     "prompt-toolkit>=3.0.50",
     "cachetools>=5.5.2",
+    "jsonref>=1.1.0",
 ]
 
 [tool.uv.sources]
