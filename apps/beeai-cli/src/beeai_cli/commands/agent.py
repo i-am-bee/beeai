@@ -363,7 +363,7 @@ async def run_agent(
     agent = await _get_agent(name, agents_by_name)
     ui = agent.model_extra.get("ui", {}) or {}
     ui_type = ui.get("type", None)
-    is_sequential_workflow = agent.name in {"prompted-sequential-workflow"}
+    is_sequential_workflow = agent.name in {"sequential-workflow"}
 
     user_greeting = ui.get("userGreeting", None) or "How can I help you?"
     config = {}
