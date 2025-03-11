@@ -44,7 +44,6 @@
     "lodash": "^4.17.21",
     "lottie-react": "^2.4.1",
     "mdast-util-to-hast": "^13.2.0",
-    "millify": "^6.1.0",
     "openapi-fetch": "^0.13.4",
     "pluralize": "^8.0.0",
     "react": "^19.0.0",
