@@ -104,7 +104,7 @@ export class PlatformSdk {
     this.logger.info({ beeAiAgentId, prompt }, `Running agent`);
     this.validate();
 
-    const agents = await this.listAgents();
+    const agents = await this.listAgents(signal);
     if (
       !agents.map(({ beeAiAgentId }) => beeAiAgentId).includes(beeAiAgentId)
     ) {
