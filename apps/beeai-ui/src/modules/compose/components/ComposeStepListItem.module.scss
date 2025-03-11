@@ -57,6 +57,10 @@
 
   :global(.cds--accordion__content) {
     padding: 0;
+    overflow-x: auto;
+  }
+  :global(.cds--accordion__item):first-child {
+    border-block-start: 0;
   }
   :global(.cds--accordion__item):last-child {
     border-block-end: 0;
@@ -90,7 +94,7 @@
 }
 
 .logs {
-  max-block-size: 50vh;
+  max-block-size: 40vh;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -99,7 +103,6 @@
     @include scrollbar();
     display: flex;
     flex-direction: column;
-    gap: $spacing-03;
     overflow-y: auto;
     overflow-x: hidden;
     max-block-size: 100%;

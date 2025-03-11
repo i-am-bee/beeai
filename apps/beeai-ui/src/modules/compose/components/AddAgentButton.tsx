@@ -21,8 +21,8 @@ import { AgentListOption } from './AgentListOption';
 import { useOnClickOutside } from 'usehooks-ts';
 import { useListAgents } from '#modules/agents/api/queries/useListAgents.ts';
 import { Agent } from '#modules/agents/api/types.ts';
-import { isValidForSequentialWorkflow } from '../sequential-workflow';
 import { SkeletonItems } from '#components/SkeletonItems/SkeletonItems.tsx';
+import { isValidForSequentialWorkflow } from '../sequential/utils';
 
 interface Props {
   onSelectAgent: (agent: Agent) => void;

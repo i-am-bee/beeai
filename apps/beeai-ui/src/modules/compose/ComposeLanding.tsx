@@ -21,8 +21,13 @@ import { VersionTag } from '#components/VersionTag/VersionTag.tsx';
 import { routes } from '#utils/router.ts';
 import { TransitionLink } from '#components/TransitionLink/TransitionLink.tsx';
 import SequentialIllustration from './assets/sequential.svg';
+import { useState } from 'react';
+import { Button } from '@carbon/react';
+import { ArrowRight } from '@carbon/icons-react';
 
 export function ComposeLanding() {
+  const [selected, setSelected] = useState<Workflow>(WORKFLOWS.at(0)!);
+
   return (
     <MainContent>
       <Container size="sm">
@@ -34,16 +39,33 @@ export function ComposeLanding() {
         </div>
 
         <ul className={classes.workflows}>
-          {WORKFLOWS.map(({ id, name, route, description, image: Image }) => (
-            <li key={id} className={classes.workflow} aria-disabled={!route}>
-              <div className={classes.workflowText}>
-                <TransitionLink to={route}>{name}</TransitionLink>
-                <p>{description}</p>
-              </div>
-              <Image />
-            </li>
-          ))}
+          {WORKFLOWS.map((workflow) => {
+            const { id, name, route, description, image: Image } = workflow;
+            return (
+              <li
+                key={id}
+                className={classes.workflow}
+                aria-disabled={!route}
+                aria-selected={id === selected.id}
+                onClick={() => setSelected(workflow)}
+              >
+                <div className={classes.workflowText}>
+                  <TransitionLink to={route}>{name}</TransitionLink>
+                  <p>{description}</p>
+                </div>
+                <Image />
+              </li>
+            );
+          })}
         </ul>
+
+        <div className={classes.actionBar}>
+          <TransitionLink to={selected.route} asChild>
+            <Button renderIcon={ArrowRight} href={selected.route}>
+              Start composing
+            </Button>
+          </TransitionLink>
+        </div>
       </Container>
     </MainContent>
   );
@@ -64,3 +86,4 @@ const WORKFLOWS = [
     image: SequentialIllustration,
   },
 ];
+type Workflow = (typeof WORKFLOWS)[number];

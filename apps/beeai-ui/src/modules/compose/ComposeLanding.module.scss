@@ -46,8 +46,13 @@
   justify-content: space-between;
   gap: $spacing-05;
 
-  &:not([aria-disabled='true']):hover {
+  &:not([aria-disabled='true']):hover,
+  &[aria-selected='true'] {
     border-color: $text-primary;
+  }
+  &[aria-disabled='true'] {
+    opacity: 0.6;
+    pointer-events: none;
   }
 
   a {
@@ -69,5 +74,15 @@
   p {
     @include type-style('body-compact-01');
     font-size: rem(16px);
+  }
+}
+
+.actionBar {
+  margin-block-start: $spacing-07;
+  display: flex;
+  justify-content: flex-end;
+
+  button {
+    inline-size: rem(202px);
   }
 }

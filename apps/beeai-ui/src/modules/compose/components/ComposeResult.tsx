@@ -14,39 +14,46 @@
  * limitations under the License.
  */
 
-import { MarkdownContent } from '#components/MarkdownContent/MarkdownContent.tsx';
-import { Container } from '#components/layouts/Container.tsx';
-import { NewTab } from '@carbon/icons-react';
-import { Button } from '@carbon/react';
 import { useEffect, useRef } from 'react';
 import { useCompose } from '../contexts';
 import classes from './ComposeResult.module.scss';
+import clsx from 'clsx';
+import { AgentOutputBox } from '#modules/run/components/AgentOutputBox.tsx';
+import ScrollToBottom, { useScrollToTop } from 'react-scroll-to-bottom';
 
 export function ComposeResult() {
-  const { result, onReset } = useCompose();
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (containerRef.current) {
-      containerRef.current.scrollTop = containerRef.current.scrollHeight;
-    }
-  }, [result]);
+  const { result, status } = useCompose();
 
   return (
-    <div className={classes.root} ref={containerRef}>
-      <Container>
-        <div className={classes.resultHeader}>
-          <div>
-            <Button renderIcon={NewTab} size="md" kind="tertiary" onClick={() => onReset()}>
-              New test
-            </Button>
-          </div>
-        </div>
+    <ScrollToBottom
+      className={clsx(classes.root, { [classes.expanded]: Boolean(result) })}
+      scrollViewClassName={classes.logsScroll}
+      mode={status === 'pending' ? 'bottom' : 'top'}
+    >
+      <ResultContent />
+    </ScrollToBottom>
+  );
+}
 
-        <div className={classes.result}>
-          <MarkdownContent>{result}</MarkdownContent>
-        </div>
-      </Container>
+function ResultContent() {
+  const { result, status } = useCompose();
+  const scrollToTop = useScrollToTop();
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const scrollContainer = contentRef.current?.parentElement;
+    if (status === 'finished' && scrollContainer) {
+      scrollToTop();
+
+      console.log({ status, scrollContainer });
+
+      scrollContainer.scrollTop = 0;
+    }
+  }, [scrollToTop, status]);
+
+  return (
+    <div className={classes.content} ref={contentRef}>
+      <AgentOutputBox text={result} isPending={status === 'pending'} />
     </div>
   );
 }

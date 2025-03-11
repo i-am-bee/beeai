@@ -17,12 +17,15 @@
 import { Agent } from '#modules/agents/api/types.ts';
 import { RunStats } from '#modules/run/types.ts';
 import { createContext } from 'react';
+import { UseFieldArrayReturn } from 'react-hook-form';
 
 export const ComposeContext = createContext<ComposeContextValue | null>(null);
 
+export type RunStatus = 'ready' | 'pending' | 'finished';
 interface ComposeContextValue {
   result?: string;
-  isPending: boolean;
+  status: RunStatus;
+  stepsFields: UseFieldArrayReturn<SequentialFormValues, 'steps'>;
   onSubmit: () => void;
   onCancel: () => void;
   onClear: () => void;

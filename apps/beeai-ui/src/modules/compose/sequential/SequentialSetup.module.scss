@@ -14,16 +14,46 @@
  * limitations under the License.
  */
 
-.root {
+$max-container: rem(1632px);
+
+.form {
+  display: grid;
+  grid-template-rows: 1fr max-content;
+  max-block-size: 100%;
+  overflow: hidden;
+
+  &.toLeft {
+    justify-items: end;
+
+    > div {
+      inline-size: 100%;
+      max-inline-size: $max-container / 3 + $spacing-05;
+    }
+
+    .header h1 {
+      font-size: rem(20px);
+    }
+  }
+}
+
+.content {
   @include scrollbar();
   display: flex;
   justify-content: center;
   overflow-y: auto;
-  block-size: 100%;
+  overflow-x: hidden;
 
   > div {
-    margin-inline: 0;
-    padding-inline-end: $spacing-06;
+    padding-block: $spacing-09;
+  }
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  margin-block-end: $spacing-07;
+  h1 {
+    margin-block-end: 0;
   }
 }
 
@@ -34,11 +64,22 @@
   padding-block-end: $spacing-06;
 }
 
-.buttons {
-  display: flex;
-  justify-content: flex-end;
+.actionBar {
+  padding-block: $spacing-06 $spacing-08;
+
+  > div {
+    display: flex;
+    justify-content: space-between;
+  }
 
   button {
     min-inline-size: rem(128px);
   }
+}
+
+.backButton {
+  display: flex;
+  gap: $spacing-03;
+  align-items: center;
+  padding-right: $spacing-05;
 }

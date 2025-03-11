@@ -15,17 +15,21 @@
  */
 
 import { useViewTransition } from '#hooks/useViewTransition.ts';
+import { Slot } from '@radix-ui/react-slot';
 import { HTMLProps } from 'react';
 
 interface Props extends Omit<HTMLProps<HTMLAnchorElement>, 'href'> {
   to?: string;
+  asChild?: boolean;
 }
 
-export function TransitionLink({ to, onClick, children, ...props }: Props) {
+export function TransitionLink({ to, onClick, asChild, children, ...props }: Props) {
   const { transitionTo } = useViewTransition();
 
+  const Element = asChild ? Slot : 'a';
+
   return (
-    <a
+    <Element
       {...props}
       href={to}
       onClick={(e) => {
@@ -37,6 +41,6 @@ export function TransitionLink({ to, onClick, children, ...props }: Props) {
       }}
     >
       {children}
-    </a>
+    </Element>
   );
 }

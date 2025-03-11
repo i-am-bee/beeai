@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import { useHandsOff } from '../contexts/hands-off';
-import { AgentOutputBox } from '../components/AgentOutputBox';
-
-export function HandsOffText() {
-  const { agent, text, isPending } = useHandsOff();
-
-  return <AgentOutputBox text={text} isPending={isPending} downloadFileName={`${agent}-output`} />;
-}
+export type SequentialWorkflowInput = {
+  steps: { agent: string; instruction: string }[];
+  input?: string;
+};

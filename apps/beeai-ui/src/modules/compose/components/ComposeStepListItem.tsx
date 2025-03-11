@@ -19,34 +19,48 @@ import { ElapsedTime } from '#modules/run/components/ElapsedTime.tsx';
 import { Accordion, AccordionItem, InlineLoading, OverflowMenu, OverflowMenuItem } from '@carbon/react';
 import clsx from 'clsx';
 import ScrollToBottom from 'react-scroll-to-bottom';
-import { ComposeStep, SequentialFormValues } from '../contexts/compose-context';
+import { SequentialFormValues } from '../contexts/compose-context';
 import classes from './ComposeStepListItem.module.scss';
-import { useFieldArray, useForm } from 'react-hook-form';
+import { useFormContext } from 'react-hook-form';
 import { TextAreaAutoHeight } from '#components/TextAreaAutoHeight/TextAreaAutoHeight.tsx';
+import { useCompose } from '../contexts';
+import { KeyboardEvent } from 'react';
+import { AgentRunLogItem } from '#modules/run/components/AgentRunLogItem.tsx';
 
 interface Props {
-  agent: ComposeStep;
   idx: number;
 }
-export function ComposeStepListItem({ agent: ComposeStep, idx }: Props) {
+export function ComposeStepListItem({ idx }: Props) {
+  const { register, watch } = useFormContext<SequentialFormValues>();
   const {
-    register,
-    formState: { isSubmitting },
-  } = useForm<SequentialFormValues>();
-  const { remove } = useFieldArray<SequentialFormValues>({ name: 'steps' });
-  const { data, isPending, logs, stats, result } = ComposeStep;
+    status,
+    onSubmit,
+    stepsFields: { remove },
+  } = useCompose();
+
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') {
+      onSubmit();
+    }
+  };
+
+  const step = watch(`steps.${idx}`);
+  const { data, isPending, logs, stats, result } = step;
   const { name } = data;
 
-  const isFinished = !isPending && result;
+  const isViewMode = status !== 'ready';
+  const isFinished = Boolean(!isPending && result);
 
   return (
     <div className={classes.root}>
       <div className={classes.name}>{name}</div>
 
       <div className={classes.actions}>
-        <OverflowMenu aria-label="Options" size="md">
-          <OverflowMenuItem itemText="Remove" disabled={isSubmitting} onClick={() => remove(idx)} />
-        </OverflowMenu>
+        {!isViewMode && (
+          <OverflowMenu aria-label="Options" size="md">
+            <OverflowMenuItem itemText="Remove" onClick={() => remove(idx)} />
+          </OverflowMenu>
+        )}
       </div>
 
       <div className={classes.input}>
@@ -54,10 +68,11 @@ export function ComposeStepListItem({ agent: ComposeStep, idx }: Props) {
           className={classes.textarea}
           rows={3}
           placeholder="Write your entry here…"
-          disabled={isPending}
+          disabled={isViewMode}
           {...register(`steps.${idx}.instruction`, {
             required: true,
           })}
+          onKeyDown={handleKeyDown}
         />
       </div>
 
@@ -71,8 +86,9 @@ export function ComposeStepListItem({ agent: ComposeStep, idx }: Props) {
                     className={classes.logs}
                     scrollViewClassName={classes.logsScroll}
                     mode={isPending ? 'bottom' : 'top'}
+                    checkInterval={50}
                   >
-                    {logs?.map((log, order) => <div key={order}>{log}</div>)}
+                    {logs?.map((message, order) => <AgentRunLogItem key={order}>{message}</AgentRunLogItem>)}
                   </ScrollToBottom>
                 </AccordionItem>
               </div>

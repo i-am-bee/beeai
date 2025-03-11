@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import { useHandsOff } from '../contexts/hands-off';
-import { AgentOutputBox } from '../components/AgentOutputBox';
+import { textInputSchema, textOutputSchema } from '@i-am-bee/beeai-sdk/schemas/text';
+import zodToJsonSchema from 'zod-to-json-schema';
 
-export function HandsOffText() {
-  const { agent, text, isPending } = useHandsOff();
+export const SEQUENTIAL_COMPOSE_AGENT_NAME = 'sequential-workflow';
 
-  return <AgentOutputBox text={text} isPending={isPending} downloadFileName={`${agent}-output`} />;
-}
+export const textInputJsonSchema = zodToJsonSchema(textInputSchema);
+export const textOutputJsonSchema = zodToJsonSchema(textOutputSchema);

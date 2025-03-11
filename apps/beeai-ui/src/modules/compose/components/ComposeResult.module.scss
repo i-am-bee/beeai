@@ -14,64 +14,37 @@
  * limitations under the License.
  */
 
+$max-container: rem(1632px);
+$third-of-max-container: $max-container / 3;
+$to-two-thirds-of-max-container: calc(2 * $third-of-max-container + ((100vw - $max-container) / 2));
+
 .root {
   display: flex;
   flex-direction: column;
   background-color: $background;
-  padding-block-start: $spacing-05;
-  padding-block-end: 0;
-  overflow: hidden;
+  padding-block-start: 0;
   inline-size: 0;
+  overflow: hidden;
   background-color: $layer-02;
+  transition:
+    inline-size $duration-moderate-01 ease-out,
+    max-inline-size $duration-moderate-01 ease-out;
+
+  &.expanded {
+    inline-size: $to-two-thirds-of-max-container;
+    max-inline-size: 100%;
+  }
 
   > div {
-    margin-inline: 0;
-    padding-inline-end: $spacing-06;
-    padding-inline-start: $spacing-07;
-    overflow: hidden;
-    display: grid;
-    grid-template-rows: max-content 1fr;
+    @include scrollbar();
   }
-
-  h2 {
-    @include h1();
+  > button {
+    display: none;
   }
 }
 
-.form {
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-05;
-}
-
-.textarea textarea {
-  border: 1px solid $border-subtle;
-  border-radius: $border-radius;
-}
-
-.buttons {
-  button {
-    min-inline-size: rem(150px);
-  }
-}
-
-.resultHeader {
-  display: grid;
-  grid-template-columns: 1fr max-content;
-  padding-block-end: $spacing-06;
-  margin-block-end: $spacing-06;
-  border-block-end: 1px solid $border-subtle;
-
-  h2 {
-    margin: 0;
-    margin-block-start: $spacing-02;
-    font-size: rem(18px);
-    line-height: math.div(20, 18);
-  }
-}
-
-.result {
-  @include scrollbar();
-  overflow-y: auto;
-  padding-block-end: $spacing-09;
+.content {
+  background-color: $layer-02;
+  padding: $spacing-07;
+  max-inline-size: 2 * $third-of-max-container + $spacing-06;
 }

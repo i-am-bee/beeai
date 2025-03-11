@@ -16,10 +16,7 @@
 
 .root {
   display: grid;
-  grid-template-columns: minmax(rem(432px), 1fr) max-content;
+  grid-template-columns: 1fr max-content;
   inline-size: 100%;
-
-  > div {
-    padding-block-start: $spacing-09;
-  }
+  overflow: hidden;
 }
