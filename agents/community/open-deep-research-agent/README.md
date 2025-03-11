@@ -9,8 +9,8 @@
 Set environmental variables
 
 ```bash
-export HF_TOKEN=<xxx>
-export SERPER_API_KEY=<xxx>
+mise beeai-cli:run -- env add HF_TOKEN=<token>
+mise beeai-cli:run -- env add SERPER_API_KEY=<token>
 ```
 
 Add provider
@@ -22,7 +22,7 @@ mise beeai-cli:run -- provider add file://agents/community/open-deep-research-ag
 Run agent
 
 ```bash
-
+mise beeai-cli:run -- agent run open-deep-research "How many albums did Bob Dylan release before 1970?"
 ```
 
 
