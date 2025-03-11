@@ -109,13 +109,11 @@ export const agent = {
   outputSchema,
   run,
   metadata: {
-    fullDescription: "TBD",
+    fullDescription: "",
     framework: "BeeAI",
     license: "Apache 2.0",
     languages: ["TypeScript"],
     githubUrl:
       "https://github.com/i-am-bee/beeai/blob/main/agents/official/beeai-framework/src/supervisor",
-    avgRunTimeSeconds: 1000_000,
-    avgRunTokens: 1000_000,
   } satisfies Metadata,
 };
