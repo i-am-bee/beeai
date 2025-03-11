@@ -14,27 +14,14 @@
  * limitations under the License.
  */
 
-.root {
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-03;
-}
+import { isNotNull } from '#utils/helpers.ts';
+import uniq from 'lodash/uniq';
+import { Agent } from './api/types';
 
-.body {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  column-gap: $gap;
-}
-
-.heading {
-  font-size: rem(24px);
-  line-height: math.div(28, 24);
-  font-weight: normal;
-  color: $text-dark;
-  margin-block-end: 0;
-}
-
-.label {
-  inline-size: 100%;
-}
+export const getAgentsLanguages = (agents: Agent[] | undefined) =>
+  uniq(
+    agents
+      ?.map(({ languages }) => languages)
+      .filter(isNotNull)
+      .flat(),
+  );

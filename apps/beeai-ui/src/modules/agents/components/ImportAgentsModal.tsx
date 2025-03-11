@@ -19,7 +19,9 @@ import { Modal } from '#components/Modal/Modal.tsx';
 import { ModalProps } from '#contexts/Modal/modal-context.ts';
 import { useCreateProvider } from '#modules/providers/api/mutations/useCreateProvider.ts';
 import { CreateProviderBody } from '#modules/providers/api/types.ts';
+import { ProviderSourcePrefixes } from '#modules/providers/constants.ts';
 import { useMonitorProvider } from '#modules/providers/hooks/useMonitorProviderStatus.ts';
+import { ProviderSource } from '#modules/providers/types.ts';
 import {
   Button,
   FormLabel,
@@ -59,7 +61,7 @@ export function ImportAgentsModal({ onRequestClose, ...modalProps }: ModalProps)
   } = useForm<FormValues>({
     mode: 'onChange',
     defaultValues: {
-      source: Source.LocalPath,
+      source: ProviderSource.Local,
     },
   });
 
@@ -68,7 +70,7 @@ export function ImportAgentsModal({ onRequestClose, ...modalProps }: ModalProps)
   const onSubmit = useCallback(
     ({ location, source }: FormValues) => {
       createProvider({
-        body: { location: `${LOCATION_PREFIXES[source]}${location}` },
+        body: { location: `${ProviderSourcePrefixes[source]}${location}` },
       });
     },
     [createProvider],
@@ -102,9 +104,9 @@ export function ImportAgentsModal({ onRequestClose, ...modalProps }: ModalProps)
                 valueSelected={sourceField.value}
                 onChange={sourceField.onChange}
               >
-                <RadioButton labelText="Local path" value={Source.LocalPath} />
+                <RadioButton labelText="Local path" value={ProviderSource.Local} />
 
-                <RadioButton labelText="GitHub" value={Source.GitHub} />
+                <RadioButton labelText="GitHub" value={ProviderSource.GitHub} />
               </RadioButtonGroup>
 
               <TextInput
@@ -152,23 +154,13 @@ export function ImportAgentsModal({ onRequestClose, ...modalProps }: ModalProps)
   );
 }
 
-enum Source {
-  LocalPath = 'LocalPath',
-  GitHub = 'GitHub',
-}
-
-type FormValues = CreateProviderBody & { source: Source };
-
-const LOCATION_PREFIXES = {
-  [Source.LocalPath]: 'file://',
-  [Source.GitHub]: 'git+',
-};
+type FormValues = CreateProviderBody & { source: ProviderSource };
 
 const INPUTS_PROPS = {
-  [Source.LocalPath]: {
+  [ProviderSource.Local]: {
     labelText: 'Agent provider path',
   },
-  [Source.GitHub]: {
+  [ProviderSource.GitHub]: {
     labelText: 'GitHub repository URL',
     helperText: 'Make sure to provide a public link',
   },

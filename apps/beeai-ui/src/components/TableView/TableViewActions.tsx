@@ -14,27 +14,9 @@
  * limitations under the License.
  */
 
-.root {
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-03;
-}
+import { PropsWithChildren } from 'react';
+import classes from './TableViewActions.module.scss';
 
-.body {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  column-gap: $gap;
-}
-
-.heading {
-  font-size: rem(24px);
-  line-height: math.div(28, 24);
-  font-weight: normal;
-  color: $text-dark;
-  margin-block-end: 0;
-}
-
-.label {
-  inline-size: 100%;
+export function TableViewActions({ children }: PropsWithChildren) {
+  return <div className={classes.root}>{children}</div>;
 }

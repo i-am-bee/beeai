@@ -17,24 +17,26 @@
 .root {
   display: flex;
   flex-direction: column;
-  gap: $spacing-03;
+  row-gap: $spacing-07;
 }
 
-.body {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  column-gap: $gap;
+.description {
+  @include type-style(body-01);
 }
 
-.heading {
-  font-size: rem(24px);
-  line-height: math.div(28, 24);
-  font-weight: normal;
-  color: $text-dark;
-  margin-block-end: 0;
-}
-
-.label {
-  inline-size: 100%;
+.table {
+  :global(.cds--data-table) {
+    border-block-start: 0;
+    border-start-start-radius: 0;
+    border-start-end-radius: 0;
+    th,
+    td {
+      &:last-child {
+        inline-size: rem(46px);
+      }
+    }
+    thead tr:first-child th {
+      border-radius: 0;
+    }
+  }
 }
