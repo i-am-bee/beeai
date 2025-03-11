@@ -62,7 +62,7 @@ brew install i-am-bee/beeai/beeai && brew services start beeai
 
 BeeAI offers two primary interaction methods to suit different user preferences:
 
-#### 1. Using the Web Interface (Recommended)
+#### 1. Using the Web Interface
 
 1. Open BeeAI in your browser by navigating to http://localhost:8333
 2. Browse available agents in the "Agents" tab
