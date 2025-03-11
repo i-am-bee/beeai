@@ -24,7 +24,13 @@
   position: relative;
 
   :global(.cds--text-input) {
+    // 47px = 48px - 1px for the left border
     padding-inline-start: rem(47px);
+
+    // 48px = because using negative outline-offset for the .toggleButton (it is exactly 48px in width)
+    // 1rem = about the same space as on the left after the Search icon
+    // 0.25rem = additional space to make it optically look even with the space on the left side (especially when focused which uses a thick dark vertical line)
+    padding-inline-end: calc(rem(48px) + 1rem + 0.25rem);
   }
 }
 
