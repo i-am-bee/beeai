@@ -75,13 +75,15 @@ export class AgentFactory extends BaseAgentFactory<AgentType> {
   async runAgent(
     agent: AgentType,
     prompt: string,
-    onUpdate: (key: string, value: string) => void
+    onUpdate: (key: string, value: string) => void,
+    signal?: AbortSignal
   ) {
     if (agent instanceof BeeAgent) {
       const resp = await agent
         .run(
           { prompt },
           {
+            signal,
             execution: {
               maxIterations: 100,
               maxRetriesPerStep: 2,
@@ -110,12 +112,12 @@ export class AgentFactory extends BaseAgentFactory<AgentType> {
             } | null)[]
           ).filter((it) => it != null);
           logs.forEach((log) => {
-            onUpdate('thought', log.message);
+            onUpdate("thought", log.message);
           });
-        }
+        },
+        signal
       );
 
-      // TODO Emit progress
       return String(resp.output.text);
     }
 

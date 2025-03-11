@@ -1,6 +1,6 @@
 manifestVersion: 1
 driver: nodejs
-package: "git+https://github.com/i-am-bee/beeai@agents-v0.0.47#path=agents/official/beeai-supervisor"
+package: "git+https://github.com/i-am-bee/beeai@agents-v0.0.48#path=agents/official/beeai-supervisor"
 serverType: http
 mcpTransport: sse
 mcpEndpoint: /sse

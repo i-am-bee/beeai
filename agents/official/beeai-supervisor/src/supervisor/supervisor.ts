@@ -13,6 +13,7 @@ import { CreateAgentConfig } from "@i-am-bee/beeai-supervisor/agents/registry/re
 import { z } from "zod";
 import { AgentFactory } from "./agent-factory.js";
 import { PlatformSdk } from "./platform-sdk.js";
+import { Logger } from "beeai-framework";
 
 const inputSchema = textInputSchema.extend({
   availableAgents: z.array(z.string()),
@@ -20,7 +21,7 @@ const inputSchema = textInputSchema.extend({
 type Input = z.infer<typeof inputSchema>;
 const outputSchema = textOutputSchema;
 
-export const OUTPUT_DIR = `./beeai-supervisor-output`
+export const OUTPUT_DIR = `./beeai-supervisor-output`;
 
 const run =
   (server: AcpServer) =>
@@ -42,7 +43,7 @@ const run =
     await platformSdk.init(
       input.availableAgents.map((a) => a.toLocaleLowerCase())
     );
-    const listedPlatformAgents = await platformSdk.listAgents();
+    const listedPlatformAgents = await platformSdk.listAgents(signal);
     const agentConfigFixtures = listedPlatformAgents.map(
       ({ beeAiAgentId, description }) =>
         ({
@@ -71,6 +72,8 @@ const run =
       },
       workspace: "beeai",
       outputDirPath: OUTPUT_DIR,
+      logger: Logger.root,
+      signal,
     });
 
     const output: RuntimeOutputMethod = async (output) => {
