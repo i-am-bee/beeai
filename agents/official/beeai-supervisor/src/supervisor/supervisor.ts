@@ -102,7 +102,7 @@ const run =
   };
 
 export const agent = {
-  name: "supervisor-local",
+  name: "supervisor",
   description:
     "A supervisor agent that autonomously decomposes complex tasks, assigns them to the most suitable agents, and orchestrates execution within a multi-agent system. It iteratively evaluates results, determines follow-up tasks, and dynamically adapts workflows until an optimal solution is reached before responding to the user.",
   inputSchema,
