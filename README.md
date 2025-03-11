@@ -33,14 +33,12 @@ BeeAI is an open platform designed to help you discover, run, and compose AI age
 
 ## Get started
 
-1. **Install** BeeAI using [Homebrew](https://brew.sh/):
+1. **Install** BeeAI using [Homebrew](https://brew.sh/) (or see the [installation guide](https://docs.beeai.dev/get-started/installation) for other methods):
 
 ```sh
 brew install i-am-bee/beeai/beeai
 brew services start beeai
 ```
-
-For other installation methods, see the [installation guide](https://docs.beeai.dev/get-started/installation).
 
 2. **Launch** the web interface:
 
