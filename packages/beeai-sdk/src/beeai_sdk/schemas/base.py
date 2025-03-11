@@ -18,8 +18,8 @@ from enum import StrEnum
 from pydantic import BaseModel, Field
 
 
-class Config(BaseModel):
-    tools: list[str] | None = None
+class Config(BaseModel, extra="allow"):
+    pass
 
 
 class Input(BaseModel, extra="allow"):
