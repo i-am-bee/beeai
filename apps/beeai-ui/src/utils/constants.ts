@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-export const GITHUB_REPO = { owner: 'i-am-bee', repo: 'beeai-framework' };
-
-export const GITHUB_REPO_LINK = `https://github.com/${GITHUB_REPO.owner}/${GITHUB_REPO.repo}`;
+export const GITHUB_REPO_LINK = 'https://github.com/i-am-bee/beeai';
 
 export const DISCORD_LINK = 'https://discord.gg/NradeA6ZNF';
 
@@ -28,4 +26,4 @@ export const DOCUMENTATION_LINK = 'https://docs.beeai.dev';
 
 export const BEE_AI_FRAMEWORK_TAG = 'BeeAI';
 
-export const BREW_INSTALL_BEEAI = 'brew install beeai';
+export const BREW_INSTALL_BEEAI = 'brew install i-am-bee/beeai/beeai';

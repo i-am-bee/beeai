@@ -22,28 +22,38 @@ from composition.utils import extract_messages
 agentName = "sequential-workflow"
 
 exampleInput = {
+    "input": "Long article text here...",
     "steps": [
         {"agent": "text-summarizer", "instruction": "Summarize the following text:"},
         {"agent": "text-analyzer", "instruction": "Analyze the sentiment and key themes of this summary:"},
     ],
-    "input": "Long article text here...",
 }
 exampleInputStr = yaml.dump(exampleInput, allow_unicode=True)
 
 fullDescription = f"""
-This agent orchestrates a sequence of text-processing AI agents, each with specific instructions. 
-It manages the flow of information between agents, where each agent receives both an instruction 
-and the previous agent's output formatted as YAML.
+The sequential workflow agent is designed to manage and execute a series of text-processing tasks using multiple AI agents. It takes a series of steps, each specifying an agent and its corresponding instruction, and processes text data through these agents in a sequential manner. The agent ensures that each subsequent agent receives the output of the previous agent, formatted as YAML, along with its specific instruction, thus creating a seamless workflow for complex text-processing tasks.
 
 ## How It Works
-The agent takes a list of steps (each containing an agent name and instruction) and an initial input text. 
-Each subsequent agent receives its instruction followed by the YAML-formatted output from the previous agent.
+
+The agent receives an initial input text and a list of steps, each comprising an agent name and its instruction. It validates the availability and compatibility of the specified agents. The workflow proceeds by passing the formatted output of each agent as input to the next, adhering to the instructions specified for each step. This process continues until all steps are executed, and the final output is generated.
 
 ## Input Parameters
+- **input** (str) – The initial text input to be processed by the workflow.
 - **steps** (list) – A list of steps, each containing:
-  - **agent** (str) – The name of the agent to execute
-  - **instruction** (str) – The instruction for this agent
-- **input** (str) – The initial input text
+  - **agent** (str) – The name of the agent to execute.
+  - **instruction** (str) – The specific instruction for the agent.
+
+
+## Key Features
+- **Sequential Execution**: Manages the flow of data and instructions between multiple text-processing agents.
+- **YAML Formatting**: Uses YAML to format outputs for seamless interoperability between agents.
+- **Validation**: Ensures that each agent in the sequence is available and compatible with the expected input schema.
+- **Progress Reporting**: Provides detailed logs and progress updates throughout the workflow execution.
+
+## Use Cases
+- **Complex Text Processing**: Ideal for tasks that require multiple stages of processing, such as summarization followed by sentiment analysis.
+- **Automated Workflows**: Suitable for automated content processing pipelines that leverage multiple AI models.
+- **Dynamic Instruction Handling**: Useful when dynamic instructions need to be provided to different agents based on prior processing results.
 
 ## Example Usage
 ```yaml
@@ -89,7 +99,7 @@ def format_agent_input(instruction: str, previous_output: dict[str, Any] | str) 
 def add_sequential_workflow_agent(server: Server):
     @server.agent(
         agentName,
-        "Executes a sequence of text-processing agents, each with specific instructions.",
+        "The agent orchestrates a sequence of text-processing AI agents, managing the flow of information and instructions between them.",
         input=SequentialWorkflowInput,
         output=Output,
         **Metadata(

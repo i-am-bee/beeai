@@ -15,25 +15,9 @@
  */
 
 import type { PropsWithChildren } from 'react';
-import { matchQuery, MutationCache, QueryCache, QueryClient } from '@tanstack/react-query';
-import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister';
-import { type PersistQueryClientProviderProps, PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
-import { gitHubRepoKeys } from '#modules/home/api/key.ts';
+import { matchQuery, MutationCache, QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useHandleError } from '#hooks/useHandleError.ts';
 import type { HandleError } from './types';
-
-const localStoragePersister = createSyncStoragePersister({
-  storage: window.localStorage,
-});
-
-const persistOptions: PersistQueryClientProviderProps['persistOptions'] = {
-  persister: localStoragePersister,
-  dehydrateOptions: {
-    shouldDehydrateQuery(query) {
-      return query.queryKey[0] === gitHubRepoKeys.all()[0];
-    },
-  },
-};
 
 const createQueryClient = ({ handleError }: { handleError: HandleError }) => {
   const queryClient = new QueryClient({
@@ -72,9 +56,5 @@ export function QueryProvider({ children }: PropsWithChildren) {
   const handleError = useHandleError();
   const queryClient = createQueryClient({ handleError });
 
-  return (
-    <PersistQueryClientProvider client={queryClient} persistOptions={persistOptions}>
-      {children}
-    </PersistQueryClientProvider>
-  );
+  return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
 }

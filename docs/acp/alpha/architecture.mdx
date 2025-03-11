@@ -12,6 +12,7 @@ In the meantime, we invite the community to actively participate in shaping key 
 Join the conversations on GitHub:
 
 - [Support for Stateful Agents](https://github.com/i-am-bee/beeai/discussions/322)
+- [Manifest-Based Agent Offline Discoverability](https://github.com/i-am-bee/beeai/discussions/344)
 
 Pending topics:
 
@@ -24,7 +25,156 @@ Pending topics:
 - **Agent and Tool Providers versus MCP Servers: Roles and Responsibilities** _(pending creation)_
 - **Deployment Strategies for Agents** _(pending creation)_
 - **Configuration and Model Dependency Management for Agents** _(pending creation)_
-- **Agent Discoverability without Runtime** _(pending creation)_
+- **Namespacing and name uniqueness** _(pending creation)_
+- **Improved Installation Process** _(pending creation)_
+
+## Manifest-Based Agent Offline Discoverability
+
+💬 [GitHub Discussion](https://github.com/i-am-bee/beeai/discussions/344)
+
+### Problem
+
+In the [Pre-alpha](/acp/pre-alpha/introduction) version of ACP, we introduced a tight coupling between agent providers and agents, meaning they run in the same runtime. To be discoverable, an agent must first be instantiated (dependencies installed, main process running). This presents several challenges:
+
+- Agents are only discoverable if the provider is running.
+- Agents require instantiation to become discoverable, consuming significant resources.
+- Agents become discoverable only if successfully executed, but sometimes agents depend on external configurations that aren't available until discovery occurs.
+- Agents built using different languages or frameworks cannot coexist within the same provider.
+- Environment management currently occurs on the agent provider's side, yet should be coupled directly to the agent.
+- Agents might depend on local resources (e.g., locally installed models) that must be prepared before runtime. The current design doesn't support this.
+- Agent installation currently happens implicitly—it should instead occur explicitly at user request (to handle failures transparently).
+- A single agent should be deployable independently rather than deploying an entire provider.
+- Fatal errors in the provider or agent currently affect both, impacting stability.
+
+### Current Implementation
+
+Currently, the platform functions as a service registry. Providers register via the `beeai provider add` command, pointing to a manifest file specifying deployment configurations. Providers then notify the platform through an JSON-RPC API about available agents embedded within their runtime.
+
+#### Discoverability Process
+
+```json Request
+{ "id": 1, "jsonrpc": "2.0", "method": "agents/list" }
+```
+
+Response:
+
+```json Response [expandable]
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": {
+    "agents": [
+      {
+        "name": "gpt-researcher",
+        "description": "The agent conducts in-depth local and web research using a language model to generate comprehensive reports with citations, aimed at delivering factual, unbiased information.",
+        "inputSchema": {},
+        "outputSchema": {},
+        "fullDescription": "...",
+        "framework": "...",
+        "license": "...",
+        "languages": ["Python"],
+        "githubUrl": "...",
+        "examples": {
+          "cli": [
+            {
+              "command": "beeai run gpt-researcher \"Impact of climate change on global agriculture\"",
+              "name": null,
+              "description": "Conducting Research on Climate Change",
+              "output": null,
+              "processingSteps": [
+                "Initializes task-specific agents to interpret the query",
+                "Generates a series of questions to form an objective opinion on the topic",
+                "Uses a crawler agent to gather and summarize information for each question",
+                "Aggregates and filters these summaries into a final comprehensive report"
+              ]
+            }
+          ]
+        },
+        "avgRunTimeSeconds": 2.1,
+        "avgRunTokens": 111,
+        "ui": {
+          "type": "hands-off",
+          "userGreeting": "What topic do you want to research?"
+        },
+        "provider": "git+https://github.com/i-am-bee/beeai@agents-v0.0.47#path=agents/community/gpt-researcher-agent/beeai-provider.yaml"
+      }
+    ]
+  }
+}
+```
+
+#### Provider Manifest Format
+
+```yaml
+manifestVersion: int # manifest version, incremented on breaking changes
+
+# canonical name incl. domain
+# ex. "github.com/i-am-bee/beeai", "github.com/i-am-bee/beeai/nested/folder", "example.com", "example.com/something/else"
+# for remotely loaded manifests, the domain of the manifest must match prefix -- e.g. "github.com/i-am-bee/beeai/nested/folder" can be loaded from "https://github.com/i-am-bee/beeai" but not from "https://example.com"
+name: str
+
+# how to run the provider server
+driver: nodejs | python | container | unmanaged # can later contain new versions like "nodejs@2"
+
+# valid for driver: nodejs | python
+# either a NPM/PyPI package name, or "git:..." URL, or (not allowed in remote manifests) "file:..." URL
+# can include version for pinning
+package: str
+
+# valid for driver: container
+# container image identifier (e.g. "docker.io/something/here:latest")
+# include version for pinning
+image: str
+
+# valid for driver: nodejs | python | container
+# command with arguments to run
+command: str[]
+
+# whether the server communicates through stdin/stdout, or a HTTP server spawned at $PORT
+# for unmanaged provider, only http is available
+serverType: stdio | http
+
+mcpTransport: ws | wss | sse | sses | none
+
+# for serverType=http, an array of endpoints
+ui: str[] # absolute for "remote" driver, relative for managed drivers
+
+# manifest files can contain multiple entries separated by ---
+```
+
+Example:
+
+```yaml
+manifestVersion: 1
+name: github.com/i-am-bee/beeai/agents/community/something
+driver: nodejs
+package: git+https://github.com/i-am-bee/beeai/agents/community/something
+command: ["something", "--transport", "http"]
+serverType: http
+mcpTransport: sse
+```
+
+### Goal
+
+Reevaluate the agent manifest and provider concepts. While grouping agents under providers has usability advantages, it introduces complexities outlined above. We propose shifting the provider details directly into individual agent manifests, enabling offline discovery and simplifying deployment. The new agent manifest should clearly describe:
+
+1. Deployment and consumption (as a service or deployable artifact).
+1. Interface definition (input/output schemas).
+1. Configuration requirements (secrets, environment variables).
+1. Dependencies (including other agents or external resources)
+1. Capabilities (sessions, interruptions) and metadata (license, description, skills, etc.)
+
+### Open Questions
+
+- Should the agent manifest be compatible or inspired by Kubernetes manifests, or do we need a completely different schema due to ACP-specific requirements?
+- Should MCP resources (e.g., tools, prompts) be combined in a single manifest or maintain separate manifests for clarity and modularity?
+
+### Additional Resources
+
+- [Lamma stack - Support for providers outside of this codebase](https://github.com/meta-llama/llama-stack/issues/658)
+- [MCP - .well-known/mcp directory](https://github.com/orgs/modelcontextprotocol/discussions/84)
+- [MCP - Service discovery for MCPs](https://github.com/modelcontextprotocol/specification/discussions/69)
+- [MCO - MCP server registry](https://github.com/orgs/modelcontextprotocol/discussions/159)
 
 ## Support for Stateful Agents
 
@@ -50,7 +200,7 @@ Supporting both stateless and stateful agents enables ACP to handle a broader ra
 
 ### Problem
 
-ACP currently supports both stateful and stateless agents. Stateful agents utilize agent templates, but this feature is currently undocumented. The transport mechanisms (e.g., SSE, WebSockets) inherently maintain stateful connections, raising questions about the adequacy and clarity of the existing implementation. This implementation must be clearly evaluated and documented.
+ACP in [Pre-alpha](/acp/pre-alpha/introduction) supports both stateful and stateless agents. Stateful agents utilize agent templates, but this feature is currently undocumented. The transport mechanisms (e.g., SSE, WebSockets) inherently maintain stateful connections, raising questions about the adequacy and clarity of the existing implementation. This implementation must be clearly evaluated and documented.
 
 Selecting appropriate transport mechanisms is critical. Incorporating stateful behavior should not overly complicate ACP nor compromise its scalability and performance.
 
@@ -60,7 +210,7 @@ The agent author provides a single method to instantiate, run, and destroy an ag
 
 ```json
 {
-  "id": "msg-001",
+  "id": 1,
   "jsonrpc": "2.0",
   "method": "agents/run",
   "params": {
@@ -78,7 +228,7 @@ The agent author provides three separate methods: `create`, `run` and `destroy` 
 
 ```json
 {
-  "id": "msg-001",
+  "id": 1,
   "jsonrpc": "2.0",
   "method": "agents/create",
   "params": { "templateName": "agent-name", "config": {} }
@@ -89,7 +239,7 @@ The agent author provides three separate methods: `create`, `run` and `destroy` 
 
 ```json
 {
-  "id": "msg-002",
+  "id": 2,
   "jsonrpc": "2.0",
   "method": "agents/run",
   "params": {
@@ -103,7 +253,7 @@ The agent author provides three separate methods: `create`, `run` and `destroy` 
 
 ```json
 {
-  "id": "msg-003",
+  "id": 3,
   "jsonrpc": "2.0",
   "method": "agents/destroy",
   "params": { "name": "agent-name-001" }
@@ -126,7 +276,7 @@ Passing `sessionId` through `_meta` object.
 
 ```json
 {
-  "id": "msg-001",
+  "id": 1,
   "jsonrpc": "2.0",
   "method": "agents/run",
   "params": {

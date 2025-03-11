@@ -144,8 +144,6 @@ Free text, depending on the output of the agents used.
     languages: ["TypeScript"],
     githubUrl:
       "https://github.com/i-am-bee/beeai/blob/main/agents/official/beeai-framework/src/supervisor",
-    avgRunTimeSeconds: 3,
-    avgRunTokens: 89,
     examples: {
       cli: [
         {

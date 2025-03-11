@@ -14,10 +14,22 @@
  * limitations under the License.
  */
 
-import { GitHubRepoParams } from './types';
+.container {
+  position: relative;
+  display: flex;
+  block-size: rem(72px);
+}
 
-export const gitHubRepoKeys = {
-  all: () => ['github-repo'] as const,
-  details: () => [...gitHubRepoKeys.all(), 'detail'] as const,
-  detail: (params?: GitHubRepoParams) => [...gitHubRepoKeys.details(), params] as const,
-};
+.placeholder,
+.animation {
+  position: absolute;
+  block-size: rem(209px);
+  margin-inline-start: rem(-27px);
+  margin-block-start: rem(-68px);
+}
+
+.placeholder {
+  .loaded & {
+    visibility: hidden;
+  }
+}

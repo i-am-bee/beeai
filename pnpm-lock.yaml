@@ -42,8 +42,8 @@ importers:
         specifier: 0.0.4
         version: 0.0.4
       '@i-am-bee/beeai-sdk':
-        specifier: 0.0.12
-        version: 0.0.12
+        specifier: 0.0.14
+        version: 0.0.14
       beeai-framework:
         specifier: ^0.1.2
         version: 0.1.2(@ai-sdk/openai@1.1.13(zod@3.24.2))(@aws-sdk/client-bedrock-runtime@3.751.0)(@modelcontextprotocol/sdk@1.6.1)(ollama-ai-provider@1.2.0(zod@3.24.2))(react@19.0.0)(yaml@2.7.0)
@@ -67,8 +67,8 @@ importers:
         specifier: 0.0.4
         version: 0.0.4
       '@i-am-bee/beeai-sdk':
-        specifier: 0.0.13
-        version: 0.0.13
+        specifier: 0.0.14
+        version: 0.0.14
       beeai-framework:
         specifier: ^0.1.2
         version: 0.1.2(@ai-sdk/openai@1.1.14(zod@3.24.2))(@aws-sdk/client-bedrock-runtime@3.751.0)(@modelcontextprotocol/sdk@1.6.1)(ollama-ai-provider@1.2.0(zod@3.24.2))(react@19.0.0)(yaml@2.7.0)
@@ -95,8 +95,8 @@ importers:
         specifier: 0.0.4
         version: 0.0.4
       '@i-am-bee/beeai-sdk':
-        specifier: 0.0.13
-        version: 0.0.13
+        specifier: 0.0.14
+        version: 0.0.14
       '@i-am-bee/beeai-supervisor':
         specifier: 0.0.9
         version: 0.0.9(@ai-sdk/openai@1.1.14(zod@3.24.2))(@eslint/js@9.21.0)(@i-am-bee/acp-sdk@0.0.4)(@opentelemetry/api@1.9.0)(@types/debug@4.1.12)(@types/node@22.13.5)(bee-agent-framework@0.0.61(@aws-sdk/client-bedrock-runtime@3.751.0)(@google-cloud/vertexai@1.9.3)(@grpc/grpc-js@1.12.6)(@grpc/proto-loader@0.7.13)(@modelcontextprotocol/sdk@1.6.1)(google-auth-library@9.15.1)(ollama@0.5.14)(openai-chat-tokens@0.2.8)(openai@4.86.2(ws@8.18.0)(zod@3.24.2))(yaml@2.7.0))(beeai-framework@0.1.2(@ai-sdk/openai@1.1.14(zod@3.24.2))(@aws-sdk/client-bedrock-runtime@3.751.0)(@modelcontextprotocol/sdk@1.6.1)(ollama-ai-provider@1.2.0(zod@3.24.2))(react@19.0.0)(yaml@2.7.0))(sass-embedded@1.85.1)(sass@1.85.0)(tsx@4.19.3)(typescript@5.7.3)(vite@6.2.0(@types/node@22.13.5)(sass-embedded@1.85.1)(sass@1.85.0)(tsx@4.19.3)(yaml@2.7.0))(ws@8.18.0)(yaml@2.7.0)
@@ -161,15 +161,9 @@ importers:
       '@radix-ui/react-slot':
         specifier: ^1.1.2
         version: 1.1.2(@types/react@19.0.10)(react@19.0.0)
-      '@tanstack/query-sync-storage-persister':
-        specifier: ^5.67.1
-        version: 5.67.1
       '@tanstack/react-query':
         specifier: ^5.67.1
         version: 5.67.1(react@19.0.0)
-      '@tanstack/react-query-persist-client':
-        specifier: ^5.67.1
-        version: 5.67.1(@tanstack/react-query@5.67.1(react@19.0.0))(react@19.0.0)
       '@types/react-resizable':
         specifier: ^3.0.8
         version: 3.0.8
@@ -203,9 +197,6 @@ importers:
       mdast-util-to-hast:
         specifier: ^13.2.0
         version: 13.2.0
-      millify:
-        specifier: ^6.1.0
-        version: 6.1.0
       openapi-fetch:
         specifier: ^0.13.4
         version: 0.13.4
@@ -1771,11 +1762,8 @@ packages:
     resolution: {integrity: sha512-bp0Nx1SibAeq+QbmavYf4cOBzW98crtn8gXfq4VCo0Vm7VIHEC0IGA40g+iFHx+OTAyAN/he0PAme2pGyGseXw==}
     engines: {node: '>=18'}
 
-  '@i-am-bee/beeai-sdk@0.0.12':
-    resolution: {integrity: sha512-jNVBTGzB4WsI3GPNXCBZy6uIN7uDdMNbdJSMYkbY7CcjPmkzRVoKN1Y2NIjngnyYxXniWq0cKHoXmSZ3Yb7xhA==}
-
-  '@i-am-bee/beeai-sdk@0.0.13':
-    resolution: {integrity: sha512-lCBIUancXcHY0D/YM0RzOJQYgkD6rZPG8F/XxLA2TBWtIfSEAik6Eaohk75fOw/JVcvQB8FgkCHEBPlOw43k5g==}
+  '@i-am-bee/beeai-sdk@0.0.14':
+    resolution: {integrity: sha512-D7J6gEoJVre94XGs7fUYJJBx10++vn37/QW0kNRB8wg/LM3TS1hONKLlUylxvlzuRG3cRcA6dbjYajiLNYPPWw==}
 
   '@i-am-bee/beeai-supervisor@0.0.9':
     resolution: {integrity: sha512-CsGlyfZLshO8+QiMh9Vtm1hQ2NusX1BC3NknzYyWfUBxejtR0oLC2oZiW3VCk2At//bYgTlw7TBkvsIRjdlGDA==}
@@ -3090,18 +3078,6 @@ packages:
   '@tanstack/query-core@5.67.1':
     resolution: {integrity: sha512-AkFmuukVejyqVIjEQoFhLb3q+xHl7JG8G9cANWTMe3s8iKzD9j1VBSYXgCjy6vm6xM8cUCR9zP2yqWxY9pTWOA==}
 
-  '@tanstack/query-persist-client-core@5.67.1':
-    resolution: {integrity: sha512-dRyX0U1rsMn5p85fF71VPbAGHVlhdU7cjt35GCQlCqKYpxmanpXq2JohtXEWonYNPrhVSPI5okvUbljggpRPhA==}
-
-  '@tanstack/query-sync-storage-persister@5.67.1':
-    resolution: {integrity: sha512-ejMwbiGM5U0fM5ZswPSkOxBVU5IXQAH6TAzz6riysCq3gEJ980xUFmvH1w2u/TttFRhO6DmNpvgsD451nmQmZw==}
-
-  '@tanstack/react-query-persist-client@5.67.1':
-    resolution: {integrity: sha512-tDmgrAPPRD4nUuBoMpPbSpMgo9hfIjtv8KvMsnECqkN049UVPIHsU7KS70rO8cNtXdsFLzorzq8gbinwUhZ3Gw==}
-    peerDependencies:
-      '@tanstack/react-query': ^5.67.1
-      react: ^18 || ^19
-
   '@tanstack/react-query@5.67.1':
     resolution: {integrity: sha512-fH5u4JLwB6A+wLFdi8wWBWAYoJV5deYif2OveJ26ktAWjU499uvVFS1wPWnyEyq5LvZX1MZInvv9QRaIZANRaQ==}
     peerDependencies:
@@ -3716,7 +3692,6 @@ packages:
 
   bee-agent-framework@0.0.61:
     resolution: {integrity: sha512-SnKlcPgBMQ9pJ83yso6CLnODme3Pzsu3Yc3fFlOalPRRfxgz75yo9+wIiCUQFFcGgx7UDBB4N44Bl5mfYdSk6w==}
-    deprecated: 'WARNING: This project has been renamed to beeai-framework. Install using beeai-framework instead.'
     peerDependencies:
       '@aws-sdk/client-bedrock-runtime': ^3.687.0
       '@elastic/elasticsearch': ^8.0.0
@@ -6338,10 +6313,6 @@ packages:
   micromatch@4.0.8:
     resolution: {integrity: sha512-PXwfBhYu0hBCPw8Dn0E+WDYb7af3dSLVWKi3HGv84IdF4TyFoC0ysxFd0Goxw7nSv4T/PzEJQxsYsEiFCKo2BA==}
     engines: {node: '>=8.6'}
-
-  millify@6.1.0:
-    resolution: {integrity: sha512-H/E3J6t+DQs/F2YgfDhxUVZz/dF8JXPPKTLHL/yHCcLZLtCXJDUaqvhJXQwqOVBvbyNn4T0WjLpIHd7PAw7fBA==}
-    hasBin: true
 
   mime-db@1.52.0:
     resolution: {integrity: sha512-sPU4uV7dYlvtWJxwwxHD0PuihVNiE7TyAbQ5SWxDCB9mUYvOgroQOwYQQOKPJ8CIbE+1ETVlOoK1UC2nU3gYvg==}
@@ -10285,20 +10256,7 @@ snapshots:
       zod: 3.24.2
       zod-to-json-schema: 3.24.3(zod@3.24.2)
 
-  '@i-am-bee/beeai-sdk@0.0.12':
-    dependencies:
-      '@i-am-bee/acp-sdk': 0.0.4
-      '@opentelemetry/api': 1.9.0
-      '@opentelemetry/sdk-node': 0.57.2(@opentelemetry/api@1.9.0)
-      '@opentelemetry/semantic-conventions': 1.30.0
-      '@types/stoppable': 1.1.3
-      express: 4.21.2
-      stoppable: 1.1.0
-      zod: 3.24.2
-    transitivePeerDependencies:
-      - supports-color
-
-  '@i-am-bee/beeai-sdk@0.0.13':
+  '@i-am-bee/beeai-sdk@0.0.14':
     dependencies:
       '@i-am-bee/acp-sdk': 0.0.4
       '@opentelemetry/api': 1.9.0
@@ -12016,21 +11974,6 @@ snapshots:
       defer-to-connect: 2.0.1
 
   '@tanstack/query-core@5.67.1': {}
-
-  '@tanstack/query-persist-client-core@5.67.1':
-    dependencies:
-      '@tanstack/query-core': 5.67.1
-
-  '@tanstack/query-sync-storage-persister@5.67.1':
-    dependencies:
-      '@tanstack/query-core': 5.67.1
-      '@tanstack/query-persist-client-core': 5.67.1
-
-  '@tanstack/react-query-persist-client@5.67.1(@tanstack/react-query@5.67.1(react@19.0.0))(react@19.0.0)':
-    dependencies:
-      '@tanstack/query-persist-client-core': 5.67.1
-      '@tanstack/react-query': 5.67.1(react@19.0.0)
-      react: 19.0.0
 
   '@tanstack/react-query@5.67.1(react@19.0.0)':
     dependencies:
@@ -16235,10 +16178,6 @@ snapshots:
     dependencies:
       braces: 3.0.3
       picomatch: 2.3.1
-
-  millify@6.1.0:
-    dependencies:
-      yargs: 17.7.2
 
   mime-db@1.52.0: {}
 
