@@ -14,16 +14,28 @@
  * limitations under the License.
  */
 
-import { ElapsedTime } from '../components/ElapsedTime';
-import { useHandsOff } from '../contexts/hands-off';
-import classes from './TaskCompleted.module.scss';
+import { useEffect, useState } from 'react';
 
-export function TaskCompleted() {
-  const { stats, isPending } = useHandsOff();
+export function useScrollableContainer(element: HTMLElement | null) {
+  const [container, setContainer] = useState<HTMLElement | null>(null);
 
-  return stats?.startTime && stats.endTime && !isPending ? (
-    <p className={classes.root}>
-      Task completed in <ElapsedTime stats={stats} />
-    </p>
-  ) : null;
+  useEffect(() => {
+    if (element) {
+      let parent = element.parentElement;
+
+      while (parent) {
+        const { overflowY } = window.getComputedStyle(parent);
+
+        if (overflowY === 'scroll' || overflowY === 'auto') {
+          setContainer(parent);
+
+          return;
+        }
+
+        parent = parent.parentElement;
+      }
+    }
+  }, [element]);
+
+  return container;
 }

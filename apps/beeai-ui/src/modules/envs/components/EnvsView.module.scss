@@ -14,16 +14,12 @@
  * limitations under the License.
  */
 
-import { ElapsedTime } from '../components/ElapsedTime';
-import { useHandsOff } from '../contexts/hands-off';
-import classes from './TaskCompleted.module.scss';
+.name {
+  inline-size: 30%;
+  word-break: break-all;
+}
 
-export function TaskCompleted() {
-  const { stats, isPending } = useHandsOff();
-
-  return stats?.startTime && stats.endTime && !isPending ? (
-    <p className={classes.root}>
-      Task completed in <ElapsedTime stats={stats} />
-    </p>
-  ) : null;
+.value {
+  @include line-clamp();
+  max-inline-size: 0;
 }

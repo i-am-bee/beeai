@@ -25,3 +25,8 @@
   filter: none;
   box-shadow: $box-shadow;
 }
+
+.cds--popover-content {
+  border-radius: $border-radius;
+  padding: $spacing-03 $spacing-04;
+}
