@@ -10,9 +10,10 @@
 <h4 align="center">Discover, run, and compose AI agents from any framework</h4>
 
 <p align="center">
-    <a href="#key-features">Key Features</a> •
-    <a href="#installation">Installation</a> •
-    <a href="#how-to-use">How To Use</a> •
+    <a href="#overview">Overview</a> •
+    <a href="#key-features">Key features</a> •
+    <a href="#example-use-cases">Example use cases</a> •
+    <a href="#getting-started">Getting started</a> •
     <a href="#documentation">Documentation</a> •
     <a href="#agent-library">Agent Library</a>
 </p>
@@ -23,52 +24,71 @@ https://github.com/user-attachments/assets/8b945bae-47be-41d6-ae09-49e7b952e403
 
 </div>
 
-BeeAI is an open platform designed to help you discover, run, and compose AI agents from any framework and language. Whether you’re building your own agents or looking for powerful existing solutions, BeeAI makes it easy to find, connect, and orchestrate AI agents seamlessly.
+## Overview
 
-**Example: Combine Deep Research and Coding agents to turn research papers into working apps.**
+BeeAI is an open platform designed to help you **discover, run, and compose AI agents** from any framework and language. Whether you’re building your own agents or looking for powerful existing solutions, BeeAI makes it easy to find, connect, and orchestrate AI agents seamlessly.
 
-## Key Features
+## Key features
 
-- 🌐 **Framework Agnostic**: Integrate AI agents regardless of language or platform.
-- ⚙️ **Simple Orchestration**: Compose complex workflows from simple building blocks.
-- 🔍 **Discoverability**: Powerful agent catalog with integrated search.
-- 🐝 **BeeAI Ecosystem:** First-class support for [Python](https://github.com/i-am-bee/beeai-framework/tree/main/python) and [TypeScript](https://github.com/i-am-bee/beeai-framework/tree/main/typecript) agent developers via [BeeAI Framework](https://github.com/i-am-bee/beeai-framework).
+- 🌐 **Framework agnostic**: Integrate AI agents seamlessly, no matter the language or platform.
+- ⚙️ **Simple orchestration**: Build complex, multi-step workflows from straightforward building blocks.
+- 🔍 **Discoverability**: Explore a [powerful agent catalog](https://beeai.dev/agents) with integrated search.
+- 🐝 **BeeAI ecosystem:** First-class support for [Python](https://github.com/i-am-bee/beeai-framework/tree/main/python) and [TypeScript](https://github.com/i-am-bee/beeai-framework/tree/main/typecript) agent developers via [BeeAI Framework](https://github.com/i-am-bee/beeai-framework).
 
+## Example use cases
 
-## Installation
+- 📊 **Competitive analysis:** Combine web research and data analysis agents to transform raw information into insights
+- ⚡ **Developer productivity:** Accelerate software development by combining code generation, bug detection, and documentation generator agents
+- 🔄 **Workflow automation:** Streamline processes by orchestrating agents into a pipeline
+  
+---
+
+## Getting started
+
+Get up and running with BeeAI in just a few minutes!  
+
+### Installation
 
 To quickly install and start BeeAI using [Homebrew](https://brew.sh/), run:
 
 ```sh
-brew install i-am-bee/beeai/beeai
-brew services start beeai
+brew install i-am-bee/beeai/beeai && brew services start beeai
 ```
 
-For all installation options, check the [installation guide](https://docs.beeai.dev/get-started/installation).
+>[!TIP]
+> For all installation options, check the [installation guide](https://docs.beeai.dev/get-started/installation)
 
-## How To Use
+### Quick start
 
-### Web Interface
+BeeAI offers two primary interaction methods to suit different user preferences:
 
-Launch http://localhost:8333 in your browser.
+#### 1. Using the Web Interface
 
-### CLI
+1. Open BeeAI in your browser by navigating to http://localhost:8333
+2. Browse available agents in the "Agents" tab
+3. Explore agent details and capabilities
+4. Use the "Compose playground" to create complex agent workflows
 
-To list all available agents:
+#### 2. Using the Command Line Interface
+
+Simple commands to get you started:
 
 ```sh
+# List all available agents
 beeai list
+
+# Run your first agent
+beeai run chat "Hi! How are you?"
 ```
 
-To run a `chat` agent:
+>[!TIP]
+> For a list of all commands, run `beeai --help`
 
-```sh
-beeai run chat
-```
+---
 
 ## Documentation
 
-Visit [docs.beeai.dev](https://docs.beeai.dev) to view the full documentation.
+For complete documentation, visit [docs.beeai.dev](https://docs.beeai.dev).
 
 ## Agent library
 
