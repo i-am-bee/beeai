@@ -364,7 +364,7 @@ def _get_config_schema(schema: dict[str, Any] | None) -> dict[str, Any] | None:
         return None
 
     schema = remove_nullable(schema)
-    if "properties" not in schema:
+    if not schema.get("properties", None):
         return None
     return schema
 
