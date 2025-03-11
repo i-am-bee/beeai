@@ -14,21 +14,29 @@
  * limitations under the License.
  */
 
-@use '@carbon/styles/scss/utilities/button-reset';
-
 .root {
   display: flex;
   flex-direction: column;
-  row-gap: $spacing-04;
-  flex-grow: 1;
+  row-gap: $spacing-07;
 }
 
-.button {
-  @include button-reset.reset();
-  @include type-style(label-01);
-  max-inline-size: max-content;
-  color: $text-secondary;
-  &:hover {
-    color: $text-primary;
+.description {
+  @include type-style(body-01);
+}
+
+.table {
+  :global(.cds--data-table) {
+    border-block-start: 0;
+    border-start-start-radius: 0;
+    border-start-end-radius: 0;
+    th,
+    td {
+      &:last-child {
+        inline-size: rem(46px);
+      }
+    }
+    thead tr:first-child th {
+      border-radius: 0;
+    }
   }
 }

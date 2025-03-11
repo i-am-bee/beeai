@@ -14,28 +14,14 @@
  * limitations under the License.
  */
 
-import { DOCUMENTATION_LINK } from '#utils/constants.ts';
-import classes from './SideNav.module.scss';
+@use 'styles/common' as *;
 
-export function SideNav() {
-  return (
-    <nav>
-      <ul className={classes.list}>
-        {NAV_ITEMS.map(({ label, href }, idx) => (
-          <li key={idx}>
-            <a href={href} target="_blank" className={classes.link}>
-              {label}
-            </a>
-          </li>
-        ))}
-      </ul>
-    </nav>
-  );
+.cds--popover--tab-tip > .cds--popover > .cds--popover-content {
+  border-radius: $border-radius;
+  padding: 1rem;
 }
 
-const NAV_ITEMS = [
-  {
-    label: 'Documentation',
-    href: DOCUMENTATION_LINK,
-  },
-];
+.cds--popover--drop-shadow .cds--popover > .cds--popover-content {
+  filter: none;
+  box-shadow: $box-shadow;
+}

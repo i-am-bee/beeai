@@ -28,4 +28,4 @@ async def sequential(
     dump_files: Optional[Path] = typer.Option(None, help="Folder path to save any files returned by the agent"),
 ) -> None:
     """Compose agents into a sequential workflow"""
-    await run_agent(name="prompted-sequential-workflow", input=None, dump_files=dump_files)
+    await run_agent(name="sequential-workflow", input=None, dump_files=dump_files)

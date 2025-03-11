@@ -20,15 +20,12 @@
   align-items: center;
 }
 
-.holder {
-  max-inline-size: rem(400px);
-}
-
 .description {
   font-size: rem(24px);
   line-height: math.div(32, 24);
   color: $text-dark;
   margin-block-start: $spacing-08;
+  text-wrap: balance;
 }
 
 .bottom {
@@ -36,35 +33,9 @@
   align-items: flex-start;
   column-gap: $spacing-05;
   margin-block-start: $spacing-06;
+  max-inline-size: rem(400px);
 }
 
-.buttons {
-  display: flex;
-  flex-direction: column;
-  row-gap: $spacing-03;
-  flex-grow: 1;
-}
-
-.button {
-  &:global(.cds--btn) {
-    inline-size: 100%;
-    border-color: $text-dark;
-    &:hover {
-      color: $text-inverse;
-      background-color: $layer-selected-inverse;
-      border-color: $layer-selected-inverse;
-    }
-  }
-}
-
-.link {
-  font-size: rem(12px);
-  line-height: math.div(18, 12);
-  letter-spacing: $letter-spacing;
-  max-inline-size: max-content;
-  text-decoration: none;
-  color: $text-secondary;
-  &:hover {
-    color: $text-primary;
-  }
+.snippet {
+  min-inline-size: rem(275px);
 }

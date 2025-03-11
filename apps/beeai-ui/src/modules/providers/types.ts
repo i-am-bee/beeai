@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-.root {
-  &:global(.cds--btn) {
-    @include type-style(label-01);
-    min-inline-size: rem(84px);
-    column-gap: $spacing-03;
-    justify-content: flex-start;
-    align-items: center;
-    padding-inline-end: rem(15px);
-  }
+export enum ProviderSource {
+  Local = 'Local',
+  GitHub = 'GitHub',
 }

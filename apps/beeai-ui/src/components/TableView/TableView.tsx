@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-.list {
-  display: flex;
-  column-gap: $spacing-06;
+import { PropsWithChildren } from 'react';
+import classes from './TableView.module.scss';
+
+interface Props {
+  description?: string;
 }
 
-.link {
-  @include type-style(label-01);
-  display: block;
-  color: $text-secondary;
-  text-decoration: none;
-  &:hover {
-    color: $text-primary;
-  }
+export function TableView({ description, children }: PropsWithChildren<Props>) {
+  return (
+    <div className={classes.root}>
+      {description && <p className={classes.description}>{description}</p>}
+
+      <div className={classes.table}>{children}</div>
+    </div>
+  );
 }

@@ -14,9 +14,10 @@ Install using **[Homebrew](https://brew.sh/)** (recommended): A cross-platform p
 1. If you don't already use Homebrew, install it using the instructions [provided on the homepage](https://brew.sh/).
 2. Install BeeAI with:
     `brew install i-am-bee/beeai/beeai && brew services start beeai`
-3. (optional) Install the [Arize Phoenix](https://phoenix.arize.com/) UI with:
+3. _(optional)_ Install the [Arize Phoenix](https://phoenix.arize.com/) UI with:
     `brew install i-am-bee/beeai/arize-phoenix && brew services start arize-phoenix`
 4. Installation complete! Move to the next section to set up agent providers.
+5. UPDATING: Run `brew update beeai` to update to the newest version of the platform. Note that agents are auto-updated.
 
 ---
 
@@ -27,15 +28,16 @@ Install from **PyPI**: Python-native way of installing. This method is less pref
     - _Alternative_: If you are a user of `uv`, you may use `uv tool install ...` instead of `pipx install ...`.
 2. Install BeeAI with:
     `pipx install beeai-cli`
-3. (optional) Install the [Arize Phoenix](https://phoenix.arize.com/) UI with:
+3. _(optional)_ Install the [Arize Phoenix](https://phoenix.arize.com/) UI with:
     `pipx install arize-phoenix`
 4. Install agent runtimes. These are optional, but you won't be able to use agents, including built-in ones, if the corresponding runtime is not available.
     - _Python_: BeeAI uses [`uv`](https://docs.astral.sh/uv/) to manage Python environments. Install `uv` using your OS's package manager, or follow the [official installation instructions](https://docs.astral.sh/uv/getting-started/installation/).
     - _JavaScript / TypeScript_: BeeAI uses `npx`, part of [Node.js](https://nodejs.org/), to manage JS/TS environments. Install `node` using your OS's package manager, or follow the [official installation instructions](https://nodejs.org/en/download).
     - _Docker_: (optional: no built-in agents use this runtime) BeeAI uses the `docker` CLI to manage agent containers. If you are unsure how to setup a container runtime on your machine, we recommend [Rancher Desktop](https://rancherdesktop.io/).
 5. Open a new terminal window and run `beeai serve`. This will start the BeeAI service, and show you the logs. Keep this terminal window running in order to use the platform.
-6. (optional) Open a new terminal window and run `PHOENIX_GRPC_PORT=8336 phoenix serve` to run the Arize Phoenix UI. Also keep this terminal window open and running.
+6. _(optional)_ Open a new terminal window and run `PHOENIX_GRPC_PORT=8336 phoenix serve` to run the Arize Phoenix UI. Also keep this terminal window open and running.
 7. Installation complete! Move to the next section to set up agent providers.
+8. UPDATING: Run `pipx upgrade beeai` to update to the newest version of the platform. Note that agents are auto-updated.
 
 ---
 
@@ -45,60 +47,66 @@ After installation, it's time to configure your API keys using the `beeai env ad
 
 If you don't have an API key and don't want to pay, Groq and OpenRouter have some limited free offerings. And if your computer is powerful, you can run models locally with Ollama.
 
-<table>
-<tr>
-<td>OpenAI</td>
-<td>
+---
 
-```
+### OpenAI
+
+```bash
 beeai env add LLM_MODEL=gpt-4o
 beeai env add LLM_API_BASE=https://api.openai.com/v1
-beeai env add LLM_API_KEY=sk_[...]
+beeai env add LLM_API_KEY=sk_[...] # <- put your actual API key here
+beeai env check
 ```
 
-</td></tr>
+---
 
-<tr><td>Anthropic</td><td>
+### Anthropic
 
-```
+```bash
 beeai env add LLM_MODEL=claude-3-7-sonnet-20250219
 beeai env add LLM_API_BASE=https://api.anthropic.com/v1/
-beeai env add LLM_API_KEY=[...]
+beeai env add LLM_API_KEY=[...] # <- put your actual API key here
+beeai env check
 ```
 
-</td></tr>
+---
 
-<tr><td>Groq (has some free usage)</td><td>
+### Groq (has some free usage)
 
-```
+```bash
 beeai env add LLM_MODEL=deepseek-r1-distill-llama-70b
 beeai env add LLM_API_BASE=https://api.groq.com/openai/v1
-beeai env add LLM_API_KEY=gsk_[...]
+beeai env add LLM_API_KEY=gsk_[...] # <- put your actual API key here
+beeai env check
 ```
 
-</td></tr>
+---
 
-<tr><td>Ollama (running locally, for powerful computers)</td><td>
+### Ollama (running locally, for powerful computers)
 
-```
+```bash
 beeai env add LLM_MODEL=llama3.3
 beeai env add LLM_API_BASE=http://localhost:11434/v1
 beeai env add LLM_API_KEY=ollama
+beeai env check
 ```
 
-</td></tr>
+---
 
-<tr><td>OpenRouter (has some free models)</td><td>
+### OpenRouter (has some free models)
 
-```
+```bash
 beeai env add LLM_MODEL=google/gemini-2.0-pro-exp-02-05:free
 beeai env add LLM_API_BASE=https://openrouter.ai/api/v1
-beeai env add LLM_API_KEY=sk-or-v1-[...]
+beeai env add LLM_API_KEY=sk-or-v1-[...] # <- put your actual API key here
+beeai env check
 ```
 
-</td></tr><table>
+---
 
 After setting environment variables, run `beeai provider list` and check that all of the providers are in the `ready` state. It might take a while the first time. Repeat `beeai provider list` to see the current staus.
+
+If there's something wrong, run `beeai env check` to troubleshoot your issue.
 
 ## Visit the UI
 

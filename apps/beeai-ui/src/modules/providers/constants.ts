@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-import { z } from 'zod';
-export interface GitHubRepoParams {
-  owner: string;
-  repo: string;
-}
+import { ProviderSource } from './types';
 
-export const GitHubRepoSchema = z.object({
-  stargazers_count: z.number(),
-});
+export const ProviderSourcePrefixes = {
+  [ProviderSource.Local]: 'file://',
+  [ProviderSource.GitHub]: 'git+',
+} as const;

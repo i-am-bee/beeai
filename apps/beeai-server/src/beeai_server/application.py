@@ -17,7 +17,9 @@ import contextlib
 import logging
 import pathlib
 from contextlib import asynccontextmanager
+from typing import Iterable
 
+from beeai_server.domain.model import LoadedProviderStatus
 from fastapi import FastAPI, APIRouter
 from fastapi import HTTPException
 from fastapi.exception_handlers import http_exception_handler
@@ -26,8 +28,9 @@ from fastapi.staticfiles import StaticFiles
 from kink import inject, di
 from starlette.responses import FileResponse
 from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
+from opentelemetry.metrics import get_meter, Observation, CallbackOptions
 
-from beeai_server.telemetry import shutdown_telemetry
+from beeai_server.telemetry import INSTRUMENTATION_NAME, shutdown_telemetry
 from beeai_server.domain.telemetry import TelemetryCollectorManager
 from beeai_server.bootstrap import bootstrap_dependencies
 from beeai_server.configuration import Configuration
@@ -89,11 +92,38 @@ def mount_routes(app: FastAPI):
     app.mount("/", ui_app)
 
 
+@inject
+def register_telemetry(provider_container: ProviderContainer):
+    meter = get_meter(INSTRUMENTATION_NAME)
+
+    def scrape_platform_status(options: CallbackOptions) -> Iterable[Observation]:
+        yield Observation(value=1)
+
+    meter.create_observable_gauge("platform_status", callbacks=[scrape_platform_status])
+
+    def scrape_providers_by_status(options: CallbackOptions) -> Iterable[Observation]:
+        providers = provider_container.loaded_providers
+        for status in LoadedProviderStatus:
+            count = 0
+            for provider in providers:
+                if provider.status == status:
+                    count += 1
+            yield Observation(
+                value=count,
+                attributes={
+                    "status": status,
+                },
+            )
+
+    meter.create_observable_gauge("providers_by_status", callbacks=[scrape_providers_by_status])
+
+
 @asynccontextmanager
 @inject
 async def lifespan(
     _app: FastAPI, provider_container: ProviderContainer, telemetry_collector_manager: TelemetryCollectorManager
 ):
+    register_telemetry()
     async with provider_container, telemetry_collector_manager, run_all_crons():
         yield
     shutdown_telemetry()

@@ -14,21 +14,10 @@
  * limitations under the License.
  */
 
-import { useQuery } from '@tanstack/react-query';
-import type { GitHubRepoParams } from '../types';
-import { gitHubRepoKeys } from '../key';
-import { fetchGitHubRepo } from '..';
+.cds--link {
+  text-decoration: none;
 
-export function useGitHubRepo(params: GitHubRepoParams) {
-  const query = useQuery({
-    queryKey: gitHubRepoKeys.detail(params),
-    queryFn: () => fetchGitHubRepo(params),
-    staleTime: 1000 * 60 * 60 * 2, // 2 hours
-    retry: 1,
-    meta: {
-      errorToast: false,
-    },
-  });
-
-  return query;
+  &:hover {
+    text-decoration: underline;
+  }
 }
