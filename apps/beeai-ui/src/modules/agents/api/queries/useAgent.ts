@@ -31,7 +31,7 @@ export function useAgent({ name }: Props) {
     queryFn: () => client!.listAgents(),
     enabled: Boolean(client),
     select: (data) => {
-      const agent = data?.agents.find((item) => name === item.name);
+      const agent = data.agents.find((item) => name === item.name);
 
       return agent ? (agent as Agent) : undefined;
     },

@@ -16,7 +16,9 @@
 
 import { ApiRequestBody, ApiResponse } from '#@types/utils.ts';
 
-export type Provider = ApiResponse<'/api/v1/provider'>['items'][number];
+export type ProvidersList = ApiResponse<'/api/v1/provider'>;
+
+export type Provider = ProvidersList['items'][number];
 
 export type CreateProviderBody = ApiRequestBody<'/api/v1/provider'>;
 
