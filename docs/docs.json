@@ -15,7 +15,9 @@
         "groups": [
           {
             "group": "Get Started",
-            "pages": ["/get-started/quickstart"]
+            "pages": [
+              "/get-started/quickstart"
+            ]
           },
           {
             "group": "Agents",
@@ -26,12 +28,24 @@
             ]
           },
           {
+            "group": "Concepts",
+            "pages": [
+              "/concepts/components",
+              "/concepts/providers",
+              "/concepts/agents",
+              "/concepts/tools"
+            ]
+          },
+          {
             "group": "Agent Communication Protocol",
             "pages": [
               {
                 "group": "Alpha",
                 "icon": "tag",
-                "pages": ["/acp/alpha/introduction", "/acp/alpha/architecture"]
+                "pages": [
+                  "/acp/alpha/introduction",
+                  "/acp/alpha/architecture"
+                ]
               },
               {
                 "group": "Pre-alpha",
