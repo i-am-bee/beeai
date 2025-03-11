@@ -89,8 +89,6 @@ export function ComposeProvider({ children }: PropsWithChildren) {
     (delta: ComposeNotificationDelta) => {
       if (delta.agent_idx === undefined) return;
 
-      console.log(delta);
-
       const fieldName = `steps.${delta.agent_idx}` as const;
       const step = getValues(fieldName);
 
@@ -107,11 +105,8 @@ export function ComposeProvider({ children }: PropsWithChildren) {
 
       if (delta.agent_idx > 0) {
         const stepsBefore = getValues('steps').slice(0, delta.agent_idx);
-        console.log({ stepsBefore });
 
         stepsBefore.forEach((step, stepsBeforeIndex) => {
-          console.log({ stepBefore: step });
-
           if (step.isPending || !step.stats?.endTime) {
             step.isPending = false;
             step.stats = { ...step.stats, endTime: Date.now() };
@@ -191,11 +186,9 @@ export function ComposeProvider({ children }: PropsWithChildren) {
 
   const onSubmit = useCallback(() => {
     handleSubmit(async ({ steps }) => {
-      console.log({ valuesStep: steps, values: getValues() });
-
       await send(steps);
     })();
-  }, [getValues, handleSubmit, send]);
+  }, [handleSubmit, send]);
 
   const handleCancel = useCallback(() => {
     abortControllerRef.current?.abort();
