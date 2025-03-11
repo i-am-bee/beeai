@@ -14,10 +14,16 @@
  * limitations under the License.
  */
 
-import { GitHubRepoParams } from './types';
+import { GITHUB_REPO_LINK } from '#utils/constants.ts';
+import { Button } from '@carbon/react';
+import { LogoGithub } from '@carbon/icons-react';
+import classes from './GitHubButton.module.scss';
 
-export const gitHubRepoKeys = {
-  all: () => ['github-repo'] as const,
-  details: () => [...gitHubRepoKeys.all(), 'detail'] as const,
-  detail: (params?: GitHubRepoParams) => [...gitHubRepoKeys.details(), params] as const,
-};
+export function GitHubButton() {
+  return (
+    <Button as="a" href={GITHUB_REPO_LINK} target="_blank" rel="noreferrer" size="md" className={classes.root}>
+      <LogoGithub />
+      <span>Star on GitHub</span>
+    </Button>
+  );
+}

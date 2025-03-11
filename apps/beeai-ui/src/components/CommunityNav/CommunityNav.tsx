@@ -25,7 +25,7 @@ export function CommunityNav() {
       <ul className={classes.list}>
         {NAV_ITEMS.map(({ label, href, Icon }) => (
           <li key={label} className={classes.item}>
-            <a href={href} target="_blank" aria-label={label} className={classes.link}>
+            <a href={href} target="_blank" rel="noreferrer" aria-label={label} className={classes.link}>
               <Icon />
             </a>
           </li>
