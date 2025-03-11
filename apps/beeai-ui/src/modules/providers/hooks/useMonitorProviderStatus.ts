@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-// import { useTaskRunner } from '#contexts/TaskRunner/index.ts';
 import { useToast } from '#contexts/Toast/index.ts';
-import { useTasks } from '#hooks/useTasks.ts';
+import { TaskPrefix, useTasks } from '#hooks/useTasks.ts';
 import { agentKeys } from '#modules/agents/api/keys.ts';
 import { useListProviderAgents } from '#modules/agents/api/queries/useListProviderAgents.ts';
 import { useQueryClient } from '@tanstack/react-query';
 import pluralize from 'pluralize';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useProvider } from '../api/queries/useProvider';
 
 interface Props {
@@ -65,20 +64,22 @@ export function useMonitorProvider({ id }: Props) {
 
     if (status === 'ready' || status === 'error') {
       if (id) {
-        removeTask({ id });
+        removeTask({ id: `${TaskPrefix.ProviderStatusCheck}${id}` });
       }
 
       setIsDone(true);
     }
   }, [id, queryClient, refetchProvider, refetchAgents, addToast, removeTask]);
 
-  if (id && !isDone) {
-    addTask({
-      id,
-      task: checkProvider,
-      delay: CHECK_PROVIDER_STATUS_INTERVAL,
-    });
-  }
+  useEffect(() => {
+    if (id && !isDone) {
+      addTask({
+        id: `${TaskPrefix.ProviderStatusCheck}${id}`,
+        task: checkProvider,
+        delay: CHECK_PROVIDER_STATUS_INTERVAL,
+      });
+    }
+  }, [id, isDone, addTask, checkProvider]);
 
   return {
     status,

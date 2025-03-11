@@ -41,3 +41,7 @@ export function useTasks() {
     removeTask,
   };
 }
+
+export enum TaskPrefix {
+  ProviderStatusCheck = 'ProviderStatusCheck_',
+}
