@@ -427,13 +427,7 @@ async def run_agent(
         elif is_sequential_workflow:
             workflow_steps = _setup_sequential_workflow(splash_screen, agents_by_name)
             console.print()
-            input = filter_dict(
-                {
-                    **config,
-                    "steps": workflow_steps if agent.name != "sequential-workflow" else None,
-                    "agents": [s["agent"] for s in workflow_steps] if agent.name == "sequential-workflow" else None,
-                }
-            )
+            input = filter_dict({**config, "steps": workflow_steps})
             await _run_agent(name, input, dump_files_path=dump_files)
 
     else:
