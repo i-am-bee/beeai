@@ -65,7 +65,19 @@ $max-container: rem(1632px);
 }
 
 .actionBar {
-  padding-block: $spacing-06 $spacing-08;
+  padding-block: $spacing-04 $spacing-08;
+  position: relative;
+
+  &::after {
+    content: '';
+    pointer-events: none;
+    position: absolute;
+    inset-block-end: 100%;
+    inset-inline-start: 0;
+    inline-size: 100%;
+    block-size: rem(48px);
+    background-image: linear-gradient(to top, $background, $background-transparent);
+  }
 
   > div {
     display: flex;
