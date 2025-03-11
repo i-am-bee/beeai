@@ -87,7 +87,7 @@ async def check():
             console.print(f"  - [yellow]{var}[/yellow]")
         console.print("\nPlease set these variables using the [bold]beeai env add[/bold] command.")
         console.print(
-            "[link=https://github.com/i-am-bee/beeai/blob/main/docs/get-started/installation.mdx#set-up-api-keys]See documentation for details[/link]"
+            "See documentation for details: https://docs.beeai.dev/get-started/installation#set-up-agent-providers"
         )
         print_var_statuses(statuses)
         return
