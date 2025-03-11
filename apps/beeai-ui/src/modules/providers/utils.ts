@@ -15,7 +15,7 @@
  */
 
 import { Agent } from '#modules/agents/api/types.ts';
-import { groupBy } from 'lodash';
+import groupBy from 'lodash/groupBy';
 import { ProviderSourcePrefixes } from './constants';
 
 export const getProviderSource = (id: string) => {

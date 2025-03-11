@@ -24,19 +24,19 @@ interface Props<T> {
 export function useTableSearch<T>({ entries, fields }: Props<T>) {
   const [search, setSearch] = useState('');
 
-  const searchQuery = search.trim().toLowerCase();
-
   const onSearch = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     setSearch(event.target.value);
   }, []);
 
   const items = useMemo(() => {
+    const searchQuery = search.trim().toLowerCase();
+
     if (!searchQuery) {
       return entries;
     }
 
     return entries.filter((item) => fields.some((field) => String(item[field]).toLowerCase().includes(searchQuery)));
-  }, [searchQuery, entries, fields]);
+  }, [search, entries, fields]);
 
   return {
     items,

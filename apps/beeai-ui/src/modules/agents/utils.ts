@@ -15,7 +15,7 @@
  */
 
 import { isNotNull } from '#utils/helpers.ts';
-import { uniq } from 'lodash';
+import uniq from 'lodash/uniq';
 import { Agent } from './api/types';
 
 export const getAgentsLanguages = (agents: Agent[] | undefined) =>
