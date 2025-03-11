@@ -81,9 +81,9 @@ def validate_agents(input: SequentialWorkflowInput, server_agents: dict[str, Age
 def format_agent_input(instruction: str, previous_output: dict[str, Any] | str) -> str:
     if not previous_output:
         return instruction
-    return f"""{instruction}\n---\n{
+    return f"""{
         previous_output if isinstance(previous_output, str) else yaml.dump(previous_output, allow_unicode=True)
-    }"""
+    }\n---\n{instruction}"""
 
 
 def add_sequential_workflow_agent(server: Server):
