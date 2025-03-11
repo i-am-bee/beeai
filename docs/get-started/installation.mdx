@@ -47,58 +47,62 @@ After installation, it's time to configure your API keys using the `beeai env ad
 
 If you don't have an API key and don't want to pay, Groq and OpenRouter have some limited free offerings. And if your computer is powerful, you can run models locally with Ollama.
 
-<table>
-<tr>
-<td>OpenAI</td>
-<td>
+---
 
-```
+### OpenAI
+
+```bash
 beeai env add LLM_MODEL=gpt-4o
 beeai env add LLM_API_BASE=https://api.openai.com/v1
-beeai env add LLM_API_KEY=sk_[...]
+beeai env add LLM_API_KEY=sk_[...] # <- put your actual API key here
+beeai env check
 ```
 
-</td></tr>
+---
 
-<tr><td>Anthropic</td><td>
+### Anthropic
 
-```
+```bash
 beeai env add LLM_MODEL=claude-3-7-sonnet-20250219
 beeai env add LLM_API_BASE=https://api.anthropic.com/v1/
-beeai env add LLM_API_KEY=[...]
+beeai env add LLM_API_KEY=[...] # <- put your actual API key here
+beeai env check
 ```
 
-</td></tr>
+---
 
-<tr><td>Groq (has some free usage)</td><td>
+### Groq (has some free usage)
 
-```
+```bash
 beeai env add LLM_MODEL=deepseek-r1-distill-llama-70b
 beeai env add LLM_API_BASE=https://api.groq.com/openai/v1
-beeai env add LLM_API_KEY=gsk_[...]
+beeai env add LLM_API_KEY=gsk_[...] # <- put your actual API key here
+beeai env check
 ```
 
-</td></tr>
+---
 
-<tr><td>Ollama (running locally, for powerful computers)</td><td>
+### Ollama (running locally, for powerful computers)
 
-```
+```bash
 beeai env add LLM_MODEL=llama3.3
 beeai env add LLM_API_BASE=http://localhost:11434/v1
 beeai env add LLM_API_KEY=ollama
+beeai env check
 ```
 
-</td></tr>
+---
 
-<tr><td>OpenRouter (has some free models)</td><td>
+### OpenRouter (has some free models)
 
-```
+```bash
 beeai env add LLM_MODEL=google/gemini-2.0-pro-exp-02-05:free
 beeai env add LLM_API_BASE=https://openrouter.ai/api/v1
-beeai env add LLM_API_KEY=sk-or-v1-[...]
+beeai env add LLM_API_KEY=sk-or-v1-[...] # <- put your actual API key here
+beeai env check
 ```
 
-</td></tr><table>
+---
 
 After setting environment variables, run `beeai provider list` and check that all of the providers are in the `ready` state. It might take a while the first time. Repeat `beeai provider list` to see the current staus.
 
