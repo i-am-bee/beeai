@@ -17,10 +17,11 @@ class Configuration:
     """The configurable fields for the research assistant."""
 
     max_web_research_loops: int = 3
-    local_llm: str = "llama3.1"
-    search_api: SearchAPI = SearchAPI.DUCKDUCKGO  # Default to DUCDUCKGO
-    fetch_full_page: bool = False  # Default to False
-    ollama_base_url: str = "http://localhost:11434/"
+    model: str = os.getenv("LLM_MODEL", "llama3.1")
+    api_key: str = os.getenv("LLM_API_KEY", "dummy")
+    api_base: str = os.getenv("LLM_API_BASE", "http://localhost:11434/v1")
+    search_api: SearchAPI = SearchAPI.DUCKDUCKGO
+    fetch_full_page: bool = False
 
     @classmethod
     def from_runnable_config(

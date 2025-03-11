@@ -15,6 +15,7 @@
 from typing import runtime_checkable, Protocol
 
 from beeai_server.domain.model import Provider
+from pydantic import BaseModel
 
 NOT_SET = object()
 
@@ -32,3 +33,14 @@ class IEnvVariableRepository(Protocol):
     async def get(self, key: str, default: str | None = NOT_SET) -> str: ...
     async def get_all(self) -> dict[str, str]: ...
     async def update(self, update: dict[str, str | None]) -> None: ...
+
+
+class TelemetryConfig(BaseModel):
+    sharing_enabled: bool = True
+
+
+@runtime_checkable
+class ITelemetryRepository(Protocol):
+    async def sync(self) -> None: ...
+    async def set(self, *, config: TelemetryConfig) -> None: ...
+    async def get(self) -> TelemetryConfig: ...

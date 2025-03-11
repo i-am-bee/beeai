@@ -81,7 +81,7 @@ async def register_agent() -> int:
             languages=["Python"],
             githubUrl="https://github.com/i-am-bee/beeai/tree/main/agents/community/aider-agent",
             examples=examples,
-            ui=UiDefinition(type=UiType.single_prompt, userGreeting="Define your programming task."),
+            ui=UiDefinition(type=UiType.hands_off, userGreeting="Define your programming task."),
             fullDescription=fullDescription,
             avgRunTimeSeconds=5.0,
             avgRunTokens=5000,
@@ -92,6 +92,10 @@ async def register_agent() -> int:
         with tempfile.TemporaryDirectory() as tmp_dir:
             tmp_path = Path(tmp_dir)
             try:
+                env = os.environ.copy()
+                env["OPENAI_API_KEY"] = env.get("LLM_API_KEY", "dummy")
+                env["OPENAI_API_BASE"] = env.get("LLM_API_BASE", "http://localhost:11434/v1")
+                env["AIDER_MODEL"] = f"openai/{env.get('LLM_MODEL', 'llama3.1')}"
                 process = await asyncio.create_subprocess_exec(
                     sys.executable,
                     "-m",
@@ -107,12 +111,13 @@ async def register_agent() -> int:
                     "--no-detect-urls",
                     "--no-auto-lint",
                     "--no-auto-test",
+                    "--no-check-update",
                     "--message",
                     input.text,
                     cwd=tmp_dir,
                     stdout=subprocess.PIPE,
                     stderr=subprocess.PIPE,
-                    env=os.environ.copy(),
+                    env=env,
                 )
 
                 binary_buffer = io.BytesIO()
@@ -137,7 +142,7 @@ async def register_agent() -> int:
                     return output
 
                 for file_path in tmp_path.rglob("*"):
-                    if any(part in [".aider", "node_modules", ".venv"] for part in file_path.parts):
+                    if any(part in ["node_modules", ".venv"] or part.startswith(".aider.") for part in file_path.parts):
                         continue
                     if file_path.is_file():
                         try:

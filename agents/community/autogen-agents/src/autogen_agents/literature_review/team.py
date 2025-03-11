@@ -7,25 +7,17 @@ from autogen_ext.models.openai import OpenAIChatCompletionClient
 
 
 def get_client():
-    if os.getenv("OPENAI_API_KEY"):
-        # OpenAI
-        return OpenAIChatCompletionClient(
-            model=os.getenv("MODEL", "gpt-4o-mini"),
-            api_key=os.getenv("OPENAI_API_KEY"),
-        )
-    else:
-        # Ollama
-        return OpenAIChatCompletionClient(
-            model="llama3.1:latest",
-            base_url=os.getenv("API_BASE"),
-            api_key="placeholder",
-            model_info={
-                "vision": False,
-                "function_calling": True,
-                "json_output": False,
-                "family": "unknown",
-            },
-        )
+    return OpenAIChatCompletionClient(
+        model=os.getenv("LLM_MODEL"),
+        base_url=os.getenv("LLM_API_BASE"),
+        api_key=os.getenv("LLM_API_KEY"),
+        model_info={
+            "vision": False,
+            "function_calling": True,
+            "json_output": False,
+            "family": "unknown",
+        },
+    )
 
 
 google_search_agent = None

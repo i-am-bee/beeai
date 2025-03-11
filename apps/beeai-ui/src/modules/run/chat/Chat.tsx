@@ -15,16 +15,14 @@
  */
 
 import { Container } from '#components/layouts/Container.tsx';
-import { getAgentTitle } from '#modules/agents/utils.ts';
 import { ArrowDown } from '@carbon/icons-react';
 import { IconButton } from '@carbon/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useChat, useChatMessages } from '../contexts';
-import { AgentIcon } from './AgentIcon';
+import { AgentHeader } from '../components/AgentHeader';
+import { useChat, useChatMessages } from '../contexts/chat';
 import classes from './Chat.module.scss';
-import { InputBar } from './InputBar';
+import { ChatInput } from './ChatInput';
 import { Message } from './Message';
-import NewSession from './NewSession.svg';
 
 export function Chat() {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -72,16 +70,7 @@ export function Chat() {
   return (
     <div className={classes.root}>
       <Container size="sm" className={classes.holder}>
-        <header className={classes.header}>
-          <h1>
-            <AgentIcon />
-            {getAgentTitle(agent)}
-          </h1>
-
-          <IconButton kind="tertiary" size="sm" label="New session" onClick={onClear}>
-            <NewSession />
-          </IconButton>
-        </header>
+        <AgentHeader agent={agent} className={classes.header} onNewSessionClick={onClear} />
 
         <div className={classes.content} ref={scrollRef}>
           <div className={classes.scrollRef} ref={bottomRef} />
@@ -107,7 +96,7 @@ export function Chat() {
             </IconButton>
           )}
 
-          <InputBar
+          <ChatInput
             onMessageSubmit={() => {
               requestAnimationFrame(() => {
                 scrollToBottom();

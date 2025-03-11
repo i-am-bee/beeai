@@ -1,6 +1,0 @@
-manifestVersion: 1
-driver: nodejs
-package: "."
-serverType: http
-mcpTransport: sse
-mcpEndpoint: /sse

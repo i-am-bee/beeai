@@ -5,9 +5,9 @@ import {
   textOutputSchema,
 } from "@i-am-bee/beeai-sdk/schemas/text";
 import { SystemMessage, UserMessage } from "beeai-framework/backend/message";
-import { CHAT_MODEL } from "../config.js";
-import { ChatModel } from "beeai-framework/backend/chat";
 import { AcpServer } from "@i-am-bee/acp-sdk/server/acp.js";
+import { MODEL, API_BASE, API_KEY } from "../config.js";
+import { OpenAIChatModel } from "beeai-framework/adapters/openai/backend/chat";
 
 const inputSchema = textInputSchema;
 type Input = z.output<typeof inputSchema>;
@@ -27,7 +27,11 @@ const run =
   ): Promise<Output> => {
     const { text } = params.input;
 
-    const model = await ChatModel.fromName(CHAT_MODEL);
+    const model = new OpenAIChatModel(
+      MODEL,
+      {},
+      { baseURL: API_BASE, apiKey: API_KEY, compatibility: "compatible" }
+    );
 
     const podcastResponse = await model
       .create({
@@ -242,7 +246,7 @@ ${exampleOutput}
       ],
     },
     ui: {
-      type: "single-prompt",
+      type: "hands-off",
       userGreeting: "Provide article that should be converted to a podcast.",
     },
     avgRunTimeSeconds: 19,

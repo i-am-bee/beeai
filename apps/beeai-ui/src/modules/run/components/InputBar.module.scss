@@ -1,0 +1,79 @@
+/**
+ * Copyright 2025 IBM Corp.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@use '@carbon/styles/scss/utilities/visually-hidden' as *;
+
+.root {
+  position: relative;
+  border: 1px solid $border-subtle-00;
+  border-radius: $border-radius;
+  &:has(textarea:focus-visible) {
+    border-color: $text-dark;
+  }
+}
+
+.textarea {
+  max-block-size: rem(192px);
+  overflow-y: auto;
+  &::after,
+  > textarea {
+    padding: rem(11px) rem(11px) $spacing-03;
+    border-radius: calc($border-radius - 1px) calc($border-radius - 1px) 0 0;
+  }
+  > textarea {
+    color: inherit;
+    background-color: $background;
+    &::placeholder {
+      transition: opacity $duration-fast-02;
+      color: $text-placeholder;
+    }
+    &:focus-visible {
+      outline: 0;
+      &::placeholder {
+        opacity: 0.5;
+      }
+    }
+  }
+}
+
+.actionBar {
+  padding: 0 rem(11px) rem(11px);
+  display: flex;
+  justify-content: space-between;
+  column-gap: $spacing-04;
+}
+
+.tools {
+  display: flex;
+  :global(.#{$prefix}--btn) {
+    &:hover,
+    &:active,
+    &[aria-expanded='true'] {
+      background-color: $button-primary;
+      color: $text-inverse;
+    }
+    &:not([disabled]) svg {
+      fill: currentColor;
+    }
+  }
+  [aria-owns] :global(.#{$prefix}--popover) {
+    display: none;
+  }
+}
+
+.submit {
+  margin-inline-start: auto;
+}

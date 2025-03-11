@@ -45,7 +45,7 @@ export const metadataSchema = z
     tags: z.array(z.string()),
     ui: z
       .object({
-        type: z.enum(["chat", "single-prompt", "hands-off", "custom"]),
+        type: z.enum(["chat", "hands-off", "custom"]),
         userGreeting: z.string().optional(),
       })
       .passthrough(),

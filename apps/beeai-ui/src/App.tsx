@@ -16,7 +16,7 @@
 
 import { Settings } from '#pages/Settings.tsx';
 import { ErrorBoundary } from 'react-error-boundary';
-import { BrowserRouter, Route, Routes } from 'react-router';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router';
 import { ErrorFallback } from './components/fallbacks/ErrorFallback';
 import { AppLayout } from './components/layouts/AppLayout';
 import { MCPClientProvider } from './contexts/MCPClient/MCPClientProvider';
@@ -25,7 +25,6 @@ import { QueryProvider } from './contexts/QueryProvider/QueryProvider';
 import { ToastProvider } from './contexts/Toast/ToastProvider';
 import { Agents } from './pages/Agents';
 import { Agent } from './pages/agents/Agent';
-import { Home } from './pages/Home';
 import { NotFound } from './pages/NotFound';
 import { AgentRunPage } from './pages/run/AgentRunPage';
 import { routeDefinitions } from './utils/router';
@@ -42,7 +41,10 @@ export function App() {
               <BrowserRouter>
                 <Routes>
                   <Route element={<AppLayout />}>
-                    <Route path={routeDefinitions.home()} element={<Home />} />
+                    <Route
+                      path={routeDefinitions.home()}
+                      element={<Navigate to={routeDefinitions.agents()} replace />}
+                    />
                     <Route path={routeDefinitions.agents()} element={<Agents />} />
                     <Route path={routeDefinitions.agentDetail()} element={<Agent />} />
                     <Route path={routeDefinitions.agentRun()} element={<AgentRunPage />} />

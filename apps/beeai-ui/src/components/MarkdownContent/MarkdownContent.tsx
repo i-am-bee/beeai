@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import clsx from 'clsx';
 import Markdown from 'react-markdown';
-import { PluggableList } from 'unified';
+import clsx from 'clsx';
+import { components } from './components';
 import classes from './MarkdownContent.module.scss';
 
 interface Props {
@@ -26,10 +26,8 @@ interface Props {
 
 export function MarkdownContent({ className, children }: Props) {
   return (
-    <Markdown rehypePlugins={REHYPE_PLUGINS} className={clsx(classes.root, className)}>
+    <Markdown className={clsx(classes.root, className)} components={components}>
       {children}
     </Markdown>
   );
 }
-
-const REHYPE_PLUGINS = [] satisfies PluggableList;

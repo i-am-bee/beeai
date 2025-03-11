@@ -15,10 +15,11 @@
  */
 
 import { useCreateMCPClient } from '#api/mcp-client/useCreateMCPClient.ts';
-import { Agent } from '@i-am-bee/acp-sdk/types.js';
+import { QueryMetadata } from '#contexts/QueryProvider/types.ts';
+import { Agent } from '#modules/agents/api/types.ts';
+import { AgentRunProgressNotificationSchema } from '@i-am-bee/acp-sdk/types.js';
 import { useMutation } from '@tanstack/react-query';
 import z, { ZodLiteral, ZodObject } from 'zod';
-import { QueryMetadata } from '#contexts/QueryProvider/types.ts';
 
 interface Props<
   NotificationsSchema extends ZodObject<{
@@ -26,7 +27,6 @@ interface Props<
   }>,
 > {
   notifications?: {
-    schema: NotificationsSchema;
     handler: (notification: z.infer<NotificationsSchema>) => void | Promise<void>;
   };
   queryMetadata?: QueryMetadata;
@@ -52,7 +52,10 @@ export function useRunAgent<
       if (!client) throw new Error('Connecting to MCP server failed.');
 
       if (notifications) {
-        client.setNotificationHandler(notifications.schema, notifications.handler);
+        client.setNotificationHandler(
+          AgentRunProgressNotificationSchema as unknown as NotificationsSchema,
+          notifications.handler,
+        );
       }
 
       return client.runAgent(

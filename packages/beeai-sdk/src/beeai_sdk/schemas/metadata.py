@@ -20,7 +20,6 @@ from pydantic import BaseModel
 
 class UiType(StrEnum):
     chat = "chat"
-    single_prompt = "single-prompt"
     hands_off = "hands-off"
     custom = "custom"
 

@@ -16,16 +16,18 @@
 
 'use client';
 
-import { TagsList } from '#components/TagsList/TagsList.tsx';
-import { BEE_AI_FRAMEWORK_TAG } from '#utils/constants.ts';
-import { isNotNull } from '#utils/helpers.ts';
-import { Search } from '@carbon/icons-react';
-import { OperationalTag, TextInput, TextInputSkeleton } from '@carbon/react';
-import clsx from 'clsx';
 import { useId, useMemo } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { AgentsFiltersParams } from '../providers/AgentsFiltersProvider';
-import { Agent } from '../api/types';
+import { OperationalTag, TextInput, TextInputSkeleton } from '@carbon/react';
+import { Search } from '@carbon/icons-react';
+import clsx from 'clsx';
+import { TagsList } from '#components/TagsList/TagsList.tsx';
+import { FiltersPopover, type Group } from '#components/FiltersPopover/FiltersPopover.tsx';
+import isEmpty from 'lodash/isEmpty';
+import xor from 'lodash/xor';
+import { type AgentsCountedOccurrence, countOccurrences } from '#utils/agents/countOccurrences.ts';
+import type { Agent } from '../api/types';
+import type { AgentsFiltersParams } from '../providers/AgentsFiltersProvider';
 import classes from './AgentsFilters.module.scss';
 
 interface Props {
@@ -34,30 +36,17 @@ interface Props {
 
 export function AgentsFilters({ agents }: Props) {
   const id = useId();
+  const occurrences = useMemo(() => agents && countOccurrences(agents), [agents]);
   const { watch, setValue } = useFormContext<AgentsFiltersParams>();
-
-  const frameworks = useMemo(() => {
-    if (!agents) return [];
-
-    return [...new Set(agents.map(({ framework }) => framework))].filter(isNotNull).sort((a, b) => {
-      // BeeAI framework should be always first
-      if (a === BEE_AI_FRAMEWORK_TAG) return -1;
-      if (b === BEE_AI_FRAMEWORK_TAG) return 1;
-
-      return a.localeCompare(b);
-    });
-  }, [agents]);
-
-  const selectFramework = (framework: string | null) => {
-    setValue('framework', framework);
-  };
-
-  const selectedFramework = watch('framework');
+  const [selectedFrameworks, selectedLanguages, selectedLicenses] = watch(['frameworks', 'languages', 'licenses']);
+  const areArrayFiltersActive = Boolean(
+    selectedFrameworks.length || selectedLanguages.length || selectedLicenses.length,
+  );
 
   return (
-    <div className={classes.root}>
+    <div className={clsx(classes.root, { [classes.arrayFiltersActive]: areArrayFiltersActive })}>
       <div className={classes.searchBar}>
-        <Search />
+        <Search className={classes.searchIcon} />
 
         <TextInput
           id={`${id}:search`}
@@ -66,25 +55,61 @@ export function AgentsFilters({ agents }: Props) {
           onChange={(event) => setValue('search', event.target.value)}
           hideLabel
         />
+
+        {occurrences && (
+          <div className={classes.popoverContainer}>
+            <FiltersPopover
+              groups={[
+                createGroup({
+                  label: 'Framework',
+                  occurrence: occurrences.frameworks,
+                  selected: selectedFrameworks,
+                  onChange: (value) => setValue('frameworks', value),
+                }),
+                createGroup({
+                  label: 'Language',
+                  occurrence: occurrences.languages,
+                  selected: selectedLanguages,
+                  onChange: (value) => setValue('languages', value),
+                }),
+                createGroup({
+                  label: 'License',
+                  occurrence: occurrences.licenses,
+                  selected: selectedLicenses,
+                  onChange: (value) => setValue('licenses', value),
+                }),
+              ]}
+              onClearAll={() => {
+                setValue('frameworks', []);
+                setValue('languages', []);
+                setValue('licenses', []);
+              }}
+              toggleButtonClassName={classes.toggleButton}
+            />
+          </div>
+        )}
       </div>
 
-      <TagsList
-        tags={[
-          <OperationalTag
-            onClick={() => selectFramework(null)}
-            text="All"
-            className={clsx(classes.frameworkAll, { selected: !isNotNull(selectedFramework) })}
-          />,
-          ...frameworks.map((framework) => (
+      {occurrences?.frameworks && (
+        <TagsList
+          tags={[
             <OperationalTag
-              key={framework}
-              onClick={() => selectFramework(framework)}
-              text={framework}
-              className={clsx({ selected: selectedFramework === framework })}
-            />
-          )),
-        ]}
-      />
+              key="all"
+              text="All"
+              className={clsx(classes.frameworksAll, { selected: isEmpty(selectedFrameworks) })}
+              onClick={() => setValue('frameworks', [])}
+            />,
+            ...occurrences.frameworks.map(({ label: framework }) => (
+              <OperationalTag
+                key={framework}
+                text={framework}
+                className={clsx({ selected: selectedFrameworks.includes(framework) })}
+                onClick={() => setValue('frameworks', xor(selectedFrameworks, [framework]))}
+              />
+            )),
+          ]}
+        />
+      )}
     </div>
   );
 }
@@ -100,3 +125,21 @@ AgentsFilters.Skeleton = function AgentsFiltersSkeleton() {
     </div>
   );
 };
+
+interface CreateGroupProps {
+  label: string;
+  occurrence: AgentsCountedOccurrence;
+  selected: string[];
+  onChange: (value: string[]) => void;
+}
+
+function createGroup({ label, occurrence, selected, onChange }: CreateGroupProps): Group {
+  return {
+    label,
+    options: occurrence.map((item) => ({
+      ...item,
+      checked: selected.includes(item.label),
+      onChange: () => onChange(xor(selected, [item.label])),
+    })),
+  };
+}

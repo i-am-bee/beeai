@@ -1,12 +1,12 @@
 [project]
 name = "beeai-server"
-version = "0.0.2"
-description = "Add your description here"
+version = "0.0.3"
+description = "BeeAI server"
 readme = "README.md"
 authors = [{ name = "IBM Corp." }]
 requires-python = ">=3.11,<4.0"
 dependencies = [
-    "beeai-sdk==0.0.10",
+    "beeai-sdk==0.0.11",
     "acp-sdk", # version determined by beeai-sdk
     "aiohttp>=3.11.11",
     "anyio>=4.8.0",
@@ -22,6 +22,9 @@ dependencies = [
     "pydantic-settings>=2.7.1",
     "structlog>=25.1.0",
     "uvicorn>=0.34.0",
+    "opentelemetry-sdk>=1.30.0",
+    "opentelemetry-api>=1.30.0",
+    "opentelemetry-exporter-otlp-proto-http>=1.30.0",
 ]
 
 [tool.ruff]

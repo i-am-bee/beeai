@@ -29,10 +29,9 @@ import { motion } from 'framer-motion';
 import type { ReactNode } from 'react';
 import type { Agent } from '../api/types';
 import { AgentLaunchButton } from '../detail/AgentLaunchButton';
-import { getAgentTitle } from '../utils';
 import classes from './AgentDetail.module.scss';
 import { AgentDetailSection } from './AgentDetailSection';
-// import { AgentExampleRequests } from './AgentExampleRequests';
+import { AgentExampleRequests } from './AgentExampleRequests';
 import { AgentMetadata } from './AgentMetadata';
 import { AgentTags } from './AgentTags';
 import { BeeBadge } from './BeeBadge';
@@ -43,11 +42,13 @@ interface Props {
 }
 
 export function AgentDetail({ agent, buttons }: Props) {
-  const { name, exampleInput, description, fullDescription } = agent;
+  const { name, description, fullDescription, examples } = agent;
+  const firstCliExample = examples?.cli?.at(0);
+
   return (
     <div className={classes.root}>
       <motion.h1 {...fadeInPropsWithMarginShift({ start: { from: spacing[4] } })} className={classes.name}>
-        {getAgentTitle(agent)}
+        {agent.name}
         <BeeBadge agent={agent} size="lg" />
       </motion.h1>
 
@@ -62,10 +63,10 @@ export function AgentDetail({ agent, buttons }: Props) {
         className={classes.buttons}
       >
         {buttons}
-        <CopySnippet snippet={commands.beeai.run(name)} className={classes.copySnippet} />
+        <CopySnippet className={classes.copySnippet}>{commands.beeai.run(name)}</CopySnippet>
       </motion.div>
 
-      {(exampleInput || fullDescription) && (
+      {(firstCliExample || fullDescription) && (
         <motion.hr
           {...fadeInPropsWithMarginShift({
             start: { from: spacing[7], to: spacing[6] },
@@ -75,16 +76,24 @@ export function AgentDetail({ agent, buttons }: Props) {
         />
       )}
 
-      {/*{exampleInput && (*/}
-      {/*  <AgentDetailSection title="Example requests">*/}
-      {/*    <AgentExampleRequests cli={commands.beeai.run(name, exampleInput)} />*/}
-      {/*  </AgentDetailSection>*/}
-      {/*)}*/}
+      {firstCliExample && (
+        <motion.div
+          {...fadeInPropsWithMarginShift({
+            end: { from: spacing[10], to: spacing[9] },
+          })}
+        >
+          <AgentDetailSection title="Example requests">
+            <AgentExampleRequests cli={firstCliExample.command} />
+          </AgentDetailSection>
+        </motion.div>
+      )}
 
       {fullDescription && (
-        <AgentDetailSection title="Description" titleSpacing="large">
-          <MarkdownContent className={classes.fullDescription}>{fullDescription}</MarkdownContent>
-        </AgentDetailSection>
+        <motion.div {...fadeInPropsWithMarginShift()}>
+          <AgentDetailSection title="Description" titleSpacing="large">
+            <MarkdownContent className={classes.fullDescription}>{fullDescription}</MarkdownContent>
+          </AgentDetailSection>
+        </motion.div>
       )}
     </div>
   );
@@ -123,7 +132,7 @@ function fadeInPropsWithMarginShift({
 }: {
   start?: { from: string; to?: string };
   end?: { from: string; to?: string };
-}) {
+} = {}) {
   return fadeProps({
     hidden: {
       marginBlockStart: start ? start.from : undefined,

@@ -15,9 +15,9 @@
  */
 
 import { useMemo } from 'react';
-import { Agent } from '../api/types';
-import { getAgentTitle } from '../utils';
-import { AgentsFiltersParams } from '../providers/AgentsFiltersProvider';
+import type { Agent } from '../api/types';
+import type { AgentsFiltersParams } from '../providers/AgentsFiltersProvider';
+import intersection from 'lodash/intersection';
 
 interface Props {
   agents: Agent[];
@@ -26,19 +26,27 @@ interface Props {
 
 export function useFilteredAgents({ agents, filters }: Props) {
   const filteredAgents = useMemo(() => {
-    const { framework, search } = filters;
+    const { search, frameworks, languages, licenses } = filters;
 
-    const searchQuery = search?.trim().toLowerCase();
+    const searchQuery = search.trim().toLowerCase();
     const searchRegex = searchQuery ? new RegExp(searchQuery, 'i') : null;
 
     return agents
       ?.filter((agent) => {
-        if (framework && framework !== agent.framework) {
+        if (frameworks.length && !frameworks.includes(agent.framework ?? '')) {
+          return false;
+        }
+
+        if (languages.length && !intersection(languages, agent.languages ?? []).length) {
+          return false;
+        }
+
+        if (licenses.length && !licenses.includes(agent.license ?? '')) {
           return false;
         }
 
         if (searchRegex) {
-          const nameMatch = searchRegex.test(getAgentTitle(agent));
+          const nameMatch = searchRegex.test(agent.name);
           const descriptionMatch = agent.description ? searchRegex.test(agent.description) : false;
           const fullDescriptionMatch = agent.fullDescription ? searchRegex.test(agent.fullDescription) : false;
 

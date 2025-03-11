@@ -77,7 +77,7 @@ async def run():
             languages=["Python"],
             githubUrl="https://github.com/i-am-bee/beeai/tree/main/agents/community/langgraph-agents/src/langgraph_agents/ollama_deep_researcher",
             examples=examples,
-            ui=UiDefinition(type=UiType.single_prompt, userGreeting="What topic do you want to research?"),
+            ui=UiDefinition(type=UiType.hands_off, userGreeting="What topic do you want to research?"),
             fullDescription=fullDescription,
         ).model_dump(),
     )
