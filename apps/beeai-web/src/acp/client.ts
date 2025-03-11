@@ -18,15 +18,15 @@ import "server-only";
 import { Client } from "@i-am-bee/acp-sdk/client/index.js";
 import type { ServerCapabilities } from "@i-am-bee/acp-sdk/types.js";
 import { SSEClientTransport } from "@i-am-bee/acp-sdk/client/sse.js";
-import { BEEAI_HOST } from "@/constants";
+import { ACP_CLIENT_SERVER_URL } from "@/constants";
 import { getNativeFetch } from "./native-fetch";
 
 export async function getAcpClient() {
-  if (!ACP_SSE_TRANSPORT_URL) {
+  if (!ACP_CLIENT_SERVER_URL) {
     throw new Error("ACP Transport has not been set");
   }
 
-  const transport = new SSEClientTransport(ACP_SSE_TRANSPORT_URL, {
+  const transport = new SSEClientTransport(new URL(ACP_CLIENT_SERVER_URL), {
     eventSourceInit: {
       // Use native nodejs fetch instead of nextjs patched one, we don't want
       // any nextjs caching/deduping behaviour here.
@@ -51,7 +51,6 @@ function assertServerCapability(
   }
 }
 
-const ACP_SSE_TRANSPORT_URL = BEEAI_HOST ? new URL(BEEAI_HOST) : undefined;
 const ACP_EXAMPLE_AGENT_CONFIG = {
   name: "example-client",
   version: "1.0.0",

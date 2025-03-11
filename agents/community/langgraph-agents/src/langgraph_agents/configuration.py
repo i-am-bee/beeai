@@ -4,10 +4,13 @@ from pydantic_settings import BaseSettings
 
 
 class Configuration(BaseSettings):
-    model: str = "ollama/llama3.1"
-    api_base: str ="http://localhost:11434"
+    llm_model: str = "llama3.1"
+    llm_api_base: str = "http://localhost:11434/v1"
+    llm_api_key: str = "dummy"
 
 
 def load_env():
-    for name, var in Configuration().model_dump().items():
-        os.environ.setdefault(name.upper(), var)
+    config = Configuration()
+    os.environ["MODEL"] = config.llm_model
+    os.environ["API_BASE"] = config.llm_api_base
+    os.environ["OPENAI_API_KEY"] = config.llm_api_key

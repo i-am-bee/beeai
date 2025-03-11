@@ -5,8 +5,8 @@ import {
   textOutputSchema,
 } from "@i-am-bee/beeai-sdk/schemas/text";
 import { SystemMessage, UserMessage } from "beeai-framework/backend/message";
-import { CHAT_MODEL } from "./config.js";
-import { ChatModel } from "beeai-framework/backend/chat";
+import { MODEL, API_KEY, API_BASE } from "./config.js";
+import { OpenAIChatModel } from "beeai-framework/adapters/openai/backend/chat";
 
 const inputSchema = textInputSchema;
 type Input = z.infer<typeof inputSchema>;
@@ -19,11 +19,15 @@ const run = async (
   }: {
     params: { input: z.infer<typeof inputSchema> };
   },
-  { signal }: { signal?: AbortSignal },
+  { signal }: { signal?: AbortSignal }
 ) => {
   const { text } = params.input;
 
-  const model = await ChatModel.fromName(CHAT_MODEL);
+  const model = new OpenAIChatModel(
+    MODEL,
+    {},
+    { baseURL: API_BASE, apiKey: API_KEY, compatibility: "compatible" }
+  );
 
   const response = await model.create({
     messages: [

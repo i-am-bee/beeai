@@ -9,13 +9,15 @@
     "lint": "next lint"
   },
   "peerDependencies": {
+    "@carbon/icons-react": "*",
     "@tanstack/react-query": "*",
     "react": "*",
     "react-dom": "*",
-    "react-is": "*",
-    "react-hook-form": "*"
+    "react-hook-form": "*",
+    "react-is": "*"
   },
   "dependencies": {
+    "@bprogress/next": "^3.2.4",
     "@i-am-bee/acp-sdk": "workspace:*",
     "@i-am-bee/beeai-ui": "workspace:*",
     "clsx": "^2.1.1",

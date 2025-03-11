@@ -28,7 +28,7 @@ export function useListAgents({ enabled = true, params }: Props = {}) {
   const client = useMCPClient();
 
   const query = useQuery({
-    queryKey: agentKeys.list(params),
+    queryKey: agentKeys.list({ params }),
     queryFn: () => client!.listAgents(params),
     enabled: Boolean(client) && enabled,
     select: (data) => data?.agents as Agent[],

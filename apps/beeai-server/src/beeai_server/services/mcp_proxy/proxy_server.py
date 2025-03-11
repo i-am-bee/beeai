@@ -53,7 +53,10 @@ from beeai_server.services.mcp_proxy.provider import ProviderContainer
 logger = logging.getLogger(__name__)
 
 AGENT_RUNS = metrics.get_meter(INSTRUMENTATION_NAME).create_counter("agent_runs_total")
+AGENT_RUNS.add(0)
+
 TOOL_CALLS = metrics.get_meter(INSTRUMENTATION_NAME).create_counter("tool_calls_total")
+TOOL_CALLS.add(0)
 
 
 @inject

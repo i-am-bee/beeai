@@ -1,11 +1,9 @@
 from typing import Any
 
-import json
-
+import yaml
 from pydantic import Field, BaseModel
 
 from acp import Agent
-
 from acp import RunAgentRequest, RunAgentResult
 from acp.server.highlevel import Context, Server
 from acp.server.highlevel.exceptions import AgentError
@@ -16,138 +14,115 @@ from acp.types import (
     AgentRunProgressNotificationParams,
 )
 from beeai_sdk.schemas.base import Input, Log, LogLevel, Output
-from beeai_sdk.schemas.message import UserMessage
-from beeai_sdk.schemas.metadata import Metadata, CliExample, Examples, UiDefinition, UiType
+from beeai_sdk.schemas.metadata import Metadata
 from beeai_sdk.utils.api import send_request_with_notifications, mcp_client
 from composition.configuration import Configuration
 from composition.utils import extract_messages
 
 agentName = "sequential-workflow"
 
-exampleInput = {"agents": ["gpt-researcher", "podcast-creator"], "input": {"text": "Advancements in quantum computing"}}
-exampleInputStr = json.dumps(exampleInput, ensure_ascii=False, indent=2)
-examples = Examples(
-    cli=[
-        CliExample(
-            command=f"beeai run {agentName} '{exampleInputStr}'",
-            processingSteps=[
-                "Validates the availability and compatibility of the agents",
-                "Transforms the initial input for the first agent",
-                "Executes each agent in sequence, transforming outputs as necessary for the next agent",
-                "Sends notifications of progress and completion",
-            ],
-        )
-    ]
-)
+exampleInput = {
+    "steps": [
+        {"agent": "text-summarizer", "instruction": "Summarize the following text:"},
+        {"agent": "text-analyzer", "instruction": "Analyze the sentiment and key themes of this summary:"},
+    ],
+    "input": "Long article text here...",
+}
+exampleInputStr = yaml.dump(exampleInput, allow_unicode=True)
 
-fullDescription = """
-The agent orchestrates a series of AI agents to run in a specified sequence. It manages the transformation of outputs from one agent to be used as inputs for the next, ensuring compatibility and a smooth workflow execution. This agent is useful for complex task chains where multiple AI capabilities are needed in tandem.
+fullDescription = f"""
+This agent orchestrates a sequence of text-processing AI agents, each with specific instructions. 
+It manages the flow of information between agents, where each agent receives both an instruction 
+and the previous agent's output formatted as YAML.
 
 ## How It Works
-The agent takes a list of agent names and an initial input, ensuring all necessary agents are available on the server. It validates compatibility between the agents' input and output schemas before execution. The agent then sequentially processes each agent, transforming outputs as needed to match the next agent in the series. Notifications and progress updates are sent throughout the process.
+The agent takes a list of steps (each containing an agent name and instruction) and an initial input text. 
+Each subsequent agent receives its instruction followed by the YAML-formatted output from the previous agent.
 
 ## Input Parameters
-- **agents** (list of str) – A list of agent names to be executed in sequence.
-- **input** (dict) – The initial input dictionary that matches the schema of the first agent in the sequence.
+- **steps** (list) – A list of steps, each containing:
+  - **agent** (str) – The name of the agent to execute
+  - **instruction** (str) – The instruction for this agent
+- **input** (str) – The initial input text
 
-## Key Features
-- **Sequential Execution** – Runs multiple agents in a defined sequence.
-- **Output Transformation** – Converts outputs between agents for schema compatibility.
-- **Progress Notifications** – Provides updates and notifications for workflow progress.
-- **Error Handling** – Catches and reports errors with detailed messages.
-
-## Use Cases
-- **Complex Task Automation** – Automate workflows requiring multiple AI services.
-- **Data Processing Pipelines** – Sequentially transform and process data through various agents.
-- **Experimentation and Prototyping** – Chain agents to explore new combinations of AI functions.
+## Example Usage
+```yaml
+{exampleInputStr}
+```
 """
 
 
-class SequentialAgentWorkflowInput(Input):
-    """Input schema must match the first agent (not checked)"""
-
-    agents: list[str] = Field(min_length=1)
-    input: dict[str, Any]
+class WorkflowStep(BaseModel):
+    agent: str
+    instruction: str
 
 
-class AgentOutputDelta(BaseModel):
-    output: dict[str, Any]
+class SequentialWorkflowInput(Input):
+    steps: list[WorkflowStep] = Field(min_length=1)
+    input: str = Field(default_factory=str)
 
 
-def transform_agent_output(output: dict[str, Any], input_schema: dict[str, Any]):
-    required_input_properties = set(input_schema.get("required", []))
-    if required_input_properties == {"text"}:
-        return {"text": output.get("text", str(output))}
-    if required_input_properties == {"messages"}:
-        if messages := output.get("messages", []):
-            # TODO chat history is forgotten between agents
-            return {"messages": [UserMessage(role="user", content=messages[-1]["content"])]}
-        text = output.get("text", str(output))
-        return {"messages": [UserMessage(role="user", content=text).model_dump()]}
-    if missing_properties := required_input_properties - output.keys():
-        raise ValueError(f"Missing input properties: {missing_properties}")
-    return {key: value for key, value in output.items() if key in required_input_properties}
-
-
-def validate_agents(input: SequentialAgentWorkflowInput, server_agents: dict[str, Agent]):
-    if missing_agents := (set(input.agents) - server_agents.keys()):
+def validate_agents(input: SequentialWorkflowInput, server_agents: dict[str, Agent]):
+    if missing_agents := (set(step.agent for step in input.steps) - server_agents.keys()):
         raise ValueError(f"The following agents are missing: {missing_agents}")
 
-    agent_defs = [server_agents[agent] for agent in input.agents]
+    for agent_name in (step.agent for step in input.steps):
+        agent = server_agents[agent_name]
+        input_schema = agent.inputSchema
+        required_input_properties = set(input_schema.get("required", []))
 
-    try:
-        transform_agent_output(input.input, agent_defs[0].inputSchema)
-    except ValueError as ex:
-        raise ValueError(f"Input is not compatible with the first agent: {ex}") from ex
-
-    for agent, next_agent in zip(agent_defs, agent_defs[1:]):
-        required_output_properties = set(agent.outputSchema.get("required", []))
-        required_input_properties = set(next_agent.inputSchema.get("required", []))
-
-        if required_input_properties in [{"text"}, {"messages"}]:
-            continue  # special case - output of previous agent will be serialized to text or message
-
-        if missing_properties := (required_input_properties - required_output_properties):
+        if required_input_properties != {"text"}:
             raise ValueError(
-                f"Incompatible agents: Output from agent '{agent.name}' is missing required input "
-                f"properties of agent '{next_agent.outputSchema}': {missing_properties}",
+                f"Agent '{agent_name}' has incompatible input schema. Expected {{'text': str}}, "
+                f"got required properties: {required_input_properties}"
             )
+
+
+def format_agent_input(instruction: str, previous_output: dict[str, Any] | str) -> str:
+    if not previous_output:
+        return instruction
+    return f"""{instruction}\n---\n{
+        previous_output if isinstance(previous_output, str) else yaml.dump(previous_output, allow_unicode=True)
+    }"""
 
 
 def add_sequential_workflow_agent(server: Server):
     @server.agent(
         agentName,
-        "The agent executes a sequence of AI agents in a defined workflow, transforming and routing outputs from one agent to the next.",
-        input=SequentialAgentWorkflowInput,
+        "Executes a sequence of text-processing agents, each with specific instructions.",
+        input=SequentialWorkflowInput,
         output=Output,
         **Metadata(
             framework=None,
             licence="Apache 2.0",
             languages=["Python"],
             githubUrl="https://github.com/i-am-bee/beeai/tree/main/agents/official/composition/src/composition/sequential_workflow.py",
-            examples=examples,
-            ui=UiDefinition(type=UiType.custom),
+            exampleInput=exampleInputStr,
             fullDescription=fullDescription,
         ).model_dump(),
         composition_agent=True,
     )
-    async def run_sequential_workflow(input: SequentialAgentWorkflowInput, ctx: Context) -> Output:
+    async def run_sequential_workflow(input: SequentialWorkflowInput, ctx: Context) -> Output:
         output = Output()
-        agent = None
+        current_step = None
         try:
             async with mcp_client(url=Configuration().mcp_url) as session:
                 resp = await session.list_agents()
                 server_agents_by_name = {a.name: a for a in resp.agents}
                 validate_agents(input, server_agents_by_name)
 
-                agent_input = transform_agent_output(input.input, server_agents_by_name[input.agents[0]].inputSchema)
+                previous_output = input.input
 
-                for idx, agent in enumerate(input.agents):
+                for idx, step in enumerate(input.steps):
+                    current_step = step
+
                     async for message in send_request_with_notifications(
                         session,
                         req=RunAgentRequest(
                             method="agents/run",
-                            params=RunAgentRequestParams(name=agent, input=agent_input),
+                            params=RunAgentRequestParams(
+                                name=step.agent, input={"text": format_agent_input(step.instruction, previous_output)}
+                            ),
                         ),
                         result_type=RunAgentResult,
                     ):
@@ -158,34 +133,38 @@ def add_sequential_workflow_agent(server: Server):
                                 )
                             ):
                                 output_delta = Output.model_validate(output_delta_dict)
-                                output_delta.agent_name = agent
+                                output_delta.agent_name = step.agent
                                 output_delta.agent_idx = idx
                                 await ctx.report_agent_run_progress(delta=output_delta)
                             case RunAgentResult(output=output_delta_dict):
                                 output_delta = Output.model_validate(output_delta_dict)
-                                output_delta.agent_name = agent
+                                output_delta.agent_name = step.agent
                                 output_delta.agent_idx = idx
-                                if idx == len(input.agents) - 1:
+                                if idx == len(input.steps) - 1:
                                     output = output_delta
                                     break
 
-                                output_serialized = str(output_delta.model_dump())
-                                message = f"{output_serialized[:100] + '...' if len(output_serialized) > 100 else output_serialized}"
+                                previous_output = getattr(
+                                    output_delta, "text", output_delta.model_dump(exclude={"logs"})
+                                )
+
+                                message = (
+                                    str(previous_output)[:100] + "..."
+                                    if len(str(previous_output)) > 100
+                                    else str(previous_output)
+                                )
                                 await ctx.report_agent_run_progress(
                                     delta=Output(
                                         logs=[
-                                            None,
                                             Log(
                                                 level=LogLevel.success,
-                                                message=f"✅ Agent {agent}[{idx}] finished successfully: {message}",
+                                                message=f"✅ Agent {step.agent}[{idx}] finished successfully: {message}",
                                             ),
                                         ]
                                     )
                                 )
-                                agent_input = transform_agent_output(
-                                    output_delta_dict, server_agents_by_name[input.agents[idx + 1]].inputSchema
-                                )
+
         except Exception as e:
-            agent_msg = f"{agent}[{idx}] - " if agent else ""
-            raise AgentError(f"{agent_msg}{extract_messages(e)}") from e
+            step_msg = f"{current_step.agent}[{idx}] - " if current_step else ""
+            raise AgentError(f"{step_msg}{extract_messages(e)}") from e
         return output

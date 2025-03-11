@@ -14,32 +14,81 @@
  * limitations under the License.
  */
 
-import Link from "next/link";
+"use client";
+
+import type { ReactNode } from "react";
+import { type CarbonIconType, ArrowUpRight } from "@carbon/icons-react";
+import clsx from "clsx";
+import { usePathname } from "next/navigation";
 import classes from "./MainNav.module.scss";
+import { TransitionLink } from "../TransitionLink/TransitionLink";
+import Link from "next/link";
 
 export function MainNav() {
   return (
     <nav>
       <ul className={classes.list}>
-        {NAV_ITEMS.map(({ label, href }, idx) => (
-          <li key={idx}>
-            <Link href={href} className={classes.link}>
-              {label}
-            </Link>
-          </li>
+        {NAV_ITEMS.map((item) => (
+          <NavItem key={item.href} item={item} />
         ))}
       </ul>
     </nav>
   );
 }
 
-const NAV_ITEMS = [
+function NavItem({
+  item: { label, href, isExternal, isSection, Icon },
+}: {
+  item: NavItem;
+}) {
+  const pathname = usePathname();
+
+  const LinkComponent = !isExternal ? TransitionLink : Link;
+  const additionalLinkProps = isExternal
+    ? { target: "_blank", rel: "noreferrer" }
+    : null;
+
+  return (
+    <li
+      className={clsx({
+        [classes.active]: isSection && pathname.startsWith(href),
+      })}
+    >
+      <LinkComponent
+        href={href}
+        className={classes.link}
+        {...additionalLinkProps}
+      >
+        {label}
+
+        {Icon && <Icon />}
+      </LinkComponent>
+    </li>
+  );
+}
+
+interface NavItem {
+  label: ReactNode;
+  href: string;
+  isSection?: boolean;
+  isExternal?: boolean;
+  Icon?: CarbonIconType;
+}
+
+const NAV_ITEMS: NavItem[] = [
   {
     label: <strong>BeeAI</strong>,
     href: "/",
   },
   {
-    label: 'Agents',
-    href: '/agents',
-  }
+    label: "Agents",
+    href: "/agents",
+    isSection: true,
+  },
+  {
+    label: "Docs",
+    href: "https://docs.beeai.dev/",
+    Icon: ArrowUpRight,
+    isExternal: true,
+  },
 ];

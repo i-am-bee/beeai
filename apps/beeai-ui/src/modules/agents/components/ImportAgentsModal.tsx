@@ -20,7 +20,7 @@ import { ModalProps } from '#contexts/Modal/modal-context.ts';
 import { useCreateProvider } from '#modules/providers/api/mutations/useCreateProvider.ts';
 import { CreateProviderBody } from '#modules/providers/api/types.ts';
 import { ProviderSourcePrefixes } from '#modules/providers/constants.ts';
-import { useCheckProviderStatus } from '#modules/providers/hooks/useCheckProviderStatus.ts';
+import { useMonitorProvider } from '#modules/providers/hooks/useMonitorProviderStatus.ts';
 import { ProviderSource } from '#modules/providers/types.ts';
 import {
   Button,
@@ -43,8 +43,8 @@ import classes from './ImportAgentsModal.module.scss';
 export function ImportAgentsModal({ onRequestClose, ...modalProps }: ModalProps) {
   const id = useId();
   const [createdProviderId, setCreatedProviderId] = useState<string>();
-  const { status, agents } = useCheckProviderStatus({ id: createdProviderId });
-  const agentsCount = agents.length;
+  const { status, agents } = useMonitorProvider({ id: createdProviderId });
+  const agentsCount = agents?.length ?? 0;
 
   const { mutate: createProvider, isPending } = useCreateProvider({
     onSuccess: (provider) => {
@@ -122,13 +122,11 @@ export function ImportAgentsModal({ onRequestClose, ...modalProps }: ModalProps)
           {status === 'ready' && agentsCount > 0 && (
             <div className={classes.agents}>
               <FormLabel>
-                {agentsCount} {pluralize('agent', agentsCount)} found
+                {agentsCount} {pluralize('agent', agentsCount)} imported
               </FormLabel>
 
               <UnorderedList>
-                {agents.map((agent) => (
-                  <ListItem key={agent.name}>{agent.name}</ListItem>
-                ))}
+                {agents?.map((agent) => <ListItem key={agent.name}>{agent.name}</ListItem>)}
               </UnorderedList>
             </div>
           )}
@@ -136,7 +134,7 @@ export function ImportAgentsModal({ onRequestClose, ...modalProps }: ModalProps)
           {status === 'initializing' && <InlineLoading description="Scraping repository&hellip;" />}
 
           {status === 'error' && (
-            <ErrorMessage subtitle="Error during agents import. Check the files in the URL provided" />
+            <ErrorMessage subtitle="Error during agents import. Check the files in the URL provided." />
           )}
         </form>
       </ModalBody>

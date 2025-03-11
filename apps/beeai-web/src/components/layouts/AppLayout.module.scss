@@ -31,3 +31,18 @@
 .footer {
   grid-area: footer;
 }
+
+.main {
+  overflow: hidden;
+  display: flex;
+  justify-content: stretch;
+  inline-size: 100%;
+  transition: opacity $duration-moderate-02;
+
+  &[data-route-transition="out"] {
+    opacity: 0;
+  }
+  &[data-route-transition="in"] {
+    opacity: 1;
+  }
+}

@@ -17,6 +17,7 @@ dependencies = [
     "langchain-ollama>=0.2.1",
     "duckduckgo-search>=7.3.0",
     "beautifulsoup4>=4.13.3",
+    "langchain-openai>=0.3.7",
 ]
 
 [project.scripts]

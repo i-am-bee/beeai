@@ -15,7 +15,7 @@
  */
 
 import { JSONSchema, validateJsonSchema } from '#helpers/validateJsonSchema.ts';
-import { Agent } from '@i-am-bee/acp-sdk/types.js';
+import { Agent } from '#modules/agents/api/types.ts';
 import { messageInputSchema, messageOutputSchema } from '@i-am-bee/beeai-sdk/schemas/message';
 import { textInputSchema, textOutputSchema } from '@i-am-bee/beeai-sdk/schemas/text';
 import zodToJsonSchema from 'zod-to-json-schema';

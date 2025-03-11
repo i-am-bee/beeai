@@ -92,6 +92,10 @@ async def register_agent() -> int:
         with tempfile.TemporaryDirectory() as tmp_dir:
             tmp_path = Path(tmp_dir)
             try:
+                env = os.environ.copy()
+                env["OPENAI_API_KEY"] = env.get("LLM_API_KEY", "dummy")
+                env["OPENAI_API_BASE"] = env.get("LLM_API_BASE", "http://localhost:11434/v1")
+                env["AIDER_MODEL"] = f"openai/{env.get('LLM_MODEL', 'llama3.1')}"
                 process = await asyncio.create_subprocess_exec(
                     sys.executable,
                     "-m",
@@ -113,7 +117,7 @@ async def register_agent() -> int:
                     cwd=tmp_dir,
                     stdout=subprocess.PIPE,
                     stderr=subprocess.PIPE,
-                    env=os.environ.copy(),
+                    env=env,
                 )
 
                 binary_buffer = io.BytesIO()

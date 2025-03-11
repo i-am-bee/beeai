@@ -15,6 +15,7 @@
  */
 
 .root {
+  inline-size: 100%;
   @include scrollbar();
   padding-block: $spacing-09;
   overflow-x: hidden;

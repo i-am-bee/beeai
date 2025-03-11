@@ -77,15 +77,23 @@ export function AgentDetail({ agent, buttons }: Props) {
       )}
 
       {firstCliExample && (
-        <AgentDetailSection title="Example requests">
-          <AgentExampleRequests cli={firstCliExample.command} />
-        </AgentDetailSection>
+        <motion.div
+          {...fadeInPropsWithMarginShift({
+            end: { from: spacing[10], to: spacing[9] },
+          })}
+        >
+          <AgentDetailSection title="Example requests">
+            <AgentExampleRequests cli={firstCliExample.command} />
+          </AgentDetailSection>
+        </motion.div>
       )}
 
       {fullDescription && (
-        <AgentDetailSection title="Description" titleSpacing="large">
-          <MarkdownContent className={classes.fullDescription}>{fullDescription}</MarkdownContent>
-        </AgentDetailSection>
+        <motion.div {...fadeInPropsWithMarginShift()}>
+          <AgentDetailSection title="Description" titleSpacing="large">
+            <MarkdownContent className={classes.fullDescription}>{fullDescription}</MarkdownContent>
+          </AgentDetailSection>
+        </motion.div>
       )}
     </div>
   );
@@ -124,7 +132,7 @@ function fadeInPropsWithMarginShift({
 }: {
   start?: { from: string; to?: string };
   end?: { from: string; to?: string };
-}) {
+} = {}) {
   return fadeProps({
     hidden: {
       marginBlockStart: start ? start.from : undefined,

@@ -1,8 +1,6 @@
 import { Client as MCPClient } from "@i-am-bee/acp-sdk/client/index.js";
 import { SSEClientTransport } from "@i-am-bee/acp-sdk/client/sse.js";
-import {
-  AgentRunProgressNotificationSchema
-} from "@i-am-bee/acp-sdk/types.js";
+import { AgentRunProgressNotificationSchema } from "@i-am-bee/acp-sdk/types.js";
 import { Logger } from "beeai-framework";
 import { z } from "zod";
 
@@ -80,9 +78,9 @@ export class PlatformSdk {
     }
   }
 
-  async listAgents() {
+  async listAgents(signal?: AbortSignal) {
     this.logger.debug(`Listing agents`);
-    const agents = await this.client.listAgents();
+    const agents = await this.client.listAgents({}, { signal });
 
     return agents.agents
       .filter(
@@ -100,12 +98,13 @@ export class PlatformSdk {
     prompt: string,
     notificationHandler: (
       notification: z.infer<typeof AgentRunProgressNotificationSchema>
-    ) => void | Promise<void>
+    ) => void | Promise<void>,
+    signal?: AbortSignal
   ) {
     this.logger.info({ beeAiAgentId, prompt }, `Running agent`);
     this.validate();
 
-    const agents = await this.listAgents();
+    const agents = await this.listAgents(signal);
     if (
       !agents.map(({ beeAiAgentId }) => beeAiAgentId).includes(beeAiAgentId)
     ) {
@@ -124,7 +123,7 @@ export class PlatformSdk {
         name: beeAiAgentId,
         input: { text: prompt },
       },
-      { timeout: 10000000 }
+      { signal, timeout: 10 * 60 * 1000 }
     );
   }
 }

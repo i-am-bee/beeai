@@ -2,6 +2,12 @@
 
 import "dotenv/config";
 
+process.env.OPENAI_API_KEY ??= process.env.LLM_API_KEY;
+process.env.OPENAI_MODEL_SUPERVISOR ??= process.env.LLM_MODEL ?? "llama3.1";
+process.env.OPENAI_MODEL_OPERATOR ??= process.env.LLM_MODEL ?? "llama3.1";
+process.env.OPENAI_API_ENDPOINT ??=
+  process.env.LLM_API_BASE ?? "http://localhost:11434/v1";
+
 import { AcpServer } from "@i-am-bee/acp-sdk/server/acp.js";
 
 import { Version } from "beeai-framework";
