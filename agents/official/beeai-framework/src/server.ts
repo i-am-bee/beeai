@@ -19,7 +19,7 @@ async function registerAgents(server: AcpServer) {
     chat.inputSchema,
     chat.outputSchema,
     chat.run(server),
-    chat.metadata,
+    chat.metadata
   );
 
   server.agent(
@@ -27,8 +27,8 @@ async function registerAgents(server: AcpServer) {
     contentJudge.description,
     contentJudge.inputSchema,
     contentJudge.outputSchema,
-    contentJudge.run(server),
-    contentJudge.metadata,
+    contentJudge.run,
+    contentJudge.metadata
   );
 
   server.agent(
@@ -37,7 +37,7 @@ async function registerAgents(server: AcpServer) {
     podcastCreator.inputSchema,
     podcastCreator.outputSchema,
     podcastCreator.run(server),
-    podcastCreator.metadata,
+    podcastCreator.metadata
   );
 }
 
