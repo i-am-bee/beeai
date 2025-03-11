@@ -22,7 +22,7 @@ https://github.com/user-attachments/assets/8b945bae-47be-41d6-ae09-49e7b952e403
 
 </div>
 
-BeeAI is an open platform designed to help you discover, run, and compose AI agents from any framework and language. Whether you’re building your own agents or looking for powerful existing solutions, BeeAI makes it easy to find, connect, and orchestrate AI agents seamlessly.
+BeeAI is an open platform to help you discover, run, and compose AI agents from any framework and language. Whether building your agents or looking for powerful existing solutions, BeeAI makes it easy to find, connect, and orchestrate AI agents seamlessly.
 
 ## Key features
 
