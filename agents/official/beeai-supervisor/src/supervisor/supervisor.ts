@@ -109,11 +109,49 @@ export const agent = {
   outputSchema,
   run,
   metadata: {
-    fullDescription: "",
+    fullDescription: `The agent is an AI-powered, supervisor-led, task-driven system with the **BeeAI platform** integrated into the agent registry. The supervisor is a ReAct agent built with the **BeeAI framework**, which uses the *Task Manager* and *Agent Registry* tools to autonomously solve complex tasks.
+
+## How It Works
+
+1. When the agent receives an input message, it launches the supervisor runtime and initiates a predefined task called \`process_input_and_plan\`.
+2. This task is associated with the supervisor agent, which begins processing the task input.
+3. Based on the input, the supervisor checks the available agents and orchestrates the hierarchy of tasks to be performed.
+4. Once the hierarchy of tasks completes, the final response is presented to the user as the output.
+    
+## Input Parameters 
+The agent accepts structured input consisting of:
+
+- **text** (string) - The user input.
+- **availableAgents** (array of strings) – Agents available in the **BeeAI platform**.
+
+## Output
+Free text, depending on the output of the agents used.
+
+## Key Features
+- **Dynamic Task Orchestration** - Automates scheduling, management, and execution of tasks using the BeeAI platform.
+- **Adaptive Decision-Making** - Leverages the ReAct-based supervisor to assign tasks to the most suitable agents in real time.
+- **Scalability** - Supports integration with multiple agents, facilitating complex and large-scale task execution.
+- **Autonomous Execution** - Minimizes human intervention by running tasks end-to-end with the supervisor agent.
+
+## Use Cases
+- **Customer Support** - Responds to user queries, delegates tasks to specialized agents, and provides comprehensive assistance.
+- **Data Processing Pipelines** - Automates data extraction, transformation, and loading across various BeeAI agents.
+- **Research Assistance** - Aggregates and analyzes information from multiple agents to speed up research tasks.
+- **Workflow Automation** - Executes routine operations without manual oversight, reducing the risk of errors and saving time.
+`,
     framework: "BeeAI",
     license: "Apache 2.0",
     languages: ["TypeScript"],
     githubUrl:
       "https://github.com/i-am-bee/beeai/blob/main/agents/official/beeai-framework/src/supervisor",
+    examples: {
+      cli: [
+        {
+          command: `beeai agent run supervisor '{"text":"Prepare a marketing strategy to sell most selling mobile phones in 2024 in Europe on my eshop. Ensure the strategy is based on top of thorough research of the market.", "availableAgents":["gpt-researcher","marketing-strategy"]}'`,
+          name: "Marketing strategy",
+          description: "Creates a marketing strategy for top-selling European mobile phones through supervisor-orchestrated workflow in the BeeAI platform. The supervisor agent intelligently coordinates a multi-step process where the gpt-researcher agent first conducts comprehensive market research, then passes these insights to the marketing-strategy agent which transforms the raw data into a tailored, actionable marketing plan for your e-shop. This demonstrates the platform's dynamic task orchestration and adaptive decision-making capabilities, delivering an integrated solution without requiring manual intervention between steps.",
+        },
+      ],
+    },
   } satisfies Metadata,
 };
