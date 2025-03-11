@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+export * from './utils/constants';
+
 export * from './components/layouts/AppHeader';
 export * from './components/layouts/AppFooter';
 export * from './components/layouts/Container';

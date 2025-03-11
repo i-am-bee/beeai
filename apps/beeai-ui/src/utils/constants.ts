@@ -24,9 +24,8 @@ export const YOUTUBE_LINK = 'https://www.youtube.com/@BeeAIAgents';
 
 export const BLUESKY_LINK = 'https://bsky.app/profile/beeaiagents.bsky.social';
 
-// TODO: Add links
-export const DOCUMENTATION_LINK = '#';
-export const GET_STARTED_PYTHON_LINK = '#';
-export const GET_STARTED_TYPESCRIPT_LINK = '#';
+export const DOCUMENTATION_LINK = 'https://docs.beeai.dev';
 
 export const BEE_AI_FRAMEWORK_TAG = 'BeeAI';
+
+export const BREW_INSTALL_BEEAI = 'brew install beeai';
