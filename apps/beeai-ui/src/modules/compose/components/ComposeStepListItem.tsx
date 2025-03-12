@@ -72,7 +72,7 @@ export function ComposeStepListItem({ idx }: Props) {
             <TextAreaAutoHeight
               className={classes.textarea}
               rows={3}
-              placeholder="Write your entry here…"
+              placeholder="Write the agent prompt here"
               disabled={isViewMode}
               {...register(`steps.${idx}.instruction`, {
                 required: true,

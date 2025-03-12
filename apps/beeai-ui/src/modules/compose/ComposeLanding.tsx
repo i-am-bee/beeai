@@ -82,7 +82,7 @@ const WORKFLOWS = [
   },
   {
     id: 'supervisor',
-    name: 'Supervisor',
+    name: 'Supervisor (coming soon)',
     description: 'Choose a supervisor agent to structure and control tasks of other agents in your system',
     image: SupervisorIllustration,
   },
