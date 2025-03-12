@@ -55,7 +55,7 @@
     cursor: not-allowed;
   }
 
-  a {
+  .name {
     color: $text-primary;
     text-decoration: none;
     font-weight: 600;
@@ -63,12 +63,6 @@
     line-height: 1em;
     display: block;
     margin-block-end: $spacing-05;
-
-    &::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-    }
   }
 
   p {

@@ -48,10 +48,10 @@ export function ComposeLanding() {
                 className={classes.workflow}
                 aria-disabled={!route}
                 aria-selected={id === selected.id}
-                onClick={() => setSelected(workflow)}
+                onClick={() => route && setSelected(workflow)}
               >
                 <div className={classes.workflowText}>
-                  <TransitionLink to={route}>{name}</TransitionLink>
+                  <span className={classes.name}>{name}</span>
                   <p>{description}</p>
                 </div>
                 <Image />
