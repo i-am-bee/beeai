@@ -94,23 +94,24 @@ export function ComposeProvider({ children }: PropsWithChildren) {
 
       if (!step) return;
 
-      step.isPending = true;
-      step.stats = {
-        startTime: step.stats?.startTime ?? Date.now(),
+      const updatedStep = {
+        ...step,
+        isPending: true,
+        stats: {
+          startTime: step.stats?.startTime ?? Date.now(),
+        },
+        result: `${step.result ?? ''}${delta.text}`,
+        logs: [...(step.logs ?? []), ...delta.logs.filter(isNotNull).map((item) => item.message)],
       };
-      step.result = `${step.result ?? ''}${delta.text}`;
-      step.logs = [...(step.logs ?? []), ...delta.logs.filter(isNotNull).map((item) => item.message)];
 
-      updateStep(delta.agent_idx, step);
+      updateStep(delta.agent_idx, updatedStep);
 
       if (delta.agent_idx > 0) {
         const stepsBefore = getValues('steps').slice(0, delta.agent_idx);
 
         stepsBefore.forEach((step, stepsBeforeIndex) => {
           if (step.isPending || !step.stats?.endTime) {
-            step.isPending = false;
-            step.stats = { ...step.stats, endTime: Date.now() };
-            updateStep(stepsBeforeIndex, step);
+            updateStep(stepsBeforeIndex, { ...step, isPending: false, stats: { ...step.stats, endTime: Date.now() } });
           }
         });
       }

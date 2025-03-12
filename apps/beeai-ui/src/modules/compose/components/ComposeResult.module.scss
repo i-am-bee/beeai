@@ -21,7 +21,6 @@ $to-two-thirds-of-max-container: calc(2 * $third-of-max-container + calc((100vw 
 .root {
   display: flex;
   flex-direction: column;
-  background-color: $background;
   padding-block-start: 0;
   inline-size: 0;
   @include scrollbar();

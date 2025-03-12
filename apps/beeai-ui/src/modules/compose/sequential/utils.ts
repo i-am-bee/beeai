@@ -16,11 +16,12 @@
 
 import { JSONSchema, validateJsonSchema } from '#helpers/validateJsonSchema.ts';
 import { Agent } from '#modules/agents/api/types.ts';
+import { UiType } from '#modules/run/types.ts';
 import { SEQUENTIAL_COMPOSE_AGENT_NAME, textInputJsonSchema, textOutputJsonSchema } from './constants';
 
 export function isValidForSequentialWorkflow(agent: Agent) {
   return (
-    agent.ui?.type === 'hands-off' ||
+    agent.ui?.type === UiType.HandsOff ||
     (validateJsonSchema(agent.inputSchema as JSONSchema, textInputJsonSchema as JSONSchema) &&
       validateJsonSchema(agent.outputSchema as JSONSchema, textOutputJsonSchema as JSONSchema))
   );

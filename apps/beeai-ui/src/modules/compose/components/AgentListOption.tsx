@@ -21,6 +21,7 @@ import { SkeletonText } from '@carbon/react';
 import clsx from 'clsx';
 import { MouseEvent } from 'react';
 import classes from './AgentListOption.module.scss';
+import { BeeBadge } from '#modules/agents/components/BeeBadge.tsx';
 
 interface Props {
   agent: Agent;
@@ -30,7 +31,10 @@ export function AgentListOption({ agent, onClick }: Props) {
   return (
     <li className={classes.root} role="option" onClick={onClick}>
       <div className={classes.content}>
-        <span className={classes.name}>{agent.name}</span>
+        <span className={classes.name}>
+          {agent.name}
+          <BeeBadge agent={agent} />
+        </span>
 
         <AgentTags agent={agent} size="sm" />
       </div>

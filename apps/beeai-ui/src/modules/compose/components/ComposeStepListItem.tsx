@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { MarkdownContent } from '#components/MarkdownContent/MarkdownContent.tsx';
-import { Accordion, AccordionItem, OverflowMenu, OverflowMenuItem } from '@carbon/react';
+import { OverflowMenu, OverflowMenuItem } from '@carbon/react';
 import clsx from 'clsx';
 import { SequentialFormValues } from '../contexts/compose-context';
 import classes from './ComposeStepListItem.module.scss';
@@ -23,9 +22,8 @@ import { useFormContext } from 'react-hook-form';
 import { TextAreaAutoHeight } from '#components/TextAreaAutoHeight/TextAreaAutoHeight.tsx';
 import { useCompose } from '../contexts';
 import { KeyboardEvent } from 'react';
-import { AgentRunLogItem } from '#modules/run/components/AgentRunLogItem.tsx';
 import { Spinner } from '#components/Spinner/Spinner.tsx';
-import { useAutoScroll } from '#hooks/useAutoScroll.ts';
+import { StepResult } from './StepResult';
 
 interface Props {
   idx: number;
@@ -45,7 +43,7 @@ export function ComposeStepListItem({ idx }: Props) {
   };
 
   const step = watch(`steps.${idx}`);
-  const { data, isPending, logs, stats, result, instruction } = step;
+  const { data, isPending, result, instruction } = step;
   const { name } = data;
 
   const isViewMode = status !== 'ready';
@@ -84,46 +82,8 @@ export function ComposeStepListItem({ idx }: Props) {
           )}
         </div>
 
-        {(isPending || stats || result) && (
-          <div className={clsx(classes.run, { [classes.finished]: isFinished, [classes.pending]: isPending })}>
-            <Accordion>
-              {logs?.length ? (
-                <AccordionItem title="Logs" open={!isFinished ? isPending : undefined} className={classes.logsGroup}>
-                  <Logs logs={logs} />
-                </AccordionItem>
-              ) : null}
-
-              {isFinished && (
-                <AccordionItem
-                  className={clsx(classes.resultGroup, { [classes.empty]: !result })}
-                  title={
-                    <div className={classes.result}>
-                      <div>{isFinished ? 'Output' : null}</div>
-                      {/* TODO: hiding temporarily
-                    <div className={classes.loading}>
-                      <ElapsedTime stats={stats} className={classes.elapsed} />
-                    </div> */}
-                    </div>
-                  }
-                >
-                  <MarkdownContent>{result}</MarkdownContent>
-                </AccordionItem>
-              )}
-            </Accordion>
-          </div>
-        )}
+        <StepResult step={step} />
       </div>
-    </div>
-  );
-}
-
-function Logs({ logs }: { logs: string[] }) {
-  const { ref: autoScrollRef } = useAutoScroll([logs.length]);
-
-  return (
-    <div className={classes.logs}>
-      {logs?.map((message, order) => <AgentRunLogItem key={order}>{message}</AgentRunLogItem>)}
-      <div ref={autoScrollRef} />
     </div>
   );
 }

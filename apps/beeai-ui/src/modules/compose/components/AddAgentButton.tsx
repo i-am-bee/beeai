@@ -41,7 +41,10 @@ export function AddAgentButton({ onSelectAgent, isDisabled }: Props) {
 
   const { data, isPending } = useListAgents();
 
-  const availableAgents = useMemo(() => data?.filter(isValidForSequentialWorkflow), [data]);
+  const availableAgents = useMemo(
+    () => data?.filter(isValidForSequentialWorkflow).sort((a, b) => a.name.localeCompare(b.name)),
+    [data],
+  );
 
   return (
     <div className={classes.root} ref={selectorRef}>
