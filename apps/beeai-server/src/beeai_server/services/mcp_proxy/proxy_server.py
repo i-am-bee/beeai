@@ -124,11 +124,9 @@ class MCPProxyServer:
         @server.call_tool()
         async def call_tool(name: str, arguments: dict | None = None):
             result = "success"
+            start_time = time.perf_counter()
             try:
-                start_time = time.perf_counter()
                 provider = self._provider_container.get_provider(f"tool/{name}")
-                duration = time.perf_counter() - start_time
-                TOOL_CALL_DURATION.record(duration, {"tool": name})
                 resp = await self._send_request_with_token(
                     provider.session,
                     server,
@@ -140,7 +138,10 @@ class MCPProxyServer:
                 result = "failure"
                 raise
             finally:
-                TOOL_CALLS.add(1, {"tool": name, "result": result})
+                duration = time.perf_counter() - start_time
+                attributes = {"tool": name, "result": result}
+                TOOL_CALLS.add(1, attributes)
+                TOOL_CALL_DURATION.record(duration, attributes)
 
         @server.create_agent()
         async def create_agent(req: CreateAgentRequest) -> CreateAgentResult:
@@ -150,17 +151,18 @@ class MCPProxyServer:
         @server.run_agent()
         async def run_agent(req: RunAgentRequest) -> RunAgentResult:
             result = "success"
+            start_time = time.perf_counter()
             try:
-                start_time = time.perf_counter()
                 provider = self._provider_container.get_provider(f"agent/{req.params.name}")
-                duration = time.perf_counter() - start_time
-                AGENT_RUN_DURATION.record(duration, {"agent": req.params.name})
                 return await self._send_request_with_token(provider.session, server, req, RunAgentResult)
             except:
                 result = "failure"
                 raise
             finally:
-                AGENT_RUNS.add(1, {"agent": req.params.name, "result": result})
+                duration = time.perf_counter() - start_time
+                attributes = {"agent": req.params.name, "result": result}
+                AGENT_RUNS.add(1, attributes)
+                AGENT_RUN_DURATION.record(duration, attributes)
 
         @server.destroy_agent()
         async def destroy_agent(req: DestroyAgentRequest) -> DestroyAgentResult:
