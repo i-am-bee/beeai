@@ -15,9 +15,7 @@
         "groups": [
           {
             "group": "Get Started",
-            "pages": [
-              "/get-started/quickstart"
-            ]
+            "pages": ["/get-started/quickstart"]
           },
           {
             "group": "Agents",
@@ -42,10 +40,7 @@
               {
                 "group": "Alpha",
                 "icon": "tag",
-                "pages": [
-                  "/acp/alpha/introduction",
-                  "/acp/alpha/architecture"
-                ]
+                "pages": ["/acp/alpha/introduction", "/acp/alpha/architecture"]
               },
               {
                 "group": "Pre-alpha",
@@ -53,6 +48,7 @@
                 "pages": [
                   "/acp/pre-alpha/introduction",
                   "/acp/pre-alpha/architecture",
+                  "/acp/pre-alpha/specification",
                   "/acp/pre-alpha/sdk"
                 ]
               }
