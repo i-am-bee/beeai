@@ -10,5 +10,3 @@ providers:
   - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.53#path=/agents/community/langgraph-agents
   - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.53#path=/agents/community/aider-agent
   - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.53#path=/agents/community/autogen-agents
-  - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.54#path=/agents/community/open-deep-research-agent
-  
