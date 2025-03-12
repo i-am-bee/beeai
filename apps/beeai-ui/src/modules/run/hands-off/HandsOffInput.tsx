@@ -16,15 +16,13 @@
 
 import { PlayFilledAlt } from '@carbon/icons-react';
 import { Button } from '@carbon/react';
-import clsx from 'clsx';
 import { useForm } from 'react-hook-form';
 import { InputBar } from '../components/InputBar';
 import { useHandsOff } from '../contexts/hands-off';
 import classes from './HandsOffInput.module.scss';
 
 export function HandsOffInput() {
-  const { agent, onSubmit, input, text, isPending } = useHandsOff();
-  const userGreeting = agent.ui?.userGreeting;
+  const { onSubmit, input, text, isPending } = useHandsOff();
 
   const form = useForm<FormValues>({
     mode: 'onChange',
@@ -40,12 +38,9 @@ export function HandsOffInput() {
 
   const isSubmitDisabled = isSubmitting;
   const isPendingOrText = Boolean(isPending || text);
-  const isFinal = Boolean(text && !isPending);
 
   return (
-    <div className={clsx(classes.root, { [classes.isPendingOrText]: isPendingOrText })}>
-      <h2 className={classes.heading}>{isFinal ? 'Task input:' : userGreeting || 'What is your task?'}</h2>
-
+    <>
       {isPendingOrText ? (
         <h2 className={classes.input}>{input?.text}</h2>
       ) : (
@@ -68,7 +63,7 @@ export function HandsOffInput() {
           </Button>
         </InputBar>
       )}
-    </div>
+    </>
   );
 }
 

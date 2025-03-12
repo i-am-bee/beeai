@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { useAutoScroll } from '#hooks/useAutoScroll.ts';
 import { ChevronDown } from '@carbon/icons-react';
 import clsx from 'clsx';
 import { useState } from 'react';
@@ -27,6 +28,7 @@ interface Props {
 }
 
 export function AgentRunLogs({ logs, toggleable }: Props) {
+  const { ref: autoScrollRef } = useAutoScroll([logs.length]);
   const [isExpanded, setIsExpanded] = useState(false);
 
   return logs.length > 0 ? (
@@ -52,6 +54,8 @@ export function AgentRunLogs({ logs, toggleable }: Props) {
           ))}
         </ul>
       )}
+
+      <div ref={autoScrollRef} className={classes.bottom} />
     </div>
   ) : null;
 }
