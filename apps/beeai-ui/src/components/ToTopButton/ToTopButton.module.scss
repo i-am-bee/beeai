@@ -16,7 +16,7 @@
 
 .root {
   position: fixed;
-  inset-block-end: $grid-margin;
+  inset-block-end: rem(48px);
   inset-inline-end: 0;
   padding-inline: $grid-margin;
 
@@ -32,8 +32,7 @@
 
 @include breakpoint-up(xlg) {
   .root {
-    inset-block-end: $spacing-06;
     inset-inline-end: 50%;
-    transform: translateX(math.div(get-value($grid-breakpoints, 'xlg.width'), 2));
+    transform: translateX(math.div(get-value($grid-breakpoints, 'lg.width'), 2));
   }
 }

@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-.holder {
-  display: flex;
-  column-gap: $gap;
-  justify-content: flex-end;
-  align-items: center;
-  padding-block: $spacing-05;
+.root {
+  min-inline-size: rem(208px);
 }

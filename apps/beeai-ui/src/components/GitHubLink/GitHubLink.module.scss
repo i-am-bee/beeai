@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
-.holder {
+.root {
   display: flex;
-  column-gap: $gap;
-  justify-content: flex-end;
   align-items: center;
-  padding-block: $spacing-05;
+  column-gap: $spacing-03;
+  text-decoration: none;
+  color: $text-dark;
+  font-size: rem(14px);
+  line-height: math.div(18, 14);
+  &:hover {
+    color: $background-inverse;
+  }
 }

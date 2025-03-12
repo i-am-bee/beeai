@@ -16,7 +16,7 @@
 
 import { getAgentsList } from "@/acp/api";
 import { MainContent } from "@/components/layouts/MainContent";
-import { AgentDetail, Container } from "@i-am-bee/beeai-ui";
+import { AgentDetail, Container, TryLocallyButton } from "@i-am-bee/beeai-ui";
 import { notFound } from "next/navigation";
 
 export const dynamic = "force-dynamic"; // Opt out of static generation
@@ -36,7 +36,7 @@ export default async function AgentPage({ params }: Props) {
   return (
     <MainContent>
       <Container>
-        <AgentDetail agent={agent} />
+        <AgentDetail agent={agent} buttons={<TryLocallyButton />} />
       </Container>
     </MainContent>
   );

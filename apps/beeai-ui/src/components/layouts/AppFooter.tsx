@@ -25,7 +25,7 @@ interface Props {
 export function AppFooter({ className }: Props) {
   return (
     <footer className={className}>
-      <Container size="xlg">
+      <Container size="max">
         <div className={classes.holder}>
           <CommunityNav />
         </div>

@@ -16,16 +16,12 @@
 
 "use client";
 
-import { CommunityNav } from "@i-am-bee/beeai-ui";
-import { usePathname } from "next/navigation";
 import { MainNav } from "../MainNav/MainNav";
 
 export function Navigation() {
-  const pathname = usePathname();
   return (
     <>
       <MainNav />
-      {pathname !== "/" && <CommunityNav />}
     </>
   );
 }

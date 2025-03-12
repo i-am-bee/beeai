@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-"use client";
+import { GITHUB_REPO_LINK } from '#utils/constants.ts';
+import { LogoGithub } from '@carbon/icons-react';
+import classes from './GitHubLink.module.scss';
 
-import { AppFooter } from "@i-am-bee/beeai-ui";
-import { usePathname } from "next/navigation";
-import { ComponentProps } from "react";
-
-export function Footer(props: ComponentProps<typeof AppFooter>) {
-  const pathname = usePathname();
-  return pathname === '/' ? <AppFooter {...props} /> : null;
+export function GitHubLink() {
+  return (
+    <a href={GITHUB_REPO_LINK} target="_blank" rel="noreferrer" className={classes.root}>
+      <span>GitHub</span>
+      <LogoGithub />
+    </a>
+  );
 }
