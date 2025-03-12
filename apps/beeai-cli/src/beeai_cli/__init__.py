@@ -62,6 +62,7 @@ async def ui():
     async with httpx.AsyncClient() as client:
         await client.head(host_url)
 
+    await beeai_cli.commands.env.ensure_llm_env()
     webbrowser.open(host_url)
 
 

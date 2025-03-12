@@ -13,11 +13,19 @@
 # limitations under the License.
 
 
+import os
+import sys
+import tempfile
 import typer
+import httpx
+import subprocess
 from rich.table import Column
+from InquirerPy import inquirer
+from InquirerPy.base.control import Choice
+from InquirerPy.validator import EmptyInputValidator
 
 from beeai_cli.api import api_request
-from beeai_cli.async_typer import AsyncTyper, console, create_table
+from beeai_cli.async_typer import AsyncTyper, console, err_console, create_table
 from beeai_cli.utils import parse_env_var
 
 app = AsyncTyper()
@@ -66,98 +74,151 @@ async def sync():
     console.print("Env updated")
 
 
-@app.command("check", help="Check if LLM env vars are set correctly")
-async def check():
-    required_vars = ["LLM_API_BASE", "LLM_API_KEY", "LLM_MODEL"]
+@app.command("setup", help="Interactive setup for LLM provider environment variables")
+async def setup() -> bool:
+    """Interactive setup for LLM provider environment variables"""
+    provider_name, api_base, recommended_model = await inquirer.select(
+        message="Select LLM provider:",
+        choices=[
+            Choice(name="OpenAI", value=("OpenAI", "https://api.openai.com/v1", "gpt-4o")),
+            Choice(
+                name="Anthropic Claude",
+                value=("Anthropic", "https://api.anthropic.com/v1", "claude-3-7-sonnet-20250219"),
+            ),
+            Choice(
+                name="Groq",
+                value=("Groq", "https://api.groq.com/openai/v1", "deepseek-r1-distill-llama-70b"),
+            ),
+            Choice(
+                name="OpenRouter",
+                value=("OpenRouter", "https://openrouter.ai/api/v1", "deepseek/deepseek-r1-distill-llama-70b:free"),
+            ),
+            Choice(name="Ollama [local]", value=("Ollama", "http://localhost:11434/v1", "llama3.1:8b")),
+            Choice(name="Other [provide custom API URL]", value=("Other", None, None)),
+        ],
+    ).execute_async()
 
-    env_vars = (await api_request("get", "env")).get("env", {})
+    if provider_name == "Other":
+        api_base = await inquirer.text(
+            message="Enter the base URL of your API (OpenAI-compatible):",
+            validate=lambda url: (url.startswith(("http://", "https://")) or "URL must start with http:// or https://"),
+            transformer=lambda url: url.rstrip("/"),
+        ).execute_async()
 
-    statuses = {
-        var: {
-            "status": "missing" if var not in env_vars else "unknown",
-            "value": "Not set" if var not in env_vars else env_vars[var],
-        }
-        for var in required_vars
-    }
+    api_key = (
+        "ollama"
+        if provider_name == "Ollama"
+        else await inquirer.secret(message="Enter API key:", validate=EmptyInputValidator()).execute_async()
+    )
 
-    missing_vars = [var for var in required_vars if var not in env_vars]
-    if missing_vars:
-        console.print("[bold red]Error:[/bold red] The following required environment variables are not set:")
-        for var in missing_vars:
-            console.print(f"  - [yellow]{var}[/yellow]")
-        console.print("\nPlease set these variables using the [bold]beeai env add[/bold] command.")
-        console.print(
-            "See documentation for details: https://docs.beeai.dev/get-started/installation#set-up-agent-providers"
-        )
-        print_var_statuses(statuses)
-        return
-
-    api_base, api_key, model = [env_vars[var] for var in required_vars]
     try:
-        import httpx
-
-        headers = {"Authorization": f"Bearer {api_key}"}
         async with httpx.AsyncClient() as client:
-            response = await client.get(f"{api_base}/models", headers=headers, timeout=10.0)
-        if response.status_code in (401, 403):
-            statuses["LLM_API_BASE"]["status"] = "good"
-            statuses["LLM_API_KEY"]["status"] = "bad"
-            console.print("[bold red]Error:[/bold red] API key was rejected. Please check your LLM_API_KEY.")
-        elif not response.is_success:
-            statuses["LLM_API_BASE"]["status"] = "bad"
-            if "11434" in api_base:
-                console.print(
-                    "[bold red]Error:[/bold red] Failed to connect to Ollama. Ensure that the Ollama service is running and reachable."
-                )
-            else:
-                console.print("[bold red]Error:[/bold red] Failed to connect to the LLM API. Is the URL correct?")
-        else:
-            statuses["LLM_API_BASE"]["status"] = "good"
-            statuses["LLM_API_KEY"]["status"] = "good"
-
-            available_models = [m.get("id", "") for m in response.json().get("data", [])]
-
-            if model not in available_models:
-                statuses["LLM_MODEL"]["status"] = "bad"
-                console.print(f"[bold red]Error:[/bold red] Model '{model}' not found in available models.")
-                console.print(
-                    "Available models:",
-                    ", ".join(available_models[:100])
-                    + (f"... and {len(available_models) - 100} more" if len(available_models) > 100 else ""),
-                )
-            else:
-                statuses["LLM_MODEL"]["status"] = "good"
-                console.print("[bold green]Success![/bold green] LLM environment is correctly configured.")
-
-    except httpx.ConnectError:
-        statuses["LLM_API_BASE"]["status"] = "bad"
-        console.print(f"[bold red]Error:[/bold red] Could not connect to {api_base}")
-        if "11434" in api_base:
-            console.print(
-                "[bold red]Error:[/bold red] Ollama appears to be not running or unreachable. Check that the service is active."
+            response = await client.get(
+                f"{api_base}/models", headers={"Authorization": f"Bearer {api_key}"}, timeout=10.0
             )
-        else:
-            console.print("[bold red]Error:[/bold red] Please check if the URL is correct and the service is running.")
-    except httpx.TimeoutException:
-        statuses["LLM_API_BASE"]["status"] = "bad"
-        console.print(f"[bold red]Error:[/bold red] Connection to {api_base} timed out.")
-    except Exception as e:
-        console.print(f"[bold red]Error:[/bold red] An unexpected error occurred: {str(e)}")
+            response.raise_for_status()
+    except httpx.HTTPStatusError:
+        console.print("[bold red]Error:[/bold red] API key was rejected. Please check your API key and re-try.")
+        return False
+    except httpx.HTTPError as e:
+        console.print(f"[bold red]Error:[/bold red] {str(e)}")
+        match provider_name:
+            case "Ollama":
+                console.print("💡 [yellow]HINT[/yellow]: We could not connect to Ollama. Is it running?")
+            case "Other":
+                console.print(
+                    "💡 [yellow]HINT[/yellow]: We could not connect to the API URL you have specified. Is it correct?"
+                )
+            case _:
+                console.print(f"💡 [yellow]HINT[/yellow]: {provider_name} may be down.")
+        return False
 
-    print_var_statuses(statuses)
+    available_models = [m.get("id", "") for m in response.json().get("data", [])]
+
+    if provider_name == "Ollama":
+        available_models = [model for model in available_models if not model.endswith("-beeai")]
+
+    selected_model = (
+        recommended_model
+        if (
+            (recommended_model in available_models or provider_name == "Ollama")
+            and await inquirer.confirm(
+                message=f"Do you want to use the recommended model '{recommended_model}'?"
+                + (" It will be pulled from Ollama now." if recommended_model not in available_models else ""),
+                default=True,
+            ).execute_async()
+        )
+        else await inquirer.fuzzy(
+            message="Select a model (type to filter):",
+            choices=sorted(available_models),
+        ).execute_async()
+    )
+
+    if provider_name == "Ollama" and selected_model not in available_models:
+        try:
+            subprocess.run(["ollama", "pull", selected_model], check=True)
+        except Exception as e:
+            console.print(f"[red]Error while pulling model: {str(e)}[/red]")
+            return False
+
+    if provider_name == "Ollama" and (
+        (
+            num_ctx := await inquirer.select(
+                message="Larger context window helps agents see more information at once at the cost of memory consumption, as long as the model supports it. Set a larger context window?",
+                choices=[
+                    Choice(name="2k  ⚠️  some agents won't work", value=2048),
+                    Choice(name="4k  ⚠️  some agents won't work", value=4096),
+                    Choice(name="8k", value=8192),
+                    Choice(name="16k", value=16384),
+                    Choice(name="32k", value=32768),
+                    Choice(name="64k", value=65536),
+                    Choice(name="128k", value=131072),
+                ],
+            ).execute_async()
+        )
+        > 2048
+    ):
+        modified_model = f"{recommended_model}-beeai"
+        console.print(
+            f"⚠️  [yellow]Warning[/yellow]: BeeAI will create and use a modified version of this model tagged [bold]{modified_model}[/bold] with default context window set to [bold]{num_ctx}[/bold]."
+        )
+
+        try:
+            if modified_model in available_models:
+                subprocess.run(["ollama", "rm", modified_model], check=False)
+            with tempfile.TemporaryDirectory() as temp_dir:
+                modelfile_path = os.path.join(temp_dir, "Modelfile")
+                with open(modelfile_path, "w") as f:
+                    f.write(f"FROM {selected_model}\n\nPARAMETER num_ctx {num_ctx}\n")
+                subprocess.run(["ollama", "create", modified_model], cwd=temp_dir, check=True)
+        except Exception as e:
+            console.print(f"[red]Error setting up Ollama model: {str(e)}[/red]")
+            return False
+
+        selected_model = modified_model
+
+    await api_request(
+        "put",
+        "env",
+        json={"env": {"LLM_API_BASE": api_base, "LLM_API_KEY": api_key, "LLM_MODEL": selected_model}},
+    )
+
+    console.print("\n[bold green]You're all set![/bold green]")
+    return True
 
 
-def print_var_statuses(statuses):
-    """Print the status of environment variables with appropriate formatting."""
-    status_formats = {
-        "good": {"symbol": "✓", "color": "green"},
-        "bad": {"symbol": "✗", "color": "red"},
-        "unknown": {"symbol": "?", "color": "yellow"},
-        "missing": {"symbol": "∅", "color": "blue"},
-    }
-
-    for var in ["LLM_API_BASE", "LLM_API_KEY", "LLM_MODEL"]:
-        if var in statuses:
-            status = statuses[var]["status"]
-            fmt = status_formats[status]
-            console.print(f"[{fmt['color']}]{fmt['symbol']} {var}: {statuses[var]['value']}[/{fmt['color']}]")
+async def ensure_llm_env():
+    env = (await api_request("get", "env"))["env"]
+    if all(required_variable in env.keys() for required_variable in ["LLM_MODEL", "LLM_API_KEY", "LLM_API_BASE"]):
+        return
+    console.print("[bold]Welcome to 🐝 [red]BeeAI[/red]![/bold]")
+    console.print("Let's start by configuring your LLM environment.\n")
+    if not await setup():
+        err_console.print(
+            ":boom: [bold red]Error[/bold red]: Could not continue because the LLM environment is not properly set up."
+        )
+        err_console.print(
+            "💡 [yellow]HINT[/yellow]: Try re-entering your LLM API details with: [green]beeai env setup[/green]"
+        )
+        sys.exit(1)
+    console.print()
