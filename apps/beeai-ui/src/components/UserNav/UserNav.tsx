@@ -28,7 +28,7 @@ export function UserNav() {
 
   return (
     <OverflowMenu renderIcon={Bee} size="sm" aria-label="User navigation" flipped menuOptionsClass={classes.options}>
-      {ITEMS.map(({ itemText, icon, isInternal, isExternal, href, ...props }, idx) => {
+      {ITEMS.map(({ itemText, icon, isInternal, isExternal, hasDivider, href, ...props }, idx) => {
         const Icon = icon ? icon : isExternal ? Launch : null;
 
         return (
@@ -54,6 +54,7 @@ export function UserNav() {
                 itemText
               )
             }
+            hasDivider={hasDivider}
           />
         );
       })}
@@ -76,6 +77,7 @@ const ITEMS = [
     itemText: 'GitHub',
     href: GITHUB_REPO_LINK,
     icon: LogoGithub,
+    hasDivider: true,
   },
   {
     itemText: 'Discord',

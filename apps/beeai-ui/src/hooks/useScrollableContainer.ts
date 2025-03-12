@@ -14,26 +14,28 @@
  * limitations under the License.
  */
 
-import type { PropsWithChildren } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
+import { useEffect, useState } from 'react';
 
-export interface AgentsFiltersParams {
-  search: string;
-  frameworks: string[];
-  languages: string[];
-  licenses: string[];
-}
+export function useScrollableContainer(element: HTMLElement | null) {
+  const [container, setContainer] = useState<HTMLElement | null>(null);
 
-export function AgentsFiltersProvider({ children }: PropsWithChildren) {
-  const form = useForm<AgentsFiltersParams>({
-    mode: 'onBlur',
-    defaultValues: {
-      search: '',
-      frameworks: [],
-      languages: [],
-      licenses: [],
-    },
-  });
+  useEffect(() => {
+    if (element) {
+      let parent = element.parentElement;
 
-  return <FormProvider {...form}>{children}</FormProvider>;
+      while (parent) {
+        const { overflowY } = window.getComputedStyle(parent);
+
+        if (overflowY === 'scroll' || overflowY === 'auto') {
+          setContainer(parent);
+
+          return;
+        }
+
+        parent = parent.parentElement;
+      }
+    }
+  }, [element]);
+
+  return container;
 }

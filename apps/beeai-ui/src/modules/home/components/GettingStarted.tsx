@@ -17,9 +17,9 @@
 'use client';
 
 import { BREW_INSTALL_BEEAI } from '@i-am-bee/beeai-ui';
-import LogoBeeAI from '#svgs/LogoBeeAI.svg';
 import { Container } from '#components/layouts/Container.tsx';
 import { CopySnippet } from '#components/CopySnippet/CopySnippet.tsx';
+import { LogoBeeAI } from './LogoBeeAI';
 import { GitHubButton } from './GitHubButton';
 import classes from './GettingStarted.module.scss';
 
@@ -34,7 +34,7 @@ export function GettingStarted() {
         </p>
 
         <div className={classes.bottom}>
-          <CopySnippet className={classes.snippet}>{BREW_INSTALL_BEEAI}</CopySnippet>
+          <CopySnippet>{BREW_INSTALL_BEEAI}</CopySnippet>
           <GitHubButton />
         </div>
       </Container>

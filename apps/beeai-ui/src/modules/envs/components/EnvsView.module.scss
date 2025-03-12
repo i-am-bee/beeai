@@ -14,26 +14,12 @@
  * limitations under the License.
  */
 
-import type { PropsWithChildren } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
-
-export interface AgentsFiltersParams {
-  search: string;
-  frameworks: string[];
-  languages: string[];
-  licenses: string[];
+.name {
+  inline-size: 30%;
+  word-break: break-all;
 }
 
-export function AgentsFiltersProvider({ children }: PropsWithChildren) {
-  const form = useForm<AgentsFiltersParams>({
-    mode: 'onBlur',
-    defaultValues: {
-      search: '',
-      frameworks: [],
-      languages: [],
-      licenses: [],
-    },
-  });
-
-  return <FormProvider {...form}>{children}</FormProvider>;
+.value {
+  @include line-clamp();
+  max-inline-size: 0;
 }

@@ -14,26 +14,19 @@
  * limitations under the License.
  */
 
-import type { PropsWithChildren } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
+"use client";
 
-export interface AgentsFiltersParams {
-  search: string;
-  frameworks: string[];
-  languages: string[];
-  licenses: string[];
+import { type Agent, AgentsFiltersProvider } from "@i-am-bee/beeai-ui";
+import { AgentsView } from "./AgentsView";
+
+interface Props {
+  agents: Agent[];
 }
 
-export function AgentsFiltersProvider({ children }: PropsWithChildren) {
-  const form = useForm<AgentsFiltersParams>({
-    mode: 'onBlur',
-    defaultValues: {
-      search: '',
-      frameworks: [],
-      languages: [],
-      licenses: [],
-    },
-  });
-
-  return <FormProvider {...form}>{children}</FormProvider>;
+export default function AgentsFilteredView({ agents }: Props) {
+  return (
+    <AgentsFiltersProvider>
+      <AgentsView agents={agents} />
+    </AgentsFiltersProvider>
+  );
 }

@@ -30,7 +30,7 @@ async def run(
     name: str = typer.Argument(help="Name of the tool to call"),
     input: str = typer.Argument(help="Tool input as JSON", callback=check_json),
 ) -> None:
-    """Call a tool with given input."""
+    """Run a tool."""
     async for message in send_request_with_notifications(
         types.CallToolRequest(
             method="tools/call",
@@ -43,7 +43,7 @@ async def run(
 
 @app.command("list")
 async def list_tools():
-    """List available tools"""
+    """List available tools."""
     result = await send_request(types.ListToolsRequest(method="tools/list"), types.ListToolsResult)
     with create_table(Column("name", style="yellow"), Column("description", ratio=1)) as table:
         for tool in result.tools:
@@ -53,7 +53,7 @@ async def list_tools():
 
 @app.command("info")
 async def info(name: str = typer.Argument(help="Name of the tool")) -> None:
-    """Show details of a tool"""
+    """Show tool details."""
     result = await send_request(types.ListToolsRequest(method="tools/list"), types.ListToolsResult)
     tools_by_name = {tool.name: tool for tool in result.tools}
     if not (tool := tools_by_name.get(name, None)):

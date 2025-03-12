@@ -26,4 +26,4 @@ export const DOCUMENTATION_LINK = 'https://docs.beeai.dev';
 
 export const BEE_AI_FRAMEWORK_TAG = 'BeeAI';
 
-export const BREW_INSTALL_BEEAI = 'brew install beeai';
+export const BREW_INSTALL_BEEAI = 'brew install i-am-bee/beeai/beeai';

@@ -1,0 +1,38 @@
+---
+title: 'Tools'
+description: 'Expose tools through the beeai platform'
+icon: 'screwdriver-wrench'
+---
+
+Tools in the beeai platform are implemented in line with the [Model Context Protocol](https://modelcontextprotocol.io/).
+Adding a tool to the provider is straightforward:
+
+```python
+import asyncio
+from acp.server.highlevel import Server, Context
+from beeai_sdk.providers.agent import run_agent_provider
+
+def main():
+    server = Server("beeai-agents")
+
+    @server.tool()
+    async def add(a: int, b: int, ctx: Context) -> int:
+        """Add two numbers"""
+        return a + b
+
+    asyncio.run(run_agent_provider(server))
+```
+
+After registering the provider (see [Providers](/cocepts/providers)) to the platform, the tool will be available using
+the CLI. We can see it in `beeai tool list` and we can invoke it directly using:
+```sh
+> beeai tool run add '{"a": 1, "b": 2}'
+```
+
+The tools can be used programmatically and by agents through the [acp-sdk](/acp/pre-alpha/sdk) package or even
+through the original [MCP](https://modelcontextprotocol.io/). This means that you can leverage adapters in frameworks
+such as:
+- [LangChain MCP Adapters](https://github.com/langchain-ai/langchain-mcp-adapters)
+- [BeeAI framework MCP Tool](https://i-am-bee.github.io/beeai-framework/#/python/tools?id=mcp-tool)
+
+to enrich agents with tools available in the beeai platform.

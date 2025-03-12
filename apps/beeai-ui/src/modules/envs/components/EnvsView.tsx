@@ -36,6 +36,7 @@ import { useMemo } from 'react';
 import { useDeleteEnv } from '../api/mutations/useDeleteEnv';
 import { useListEnvs } from '../api/queries/useListEnvs';
 import { AddEnvModal } from './AddEnvModal';
+import classes from './EnvsView.module.scss';
 
 export function EnvsView() {
   const { openModal, openConfirmation } = useModal();
@@ -113,7 +114,9 @@ export function EnvsView() {
                     rows.map((row) => (
                       <TableRow {...getRowProps({ row })} key={row.id}>
                         {row.cells.map((cell) => (
-                          <TableCell key={cell.id}>{cell.value}</TableCell>
+                          <TableCell key={cell.id} className={classes[cell.info.header]}>
+                            {cell.value}
+                          </TableCell>
                         ))}
                       </TableRow>
                     ))
