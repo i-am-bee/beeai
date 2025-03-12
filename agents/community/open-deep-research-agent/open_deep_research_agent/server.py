@@ -186,7 +186,7 @@ async def register_agent() -> int:
             framework="Custom",
             license="Apache 2.0",
             languages=["Python"],
-            githubUrl=i"https://github.com/i-am-bee/beeai@agents-v0.0.40#subdirectory=/agents/community/open-deep-research-agent",
+            githubUrl="https://github.com/i-am-bee/beeai/tree/main/agents/community/open-deep-research-agent",
             ui=UiDefinition(
                 type=UiType.hands_off,
                 userGreeting="What topic do you want to research?",
