@@ -42,7 +42,7 @@ We are in an alternate universe where actually you have been writing every line 
 
 You have won multiple podcast awards for your writing.
  
-Your job is to write word by word, even "umm, hmmm, right" interruptions by the second speaker based on the PDF upload. Keep it extremely engaging, the speakers can get derailed now and then but should discuss the topic. 
+Your job is to write word by word, even "umm, hmmm, right" interruptions by the second speaker based on the content provided by user. Keep it extremely engaging, the speakers can get derailed now and then but should discuss the topic. 
 
 Remember Speaker 2 is new to the topic and the conversation should always have realistic anecdotes and analogies sprinkled throughout. The questions should have real world example follow ups etc
 
@@ -56,14 +56,14 @@ Ensure there are interruptions during explanations or there are "hmm" and "umm" 
 
 It should be a real podcast with every fine nuance documented in as much detail as possible. Welcome the listeners with a super fun overview and keep it really catchy and almost borderline click bait
 
-ALWAYS START YOUR RESPONSE DIRECTLY WITH SPEAKER 1: 
-DO NOT GIVE EPISODE TITLES SEPARATELY, LET SPEAKER 1 TITLE IT IN HER SPEECH
+ALWAYS START YOUR RESPONSE DIRECTLY WITH Speaker 1: 
+DO NOT GIVE EPISODE TITLES SEPARATELY, LET Speaker 1 TITLE IT IN HER SPEECH
 DO NOT GIVE CHAPTER TITLES
 IT SHOULD STRICTLY BE THE DIALOGUES`),
           new UserMessage(text),
         ],
         maxTokens: 8126,
-        temperature: 1,
+        temperature: 0.7,
         abortSignal: signal,
       })
       .observe((emitter) => {
@@ -73,7 +73,7 @@ IT SHOULD STRICTLY BE THE DIALOGUES`),
               progressToken: params._meta.progressToken,
               delta: {
                 logs: [
-                  { level: "info", message: JSON.stringify(token, null, 2) },
+                  { level: "info", message: token.value.getTextContent() },
                 ],
               },
             }));
@@ -81,63 +81,49 @@ IT SHOULD STRICTLY BE THE DIALOGUES`),
       });
     const podcastDialogue = podcastResponse.getTextContent();
 
-    const structuredGenerationSchema = z.array(
-      z.object({
-        speaker: z.number().min(1).max(2),
-        text: z.string(),
-      })
-    );
+    const structuredGenerationSchema = z
+      .array(
+        z.object({
+          speaker: z.number().min(1).max(2),
+          text: z.string(),
+        })
+      )
+      .min(1);
 
     // Dramatise podcast
     const finalReponse = await model.createStructure({
       schema: structuredGenerationSchema,
       // REVIEW: this essentially adds second system message because of the internal implementation of `createStructure`
       messages: [
-        new SystemMessage(`You are an international oscar winnning screenwriter
+        new SystemMessage(`You are an internationally acclaimed, Oscar-winning screenwriter with extensive experience collaborating with award-winning podcasters.
 
-You have been working with multiple award winning podcasters.
+Your task is to rewrite the provided podcast transcript for a high-quality AI Text-To-Speech (TTS) pipeline. The original script was poorly composed by a basic AI, and now it's your job to transform it into engaging, conversational content suitable for audio presentation.
 
-Your job is to use the podcast transcript written below to re-write it for an AI Text-To-Speech Pipeline. A very dumb AI had written this so you have to step up for your kind.
+## Roles:
 
-Make it as engaging as possible, Speaker 1 and 2 will be simulated by different voice engines
+- Speaker 1: Leads the conversation, educates Speaker 2, and captivates listeners with exceptional, relatable anecdotes and insightful analogies. Speaker 1 should be authoritative yet approachable.
+- Speaker 2: A curious newcomer who keeps the discussion lively by asking enthusiastic, sometimes confused questions, providing engaging tangents, and showing genuine excitement or puzzlement.
 
-Remember Speaker 2 is new to the topic and the conversation should always have realistic anecdotes and analogies sprinkled throughout. The questions should have real world example follow ups etc
+## Rules:
 
-Speaker 1: Leads the conversation and teaches the speaker 2, gives incredible anecdotes and analogies when explaining. Is a captivating teacher that gives great anecdotes
+- The rewritten dialogue must feel realistic, conversational, and highly engaging.
+- Ensure Speaker 2 frequently injects natural verbal expressions like "umm," "hmm," "[sigh]," and "[laughs]." **Use only these expressions for Speaker 2.**
+- Speaker 1 should avoid filler expressions like "umm" or "hmm" entirely, as the TTS engine does not handle them well.
+- Introduce realistic interruptions or interjections from Speaker 2 during explanations to enhance authenticity.
+- Include vivid, real-world anecdotes and examples to illustrate key points clearly.
+- Begin the podcast with a catchy, borderline clickbait introduction that immediately grabs listener attention.
 
-Speaker 2: Keeps the conversation on track by asking follow up questions. Gets super excited or confused when asking questions. Is a curious mindset that asks very interesting confirmation questions
+## Instructions:
 
-Make sure the tangents speaker 2 provides are quite wild or interesting. 
-
-Ensure there are interruptions during explanations or there are "hmm" and "umm" injected throughout from the Speaker 2.
-
-REMEMBER THIS WITH YOUR HEART
-The TTS Engine for Speaker 1 cannot do "umms, hmms" well so keep it straight text
-
-For Speaker 2 use "umm, hmm" as much, you can also use [sigh] and [laughs]. BUT ONLY THESE OPTIONS FOR EXPRESSIONS
-
-It should be a real podcast with every fine nuance documented in as much detail as possible. Welcome the listeners with a super fun overview and keep it really catchy and almost borderline click bait
-
-Please re-write to make it as characteristic as possible
-
-START YOUR RESPONSE DIRECTLY WITH SPEAKER 1:
-
-STRICTLY RETURN YOUR RESPONSE AS A LIST OF TUPLES OK? 
-
-IT WILL START DIRECTLY WITH THE LIST AND END WITH THE LIST NOTHING ELSE
-
-Example of response:
-[
-    {"speaker": 1, "text": "Welcome to our podcast, where we explore the latest advancements in AI and technology. I'm your host, and today we're joined by a renowned expert in the field of AI. We're going to dive into the exciting world of Llama 3.2, the latest release from Meta AI."},
-    {"speaker": 2, "text": "Hi, I'm excited to be here! So, what is Llama 3.2?"},
-    {"speaker": 1", "text": "Ah, great question! Llama 3.2 is an open-source AI model that allows developers to fine-tune, distill, and deploy AI models anywhere. It's a significant update from the previous version, with improved performance, efficiency, and customization options."},
-    {"speaker": 2", "text": "That sounds amazing! What are some of the key features of Llama 3.2?"}
-]`),
+- Always begin with Speaker 1.
+- Make your rewritten dialogue as vibrant, characteristic, and nuanced as possible to create an authentic podcast experience.
+`),
         new UserMessage(podcastDialogue),
       ],
       maxTokens: 8126,
-      temperature: 1,
+      temperature: 0.9,
       abortSignal: signal,
+      maxRetries: 3,
     });
 
     return outputSchema.parse({
@@ -208,12 +194,10 @@ The agent returns a structured JSON list representing the podcast conversation:
 ### Example 1: Converting an Article into a Podcast
 
 #### CLI:
+
 \`\`\`bash
 beeai run ${agentName} "${exampleInputText}"
 \`\`\`
-
-#### Processing Steps:
-
 
 #### Output:
 
