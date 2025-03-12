@@ -85,9 +85,45 @@ export function ComposeProvider({ children }: PropsWithChildren) {
     }
   }, [availableAgents, replaceSteps, searchParams, steps.length]);
 
+  const handleSuccessLog = useCallback(
+    (logs: ComposeNotificationDelta['logs']) => {
+      const successLog = logs.find((log) => log?.level === 'success');
+      if (successLog) {
+        const steps = getValues('steps');
+        const pendingStepIndex = steps.findIndex((step) => step.isPending);
+        const pendingStep = steps.at(pendingStepIndex);
+        if (pendingStep) {
+          const updatedStep = {
+            ...pendingStep,
+            isPending: false,
+            stats: { ...pendingStep.stats, endTime: Date.now() },
+          };
+          updateStep(pendingStepIndex, updatedStep);
+
+          const nextStepIndex = pendingStepIndex + 1;
+          const nextStep = steps.at(pendingStepIndex + 1);
+          if (nextStep) {
+            const nextUpdatedStep = {
+              ...nextStep,
+              isPending: true,
+              stats: {
+                startTime: nextStep.stats?.startTime ?? Date.now(),
+              },
+            };
+            updateStep(nextStepIndex, nextUpdatedStep);
+          }
+        }
+      }
+    },
+    [getValues, updateStep],
+  );
+
   const handleRunDelta = useCallback(
     (delta: ComposeNotificationDelta) => {
-      if (delta.agent_idx === undefined) return;
+      if (delta.agent_idx === undefined) {
+        handleSuccessLog(delta.logs);
+        return;
+      }
 
       const fieldName = `steps.${delta.agent_idx}` as const;
       const step = getValues(fieldName);
@@ -116,7 +152,7 @@ export function ComposeProvider({ children }: PropsWithChildren) {
         });
       }
     },
-    [getValues, updateStep],
+    [getValues, handleSuccessLog, updateStep],
   );
 
   const { runAgent } = useRunAgent<SequentialWorkflowInput, ComposeNotificationSchema>({

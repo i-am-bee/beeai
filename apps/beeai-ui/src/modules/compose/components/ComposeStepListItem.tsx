@@ -43,11 +43,11 @@ export function ComposeStepListItem({ idx }: Props) {
   };
 
   const step = watch(`steps.${idx}`);
-  const { data, isPending, result, instruction } = step;
+  const { data, isPending, stats, instruction } = step;
   const { name } = data;
 
   const isViewMode = status !== 'ready';
-  const isFinished = Boolean(!isPending && result);
+  const isFinished = Boolean(!isPending && stats?.endTime);
 
   return (
     <div className={clsx(classes.root, classes[`status-${isPending ? 'pending' : isFinished ? 'finished' : 'ready'}`])}>

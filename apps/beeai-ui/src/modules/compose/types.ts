@@ -23,8 +23,6 @@ export const composeNotificationSchema = AgentRunProgressNotificationSchema.exte
     delta: outputSchema.extend({
       agent_idx: z.number(),
       agent_name: z.string(),
-      logs: z.array(z.object({ message: z.string() }).nullable()),
-      text: z.string().optional().nullable(),
     }),
   }),
 });
