@@ -15,8 +15,7 @@
  */
 
 import { MarkdownContent } from '#components/MarkdownContent/MarkdownContent.tsx';
-import { ElapsedTime } from '#modules/run/components/ElapsedTime.tsx';
-import { Accordion, AccordionItem, InlineLoading, OverflowMenu, OverflowMenuItem } from '@carbon/react';
+import { Accordion, AccordionItem, OverflowMenu, OverflowMenuItem } from '@carbon/react';
 import clsx from 'clsx';
 import ScrollToBottom from 'react-scroll-to-bottom';
 import { SequentialFormValues } from '../contexts/compose-context';
@@ -26,6 +25,7 @@ import { TextAreaAutoHeight } from '#components/TextAreaAutoHeight/TextAreaAutoH
 import { useCompose } from '../contexts';
 import { KeyboardEvent } from 'react';
 import { AgentRunLogItem } from '#modules/run/components/AgentRunLogItem.tsx';
+import { Spinner } from '#components/Spinner/Spinner.tsx';
 
 interface Props {
   idx: number;
@@ -45,43 +45,50 @@ export function ComposeStepListItem({ idx }: Props) {
   };
 
   const step = watch(`steps.${idx}`);
-  const { data, isPending, logs, stats, result } = step;
+  const { data, isPending, logs, stats, result, instruction } = step;
   const { name } = data;
 
   const isViewMode = status !== 'ready';
   const isFinished = Boolean(!isPending && result);
 
   return (
-    <div className={classes.root}>
-      <div className={classes.name}>{name}</div>
-
-      <div className={classes.actions}>
-        {!isViewMode && (
-          <OverflowMenu aria-label="Options" size="md">
-            <OverflowMenuItem itemText="Remove" onClick={() => remove(idx)} />
-          </OverflowMenu>
-        )}
+    <div className={clsx(classes.root, classes[`status-${isPending ? 'pending' : isFinished ? 'finished' : 'ready'}`])}>
+      <div className={classes.left}>
+        <div className={classes.bullet}>{isPending ? <Spinner /> : <span>{idx + 1}</span>}</div>
       </div>
+      <div className={classes.content}>
+        <div className={classes.name}>{name}</div>
 
-      <div className={classes.input}>
-        <TextAreaAutoHeight
-          className={classes.textarea}
-          rows={3}
-          placeholder="Write your entry here…"
-          disabled={isViewMode}
-          {...register(`steps.${idx}.instruction`, {
-            required: true,
-          })}
-          onKeyDown={handleKeyDown}
-        />
-      </div>
+        <div className={classes.actions}>
+          {!isViewMode && (
+            <OverflowMenu aria-label="Options" size="md">
+              <OverflowMenuItem itemText="Remove" onClick={() => remove(idx)} />
+            </OverflowMenu>
+          )}
+        </div>
 
-      {(isPending || stats || result) && (
-        <div className={clsx(classes.run, { [classes.finished]: isFinished, [classes.pending]: isPending })}>
-          <Accordion>
-            {logs?.length ? (
-              <div className={classes.logsGroup}>
-                <AccordionItem title="Logs" open={!isFinished ? isPending : undefined}>
+        <div className={classes.input}>
+          {isViewMode ? (
+            <p>{instruction}</p>
+          ) : (
+            <TextAreaAutoHeight
+              className={classes.textarea}
+              rows={3}
+              placeholder="Write your entry here…"
+              disabled={isViewMode}
+              {...register(`steps.${idx}.instruction`, {
+                required: true,
+              })}
+              onKeyDown={handleKeyDown}
+            />
+          )}
+        </div>
+
+        {(isPending || stats || result) && (
+          <div className={clsx(classes.run, { [classes.finished]: isFinished, [classes.pending]: isPending })}>
+            <Accordion>
+              {logs?.length ? (
+                <AccordionItem title="Logs" open={!isFinished ? isPending : undefined} className={classes.logsGroup}>
                   <ScrollToBottom
                     className={classes.logs}
                     scrollViewClassName={classes.logsScroll}
@@ -91,27 +98,28 @@ export function ComposeStepListItem({ idx }: Props) {
                     {logs?.map((message, order) => <AgentRunLogItem key={order}>{message}</AgentRunLogItem>)}
                   </ScrollToBottom>
                 </AccordionItem>
-              </div>
-            ) : null}
+              ) : null}
 
-            <div className={clsx(classes.resultGroup, { [classes.empty]: !result })}>
-              <AccordionItem
-                title={
-                  <div className={classes.result}>
-                    <div>{isFinished ? 'Output' : null}</div>
+              {isFinished && (
+                <AccordionItem
+                  className={clsx(classes.resultGroup, { [classes.empty]: !result })}
+                  title={
+                    <div className={classes.result}>
+                      <div>{isFinished ? 'Output' : null}</div>
+                      {/* TODO: hiding temporarily
                     <div className={classes.loading}>
                       <ElapsedTime stats={stats} className={classes.elapsed} />
-                      <InlineLoading status={isPending ? 'active' : 'finished'} />
+                    </div> */}
                     </div>
-                  </div>
-                }
-              >
-                <MarkdownContent>{result}</MarkdownContent>
-              </AccordionItem>
-            </div>
-          </Accordion>
-        </div>
-      )}
+                  }
+                >
+                  <MarkdownContent>{result}</MarkdownContent>
+                </AccordionItem>
+              )}
+            </Accordion>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

@@ -60,8 +60,13 @@ $max-container: rem(1632px);
 .agents {
   display: flex;
   flex-direction: column;
-  gap: $spacing-06;
   padding-block-end: $spacing-06;
+}
+
+.label {
+  @include type-style('label-01');
+  color: $text-secondary;
+  margin-block-end: $spacing-03;
 }
 
 .actionBar {

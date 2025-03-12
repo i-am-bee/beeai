@@ -71,6 +71,7 @@ export function SequentialSetup() {
             )}
           </div>
 
+          <h2 className={classes.label}>Sequence</h2>
           <div className={classes.agents}>
             {fields.map((field, idx) => (
               <ComposeStepListItem key={field.id} idx={idx} />
@@ -103,7 +104,7 @@ export function SequentialSetup() {
                 kind="primary"
                 size="md"
                 iconDescription="Send"
-                disabled={isPending || !isValid}
+                disabled={isPending || !isValid || !fields.length}
               >
                 Run
               </Button>
@@ -118,7 +119,7 @@ export function SequentialSetup() {
                   e.preventDefault();
                 }}
               >
-                Running&hellip;
+                Stop
               </Button>
             ))}
         </Container>
