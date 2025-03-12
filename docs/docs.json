@@ -18,14 +18,6 @@
             "pages": ["/get-started/quickstart"]
           },
           {
-            "group": "Agents",
-            "pages": [
-              "/agents/official-list",
-              "/agents/community-list",
-              "/agents/contribute"
-            ]
-          },
-          {
             "group": "Concepts",
             "pages": [
               "/concepts/components",
@@ -55,14 +47,30 @@
             ]
           },
           {
+            "group": "Agents",
+            "pages": [
+              "/agents/official-list",
+              "/agents/community-list",
+              "/agents/contribute"
+            ]
+          },
+          {
             "group": "Observability & Telemetry",
-            "pages": ["/observability/agents", "/observability/sharing"]
+            "pages": [
+              "/observability/agents-traceability",
+              "/observability/telemetry"
+            ]
           }
         ]
       }
     ],
     "global": {
       "anchors": [
+        {
+          "anchor": "Agent Library",
+          "href": "https://beeai.dev/agents",
+          "icon": "robot"
+        },
         {
           "anchor": "GitHub",
           "href": "https://github.com/i-am-bee/beeai",
