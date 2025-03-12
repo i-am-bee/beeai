@@ -23,7 +23,7 @@ interface Props {
   agents: Agent[];
 }
 
-export default function AgentsFilteredView({ agents }: Props) {
+export function AgentsFilteredView({ agents }: Props) {
   return (
     <AgentsFiltersProvider>
       <AgentsView agents={agents} />

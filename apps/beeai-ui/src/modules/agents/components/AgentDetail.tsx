@@ -49,12 +49,15 @@ export function AgentDetail({ agent, buttons }: Props) {
     <div className={classes.root}>
       <motion.h1 {...fadeInPropsWithMarginShift({ start: { from: spacing[4] } })} className={classes.name}>
         {agent.name}
+
         <BeeBadge agent={agent} size="lg" />
       </motion.h1>
 
       <motion.div {...fadeInPropsWithMarginShift({ start: { from: spacing[3] } })}>
         <AgentMetadata agent={agent} showGithub className={classes.metadata} />
+
         {description && <MarkdownContent className={classes.description}>{description}</MarkdownContent>}
+
         <AgentTags agent={agent} className={classes.tags} />
       </motion.div>
 
@@ -62,8 +65,9 @@ export function AgentDetail({ agent, buttons }: Props) {
         {...fadeInPropsWithMarginShift({ start: { from: spacing[6], to: spacing[5] } })}
         className={classes.buttons}
       >
-        {buttons}
         <CopySnippet className={classes.copySnippet}>{commands.beeai.run(name)}</CopySnippet>
+
+        {buttons}
       </motion.div>
 
       {(firstCliExample || fullDescription) && (

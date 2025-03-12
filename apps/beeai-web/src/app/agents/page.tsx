@@ -15,9 +15,9 @@
  */
 
 import { getAgentsList } from "@/acp/api";
-import { Container, ViewStack } from "@i-am-bee/beeai-ui";
 import { MainContent } from "@/components/layouts/MainContent";
-import AgentsFilteredView from "./AgentsFilteredView";
+import { Container, ViewStack } from "@i-am-bee/beeai-ui";
+import { AgentsFilteredView } from "./AgentsFilteredView";
 
 export const dynamic = "force-dynamic"; // Opt out of static generation
 
