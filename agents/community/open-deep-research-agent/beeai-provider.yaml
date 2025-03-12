@@ -1,7 +1,7 @@
 manifestVersion: 1
 driver: python
 pythonVersion: "3.13"
-package: "git+https://github.com/i-am-bee/beeai.git@agents-v0.0.48#subdirectory=agents/community/open-deep-research-agent"
+package: "git+https://github.com/i-am-bee/beeai.git@agents-v0.0.53#subdirectory=agents/community/open-deep-research-agent"
 serverType: http
 mcpTransport: sse
 mcpEndpoint: /sse

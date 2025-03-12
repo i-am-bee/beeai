@@ -1,14 +1,14 @@
 providers:
   # Official
-  - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.52#path=/agents/official/composition
-  - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.52#path=/agents/official/beeai-framework
-  - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.52#path=/agents/official/agent-docs-creator
-  - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.52#path=/agents/official/beeai-supervisor
+  - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.53#path=/agents/official/composition
+  - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.53#path=/agents/official/beeai-framework
+  - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.53#path=/agents/official/agent-docs-creator
+  - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.53#path=/agents/official/beeai-supervisor
   # Community
-  - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.52#path=/agents/community/gpt-researcher-agent
-  - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.52#path=/agents/community/crewai-agents
-  - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.52#path=/agents/community/langgraph-agents
-  - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.52#path=/agents/community/aider-agent
-  - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.52#path=/agents/community/autogen-agents
-  - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.48#path=/agents/community/open-deep-research-agent
+  - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.53#path=/agents/community/gpt-researcher-agent
+  - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.53#path=/agents/community/crewai-agents
+  - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.53#path=/agents/community/langgraph-agents
+  - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.53#path=/agents/community/aider-agent
+  - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.53#path=/agents/community/autogen-agents
+  - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.53#path=/agents/community/open-deep-research-agent
   
