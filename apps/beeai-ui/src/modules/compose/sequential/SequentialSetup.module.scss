@@ -27,7 +27,7 @@ $max-container: rem(1632px);
 
     > div {
       inline-size: 100%;
-      max-inline-size: $max-container / 3 + $spacing-05;
+      max-inline-size: math.div($max-container, 3) + $spacing-05;
     }
 
     .header h1 {
