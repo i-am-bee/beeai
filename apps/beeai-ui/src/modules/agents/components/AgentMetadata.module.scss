@@ -33,5 +33,10 @@
 
 .githubLink {
   display: flex;
+  column-gap: $spacing-02;
   color: inherit;
+  text-decoration: none;
+  &:hover {
+    color: $text-primary;
+  }
 }

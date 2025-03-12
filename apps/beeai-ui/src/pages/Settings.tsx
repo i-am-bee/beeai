@@ -31,18 +31,18 @@ export function Settings() {
 
           <Tabs>
             <TabList>
-              <Tab>Agent providers</Tab>
-
               <Tab>Environment variables</Tab>
+
+              <Tab>Agent providers</Tab>
             </TabList>
 
             <TabPanels>
               <TabPanel>
-                <ProvidersView />
+                <EnvsView />
               </TabPanel>
 
               <TabPanel>
-                <EnvsView />
+                <ProvidersView />
               </TabPanel>
             </TabPanels>
           </Tabs>

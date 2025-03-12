@@ -28,7 +28,7 @@ $divider-height: 1px;
 }
 
 .cds--overflow-menu-options {
-  padding: $spacing-03;
+  padding: $spacing-04 $spacing-03;
   border-radius: $border-radius;
   box-shadow: $box-shadow;
   background-color: $background;
@@ -42,6 +42,16 @@ $divider-height: 1px;
   .cds--overflow-menu-options__option {
     block-size: rem(28px);
   }
+
+  .cds--overflow-menu-options__option--group-label {
+    block-size: rem(16px);
+    margin-block-end: $spacing-02;
+    .cds--overflow-menu-options__btn {
+      @include type-style(label-01);
+      color: $text-secondary;
+      padding: 0;
+    }
+  }
 }
 
 .cds--overflow-menu-options__option {
@@ -49,7 +59,7 @@ $divider-height: 1px;
 }
 
 .cds--overflow-menu--divider {
-  margin-block-start: calc($spacing-03 + $divider-height + $spacing-02);
+  margin-block-start: calc($spacing-04 + $divider-height + $spacing-03);
   border-block-start: 0;
   display: block;
   position: relative;
@@ -60,7 +70,7 @@ $divider-height: 1px;
     display: block;
     inline-size: 100%;
     position: absolute;
-    inset-block-start: calc(($spacing-03 + $divider-height) * -1);
+    inset-block-start: calc(($spacing-04 + $divider-height) * -1);
   }
 }
 
