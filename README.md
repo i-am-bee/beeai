@@ -40,13 +40,19 @@ brew install i-am-bee/beeai/beeai
 brew services start beeai
 ```
 
-2. **Launch** the web interface:
+2. **Configure** LLM provider:
+
+```sh
+beeai env setup
+```
+
+3. **Launch** the web interface:
 
 ```sh
 beeai ui
 ```
 
-3. **Use** from the terminal:
+4. **Use** from the terminal:
 
 ```sh
 # List commands
