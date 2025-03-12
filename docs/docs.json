@@ -27,6 +27,14 @@
             ]
           },
           {
+            "group": "Agents",
+            "pages": [
+              "/agents/official-list",
+              "/agents/community-list",
+              "/agents/contribute"
+            ]
+          },
+          {
             "group": "Agent Communication Protocol",
             "pages": [
               {
@@ -44,14 +52,6 @@
                   "/acp/pre-alpha/sdk"
                 ]
               }
-            ]
-          },
-          {
-            "group": "Agents",
-            "pages": [
-              "/agents/official-list",
-              "/agents/community-list",
-              "/agents/contribute"
             ]
           },
           {

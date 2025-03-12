@@ -4,39 +4,53 @@ description: "Start using the BeeAI"
 ---
 
 <Warning>
-  This project is in **Pre-Alpha** and under rapid development. Breaking changes should be expected.
+  This project is in **Pre-Alpha** and under rapid development. Breaking changes
+  should be expected.
 </Warning>
 
 ## What is BeeAI?
 
-BeeAI is an open platform designed to help you discover, run, and compose AI agents from any framework. Whether you're building your own agents or looking for powerful existing solutions, BeeAI makes it easy to find, connect, and orchestrate AI agents seamlessly.
+BeeAI is an open platform to help you discover, run, and compose AI agents from any framework and language. Whether building your agents or looking for powerful existing solutions, BeeAI makes it easy to find, connect, and orchestrate AI agents seamlessly.
 
-## Installation
+## Get started
+
+<Steps>
+   <Step title="Install">
+
+Install BeeAI using [Homebrew](https://brew.sh/) (or see the [installation guide](/get-started/installation) for other methods):
 
 ```sh
-brew install i-am-bee/beeai/beeai && brew services start beeai
+brew install i-am-bee/beeai/beeai
+brew services start beeai
 ```
 
-<Note>Additional installation methods are available [here](/get-started/installation).</Note>
-
-## Web Interface
-
-Visit `http://localhost:8333` in your browser to open the UI.
-
-## CLI Usage
-
-To list all available agents:
+   </Step>
+   <Step title="Configure LLM provider">
 
 ```sh
+beeai env setup
+```
+
+   </Step>
+   <Step title="Launch the web interface:">
+
+```sh
+beeai ui
+```
+
+   </Step>
+   <Step title="Use from the terminal:">
+
+```sh
+# List commands
+beeai --help
+
+# List all available agents
 beeai list
+
+# Run the chat agent
+beeai run chat
 ```
 
-To run a `chat` agent with a given input:
-
-```sh
-beeai run chat "Hello"
-```
-
-## Agent library
-
-A complete list of reference agent implementations is available at [GitHub](https://github.com/i-am-bee/beeai/tree/main/agents).
+   </Step>
+</Steps>
