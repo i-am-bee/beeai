@@ -79,8 +79,8 @@ class AsyncTyper(typer.Typer):
                     for exc_type, message in extract_messages(ex):
                         err_console.print(f":boom: [bold red]{exc_type}[/bold red]: {message}")
                         if exc_type == "McpError":
-                            typer.echo(
-                                f"💡 {typer.style('HINT', fg='yellow')}: Try checking if your configuration is correct with: {typer.style('beeai env check', fg='blue')}"
+                            err_console.print(
+                                "💡 [yellow]HINT[/yellow]: Is your configuration correct? Try re-entering your LLM API details with: [green]beeai env setup[/green]"
                             )
                     if DEBUG:
                         raise

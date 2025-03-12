@@ -18,6 +18,7 @@ import inspect
 import json
 import random
 
+from beeai_cli.commands.env import ensure_llm_env
 import jsonref
 from prompt_toolkit.completion import NestedCompleter
 from prompt_toolkit.validation import Validator
@@ -379,6 +380,8 @@ async def run_agent(
     dump_files: Optional[Path] = typer.Option(None, help="Folder path to save any files returned by the agent"),
 ) -> None:
     """Run an agent."""
+    await ensure_llm_env()
+
     agents_by_name = await _get_agents()
     agent = await _get_agent(name, agents_by_name)
     ui = agent.model_extra.get("ui", {}) or {}
