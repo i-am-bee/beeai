@@ -151,24 +151,16 @@
 }
 
 .logs {
+  @include scrollbar();
   max-block-size: 40vh;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
-
-  .logsScroll {
-    @include scrollbar();
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
-    overflow-x: hidden;
-    max-block-size: 100%;
-    padding-block-end: $spacing-05;
-
-    > div {
-      font-size: rem(12px);
-      color: $text-secondary;
-    }
+  padding-block-end: $spacing-05;
+  > div {
+    font-size: rem(12px);
+    color: $text-secondary;
   }
 
   > button {

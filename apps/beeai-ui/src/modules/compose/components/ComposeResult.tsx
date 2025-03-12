@@ -18,28 +18,18 @@ import { useCompose } from '../contexts';
 import classes from './ComposeResult.module.scss';
 import clsx from 'clsx';
 import { AgentOutputBox } from '#modules/run/components/AgentOutputBox.tsx';
-import ScrollToBottom from 'react-scroll-to-bottom';
+import { useAutoScroll } from '#hooks/useAutoScroll.ts';
 
 export function ComposeResult() {
   const { result, status } = useCompose();
+  const { ref: autoScrollRef } = useAutoScroll([result]);
 
   return (
-    <ScrollToBottom
-      className={clsx(classes.root, { [classes.expanded]: Boolean(result) })}
-      scrollViewClassName={classes.logsScroll}
-      mode={status === 'pending' ? 'bottom' : 'top'}
-    >
-      <ResultContent />
-    </ScrollToBottom>
-  );
-}
-
-function ResultContent() {
-  const { result, status } = useCompose();
-
-  return (
-    <div className={classes.content}>
-      <AgentOutputBox text={result} isPending={status === 'pending'} />
+    <div className={clsx(classes.root, { [classes.expanded]: Boolean(result) })}>
+      <div className={classes.content}>
+        <AgentOutputBox text={result} isPending={status === 'pending'} />
+      </div>
+      <div ref={autoScrollRef} />
     </div>
   );
 }

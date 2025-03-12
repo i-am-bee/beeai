@@ -17,7 +17,6 @@
 import { MarkdownContent } from '#components/MarkdownContent/MarkdownContent.tsx';
 import { Accordion, AccordionItem, OverflowMenu, OverflowMenuItem } from '@carbon/react';
 import clsx from 'clsx';
-import ScrollToBottom from 'react-scroll-to-bottom';
 import { SequentialFormValues } from '../contexts/compose-context';
 import classes from './ComposeStepListItem.module.scss';
 import { useFormContext } from 'react-hook-form';
@@ -26,6 +25,7 @@ import { useCompose } from '../contexts';
 import { KeyboardEvent } from 'react';
 import { AgentRunLogItem } from '#modules/run/components/AgentRunLogItem.tsx';
 import { Spinner } from '#components/Spinner/Spinner.tsx';
+import { useAutoScroll } from '#hooks/useAutoScroll.ts';
 
 interface Props {
   idx: number;
@@ -89,14 +89,7 @@ export function ComposeStepListItem({ idx }: Props) {
             <Accordion>
               {logs?.length ? (
                 <AccordionItem title="Logs" open={!isFinished ? isPending : undefined} className={classes.logsGroup}>
-                  <ScrollToBottom
-                    className={classes.logs}
-                    scrollViewClassName={classes.logsScroll}
-                    mode={isPending ? 'bottom' : 'top'}
-                    checkInterval={50}
-                  >
-                    {logs?.map((message, order) => <AgentRunLogItem key={order}>{message}</AgentRunLogItem>)}
-                  </ScrollToBottom>
+                  <Logs logs={logs} />
                 </AccordionItem>
               ) : null}
 
@@ -120,6 +113,17 @@ export function ComposeStepListItem({ idx }: Props) {
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+function Logs({ logs }: { logs: string[] }) {
+  const { ref: autoScrollRef } = useAutoScroll([logs.length]);
+
+  return (
+    <div className={classes.logs}>
+      {logs?.map((message, order) => <AgentRunLogItem key={order}>{message}</AgentRunLogItem>)}
+      <div ref={autoScrollRef} />
     </div>
   );
 }

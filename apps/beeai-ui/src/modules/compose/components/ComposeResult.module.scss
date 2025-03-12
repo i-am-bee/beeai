@@ -15,8 +15,8 @@
  */
 
 $max-container: rem(1632px);
-$third-of-max-container: $max-container / 3;
-$to-two-thirds-of-max-container: calc(2 * $third-of-max-container + ((100vw - $max-container) / 2));
+$third-of-max-container: math.div($max-container, 3);
+$to-two-thirds-of-max-container: calc(2 * $third-of-max-container + calc((100vw - $max-container) / 2));
 
 .root {
   display: flex;
@@ -24,7 +24,9 @@ $to-two-thirds-of-max-container: calc(2 * $third-of-max-container + ((100vw - $m
   background-color: $background;
   padding-block-start: 0;
   inline-size: 0;
-  overflow: hidden;
+  @include scrollbar();
+  overflow-y: auto;
+  overflow-x: hidden;
   background-color: $layer-02;
   transition:
     inline-size $duration-moderate-01 ease-out,
@@ -35,9 +37,6 @@ $to-two-thirds-of-max-container: calc(2 * $third-of-max-container + ((100vw - $m
     max-inline-size: 100%;
   }
 
-  > div {
-    @include scrollbar();
-  }
   > button {
     display: none;
   }
