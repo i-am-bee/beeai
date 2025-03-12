@@ -39,7 +39,6 @@ export function HandsOffProvider({ agent, children }: PropsWithChildren<Props>) 
     notifications: {
       handler: (notification) => handleNotification(notification),
     },
-    queryMetadata: { errorToast: false },
   });
 
   const handleNotification = useCallback((notification: TextNotification) => {

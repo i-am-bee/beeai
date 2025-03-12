@@ -18,7 +18,7 @@ import { Time } from '@carbon/icons-react';
 import { SkeletonText } from '@carbon/react';
 import { LogoGithub } from '@carbon/icons-react';
 import clsx from 'clsx';
-import { Agent } from '../api/types';
+import type { Agent } from '../api/types';
 import classes from './AgentMetadata.module.scss';
 
 interface Props {
@@ -59,7 +59,7 @@ AgentMetadata.Skeleton = function AgentMetadataSkeleton({ className }: SkeletonP
 
 function GithubLink({ githubUrl }: { githubUrl: string }) {
   return (
-    <a target="_blank" href={githubUrl} className={classes.githubLink} aria-label="Open on Github">
+    <a target="_blank" rel="noreferrer" href={githubUrl} className={classes.githubLink} aria-label="Open on Github">
       <LogoGithub size={16} />
     </a>
   );

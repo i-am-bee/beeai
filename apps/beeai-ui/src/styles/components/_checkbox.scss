@@ -14,10 +14,28 @@
  * limitations under the License.
  */
 
-import { GitHubRepoParams } from './types';
+@use 'styles/common' as *;
 
-export const gitHubRepoKeys = {
-  all: () => ['github-repo'] as const,
-  details: () => [...gitHubRepoKeys.all(), 'detail'] as const,
-  detail: (params?: GitHubRepoParams) => [...gitHubRepoKeys.details(), params] as const,
-};
+.cds--checkbox-group {
+  box-sizing: content-box;
+  padding-inline: rem(12px);
+  min-width: rem(200px);
+}
+
+.cds--label + .cds--form-item.cds--checkbox-wrapper {
+  margin-block-start: 0;
+}
+
+.cds--checkbox-label-text {
+  padding-inline-start: rem(8px);
+}
+
+.cds--form-item.cds--checkbox-wrapper {
+  margin-block-end: rem(8px);
+
+  // .cds--checkbox-group__validation-msg is the last child
+  // second-to-last child is the last .cds--form-item.cds--checkbox-wrapper
+  &:nth-last-child(2) {
+    margin-block-end: 0;
+  }
+}

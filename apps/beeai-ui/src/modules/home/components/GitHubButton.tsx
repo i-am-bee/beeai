@@ -14,23 +14,16 @@
  * limitations under the License.
  */
 
-import { Spinner } from '#components/Spinner/Spinner.tsx';
-import { GITHUB_REPO, GITHUB_REPO_LINK } from '#utils/constants.ts';
-import { LogoGithub } from '@carbon/icons-react';
+import { GITHUB_REPO_LINK } from '#utils/constants.ts';
 import { Button } from '@carbon/react';
-import { millify } from 'millify';
-import { useGitHubRepo } from '../api/queries/useGitHubRepo';
-import classes from './GitHubStarsButton.module.scss';
+import { LogoGithub } from '@carbon/icons-react';
+import classes from './GitHubButton.module.scss';
 
-export function GitHubStarsButton() {
-  const { data, isLoading } = useGitHubRepo(GITHUB_REPO);
-  const count = data?.stargazers_count && millify(data.stargazers_count);
-
+export function GitHubButton() {
   return (
-    <Button as="a" href={GITHUB_REPO_LINK} target="_blank" size="md" className={classes.root}>
+    <Button as="a" href={GITHUB_REPO_LINK} target="_blank" rel="noreferrer" size="md" className={classes.root}>
       <LogoGithub />
-
-      {isLoading ? <Spinner size="sm" /> : <span>{count || 'Star'}</span>}
+      <span>Star on GitHub</span>
     </Button>
   );
 }

@@ -16,44 +16,26 @@
 
 'use client';
 
+import { BREW_INSTALL_BEEAI } from '@i-am-bee/beeai-ui';
 import { Container } from '#components/layouts/Container.tsx';
-import LogoBeeAI from '#svgs/LogoBeeAI.svg';
-import { GET_STARTED_PYTHON_LINK, GET_STARTED_TYPESCRIPT_LINK } from '#utils/constants.ts';
-import { ArrowUpRight } from '@carbon/icons-react';
-import { Button } from '@carbon/react';
+import { CopySnippet } from '#components/CopySnippet/CopySnippet.tsx';
+import { LogoBeeAI } from './LogoBeeAI';
+import { GitHubButton } from './GitHubButton';
 import classes from './GettingStarted.module.scss';
-import { GitHubStarsButton } from './GitHubStarsButton';
 
 export function GettingStarted() {
   return (
     <div className={classes.root}>
       <Container size="xs">
-        <div className={classes.holder}>
-          <LogoBeeAI />
+        <LogoBeeAI />
 
-          <p className={classes.description}>The open-source framework for building production-ready agents.</p>
+        <p className={classes.description}>
+          The open-source platform to discover, run, and&nbsp;compose AI&nbsp;agents from&nbsp;any&nbsp;framework
+        </p>
 
-          <div className={classes.bottom}>
-            <div className={classes.buttons}>
-              <Button
-                as="a"
-                href={GET_STARTED_PYTHON_LINK}
-                target="_blank"
-                size="md"
-                kind="tertiary"
-                className={classes.button}
-                renderIcon={ArrowUpRight}
-              >
-                <span>Get started with Python</span>
-              </Button>
-
-              <a href={GET_STARTED_TYPESCRIPT_LINK} target="_blank" className={classes.link}>
-                Or get started with Typescript
-              </a>
-            </div>
-
-            <GitHubStarsButton />
-          </div>
+        <div className={classes.bottom}>
+          <CopySnippet>{BREW_INSTALL_BEEAI}</CopySnippet>
+          <GitHubButton />
         </div>
       </Container>
     </div>

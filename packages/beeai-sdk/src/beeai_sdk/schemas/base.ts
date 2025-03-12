@@ -31,7 +31,7 @@ export const logSchema = z
   .nullable();
 export type Log = z.input<typeof logSchema>;
 
-export const configSchema = z.object({ tools: z.array(z.string()).optional() });
+export const configSchema = z.object({}).passthrough();
 export type Config = z.input<typeof configSchema>;
 
 export const inputSchema = z.object({ config: configSchema.optional() });

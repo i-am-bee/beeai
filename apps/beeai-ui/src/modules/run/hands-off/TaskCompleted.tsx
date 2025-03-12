@@ -21,7 +21,7 @@ import classes from './TaskCompleted.module.scss';
 export function TaskCompleted() {
   const { stats, isPending } = useHandsOff();
 
-  return stats && !isPending ? (
+  return stats?.startTime && stats.endTime && !isPending ? (
     <p className={classes.root}>
       Task completed in <ElapsedTime stats={stats} />
     </p>

@@ -14,21 +14,22 @@
  * limitations under the License.
  */
 
-import { useQuery } from '@tanstack/react-query';
-import type { GitHubRepoParams } from '../types';
-import { gitHubRepoKeys } from '../key';
-import { fetchGitHubRepo } from '..';
+.container {
+  position: relative;
+  display: flex;
+  block-size: rem(72px);
+}
 
-export function useGitHubRepo(params: GitHubRepoParams) {
-  const query = useQuery({
-    queryKey: gitHubRepoKeys.detail(params),
-    queryFn: () => fetchGitHubRepo(params),
-    staleTime: 1000 * 60 * 60 * 2, // 2 hours
-    retry: 1,
-    meta: {
-      errorToast: false,
-    },
-  });
+.placeholder,
+.animation {
+  position: absolute;
+  block-size: rem(209px);
+  margin-inline-start: rem(-27px);
+  margin-block-start: rem(-68px);
+}
 
-  return query;
+.placeholder {
+  .loaded & {
+    visibility: hidden;
+  }
 }

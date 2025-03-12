@@ -70,17 +70,41 @@ const run =
       memory: memory ?? new UnconstrainedMemory(),
       tools: config?.tools?.map(createTool) ?? [],
     });
+    let lastKey = "";
+    let lastValue = "";
     const output = await agent
       .run({ prompt: null }, { signal })
       .observe((emitter) => {
-        emitter.on("partialUpdate", async ({ update }) => {
-          if (_meta?.progressToken && update.key === "final_answer") {
-            await server.server.sendAgentRunProgress({
-              progressToken: _meta.progressToken,
-              delta: {
-                messages: [{ role: "assistant", content: update.value }],
-              } as MessageOutput,
-            });
+        emitter.on("partialUpdate", async ({ update, meta, data }) => {
+          if (_meta?.progressToken) {
+            if (update.key === "final_answer") {
+              await server.server.sendAgentRunProgress({
+                progressToken: _meta.progressToken,
+                delta: {
+                  messages: [{ role: "assistant", content: update.value }],
+                } as MessageOutput,
+              });
+            } else if (lastKey !== update.key) {
+              lastKey &&
+                (await server.server.sendAgentRunProgress({
+                  progressToken: _meta.progressToken,
+                  delta: {
+                    logs: [
+                      {
+                        level: "info",
+                        message: JSON.stringify(
+                          { key: lastKey, value: lastValue },
+                          null,
+                          2
+                        ),
+                      },
+                    ],
+                  } as MessageOutput,
+                }));
+              lastKey = update.key;
+              lastValue = "";
+            }
+            lastValue += update.value;
           }
         });
       });
@@ -95,11 +119,11 @@ const registerTools = async (server: AcpServer) => {
     server.tool(
       toolName,
       tool.description,
-      (await tool.inputSchema().shape) as ZodRawShape,
+      tool.inputSchema().shape as ZodRawShape,
       async (args, { signal }) => {
         const result = await createTool(toolName).run(args as any, { signal });
         return { content: [{ type: "text", text: result.toString() }] };
-      },
+      }
     );
   }
 };

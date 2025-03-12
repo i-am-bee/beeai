@@ -19,7 +19,9 @@ import { Modal } from '#components/Modal/Modal.tsx';
 import { ModalProps } from '#contexts/Modal/modal-context.ts';
 import { useCreateProvider } from '#modules/providers/api/mutations/useCreateProvider.ts';
 import { CreateProviderBody } from '#modules/providers/api/types.ts';
-import { useCheckProviderStatus } from '#modules/providers/hooks/useCheckProviderStatus.ts';
+import { ProviderSourcePrefixes } from '#modules/providers/constants.ts';
+import { useMonitorProvider } from '#modules/providers/hooks/useMonitorProviderStatus.ts';
+import { ProviderSource } from '#modules/providers/types.ts';
 import {
   Button,
   FormLabel,
@@ -41,8 +43,8 @@ import classes from './ImportAgentsModal.module.scss';
 export function ImportAgentsModal({ onRequestClose, ...modalProps }: ModalProps) {
   const id = useId();
   const [createdProviderId, setCreatedProviderId] = useState<string>();
-  const { status, agents } = useCheckProviderStatus({ id: createdProviderId });
-  const agentsCount = agents.length;
+  const { status, agents } = useMonitorProvider({ id: createdProviderId });
+  const agentsCount = agents?.length ?? 0;
 
   const { mutate: createProvider, isPending } = useCreateProvider({
     onSuccess: (provider) => {
@@ -59,7 +61,7 @@ export function ImportAgentsModal({ onRequestClose, ...modalProps }: ModalProps)
   } = useForm<FormValues>({
     mode: 'onChange',
     defaultValues: {
-      source: Source.LocalPath,
+      source: ProviderSource.Local,
     },
   });
 
@@ -68,7 +70,7 @@ export function ImportAgentsModal({ onRequestClose, ...modalProps }: ModalProps)
   const onSubmit = useCallback(
     ({ location, source }: FormValues) => {
       createProvider({
-        body: { location: `${LOCATION_PREFIXES[source]}${location}` },
+        body: { location: `${ProviderSourcePrefixes[source]}${location}` },
       });
     },
     [createProvider],
@@ -102,9 +104,9 @@ export function ImportAgentsModal({ onRequestClose, ...modalProps }: ModalProps)
                 valueSelected={sourceField.value}
                 onChange={sourceField.onChange}
               >
-                <RadioButton labelText="Local path" value={Source.LocalPath} />
+                <RadioButton labelText="Local path" value={ProviderSource.Local} />
 
-                <RadioButton labelText="GitHub" value={Source.GitHub} />
+                <RadioButton labelText="GitHub" value={ProviderSource.GitHub} />
               </RadioButtonGroup>
 
               <TextInput
@@ -120,13 +122,11 @@ export function ImportAgentsModal({ onRequestClose, ...modalProps }: ModalProps)
           {status === 'ready' && agentsCount > 0 && (
             <div className={classes.agents}>
               <FormLabel>
-                {agentsCount} {pluralize('agent', agentsCount)} found
+                {agentsCount} {pluralize('agent', agentsCount)} imported
               </FormLabel>
 
               <UnorderedList>
-                {agents.map((agent) => (
-                  <ListItem key={agent.name}>{agent.name}</ListItem>
-                ))}
+                {agents?.map((agent) => <ListItem key={agent.name}>{agent.name}</ListItem>)}
               </UnorderedList>
             </div>
           )}
@@ -134,7 +134,7 @@ export function ImportAgentsModal({ onRequestClose, ...modalProps }: ModalProps)
           {status === 'initializing' && <InlineLoading description="Scraping repository&hellip;" />}
 
           {status === 'error' && (
-            <ErrorMessage subtitle="Error during agents import. Check the files in the URL provided" />
+            <ErrorMessage subtitle="Error during agents import. Check the files in the URL provided." />
           )}
         </form>
       </ModalBody>
@@ -154,23 +154,13 @@ export function ImportAgentsModal({ onRequestClose, ...modalProps }: ModalProps)
   );
 }
 
-enum Source {
-  LocalPath = 'LocalPath',
-  GitHub = 'GitHub',
-}
-
-type FormValues = CreateProviderBody & { source: Source };
-
-const LOCATION_PREFIXES = {
-  [Source.LocalPath]: 'file://',
-  [Source.GitHub]: 'git+',
-};
+type FormValues = CreateProviderBody & { source: ProviderSource };
 
 const INPUTS_PROPS = {
-  [Source.LocalPath]: {
+  [ProviderSource.Local]: {
     labelText: 'Agent provider path',
   },
-  [Source.GitHub]: {
+  [ProviderSource.GitHub]: {
     labelText: 'GitHub repository URL',
     helperText: 'Make sure to provide a public link',
   },

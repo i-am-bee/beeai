@@ -16,6 +16,8 @@
 
 @use 'styles/common' as *;
 
+$divider-height: 1px;
+
 .cds--overflow-menu__wrapper .cds--popover {
   display: none;
 }
@@ -46,6 +48,22 @@
   border-radius: inherit;
 }
 
+.cds--overflow-menu--divider {
+  margin-block-start: calc($spacing-03 + $divider-height + $spacing-02);
+  border-block-start: 0;
+  display: block;
+  position: relative;
+  &::before {
+    content: '';
+    block-size: $divider-height;
+    background-color: $border-subtle-00;
+    display: block;
+    inline-size: 100%;
+    position: absolute;
+    inset-block-start: calc(($spacing-03 + $divider-height) * -1);
+  }
+}
+
 .cds--overflow-menu-options__btn {
   max-inline-size: none;
   color: $text-dark;
@@ -57,6 +75,9 @@
   column-gap: $spacing-03;
   text-decoration: none;
   text-align: start;
+  &:focus-visible {
+    border-radius: inherit;
+  }
   @at-root a#{&}::before {
     display: none;
   }

@@ -14,17 +14,9 @@
  * limitations under the License.
  */
 
-.list {
-  display: flex;
-  column-gap: $spacing-06;
-}
+import { ProviderSource } from './types';
 
-.link {
-  @include type-style(label-01);
-  display: block;
-  color: $text-secondary;
-  text-decoration: none;
-  &:hover {
-    color: $text-primary;
-  }
-}
+export const ProviderSourcePrefixes = {
+  [ProviderSource.Local]: 'file://',
+  [ProviderSource.GitHub]: 'git+',
+} as const;

@@ -5,6 +5,7 @@ import {
   textOutputSchema,
 } from "@i-am-bee/beeai-sdk/schemas/text";
 import { SystemMessage, UserMessage } from "beeai-framework/backend/message";
+import { AcpServer } from "@i-am-bee/acp-sdk/server/acp.js";
 import { MODEL, API_BASE, API_KEY } from "../config.js";
 import { OpenAIChatModel } from "beeai-framework/adapters/openai/backend/chat";
 
@@ -14,25 +15,28 @@ type Input = z.output<typeof inputSchema>;
 const outputSchema = textOutputSchema;
 type Output = z.output<typeof outputSchema>;
 
-const run = async (
-  {
-    params,
-  }: {
-    params: { input: Input };
-  },
-  { signal }: { signal?: AbortSignal }
-): Promise<Output> => {
-  const { text } = params.input;
+const run =
+  (server: AcpServer) =>
+  async (
+    {
+      params,
+    }: {
+      params: { input: Input; _meta?: { progressToken?: string | number } };
+    },
+    { signal }: { signal?: AbortSignal }
+  ): Promise<Output> => {
+    const { text } = params.input;
 
-  const model = new OpenAIChatModel(
-    MODEL,
-    {},
-    { baseURL: API_BASE, apiKey: API_KEY, compatibility: "compatible" }
-  );
+    const model = new OpenAIChatModel(
+      MODEL,
+      {},
+      { baseURL: API_BASE, apiKey: API_KEY, compatibility: "compatible" }
+    );
 
-  const podcastResponse = await model.create({
-    messages: [
-      new SystemMessage(`You are the a world-class podcast writer, you have worked as a ghost writer for Joe Rogan, Lex Fridman, Ben Shapiro, Tim Ferris. 
+    const podcastResponse = await model
+      .create({
+        messages: [
+          new SystemMessage(`You are the a world-class podcast writer, you have worked as a ghost writer for Joe Rogan, Lex Fridman, Ben Shapiro, Tim Ferris. 
 
 We are in an alternate universe where actually you have been writing every line they say and they just stream it into their brains.
 
@@ -56,28 +60,40 @@ ALWAYS START YOUR RESPONSE DIRECTLY WITH SPEAKER 1:
 DO NOT GIVE EPISODE TITLES SEPARATELY, LET SPEAKER 1 TITLE IT IN HER SPEECH
 DO NOT GIVE CHAPTER TITLES
 IT SHOULD STRICTLY BE THE DIALOGUES`),
-      new UserMessage(text),
-    ],
-    maxTokens: 8126,
-    temperature: 1,
-    abortSignal: signal,
-  });
+          new UserMessage(text),
+        ],
+        maxTokens: 8126,
+        temperature: 1,
+        abortSignal: signal,
+      })
+      .observe((emitter) => {
+        emitter.on("newToken", async (token) => {
+          params._meta?.progressToken &&
+            (await server.server.sendAgentRunProgress({
+              progressToken: params._meta.progressToken,
+              delta: {
+                logs: [
+                  { level: "info", message: JSON.stringify(token, null, 2) },
+                ],
+              },
+            }));
+        });
+      });
+    const podcastDialogue = podcastResponse.getTextContent();
 
-  const podcastDialogue = podcastResponse.getTextContent();
+    const structuredGenerationSchema = z.array(
+      z.object({
+        speaker: z.number().min(1).max(2),
+        text: z.string(),
+      })
+    );
 
-  const structuredGenerationSchema = z.array(
-    z.object({
-      speaker: z.number().min(1).max(2),
-      text: z.string(),
-    })
-  );
-
-  // Dramatise podcast
-  const finalReponse = await model.createStructure({
-    schema: structuredGenerationSchema,
-    // REVIEW: this essentially adds second system message because of the internal implementation of `createStructure`
-    messages: [
-      new SystemMessage(`You are an international oscar winnning screenwriter
+    // Dramatise podcast
+    const finalReponse = await model.createStructure({
+      schema: structuredGenerationSchema,
+      // REVIEW: this essentially adds second system message because of the internal implementation of `createStructure`
+      messages: [
+        new SystemMessage(`You are an international oscar winnning screenwriter
 
 You have been working with multiple award winning podcasters.
 
@@ -117,17 +133,17 @@ Example of response:
     {"speaker": 1", "text": "Ah, great question! Llama 3.2 is an open-source AI model that allows developers to fine-tune, distill, and deploy AI models anywhere. It's a significant update from the previous version, with improved performance, efficiency, and customization options."},
     {"speaker": 2", "text": "That sounds amazing! What are some of the key features of Llama 3.2?"}
 ]`),
-      new UserMessage(podcastDialogue),
-    ],
-    maxTokens: 8126,
-    temperature: 1,
-    abortSignal: signal,
-  });
+        new UserMessage(podcastDialogue),
+      ],
+      maxTokens: 8126,
+      temperature: 1,
+      abortSignal: signal,
+    });
 
-  return outputSchema.parse({
-    text: JSON.stringify(finalReponse.object),
-  });
-};
+    return outputSchema.parse({
+      text: JSON.stringify(finalReponse.object),
+    });
+  };
 
 const agentName = "podcast-creator";
 

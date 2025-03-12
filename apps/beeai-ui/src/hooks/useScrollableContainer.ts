@@ -14,16 +14,28 @@
  * limitations under the License.
  */
 
-import { GitHubRepoParams, GitHubRepoSchema } from './types';
+import { useEffect, useState } from 'react';
 
-export async function fetchGitHubRepo({ owner, repo }: GitHubRepoParams) {
-  const response = await fetch(`https://api.github.com/repos/${owner}/${repo}`);
+export function useScrollableContainer(element: HTMLElement | null) {
+  const [container, setContainer] = useState<HTMLElement | null>(null);
 
-  if (!response.ok) {
-    throw new Error('Failed to fetch repository data.');
-  }
+  useEffect(() => {
+    if (element) {
+      let parent = element.parentElement;
 
-  const data = await response.json();
+      while (parent) {
+        const { overflowY } = window.getComputedStyle(parent);
 
-  return GitHubRepoSchema.parse(data);
+        if (overflowY === 'scroll' || overflowY === 'auto') {
+          setContainer(parent);
+
+          return;
+        }
+
+        parent = parent.parentElement;
+      }
+    }
+  }, [element]);
+
+  return container;
 }

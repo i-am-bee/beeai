@@ -23,7 +23,7 @@ app = AsyncTyper()
 
 @app.command("sharing")
 async def sharing(disable: bool | None = typer.Option(None, help="Disable sharing")):
-    """Read and modify telemetry sharing configuration"""
+    """Read and update telemetry sharing configuration."""
     if disable is not None:
         await api_request("put", "telemetry", {"sharing_enabled": not disable})
     config = await api_request("get", "telemetry")

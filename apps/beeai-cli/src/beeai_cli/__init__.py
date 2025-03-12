@@ -27,12 +27,12 @@ from beeai_cli.configuration import Configuration
 logging.basicConfig(level=logging.INFO if Configuration().debug else logging.FATAL)
 
 app = AsyncTyper(no_args_is_help=True)
-app.add_typer(beeai_cli.commands.tool.app, name="tool", no_args_is_help=True)
-app.add_typer(beeai_cli.commands.env.app, name="env", no_args_is_help=True)
-app.add_typer(beeai_cli.commands.provider.app, name="provider", no_args_is_help=True)
-app.add_typer(beeai_cli.commands.agent.app, name="agent", no_args_is_help=True)
-app.add_typer(beeai_cli.commands.telemetry.app, name="telemetry", no_args_is_help=True)
-app.add_typer(beeai_cli.commands.compose.app, name="compose", no_args_is_help=True)
+app.add_typer(beeai_cli.commands.tool.app, name="tool", no_args_is_help=True, help="Manage tools.")
+app.add_typer(beeai_cli.commands.env.app, name="env", no_args_is_help=True, help="Manage environment variables.")
+app.add_typer(beeai_cli.commands.provider.app, name="provider", no_args_is_help=True, help="Configure providers.")
+app.add_typer(beeai_cli.commands.agent.app, name="agent", no_args_is_help=True, help="Manage agents.")
+app.add_typer(beeai_cli.commands.telemetry.app, name="telemetry", no_args_is_help=True, help="Configure telemetry.")
+app.add_typer(beeai_cli.commands.compose.app, name="compose", no_args_is_help=True, help="Manage agent composition.")
 
 
 agent_alias = deepcopy(beeai_cli.commands.agent.app)
@@ -44,6 +44,7 @@ app.add_typer(agent_alias, name="", no_args_is_help=True)
 
 @app.command("serve")
 async def serve():
+    """Start server."""
     import beeai_server
 
     beeai_server.serve()
@@ -51,6 +52,7 @@ async def serve():
 
 @app.command("ui")
 async def ui():
+    """Launch graphical interface."""
     import webbrowser
     import httpx
 

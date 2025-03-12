@@ -29,7 +29,7 @@ export function ViewHeader({ heading, label, children }: PropsWithChildren<Props
       <div className={classes.body}>
         <h1 className={classes.heading}>{heading}</h1>
 
-        <div>{children}</div>
+        {children && <div>{children}</div>}
       </div>
     </header>
   );

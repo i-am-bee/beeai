@@ -26,21 +26,31 @@ import { TaskRunningBar } from './TaskRunningBar';
 
 export function HandsOff() {
   const { agent, logs, text, isPending, onClear } = useHandsOff();
+  const userGreeting = agent.ui?.userGreeting;
 
   const isPendingOrText = Boolean(isPending || text);
+  const isFinal = Boolean(text && !isPending);
 
   return (
     <HandsOffView>
       <div className={clsx(classes.root, { [classes.isPendingOrText]: isPendingOrText })}>
-        <AgentHeader agent={agent} onNewSessionClick={isPendingOrText ? onClear : undefined} />
+        <div className={classes.holder}>
+          <div className={classes.header}>
+            <AgentHeader agent={agent} onNewSessionClick={isPendingOrText ? onClear : undefined} />
 
-        <HandsOffInput />
+            <h2 className={classes.heading}>{isFinal ? 'Task input:' : userGreeting || 'What is your task?'}</h2>
+          </div>
 
-        <TaskCompleted />
+          <div className={classes.body}>
+            <HandsOffInput />
 
-        {logs && <AgentRunLogs logs={logs} toggleable={Boolean(text)} />}
+            <TaskCompleted />
 
-        <TaskRunningBar />
+            {logs && <AgentRunLogs logs={logs} toggleable={Boolean(text)} />}
+
+            <TaskRunningBar />
+          </div>
+        </div>
       </div>
     </HandsOffView>
   );
