@@ -96,6 +96,11 @@ def format_agent_input(instruction: str, previous_output: dict[str, Any] | str) 
     }\n---\n{instruction}"""
 
 
+class OutputWithMetadata(Output):
+    agent_name: str
+    agent_idx: int
+
+
 def add_sequential_workflow_agent(server: Server):
     @server.agent(
         agentName,
@@ -112,7 +117,7 @@ def add_sequential_workflow_agent(server: Server):
         ).model_dump(),
         composition_agent=True,
     )
-    async def run_sequential_workflow(input: SequentialWorkflowInput, ctx: Context) -> Output:
+    async def run_sequential_workflow(input: SequentialWorkflowInput, ctx: Context) -> OutputWithMetadata:
         output = Output()
         current_step = None
         try:
@@ -125,6 +130,19 @@ def add_sequential_workflow_agent(server: Server):
 
                 for idx, step in enumerate(input.steps):
                     current_step = step
+
+                    await ctx.report_agent_run_progress(
+                        delta=OutputWithMetadata(
+                            agent_name=step.agent,
+                            agent_idx=idx,
+                            logs=[
+                                Log(
+                                    level=LogLevel.info,
+                                    message=f"✅ Agent {step.agent}[{idx}] started processing",
+                                ),
+                            ],
+                        )
+                    )
 
                     async for message in send_request_with_notifications(
                         session,
@@ -142,14 +160,14 @@ def add_sequential_workflow_agent(server: Server):
                                     params=AgentRunProgressNotificationParams(delta=output_delta_dict)
                                 )
                             ):
-                                output_delta = Output.model_validate(output_delta_dict)
-                                output_delta.agent_name = step.agent
-                                output_delta.agent_idx = idx
+                                output_delta = OutputWithMetadata.model_validate(
+                                    {**output_delta_dict, "agent_name": step.agent, "agent_idx": idx}
+                                )
                                 await ctx.report_agent_run_progress(delta=output_delta)
                             case RunAgentResult(output=output_delta_dict):
-                                output_delta = Output.model_validate(output_delta_dict)
-                                output_delta.agent_name = step.agent
-                                output_delta.agent_idx = idx
+                                output_delta = OutputWithMetadata.model_validate(
+                                    {**output_delta_dict, "agent_name": step.agent, "agent_idx": idx}
+                                )
                                 if idx == len(input.steps) - 1:
                                     output = output_delta
                                     break
@@ -164,13 +182,15 @@ def add_sequential_workflow_agent(server: Server):
                                     else str(previous_output)
                                 )
                                 await ctx.report_agent_run_progress(
-                                    delta=Output(
+                                    delta=OutputWithMetadata(
+                                        agent_name=step.agent,
+                                        agent_idx=idx,
                                         logs=[
                                             Log(
                                                 level=LogLevel.success,
                                                 message=f"✅ Agent {step.agent}[{idx}] finished successfully: {message}",
                                             ),
-                                        ]
+                                        ],
                                     )
                                 )
 
