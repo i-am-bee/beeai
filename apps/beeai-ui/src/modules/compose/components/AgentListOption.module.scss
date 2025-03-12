@@ -24,15 +24,10 @@
   &:hover {
     background-color: $background-hover;
   }
-
-  &:last-child .content {
-    border-block-end: none;
-  }
 }
 
 .content {
   padding-block: $spacing-05;
-  border-block-end: 1px solid $border-subtle;
 }
 
 .name {

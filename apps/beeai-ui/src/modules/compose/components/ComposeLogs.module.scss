@@ -16,17 +16,82 @@
 
 .root {
   position: relative;
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: $spacing-04;
+  transition: block-size $duration-fast-01 ease-in-out;
+
+  &:last-child {
+    .left::before,
+    .left::after {
+      display: none;
+    }
+  }
+
+  &.status-pending {
+    .bullet {
+      background-color: $background;
+    }
+  }
+  &.status-finished {
+    .left::after {
+      block-size: 100%;
+    }
+    .bullet {
+      background-color: $background-inverse;
+      color: $text-inverse;
+    }
+  }
+}
+
+.left {
+  position: relative;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset-inline-start: rem(16px);
+    inset-block-start: rem(8px);
+    inline-size: 1px;
+    block-size: 100%;
+    background-color: $border-subtle;
+  }
+  &::after {
+    block-size: 0;
+    background-color: $background-inverse;
+    transition: block-size $duration-slow-01 ease-out;
+  }
+
+  .bullet {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    block-size: rem(32px);
+    inline-size: rem(32px);
+    border-radius: 50%;
+    overflow: hidden;
+    font-size: rem(16px);
+    font-weight: 600;
+    background-color: $layer-02;
+  }
+}
+
+.content {
+  position: relative;
   display: flex;
   flex-direction: column;
-  background-color: $background;
-  border-radius: $border-radius;
-  padding: $spacing-05;
-  box-shadow: $box-shadow;
-  transition: block-size $duration-fast-01 ease-in-out;
+  max-inline-size: 100%;
+  overflow: hidden;
+  padding-block-end: $spacing-05;
 }
 
 .name {
-  display: block;
+  display: flex;
+  align-items: center;
+  min-block-size: rem(32px);
   margin-block-end: $spacing-04;
   padding-inline-end: $spacing-08;
 }
@@ -37,10 +102,20 @@
   inset-block-start: 0;
 }
 
-.description {
-  @include type-style(label-01);
+.input p {
+  @include type-style('body-01');
   color: $text-secondary;
-  margin-block-end: $spacing-03;
+}
+
+.textarea {
+  padding-block-end: $spacing-06;
+
+  &::after,
+  textarea {
+    @include type-style('body-compact-01');
+    border: 1px solid $border-subtle;
+    border-radius: $border-radius;
+  }
 }
 
 .run {
@@ -48,9 +123,10 @@
 
   :global(.cds--accordion__content) {
     padding: 0;
+    overflow-x: auto;
   }
-  :global(.cds--accordion__item):last-child {
-    border-block-end: 0;
+  :global(.cds--accordion__item) {
+    border-block: 0;
   }
   :global(.cds--inline-loading__animation) {
     margin-inline-end: 0;
@@ -74,32 +150,17 @@
   }
 }
 
-.logsGroup {
-  :global(.cds--accordion__wrapper) {
-    padding-block-end: $spacing-05;
-  }
-}
-
 .logs {
-  max-block-size: 50vh;
-  overflow: hidden;
+  @include scrollbar();
+  max-block-size: 40vh;
+  overflow-y: auto;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
-
-  .logsScroll {
-    @include scrollbar();
-    display: flex;
-    flex-direction: column;
-    gap: $spacing-03;
-    overflow-y: auto;
-    overflow-x: hidden;
-    max-block-size: 100%;
-    padding-block-end: $spacing-05;
-
-    > div {
-      font-size: rem(12px);
-      color: $text-secondary;
-    }
+  padding-block-end: $spacing-05;
+  > div {
+    font-size: rem(12px);
+    color: $text-secondary;
   }
 
   > button {

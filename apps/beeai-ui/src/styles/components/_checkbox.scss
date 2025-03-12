@@ -19,7 +19,7 @@
 .cds--checkbox-group {
   box-sizing: content-box;
   padding-inline: rem(12px);
-  min-width: rem(200px);
+  min-inline-size: rem(200px);
 }
 
 .cds--label + .cds--form-item.cds--checkbox-wrapper {

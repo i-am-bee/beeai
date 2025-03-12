@@ -14,23 +14,10 @@
  * limitations under the License.
  */
 
-.root {
-  @include scrollbar();
-  background-color: $layer-02;
-  display: flex;
-  justify-content: flex-end;
-  overflow-y: auto;
-  block-size: 100%;
+import { textInputSchema, textOutputSchema } from '@i-am-bee/beeai-sdk/schemas/text';
+import zodToJsonSchema from 'zod-to-json-schema';
 
-  > div {
-    margin-inline: 0;
-    padding-inline-end: $spacing-06;
-  }
-}
+export const SEQUENTIAL_COMPOSE_AGENT_NAME = 'sequential-workflow';
 
-.agents {
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-06;
-  padding-block-end: $spacing-06;
-}
+export const textInputJsonSchema = zodToJsonSchema(textInputSchema);
+export const textOutputJsonSchema = zodToJsonSchema(textOutputSchema);

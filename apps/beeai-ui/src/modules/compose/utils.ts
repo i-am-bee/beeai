@@ -14,16 +14,7 @@
  * limitations under the License.
  */
 
-import { MessagesResult } from '#modules/run/api/types.ts';
-import { ComposeNotificationDelta, ComposeResult } from './types';
-
-export function isComposeMessageResult(result: ComposeResult): result is MessagesResult {
-  return Array.isArray(result.output.messages);
-}
-
-export function getComposeResultText(result: ComposeResult) {
-  return isComposeMessageResult(result) ? result.output.messages.at(-1)?.content : result.output.text;
-}
+import { ComposeNotificationDelta } from './types';
 
 export function getComposeDeltaResultText(result: ComposeNotificationDelta) {
   return Array.isArray(result.messages) ? result.messages.at(-1)?.content : (result.text ?? '');

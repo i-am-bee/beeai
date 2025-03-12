@@ -18,31 +18,73 @@ import { MainContent } from '#components/layouts/MainContent.tsx';
 import { Container } from '#components/layouts/Container.tsx';
 import classes from './ComposeLanding.module.scss';
 import { VersionTag } from '#components/VersionTag/VersionTag.tsx';
-import { AddAgentButton } from './components/AddAgentButton';
-import { useNavigate } from 'react-router';
-import { Agent } from '#modules/agents/api/types.ts';
 import { routes } from '#utils/router.ts';
+import { TransitionLink } from '#components/TransitionLink/TransitionLink.tsx';
+import SequentialIllustration from './assets/sequential.svg';
+import SupervisorIllustration from './assets/supervisor.svg';
+import { useState } from 'react';
+import { Button } from '@carbon/react';
+import { ArrowRight } from '@carbon/icons-react';
 
 export function ComposeLanding() {
-  const navigate = useNavigate();
+  const [selected, setSelected] = useState<Workflow>(WORKFLOWS.at(0)!);
 
   return (
-    <MainContent className={classes.main}>
-      <Container>
-        <h1>
-          Compose playground <VersionTag>alpha</VersionTag>
-        </h1>
+    <MainContent>
+      <Container size="sm">
+        <div className={classes.heading}>
+          <h1>
+            Compose playground <VersionTag>alpha</VersionTag>
+          </h1>
+          <p>Select a pattern to compose and test a multi-agent workflow</p>
+        </div>
 
-        <div className={classes.agents}>
-          <AddAgentButton
-            onSelectAgent={(agent: Agent) => {
-              const params = new URLSearchParams({ agents: agent.name });
+        <ul className={classes.workflows}>
+          {WORKFLOWS.map((workflow) => {
+            const { id, name, route, description, image: Image } = workflow;
+            return (
+              <li
+                key={id}
+                className={classes.workflow}
+                aria-disabled={!route}
+                aria-selected={id === selected.id}
+                onClick={() => route && setSelected(workflow)}
+              >
+                <div className={classes.workflowText}>
+                  <span className={classes.name}>{name}</span>
+                  <p>{description}</p>
+                </div>
+                <Image />
+              </li>
+            );
+          })}
+        </ul>
 
-              navigate(`${routes.composeSequential()}?${params.toString()}`);
-            }}
-          />
+        <div className={classes.actionBar}>
+          <TransitionLink to={selected.route} asChild>
+            <Button renderIcon={ArrowRight} href={selected.route} className={classes.startBtn}>
+              Start composing
+            </Button>
+          </TransitionLink>
         </div>
       </Container>
     </MainContent>
   );
 }
+
+const WORKFLOWS = [
+  {
+    id: 'sequential',
+    name: 'Sequential',
+    route: routes.composeSequential(),
+    description: 'Define your agents and the sequence that makes sense for your workflow',
+    image: SequentialIllustration,
+  },
+  {
+    id: 'supervisor',
+    name: 'Supervisor',
+    description: 'Choose a supervisor agent to structure and control tasks of other agents in your system',
+    image: SupervisorIllustration,
+  },
+];
+type Workflow = (typeof WORKFLOWS)[number];

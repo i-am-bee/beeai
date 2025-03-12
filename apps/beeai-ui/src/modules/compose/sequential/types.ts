@@ -14,15 +14,7 @@
  * limitations under the License.
  */
 
-import { ComposeSetup } from './components/ComposeSetup';
-import { ComposeTest } from './components/ComposeTest';
-import classes from './ComposeTestView.module.scss';
-
-export function ComposeTestView() {
-  return (
-    <div className={classes.root}>
-      <ComposeSetup />
-      <ComposeTest />
-    </div>
-  );
-}
+export type SequentialWorkflowInput = {
+  steps: { agent: string; instruction: string }[];
+  input?: string;
+};
