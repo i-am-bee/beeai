@@ -245,7 +245,7 @@ class Set(InteractiveCommand):
 
 
 class Help(InteractiveCommand):
-    """Show this help"""
+    """Show this help."""
 
     command = "?"
 
@@ -378,7 +378,7 @@ async def run_agent(
     ),
     dump_files: Optional[Path] = typer.Option(None, help="Folder path to save any files returned by the agent"),
 ) -> None:
-    """Call an agent with a given input."""
+    """Run an agent."""
     agents_by_name = await _get_agents()
     agent = await _get_agent(name, agents_by_name)
     ui = agent.model_extra.get("ui", {}) or {}
@@ -469,7 +469,7 @@ async def run_agent(
 
 @app.command("list")
 async def list_agents():
-    """List available agents"""
+    """List agents."""
     result = await send_request(types.ListAgentsRequest(method="agents/list"), types.ListAgentsResult)
     with create_table(Column("Name", style="yellow"), "UI", Column("Description", ratio=1)) as table:
         for agent in result.agents:
@@ -536,7 +536,7 @@ async def agent_detail(
     name: str = typer.Argument(help="Name of agent tool to show"),
     schema: bool | None = typer.Option(default=None),
 ):
-    """Show details of an agent"""
+    """Show agent details."""
     agent = await _get_agent(name)
     if schema:
         console.print(Markdown(f"# Agent {agent.name}\n## Input Schema\n"))

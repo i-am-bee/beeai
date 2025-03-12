@@ -51,7 +51,7 @@ async def preview(
         ),
     ),
 ) -> None:
-    """Preview provider configuration without adding it to the platform."""
+    """Preview provider configuration (without adding it to the platform)."""
     location = _get_abs_location(location)
     resp = await api_request("post", "provider/preview", json={"location": location})
     console.print(resp)
@@ -68,7 +68,7 @@ async def add(
         ),
     ),
 ) -> None:
-    """Add a new provider"""
+    """Add a provider."""
     location = _get_abs_location(location)
     await api_request("post", "provider", json={"location": location})
     await list_providers()
@@ -106,7 +106,7 @@ def _get_short_location(location: str) -> str:
 
 @app.command("list")
 async def list_providers():
-    """Remove provider"""
+    """List providers."""
     resp = await api_request("get", "provider")
     with create_table(
         Column("Short ID", style="yellow"),
@@ -158,7 +158,7 @@ async def remove(
         ..., help="Short ID or part of the URL of the provider manifest (from beeai provider list)"
     ),
 ) -> None:
-    """Remove provider by ID"""
+    """Remove provider."""
     location_or_id = _get_abs_location(location_or_id)
     providers = (await api_request("get", "provider"))["items"]
     remove_provider = select_provider(location_or_id, providers)["id"]
@@ -172,7 +172,7 @@ async def info(
         ..., help="Short ID or part of the URL of the provider manifest (from beeai provider list)"
     ),
 ):
-    """Show details of a provider"""
+    """Show provider details."""
     providers = (await api_request("get", "provider"))["items"]
     provider = select_provider(location_or_id, providers)
     console.print(provider)
@@ -180,6 +180,6 @@ async def info(
 
 @app.command("sync")
 async def sync():
-    """Sync external changes to provider registry (if you modified ~/.beeai/providers.yaml manually)"""
+    """Sync provider registry (if you modified ~/.beeai/providers.yaml manually)."""
     await api_request("put", "provider/sync")
     console.print("Providers updated")
