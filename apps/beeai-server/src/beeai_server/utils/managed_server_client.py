@@ -24,7 +24,7 @@ import anyio
 import anyio.abc
 import anyio.to_thread
 import psutil
-from anyio import create_task_group
+from anyio import create_task_group, CancelScope
 from httpx import ConnectError
 
 from acp.client.sse import sse_client
@@ -55,7 +55,7 @@ class ManagedServerParameters(BaseModel):
     headers: dict[str, Any] | None = (None,)
     timeout: float = 5
     sse_read_timeout: float = 60 * 5
-    graceful_terminate_timeout: float = 2
+    graceful_terminate_timeout: float = 1
     endpoint: str = "/sse"
 
 
@@ -107,21 +107,21 @@ async def managed_sse_client(server: ManagedServerParameters) -> McpClient:
                     await asyncio.sleep(timeout)
             else:
                 raise ConnectionError("Failed to connect to provider.")
-
         finally:
-            with anyio.move_on_after(server.graceful_terminate_timeout) as cancel_scope:
-                try:
-                    process.terminate()
-                    await process.wait()
-                except ProcessLookupError:
-                    logger.warning("Provider process died prematurely")
+            with CancelScope(shield=True):
+                with anyio.move_on_after(server.graceful_terminate_timeout) as cancel_scope:
+                    try:
+                        process.terminate()
+                        await process.wait()
+                    except ProcessLookupError:
+                        logger.warning("Provider process died prematurely")
 
-            if cancel_scope.cancel_called:
-                logger.warning(
-                    f"Provider process did not terminate in {server.graceful_terminate_timeout}s, killing it."
-                )
-                await anyio.to_thread.run_sync(_kill_process_group, process)
-            tg.cancel_scope.cancel()
+                if cancel_scope.cancel_called:
+                    logger.warning(
+                        f"Provider process did not terminate in {server.graceful_terminate_timeout}s, killing it."
+                    )
+                    await anyio.to_thread.run_sync(_kill_process_group, process)
+                tg.cancel_scope.cancel()
 
 
 async def find_free_port():

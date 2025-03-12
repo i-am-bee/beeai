@@ -90,7 +90,7 @@ class LoadedProvider:
         self._session_exit_stack = AsyncExitStack()
         self._writer_exit_stack = AsyncExitStack()
         self._write_messages, self.incoming_messages = anyio.create_memory_object_stream()
-        self._stopping = False
+        self._stopping = asyncio.Event()
         self._stopped = asyncio.Event()
         self._supports_agents = True
         self._initialize_result: InitializeResult | None = None
@@ -168,17 +168,27 @@ class LoadedProvider:
     async def _initialize_session(self):
         logger.info("Initializing session")
         await self._close_session()
-        mcp_client = self.provider.mcp_client(env=await self._env_repository.get_all())
-        read_stream, write_stream = await self._session_exit_stack.enter_async_context(mcp_client)
-        session = await self._session_exit_stack.enter_async_context(ClientSession(read_stream, write_stream))
-        with anyio.fail_after(self.INITIALIZE_TIMEOUT.total_seconds()):
-            self._initialize_result = await session.initialize()
-        tg = await self._session_exit_stack.enter_async_context(anyio.create_task_group())
-        self._session_exit_stack.callback(lambda: tg.cancel_scope.cancel())
+        cancel_group = await self._session_exit_stack.enter_async_context(create_task_group())
 
-        self.session = session
-        tg.start_soon(self._stream_notifications, tg)
-        await self._load_features()
+        async def _listen_for_exit():
+            await self._stopping.wait()
+            cancel_group.cancel_scope.cancel()
+
+        exit_task = asyncio.create_task(_listen_for_exit())
+        try:
+            mcp_client = self.provider.mcp_client(env=await self._env_repository.get_all())
+            read_stream, write_stream = await self._session_exit_stack.enter_async_context(mcp_client)
+            session = await self._session_exit_stack.enter_async_context(ClientSession(read_stream, write_stream))
+            with anyio.fail_after(self.INITIALIZE_TIMEOUT.total_seconds()):
+                self._initialize_result = await session.initialize()
+            tg = await self._session_exit_stack.enter_async_context(anyio.create_task_group())
+            self._session_exit_stack.callback(lambda: tg.cancel_scope.cancel())
+
+            self.session = session
+            tg.start_soon(self._stream_notifications, tg)
+            await self._load_features()
+        finally:
+            exit_task.cancel()
 
     async def _close_session(self):
         try:
@@ -189,7 +199,7 @@ class LoadedProvider:
 
     async def _ensure_session(self):
         bind_contextvars(provider=self.id)
-        if self._stopping:
+        if self._stopping.is_set():
             await self._close_session()
             self._stopped.set()
             unbind_contextvars("provider")
@@ -216,7 +226,7 @@ class LoadedProvider:
             self.status = LoadedProviderStatus.error
         except TimeoutError:
             logger.warning("The server did not respond in time, we assume it is processing a request.")
-        except Exception as ex:  # TODO narrow exception scope
+        except BaseException as ex:  # TODO narrow exception scope
             self.last_error = LoadProviderErrorMessage(message=f"Error connecting to provider: {extract_messages(ex)}")
             self.status = LoadedProviderStatus.error
         finally:
@@ -226,14 +236,14 @@ class LoadedProvider:
             unbind_contextvars("provider")
 
     async def __aenter__(self):
-        self._stopping = False
+        self._stopping.clear()
         logger.info("Loading provider")
         await self._writer_exit_stack.enter_async_context(self._write_messages)
         await self._ensure_session_periodic.start()
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
+        self._stopping.set()
         await self._writer_exit_stack.aclose()
-        self._stopping = True
         self._ensure_session_periodic.poke()
         await self._stopped.wait()
         await self._ensure_session_periodic.stop()
