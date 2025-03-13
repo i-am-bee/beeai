@@ -108,7 +108,7 @@ def _get_short_location(location: str) -> str:
 async def list_providers():
     """List providers."""
     resp = await api_request("get", "provider")
-    max_len = max(len(_get_short_location(item["id"])) for item in resp["items"])
+    max_len = max(len(_get_short_location(item["id"])) for item in (resp["items"])) if resp["items"] else 0
 
     with create_table(
         Column("Short ID", max_width=8, style="yellow"),
