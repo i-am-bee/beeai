@@ -15,7 +15,11 @@
         "groups": [
           {
             "group": "Introduction",
-            "pages": ["/introduction/welcome", "/introduction/quickstart"]
+            "pages": [
+              "/introduction/welcome",
+              "/introduction/quickstart",
+              "/introduction/installation"
+            ]
           },
           {
             "group": "Core Concepts",

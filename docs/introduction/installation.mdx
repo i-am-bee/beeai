@@ -1,0 +1,110 @@
+---
+title: "Installation"
+description: "Instructions for installing BeeAI"
+icon: "wrench"
+---
+
+The BeeAI platform supports installation on **macOS** and **Linux** using multiple methods.
+
+<Info>Windows support will be available in the next `Alpha` release.</Info>
+
+## Homebrew (recommended)
+
+Installing using [Homebrew](https://brew.sh/) is the recommended method for both macOS and Linux. It handles dependency installation and manages background services automatically.
+
+### Install
+
+```sh
+brew install i-am-bee/beeai/beeai
+brew services start beeai
+```
+
+### Update
+
+<Note>Agents are updated automatically.</Note>
+
+```sh
+brew upgrade beeai
+brew services restart beeai
+```
+
+### Uninstall
+
+```sh
+brew services stop beeai
+brew uninstall beeai
+```
+
+## PyPI
+
+This Python-native installation method is less recommended because it requires additional manual steps and does not manage dependencies or background services automatically.
+
+### Install
+
+<Warning>
+  This installation method is unsupported. We strongly recommend using the
+  [Homebrew method](#homebrew-recommended).
+</Warning>
+
+<Steps>
+   <Step title="Install pipx">
+
+Follow the official instructions to install [pipx](https://github.com/pypa/pipx).
+
+   </Step>
+   <Step title="Install BeeAI">
+
+```sh
+pipx install beeai-cli
+```
+
+   </Step>
+   <Step title="Install agent runtimes">
+
+These are optional, but you won't be able to use agents, including built-in ones, if the corresponding runtime is not available.
+
+    - **Python runtime**: Install [uv](https://docs.astral.sh/uv/).
+    - **JavaScript/TypeScript runtime**: Install [Node.js](https://nodejs.org).
+    - **Docker runtime**: This is optional since currently no built-in agents require Docker. If desired, we recommend [Rancher Desktop](https://rancherdesktop.io/).
+
+    </Step>
+    <Step title="Run BeeAI server:">
+
+You need to keep this command running in order to use the platform.
+
+```sh
+beeai serve
+```
+
+   </Step>
+</Steps>
+
+### Update
+
+```sh
+pipx upgrade beeai
+```
+
+### Uninstall
+
+```sh
+pipx uninstall beeai
+```
+
+## What's next?
+
+After installation, configure your API keys with the following command:
+
+```sh
+beeai env setup
+```
+
+Then, verify your setup by running:
+
+```sh
+beeai provider list
+```
+
+Ensure all providers display the `ready` state. Note that initial setup might take a few minutes.
+
+You may also wish to enable [Agent Traceability](/observability/agents-traceability).
