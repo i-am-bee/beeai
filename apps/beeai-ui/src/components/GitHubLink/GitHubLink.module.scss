@@ -14,18 +14,15 @@
  * limitations under the License.
  */
 
-"use client";
-
-import { CommunityNav } from "@i-am-bee/beeai-ui";
-import { usePathname } from "next/navigation";
-import { MainNav } from "../MainNav/MainNav";
-
-export function Navigation() {
-  const pathname = usePathname();
-  return (
-    <>
-      <MainNav />
-      {pathname !== "/" && <CommunityNav />}
-    </>
-  );
+.root {
+  display: flex;
+  align-items: center;
+  column-gap: $spacing-03;
+  text-decoration: none;
+  color: $text-dark;
+  font-size: rem(14px);
+  line-height: math.div(18, 14);
+  &:hover {
+    color: $background-inverse;
+  }
 }

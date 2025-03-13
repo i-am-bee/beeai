@@ -15,8 +15,8 @@
  */
 
 import LogoBluesky from '#svgs/LogoBluesky.svg';
-import { BLUESKY_LINK, DISCORD_LINK, GITHUB_REPO_LINK, YOUTUBE_LINK } from '#utils/constants.ts';
-import { LogoDiscord, LogoGithub, LogoYoutube } from '@carbon/icons-react';
+import { BLUESKY_LINK, DISCORD_LINK, YOUTUBE_LINK } from '#utils/constants.ts';
+import { LogoDiscord, LogoYoutube } from '@carbon/icons-react';
 import classes from './CommunityNav.module.scss';
 
 export function CommunityNav() {
@@ -36,11 +36,6 @@ export function CommunityNav() {
 }
 
 const NAV_ITEMS = [
-  {
-    label: 'GitHub',
-    href: GITHUB_REPO_LINK,
-    Icon: LogoGithub,
-  },
   {
     label: 'Discord',
     href: DISCORD_LINK,

@@ -14,10 +14,26 @@
  * limitations under the License.
  */
 
-.holder {
-  display: flex;
-  column-gap: $gap;
-  justify-content: flex-end;
-  align-items: center;
-  padding-block: $spacing-05;
+'use client';
+
+import { TRY_LOCALLY_LINK } from '#utils/constants.ts';
+import { ArrowUpRight } from '@carbon/icons-react';
+import { Button } from '@carbon/react';
+import classes from './TryLocallyButton.module.scss';
+
+export function TryLocallyButton() {
+  return (
+    <Button
+      as="a"
+      href={TRY_LOCALLY_LINK}
+      target="_blank"
+      rel="noreferrer"
+      kind="primary"
+      renderIcon={ArrowUpRight}
+      size="md"
+      className={classes.root}
+    >
+      Try locally in GUI
+    </Button>
+  );
 }
