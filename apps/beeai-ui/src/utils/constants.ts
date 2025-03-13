@@ -28,4 +28,4 @@ export const BEE_AI_FRAMEWORK_TAG = 'BeeAI';
 
 export const BREW_INSTALL_BEEAI = 'brew install i-am-bee/beeai/beeai';
 
-export const TRY_LOCALLY_LINK = `${DOCUMENTATION_LINK}/get-started/installation`;
+export const TRY_LOCALLY_LINK = `${DOCUMENTATION_LINK}/introduction/quickstart`;
