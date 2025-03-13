@@ -281,9 +281,9 @@ async def setup() -> bool:
             json={"env": {"LLM_API_BASE": api_base, "LLM_API_KEY": api_key, "LLM_MODEL": selected_model}},
         )
 
-    with console.status("Reloading agent providers...", spinner="dots"):
+    with console.status("Reloading agent providers (may take a few minutes)...", spinner="dots"):
         time.sleep(5)
-        for i in range(30):
+        for i in range(180):
             time.sleep(1)
             if all(item["status"] == "ready" for item in (await api_request("get", "provider"))["items"]):
                 break
