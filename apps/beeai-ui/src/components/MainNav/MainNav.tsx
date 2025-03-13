@@ -19,18 +19,39 @@ import classes from './MainNav.module.scss';
 import { TransitionLink } from '../TransitionLink/TransitionLink';
 import { useIsNavSectionActive } from '#hooks/useIsNavSectionActive.ts';
 import clsx from 'clsx';
+import { usePhoenix } from './queries/usePhoenix';
+import { Button } from '@carbon/react';
+import { Tooltip } from '#components/Tooltip/Tooltip.tsx';
+import { TracesTooltip } from './TracesTooltip';
 
 export function MainNav() {
   const isSectionActive = useIsNavSectionActive();
+  const { isPending, error, data: showPhoenixTab } = usePhoenix({ enabled: Boolean(__PHOENIX_SERVER_TARGET__) });
 
   return (
     <nav>
       <ul className={classes.list}>
-        {NAV_ITEMS.map(({ label, to, section }, idx) => (
+        {getNavItems({
+          appName: __APP_NAME__,
+          phoenixServerTarget: __PHOENIX_SERVER_TARGET__,
+          showPhoenixTab: Boolean(!isPending && !error && showPhoenixTab),
+        }).map(({ label, to, section, target, rel, isDisabled }, idx) => (
           <li key={idx} className={clsx({ [classes.active]: section && isSectionActive(section) })}>
-            <TransitionLink to={to} className={classes.link}>
-              {label}
-            </TransitionLink>
+            {isDisabled ? (
+              <Tooltip asChild content={<TracesTooltip />}>
+                <Button kind="ghost" disabled className={classes.link}>
+                  {label}
+                </Button>
+              </Tooltip>
+            ) : target ? (
+              <a href={to} className={classes.link} target={target} rel={rel}>
+                {label}
+              </a>
+            ) : (
+              <TransitionLink to={to} className={classes.link}>
+                {label}
+              </TransitionLink>
+            )}
           </li>
         ))}
       </ul>
@@ -38,19 +59,36 @@ export function MainNav() {
   );
 }
 
-const NAV_ITEMS = [
-  {
-    label: <strong>{__APP_NAME__}</strong>,
-    to: routes.home(),
-  },
-  {
-    label: 'Agents',
-    to: routes.agents(),
-    section: sections.agents,
-  },
-  {
-    label: 'Compose playground',
-    to: routes.compose(),
-    section: sections.compose,
-  },
-];
+function getNavItems({
+  appName,
+  phoenixServerTarget,
+  showPhoenixTab,
+}: {
+  appName: string;
+  phoenixServerTarget: string;
+  showPhoenixTab: boolean;
+}) {
+  return [
+    {
+      label: <strong>{appName}</strong>,
+      to: routes.home(),
+    },
+    {
+      label: 'Agents',
+      to: routes.agents(),
+      section: sections.agents,
+    },
+    {
+      label: 'Compose playground',
+      to: routes.compose(),
+      section: sections.compose,
+    },
+    {
+      label: 'Traces',
+      to: `${phoenixServerTarget}/projects`,
+      target: '_blank',
+      rel: 'noopener noreferrer', // Security best practice
+      isDisabled: Boolean(!showPhoenixTab || !phoenixServerTarget),
+    },
+  ];
+}

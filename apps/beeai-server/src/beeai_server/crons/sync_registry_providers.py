@@ -31,9 +31,8 @@ logger = logging.getLogger(__name__)
 @inject
 async def check_official_registry(configuration: Configuration, provider_service: ProviderService):
     registry = configuration.provider_registry_location
-    managed_providers = {
-        provider.id for provider in await provider_service.list_providers() if provider.registry == registry
-    }
+    await registry.resolve_version()
+    managed_providers = {provider.id for provider in await provider_service.list_providers() if provider.registry}
     errors = []
     desired_providers = set()
 

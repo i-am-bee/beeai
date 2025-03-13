@@ -11,14 +11,14 @@
 
 <p align="center">
     <a href="#key-features">Key features</a> •
-    <a href="#get-started">Get started</a> •
+    <a href="#quickstart">Quickstart</a> •
     <a href="#documentation">Documentation</a> •
     <a href="#agent-library">Agent library</a>
 </p>
 
 <div align="center">
 
-https://github.com/user-attachments/assets/0a92aecc-4876-4672-b317-4e1de3c58f9e
+https://github.com/user-attachments/assets/dc6cc4d7-4577-44c9-acf7-ec0133268a2d
 
 </div>
 
@@ -31,7 +31,7 @@ BeeAI is an open platform to help you discover, run, and compose AI agents from 
 - 🔍 **Discoverability**: Explore a [powerful agent catalog](https://beeai.dev/agents) with integrated search.
 - 🐝 **BeeAI ecosystem:** First-class support for [Python](https://github.com/i-am-bee/beeai-framework/tree/main/python) and [TypeScript](https://github.com/i-am-bee/beeai-framework/tree/main/typescript) agent developers via [BeeAI Framework](https://github.com/i-am-bee/beeai-framework).
 
-## Get started
+## Quickstart
 
 1. **Install** BeeAI using [Homebrew](https://brew.sh/) (or see the [installation guide](https://docs.beeai.dev/get-started/installation) for other methods):
 

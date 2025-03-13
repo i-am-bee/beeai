@@ -16,6 +16,8 @@
 import os
 import sys
 import tempfile
+import time
+from beeai_cli.commands.provider import list_providers
 import typer
 import httpx
 import subprocess
@@ -80,21 +82,43 @@ async def setup() -> bool:
     provider_name, api_base, recommended_model = await inquirer.select(
         message="Select LLM provider:",
         choices=[
-            Choice(name="OpenAI", value=("OpenAI", "https://api.openai.com/v1", "gpt-4o")),
             Choice(
-                name="Anthropic Claude",
-                value=("Anthropic", "https://api.anthropic.com/v1", "claude-3-7-sonnet-20250219"),
+                name="OpenAI".ljust(20) + "🚀 best performance", value=("OpenAI", "https://api.openai.com/v1", "gpt-4o")
             ),
             Choice(
-                name="Groq",
+                name="DeepSeek".ljust(20) + "🚀 best performance",
+                value=("DeepSeek", "https://api.deepseek.com/v1", "deepseek-reasoner"),
+            ),
+            Choice(
+                name="NVIDIA NIM".ljust(20) + "🚀 best performance",
+                value=("NVIDIA NIM", "https://integrate.api.nvidia.com/v1", "deepseek-ai/deepseek-r1"),
+            ),
+            Choice(
+                name="OpenRouter".ljust(20) + "🆓 has some free models",
+                value=("OpenRouter", "https://openrouter.ai/api/v1", "deepseek/deepseek-r1-distill-llama-70b:free"),
+            ),
+            Choice(
+                name="Groq".ljust(20) + "🆓 has a free tier",
                 value=("Groq", "https://api.groq.com/openai/v1", "deepseek-r1-distill-llama-70b"),
             ),
             Choice(
-                name="OpenRouter",
-                value=("OpenRouter", "https://openrouter.ai/api/v1", "deepseek/deepseek-r1-distill-llama-70b:free"),
+                name="Cohere".ljust(20) + "🆓 has a free tier",
+                value=("Cohere", "https://api.cohere.ai/compatibility/v1", "command-r-plus"),
             ),
-            Choice(name="Ollama [local]", value=("Ollama", "http://localhost:11434/v1", "llama3.1:8b")),
-            Choice(name="Other [provide custom API URL]", value=("Other", None, None)),
+            Choice(
+                name="Mistral".ljust(20) + "🚧 experimental 🆓 has a free tier",
+                value=("Mistral", "https://api.mistral.ai/v1", "mistral-large-latest"),
+            ),
+            Choice(
+                name="Anthropic Claude".ljust(20) + "🚧 experimental",
+                value=("Anthropic", "http://localhost:12345/v1", "claude-3-7-sonnet-latest"),
+            ),
+            Choice(
+                name="Perplexity".ljust(20) + "🚧 experimental", value=("Perplexity", "https://api.perplexity.ai", None)
+            ),
+            Choice(name="Ollama".ljust(20) + "💻 local", value=("Ollama", "http://localhost:11434/v1", "llama3.1:8b")),
+            Choice(name="Jan".ljust(20) + "💻 local", value=("Jan", "http://localhost:1337/v1", None)),
+            Choice(name="Other".ljust(20) + "🔧 provide API URL", value=("Other", None, None)),
         ],
     ).execute_async()
 
@@ -106,25 +130,34 @@ async def setup() -> bool:
         ).execute_async()
 
     api_key = (
-        "ollama"
-        if provider_name == "Ollama"
+        "dummy"
+        if provider_name in ["Ollama", "Jan"]
         else await inquirer.secret(message="Enter API key:", validate=EmptyInputValidator()).execute_async()
     )
 
     try:
-        async with httpx.AsyncClient() as client:
-            response = await client.get(
-                f"{api_base}/models", headers={"Authorization": f"Bearer {api_key}"}, timeout=10.0
-            )
-            response.raise_for_status()
+        with console.status("Loading available models...", spinner="dots"):
+            async with httpx.AsyncClient() as client:
+                response = await client.get(
+                    f"{api_base}/models", headers={"Authorization": f"Bearer {api_key}"}, timeout=10.0
+                )
+                if response.status_code == 404:
+                    available_models = []
+                else:
+                    response.raise_for_status()
+                    available_models = [m.get("id", "") for m in response.json().get("data", []) or []]
     except httpx.HTTPStatusError:
-        console.print("[bold red]Error:[/bold red] API key was rejected. Please check your API key and re-try.")
+        console.print("💥 [bold red]Error:[/bold red] API key was rejected. Please check your API key and re-try.")
         return False
     except httpx.HTTPError as e:
-        console.print(f"[bold red]Error:[/bold red] {str(e)}")
+        console.print(f"💥 [bold red]Error:[/bold red] {str(e)}")
         match provider_name:
             case "Ollama":
                 console.print("💡 [yellow]HINT[/yellow]: We could not connect to Ollama. Is it running?")
+            case "Jan":
+                console.print(
+                    "💡 [yellow]HINT[/yellow]: We could not connect to Jan. Ensure that the server is running: in the Jan application, click the [bold][<>][/bold] button and [bold]Start server[/bold]."
+                )
             case "Other":
                 console.print(
                     "💡 [yellow]HINT[/yellow]: We could not connect to the API URL you have specified. Is it correct?"
@@ -133,26 +166,42 @@ async def setup() -> bool:
                 console.print(f"💡 [yellow]HINT[/yellow]: {provider_name} may be down.")
         return False
 
-    available_models = [m.get("id", "") for m in response.json().get("data", [])]
-
     if provider_name == "Ollama":
         available_models = [model for model in available_models if not model.endswith("-beeai")]
 
-    selected_model = (
-        recommended_model
-        if (
-            (recommended_model in available_models or provider_name == "Ollama")
-            and await inquirer.confirm(
-                message=f"Do you want to use the recommended model '{recommended_model}'?"
-                + (" It will be pulled from Ollama now." if recommended_model not in available_models else ""),
-                default=True,
-            ).execute_async()
+    if provider_name == "Ollama" and not available_models:
+        if await inquirer.confirm(
+            message=f"There are no locally available models in Ollama. Do you want to pull the recommended model '{recommended_model}'?",
+            default=True,
+        ).execute_async():
+            selected_model = recommended_model
+        else:
+            console.print("[red]No model configured.[/red]")
+            return False
+    else:
+        selected_model = (
+            recommended_model
+            if (
+                (not available_models or recommended_model in available_models or provider_name == "Ollama")
+                and await inquirer.confirm(
+                    message=f"Do you want to use the recommended model '{recommended_model}'?"
+                    + (
+                        " It will be pulled from Ollama now."
+                        if recommended_model not in available_models and provider_name == "Ollama"
+                        else ""
+                    ),
+                    default=True,
+                ).execute_async()
+            )
+            else (
+                await inquirer.fuzzy(
+                    message="Select a model (type to filter):",
+                    choices=sorted(available_models),
+                ).execute_async()
+                if available_models
+                else await inquirer.text(message="Write a model name to use:").execute_async()
+            )
         )
-        else await inquirer.fuzzy(
-            message="Select a model (type to filter):",
-            choices=sorted(available_models),
-        ).execute_async()
-    )
 
     if provider_name == "Ollama" and selected_model not in available_models:
         try:
@@ -197,18 +246,64 @@ async def setup() -> bool:
 
         selected_model = modified_model
 
-    await api_request(
-        "put",
-        "env",
-        json={"env": {"LLM_API_BASE": api_base, "LLM_API_KEY": api_key, "LLM_MODEL": selected_model}},
-    )
+    try:
+        with console.status("Checking if the model works...", spinner="dots"):
+            async with httpx.AsyncClient() as client:
+                test_response = await client.post(
+                    f"{api_base}/chat/completions",
+                    json={
+                        "model": selected_model,
+                        "max_tokens": 500,  # reasoning models need some tokens to think about this
+                        "messages": [
+                            {
+                                "role": "system",
+                                "content": "Repeat each message back to the user, verbatim. Don't say anything else.",
+                            },
+                            {"role": "user", "content": "Hello!"},
+                        ],
+                    },
+                    headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+                    timeout=10.0,
+                )
+        test_response.raise_for_status()
+        response_text = test_response.json().get("choices", [{}])[0].get("message", {}).get("content", "")
+        if "Hello!" not in response_text:
+            console.print("[bold red]Model did not provide a proper response.[/bold red]")
+            return False
+    except Exception as e:
+        console.print(f"[bold red]Error during model test: {str(e)}[/bold red]")
+        return False
 
-    console.print("\n[bold green]You're all set![/bold green]")
+    with console.status("Saving configuration...", spinner="dots"):
+        await api_request(
+            "put",
+            "env",
+            json={"env": {"LLM_API_BASE": api_base, "LLM_API_KEY": api_key, "LLM_MODEL": selected_model}},
+        )
+
+    with console.status("Reloading agent providers (may take a few minutes)...", spinner="dots"):
+        time.sleep(5)
+        for i in range(180):
+            time.sleep(1)
+            if all(item["status"] == "ready" for item in (await api_request("get", "provider"))["items"]):
+                break
+        else:
+            console.print(
+                "[bold red]Some providers did not properly start. Please check their status with:[/bold red] beeai provider info <provider>"
+            )
+            await list_providers()
+
+    console.print(
+        "\n[bold green]You're all set![/bold green] (You can re-run this setup anytime with [blue]beeai env setup[/blue])"
+    )
     return True
 
 
 async def ensure_llm_env():
-    env = (await api_request("get", "env"))["env"]
+    try:
+        env = (await api_request("get", "env"))["env"]
+    except httpx.HTTPStatusError:
+        return  # Skip for non-conforming servers (like when running directly against an agent provider)
     if all(required_variable in env.keys() for required_variable in ["LLM_MODEL", "LLM_API_KEY", "LLM_API_BASE"]):
         return
     console.print("[bold]Welcome to 🐝 [red]BeeAI[/red]![/bold]")

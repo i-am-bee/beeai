@@ -27,6 +27,10 @@
 :root,
 .cds--white {
   @include theme($light);
+
+  @include breakpoint-down(md) {
+    --cds-grid-margin: #{$spacing-06};
+  }
 }
 
 .cds--g90 {

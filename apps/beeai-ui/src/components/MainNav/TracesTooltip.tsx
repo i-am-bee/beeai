@@ -14,28 +14,18 @@
  * limitations under the License.
  */
 
-.root {
-  z-index: z('modal');
-}
-
-.content {
-  @include type-style(label-02);
-  background-color: $background-inverse;
-  color: $text-inverse;
-  border-radius: $border-radius;
-  max-inline-size: rem(264px);
-
-  .root.sm & {
-    padding: $spacing-02 $spacing-03;
-  }
-  .root.md & {
-    padding: $spacing-04 $spacing-05;
-  }
-  a {
-    color: $link-inverse;
-  }
-}
-
-.arrow {
-  fill: $background-inverse;
+export function TracesTooltip() {
+  return (
+    <>
+      <strong>Traceability Not Configured</strong>
+      <br />
+      <br />
+      The traceability service isn't currently set up or reachable. To enable it, please check your configuration or
+      follow the steps in our{' '}
+      <a href="https://docs.beeai.dev/observability/agents-traceability" target={'_blank'}>
+        setup guide
+      </a>
+      .
+    </>
+  );
 }

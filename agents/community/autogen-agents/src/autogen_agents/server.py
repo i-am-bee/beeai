@@ -71,7 +71,7 @@ async def run():
             languages=["Python"],
             githubUrl="https://github.com/i-am-bee/beeai/tree/main/agents/community/autogen-agents/src/autogen_agents/literature_review",
             examples=examples,
-            ui=UiDefinition(type=UiType.hands_off, userGreeting="What literature do you want to review?"),
+            ui=UiDefinition(type=UiType.hands_off, userGreeting="What topic do you want to research?"),
             fullDescription=fullDescription,
         ).model_dump(),
     )

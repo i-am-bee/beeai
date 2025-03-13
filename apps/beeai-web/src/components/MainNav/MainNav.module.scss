@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
+$item-inline-padding: $spacing-04;
+
 .list {
   display: flex;
   column-gap: $spacing-05;
+  margin-inline-start: -$item-inline-padding;
 
   li {
     border-block-end: 2px solid transparent;
@@ -31,7 +34,7 @@
   block-size: $spacing-09;
   column-gap: $spacing-03;
   align-items: center;
-  padding-inline: $spacing-04;
+  padding-inline: $item-inline-padding;
   font-size: rem(14px);
   line-height: math.div(18, 14);
   color: $text-dark;

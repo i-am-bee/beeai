@@ -14,28 +14,20 @@
  * limitations under the License.
  */
 
-.root {
-  z-index: z('modal');
+import { useQuery } from '@tanstack/react-query';
+
+interface Props {
+  enabled: boolean;
 }
 
-.content {
-  @include type-style(label-02);
-  background-color: $background-inverse;
-  color: $text-inverse;
-  border-radius: $border-radius;
-  max-inline-size: rem(264px);
-
-  .root.sm & {
-    padding: $spacing-02 $spacing-03;
-  }
-  .root.md & {
-    padding: $spacing-04 $spacing-05;
-  }
-  a {
-    color: $link-inverse;
-  }
-}
-
-.arrow {
-  fill: $background-inverse;
+export function usePhoenix({ enabled }: Props) {
+  return useQuery({
+    queryKey: ['phoenix'],
+    refetchInterval: 5_000,
+    enabled,
+    queryFn: () =>
+      fetch(__PHOENIX_SERVER_TARGET__, { mode: 'no-cors' })
+        .then(() => true)
+        .catch(() => false),
+  });
 }

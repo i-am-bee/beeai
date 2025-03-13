@@ -37,7 +37,7 @@ export function AgentHeader({ agent, onNewSessionClick, className }: Props) {
       </h1>
 
       {onNewSessionClick && (
-        <IconButton kind="tertiary" size="sm" label="New session" onClick={onNewSessionClick}>
+        <IconButton kind="tertiary" size="sm" label="New session" autoAlign onClick={onNewSessionClick}>
           <NewSession />
         </IconButton>
       )}

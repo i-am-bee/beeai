@@ -1,20 +1,14 @@
 ---
 title: "Official"
-description: "List of official BeeAI agents"
+description: "Discover and use official agents"
 icon: "shield-heart"
 ---
 
 This list can also be found at https://beeai.dev/agents.
 
-## Usage
-
-```sh
-beeai run AGENT_NAME
-```
-
 ## Agents
 
-The following is a list of the official agents:
+Agents made discoverable and composable through BeeAI.
 
 | Name                                                                                                                                  | Framework | Description                                                                                                                                                                                                                                                                                 |
 | ------------------------------------------------------------------------------------------------------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -24,3 +18,9 @@ The following is a list of the official agents:
 | [podcast-creator](https://github.com/i-am-bee/beeai/blob/main/agents/official/beeai-framework/src/podcast-creator)                    | BeeAI     | The agent creates structured podcast-style dialogues optimized for AI-driven text-to-speech (TTS). It formats natural conversations with a lead speaker and an inquisitive co-host, ensuring realistic interruptions and follow-ups. The output is structured for seamless TTS integration. |
 | [sequential-workflow](https://github.com/i-am-bee/beeai/tree/main/agents/official/composition/src/composition/sequential_workflow.py) | -         | The agent orchestrates a sequence of text-processing AI agents, managing the flow of information and instructions between them.                                                                                                                                                             |
 | [supervisor](https://github.com/i-am-bee/beeai/blob/main/agents/official/beeai-supervisor/src/supervisor/supervisor.ts)               | -         | The agent that autonomously breaks down tasks, assigns them to suitable agents, manages execution, evaluates outcomes, adapts workflows dynamically, and iterates until achieving an optimal solution.                                                                                      |
+
+## CLI Usage
+
+```sh
+beeai run <name>
+```

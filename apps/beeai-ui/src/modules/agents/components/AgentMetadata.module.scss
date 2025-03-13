@@ -19,12 +19,15 @@
   color: $text-secondary;
   display: flex;
   gap: $spacing-03;
+  flex-wrap: wrap;
 }
 
 .item {
   display: flex;
   align-items: center;
   gap: $spacing-02;
+  white-space: no-wrap;
+
   &:not(:last-child) {
     padding-inline-end: $spacing-03;
     border-inline-end: 1px solid $border-subtle-00;
