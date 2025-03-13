@@ -47,7 +47,7 @@ class Configuration(BaseSettings):
     cache_dir: Path = Path.home() / ".beeai" / "cache"
     port: int = 8333
     collector_port: int = 8335
-    provider_registry_location: GithubUrl = "https://github.com/i-am-bee/beeai@main#path=provider-registry.yaml"
+    provider_registry_location: GithubUrl = "https://github.com/i-am-bee/beeai@registry#path=provider-registry.yaml"
 
 
 @cache
