@@ -17,19 +17,15 @@
 export function TracesTooltip() {
   return (
     <>
-      <strong>Phoenix Server Unavailable 🚨</strong>
+      <strong>Traceability Not Configured</strong>
       <br />
       <br />
-      It looks like the Phoenix server is not running or cannot be reached.
-      <br />
-      <br />
-      To enable traceability and ensure everything works smoothly, please check your Phoenix setup by following the
-      instructions in the official documentation:
-      <br />
-      🔗{' '}
+      The traceability service isn't currently set up or reachable. To enable it, please check your configuration or
+      follow the steps in our{' '}
       <a href="https://docs.beeai.dev/observability/agents-traceability" target={'_blank'}>
-        Set up Phoenix Server
+        setup guide
       </a>
+      .
     </>
   );
 }
