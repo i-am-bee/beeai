@@ -70,7 +70,7 @@
   }
 }
 
-.cds--btn.cds--btn--disabled {
+.cds--btn.cds--btn--disabled:not(.cds--btn--ghost) {
   &,
   &:hover,
   &:focus {
