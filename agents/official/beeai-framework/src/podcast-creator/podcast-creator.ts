@@ -231,7 +231,8 @@ ${exampleOutput}
     },
     ui: {
       type: "hands-off",
-      userGreeting: "Provide article that should be converted to a podcast.",
+      userGreeting:
+        "Add the content from which you'd like to create your podcast",
     },
     avgRunTimeSeconds: 19,
     avgRunTokens: 5409,
