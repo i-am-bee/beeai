@@ -118,7 +118,7 @@ async def setup() -> bool:
             ),
             Choice(name="Ollama".ljust(20) + "💻 local", value=("Ollama", "http://localhost:11434/v1", "llama3.1:8b")),
             Choice(name="Jan".ljust(20) + "💻 local", value=("Jan", "http://localhost:1337/v1", None)),
-            Choice(name="Other".ljust(20) + "⚙️  provide API URL", value=("Other", None, None)),
+            Choice(name="Other".ljust(20) + "🔧 provide API URL", value=("Other", None, None)),
         ],
     ).execute_async()
 
