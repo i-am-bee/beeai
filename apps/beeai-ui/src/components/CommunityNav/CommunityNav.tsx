@@ -19,9 +19,13 @@ import { BLUESKY_LINK, DISCORD_LINK, YOUTUBE_LINK } from '#utils/constants.ts';
 import { LogoDiscord, LogoYoutube } from '@carbon/icons-react';
 import classes from './CommunityNav.module.scss';
 
-export function CommunityNav() {
+interface Props {
+  className?: string;
+}
+
+export function CommunityNav({ className }: Props) {
   return (
-    <nav>
+    <nav className={className}>
       <ul className={classes.list}>
         {NAV_ITEMS.map(({ label, href, Icon }) => (
           <li key={label} className={classes.item}>

@@ -16,6 +16,8 @@
 
 export * from './utils/constants';
 
+export * from './contexts/Theme/ThemeProvider';
+
 export * from './components/CommunityNav/CommunityNav';
 export * from './components/GitHubLink/GitHubLink';
 export * from './components/layouts/AppFooter';

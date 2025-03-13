@@ -14,22 +14,23 @@
  * limitations under the License.
  */
 
+import { ErrorFallback } from '#components/fallbacks/ErrorFallback.tsx';
+import { AppLayout } from '#components/layouts/AppLayout.tsx';
+import { MCPClientProvider } from '#contexts/MCPClient/MCPClientProvider.tsx';
+import { ModalProvider } from '#contexts/Modal/ModalProvider.tsx';
+import { QueryProvider } from '#contexts/QueryProvider/QueryProvider.tsx';
+import { ThemeProvider } from '#contexts/Theme/ThemeProvider.tsx';
+import { ToastProvider } from '#contexts/Toast/ToastProvider.tsx';
+import { ComposeLanding } from '#modules/compose/ComposeLanding.tsx';
+import { ComposeSequential } from '#modules/compose/ComposeSequential.tsx';
+import { Agents } from '#pages/Agents.tsx';
+import { Agent } from '#pages/agents/Agent.tsx';
+import { NotFound } from '#pages/NotFound.tsx';
+import { AgentRunPage } from '#pages/run/AgentRunPage.tsx';
 import { Settings } from '#pages/Settings.tsx';
+import { routeDefinitions } from '#utils/router.ts';
 import { ErrorBoundary } from 'react-error-boundary';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router';
-import { ErrorFallback } from './components/fallbacks/ErrorFallback';
-import { AppLayout } from './components/layouts/AppLayout';
-import { MCPClientProvider } from './contexts/MCPClient/MCPClientProvider';
-import { ModalProvider } from './contexts/Modal/ModalProvider';
-import { QueryProvider } from './contexts/QueryProvider/QueryProvider';
-import { ToastProvider } from './contexts/Toast/ToastProvider';
-import { Agents } from './pages/Agents';
-import { Agent } from './pages/agents/Agent';
-import { NotFound } from './pages/NotFound';
-import { AgentRunPage } from './pages/run/AgentRunPage';
-import { routeDefinitions } from './utils/router';
-import { ComposeSequential } from '#modules/compose/ComposeSequential.tsx';
-import { ComposeLanding } from '#modules/compose/ComposeLanding.tsx';
 
 export function App() {
   return (
@@ -37,26 +38,28 @@ export function App() {
       <ToastProvider>
         <QueryProvider>
           <MCPClientProvider>
-            <ModalProvider>
-              <BrowserRouter>
-                <Routes>
-                  <Route element={<AppLayout />}>
-                    <Route
-                      path={routeDefinitions.home()}
-                      element={<Navigate to={routeDefinitions.agents()} replace />}
-                    />
-                    <Route path={routeDefinitions.agents()} element={<Agents />} />
-                    <Route path={routeDefinitions.agentDetail()} element={<Agent />} />
-                    <Route path={routeDefinitions.agentRun()} element={<AgentRunPage />} />
-                    <Route path={routeDefinitions.compose()} element={<ComposeLanding />} />
-                    <Route path={routeDefinitions.composeSequential()} element={<ComposeSequential />} />
-                    <Route path={routeDefinitions.settings()} element={<Settings />} />
+            <ThemeProvider>
+              <ModalProvider>
+                <BrowserRouter>
+                  <Routes>
+                    <Route element={<AppLayout />}>
+                      <Route
+                        path={routeDefinitions.home()}
+                        element={<Navigate to={routeDefinitions.agents()} replace />}
+                      />
+                      <Route path={routeDefinitions.agents()} element={<Agents />} />
+                      <Route path={routeDefinitions.agentDetail()} element={<Agent />} />
+                      <Route path={routeDefinitions.agentRun()} element={<AgentRunPage />} />
+                      <Route path={routeDefinitions.compose()} element={<ComposeLanding />} />
+                      <Route path={routeDefinitions.composeSequential()} element={<ComposeSequential />} />
+                      <Route path={routeDefinitions.settings()} element={<Settings />} />
 
-                    <Route path="*" element={<NotFound />} />
-                  </Route>
-                </Routes>
-              </BrowserRouter>
-            </ModalProvider>
+                      <Route path="*" element={<NotFound />} />
+                    </Route>
+                  </Routes>
+                </BrowserRouter>
+              </ModalProvider>
+            </ThemeProvider>
           </MCPClientProvider>
         </QueryProvider>
       </ToastProvider>

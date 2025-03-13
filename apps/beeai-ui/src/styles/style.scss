@@ -24,15 +24,14 @@
 
 @use 'components';
 
-:root {
+:root,
+.cds--white {
   @include theme($light);
 }
 
-// @media (prefers-color-scheme: dark) {
-//   :root {
-//     @include theme($dark);
-//   }
-// }
+.cds--g90 {
+  @include theme($dark);
+}
 
 body {
   overflow: hidden;

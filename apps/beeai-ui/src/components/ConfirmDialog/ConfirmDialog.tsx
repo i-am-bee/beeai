@@ -23,7 +23,7 @@ import { Modal } from '../Modal/Modal';
 import classes from './ConfirmDialog.module.scss';
 
 export interface ConfirmDialogProps {
-  title: string;
+  title: ReactNode;
   body?: ReactNode;
   primaryButtonText?: string;
   secondaryButtonText?: string;

@@ -16,16 +16,16 @@
 
 'use client';
 
-import { useId, useMemo } from 'react';
-import { useFormContext } from 'react-hook-form';
-import { OperationalTag, TextInput, TextInputSkeleton } from '@carbon/react';
-import { Search } from '@carbon/icons-react';
-import clsx from 'clsx';
-import { TagsList } from '#components/TagsList/TagsList.tsx';
 import { FiltersPopover, type Group } from '#components/FiltersPopover/FiltersPopover.tsx';
+import { TagsList } from '#components/TagsList/TagsList.tsx';
+import { type AgentsCountedOccurrence, countOccurrences } from '#utils/agents/countOccurrences.ts';
+import { Search } from '@carbon/icons-react';
+import { OperationalTag, TextInput, TextInputSkeleton } from '@carbon/react';
+import clsx from 'clsx';
 import isEmpty from 'lodash/isEmpty';
 import xor from 'lodash/xor';
-import { type AgentsCountedOccurrence, countOccurrences } from '#utils/agents/countOccurrences.ts';
+import { useId, useMemo } from 'react';
+import { useFormContext } from 'react-hook-form';
 import type { Agent } from '../api/types';
 import type { AgentsFiltersParams } from '../providers/AgentsFiltersProvider';
 import classes from './AgentsFilters.module.scss';
@@ -95,6 +95,7 @@ export function AgentsFilters({ agents }: Props) {
           tags={[
             <OperationalTag
               key="all"
+              type="cool-gray"
               text="All"
               className={clsx(classes.frameworksAll, { selected: isEmpty(selectedFrameworks) })}
               onClick={() => setValue('frameworks', [])}
@@ -102,6 +103,7 @@ export function AgentsFilters({ agents }: Props) {
             ...occurrences.frameworks.map(({ label: framework }) => (
               <OperationalTag
                 key={framework}
+                type="cool-gray"
                 text={framework}
                 className={clsx({ selected: selectedFrameworks.includes(framework) })}
                 onClick={() => setValue('frameworks', xor(selectedFrameworks, [framework]))}

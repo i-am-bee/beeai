@@ -14,8 +14,15 @@
  * limitations under the License.
  */
 
-@use 'styles/common' as *;
+import { use } from 'react';
+import { ThemeContext } from './theme-context';
 
-.cds--tab-content {
-  padding: 0;
+export function useTheme() {
+  const context = use(ThemeContext);
+
+  if (!context) {
+    throw new Error('useTheme must be used within a ThemeProvider');
+  }
+
+  return context;
 }

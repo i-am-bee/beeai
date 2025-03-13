@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-@use 'styles/common' as *;
-
-.cds--tab-content {
-  padding: 0;
+export enum Theme {
+  Light = 'white',
+  Dark = 'g90',
 }

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { ThemeToggle } from '#components/ThemeToggle/ThemeToggle.tsx';
 import { CommunityNav } from '../CommunityNav/CommunityNav';
 import classes from './AppFooter.module.scss';
 import { Container } from './Container';
@@ -27,7 +28,9 @@ export function AppFooter({ className }: Props) {
     <footer className={className}>
       <Container size="max">
         <div className={classes.holder}>
-          <CommunityNav />
+          <ThemeToggle />
+
+          <CommunityNav className={classes.communityNav} />
         </div>
       </Container>
     </footer>

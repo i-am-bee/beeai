@@ -58,7 +58,6 @@ $line-size: math.div(21, 14) * 0.875rem;
 
     @include type-style(body-02);
     padding: $spacing-04;
-    border: 0;
   }
 }
 

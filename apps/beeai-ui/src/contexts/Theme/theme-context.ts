@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-@use 'styles/common' as *;
+import { createContext } from 'react';
+import { Theme } from './types';
 
-.cds--tab-content {
-  padding: 0;
+export const ThemeContext = createContext<ThemeContextValue>({} as ThemeContextValue);
+
+interface ThemeContextValue {
+  theme: Theme;
+  toggleTheme: () => void;
 }

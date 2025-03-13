@@ -23,4 +23,7 @@
   border-radius: 50%;
   border: 1px solid $border-subtle-00;
   flex-shrink: 0;
+  svg {
+    fill: currentColor;
+  }
 }

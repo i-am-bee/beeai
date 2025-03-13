@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-@use 'styles/common' as *;
+import { Theme } from './types';
 
-.cds--tab-content {
-  padding: 0;
-}
+export const getThemeClassName = (theme: Theme) => `cds--${theme}`;
