@@ -108,11 +108,13 @@ def _get_short_location(location: str) -> str:
 async def list_providers():
     """List providers."""
     resp = await api_request("get", "provider")
+    max_len = max(len(_get_short_location(item["id"])) for item in resp["items"])
+
     with create_table(
-        Column("Short ID", style="yellow"),
-        Column("Status"),
-        Column("Missing Env", max_width=100),
-        Column("Location", ratio=2),
+        Column("Short ID", max_width=8, style="yellow"),
+        Column("Status", max_width=len("initializing")),
+        Column("Missing Env", max_width=50),
+        Column("Location", max_width=min(max_len, 70)),
         Column("Last Error", ratio=1),
     ) as table:
         for item in sorted(
