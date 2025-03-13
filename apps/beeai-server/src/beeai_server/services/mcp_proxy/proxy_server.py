@@ -56,11 +56,9 @@ logger = logging.getLogger(__name__)
 meter = metrics.get_meter(INSTRUMENTATION_NAME)
 
 AGENT_RUNS = meter.create_counter("agent_runs_total")
-AGENT_RUNS.add(0)
 AGENT_RUN_DURATION = meter.create_histogram("agent_run_duration", "seconds")
 
 TOOL_CALLS = meter.create_counter("tool_calls_total")
-TOOL_CALLS.add(0)
 TOOL_CALL_DURATION = meter.create_histogram("tool_call_duration", "seconds")
 
 
