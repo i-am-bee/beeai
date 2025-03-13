@@ -16,6 +16,8 @@
 import os
 import sys
 import tempfile
+import time
+from beeai_cli.commands.provider import list_providers
 import typer
 import httpx
 import subprocess
@@ -112,11 +114,12 @@ async def setup() -> bool:
     )
 
     try:
-        async with httpx.AsyncClient() as client:
-            response = await client.get(
-                f"{api_base}/models", headers={"Authorization": f"Bearer {api_key}"}, timeout=10.0
-            )
-            response.raise_for_status()
+        with console.status("Loading available models...", spinner="dots"):
+            async with httpx.AsyncClient() as client:
+                response = await client.get(
+                    f"{api_base}/models", headers={"Authorization": f"Bearer {api_key}"}, timeout=10.0
+                )
+                response.raise_for_status()
     except httpx.HTTPStatusError:
         console.print("[bold red]Error:[/bold red] API key was rejected. Please check your API key and re-try.")
         return False
@@ -197,18 +200,64 @@ async def setup() -> bool:
 
         selected_model = modified_model
 
-    await api_request(
-        "put",
-        "env",
-        json={"env": {"LLM_API_BASE": api_base, "LLM_API_KEY": api_key, "LLM_MODEL": selected_model}},
-    )
+    try:
+        with console.status("Checking if the model works...", spinner="dots"):
+            async with httpx.AsyncClient() as client:
+                test_response = await client.post(
+                    f"{api_base}/chat/completions",
+                    json={
+                        "model": selected_model,
+                        "max_tokens": 500,  # reasoning models need some tokens to think about this
+                        "messages": [
+                            {
+                                "role": "system",
+                                "content": "Repeat each message back to the user, verbatim. Don't say anything else.",
+                            },
+                            {"role": "user", "content": "Hello!"},
+                        ],
+                    },
+                    headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+                    timeout=10.0,
+                )
+        test_response.raise_for_status()
+        response_text = test_response.json().get("choices", [{}])[0].get("message", {}).get("content", "")
+        if "Hello!" not in response_text:
+            console.print(
+                f"[bold red]Model did not provide a proper response. The response:[/bold red] {response_text}"
+            )
+            return False
+    except Exception as e:
+        console.print(f"[bold red]Error during model test: {str(e)}[/bold red]")
+        return False
+
+    with console.status("Saving configuration...", spinner="dots"):
+        await api_request(
+            "put",
+            "env",
+            json={"env": {"LLM_API_BASE": api_base, "LLM_API_KEY": api_key, "LLM_MODEL": selected_model}},
+        )
+
+    with console.status("Reloading agent providers...", spinner="dots"):
+        time.sleep(5)
+        for i in range(30):
+            time.sleep(1)
+            if all(item["status"] == "ready" for item in (await api_request("get", "provider"))["items"]):
+                break
+        else:
+            console.print(
+                "[bold red]Some providers did not properly start. Please check their status with:[/bold red] beeai provider info <provider>"
+            )
+            await list_providers()
 
     console.print("\n[bold green]You're all set![/bold green]")
     return True
 
 
 async def ensure_llm_env():
-    env = (await api_request("get", "env"))["env"]
+    try:
+        env = (await api_request("get", "env"))["env"]
+    except httpx.HTTPStatusError:
+        return  # Skip for non-conforming servers (like when running directly against an agent provider)
     if all(required_variable in env.keys() for required_variable in ["LLM_MODEL", "LLM_API_KEY", "LLM_API_BASE"]):
         return
     console.print("[bold]Welcome to 🐝 [red]BeeAI[/red]![/bold]")
