@@ -94,24 +94,24 @@ async def setup() -> bool:
                 value=("NVIDIA NIM", "https://integrate.api.nvidia.com/v1", "deepseek-ai/deepseek-r1"),
             ),
             Choice(
-                name="Groq".ljust(20) + "🆓 has a free tier",
-                value=("Groq", "https://api.groq.com/openai/v1", "deepseek-r1-distill-llama-70b"),
-            ),
-            Choice(
                 name="OpenRouter".ljust(20) + "🆓 has some free models",
                 value=("OpenRouter", "https://openrouter.ai/api/v1", "deepseek/deepseek-r1-distill-llama-70b:free"),
             ),
             Choice(
-                name="Cohere".ljust(20) + "🚧 experimental 🆓 has a free tier",
+                name="Groq".ljust(20) + "🆓 has a free tier",
+                value=("Groq", "https://api.groq.com/openai/v1", "deepseek-r1-distill-llama-70b"),
+            ),
+            Choice(
+                name="Cohere".ljust(20) + "🆓 has a free tier",
                 value=("Cohere", "https://api.cohere.ai/compatibility/v1", "command-r-plus"),
+            ),
+            Choice(
+                name="Mistral".ljust(20) + "🚧 experimental 🆓 has a free tier",
+                value=("Mistral", "https://api.mistral.ai/v1", "mistral-large-latest"),
             ),
             Choice(
                 name="Anthropic Claude".ljust(20) + "🚧 experimental",
                 value=("Anthropic", "http://localhost:12345/v1", "claude-3-7-sonnet-latest"),
-            ),
-            Choice(
-                name="Mistral".ljust(20) + "🚧 experimental",
-                value=("Mistral", "https://api.mistral.ai/v1", "mistral-large-latest"),
             ),
             Choice(
                 name="Perplexity".ljust(20) + "🚧 experimental", value=("Perplexity", "https://api.perplexity.ai", None)
@@ -268,9 +268,7 @@ async def setup() -> bool:
         test_response.raise_for_status()
         response_text = test_response.json().get("choices", [{}])[0].get("message", {}).get("content", "")
         if "Hello!" not in response_text:
-            console.print(
-                f"[bold red]Model did not provide a proper response. The response:[/bold red] {response_text}"
-            )
+            console.print("[bold red]Model did not provide a proper response.[/bold red]")
             return False
     except Exception as e:
         console.print(f"[bold red]Error during model test: {str(e)}[/bold red]")
