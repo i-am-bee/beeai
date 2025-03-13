@@ -1,23 +1,27 @@
 ---
-title: 'Agents'
-description: 'How agents are implemented in the beeai platform, their types and schemas'
-icon: 'browser'
+title: "Agents"
+description: "How BeeAI implements agents, their types, and schemas"
+icon: "browser"
 ---
 
-Agent in the beeai platform is a stateless function that receives and input object that adheres to an input schema
-and returns an object compliant with the output schema. Optionally, agent can stream progress notifications during
-its execution. Agents are registered using the [Agent Communication Protocol](/acp/pre-alpha/introduction) SDK.
+Agents are implemented in BeeAI as stateless functions that process input objects according to an input schema and return results in the output schema format. During execution, agents have the ability to stream progress.
 
-Agent logic can be implemented using any framework of choice, for example:
-    - [LangGraph](https://www.langchain.com/langgraph)
-    - [crewAI](https://www.crewai.com/)
-    - [beeai-framework](https://i-am-bee.github.io/beeai-framework/)
-    - ...
+The registration of agents is facilitated through the [Agent Communication Protocol SDK](/acp/pre-alpha/sdk).
 
-# Agent schema
+Logic for agents can be implemented using any framework, language, or runtime. For example:
 
-Each agent in the platform has an input and output schema (formal specification of communication with the agent).
-To achieve basic compatibility with the platform, the schema must extend the base in the `beeai-sdk` package:
+- [BeeAI framework](https://github.com/i-am-bee/beeai-framework)
+- [LangGraph](https://www.langchain.com/langgraph)
+- [CrewAI](https://www.crewai.com/)
+
+## Agent schema
+
+Each agent has input and output schemas based on the `beeai-sdk` package:
+
+<Note>
+  In [ACP Alpha](/acp/alpha), `beeai-sdk` is meging into a single library
+  `acp-sdk`.
+</Note>
 
 ```python
 class Input(BaseModel, extra="allow"):
@@ -27,15 +31,12 @@ class Output(BaseModel, extra="allow"):
     logs: list[Log | None] = Field(default_factory=list)
 ```
 
-The `config` input field allows passing extra configuration at runtime, for example a list of tools the agent
-should work with.
+- The `config` input supports additional configuration, like a list of tools.
+- The `logs` field allows streaming progress details (e.g., thoughts, actions)
 
-The `logs` can be used to stream progress (thoughts, action items, etc.) that are not part of the actual output, but
-are useful to inform the user about what is happening.
+### Streaming
 
-## Streaming
-The agent can use the `ctx` object to stream intermediate steps during the agent run. The progress schema must be
-a subset of the output schema, the most useful field is `logs`. For example reporting events from langgraph:
+Agents can use the `ctx` object to stream progress during execution. The progress schema is a subset of the output schema, typically using the `logs` field:
 
 ```python
 @server.agent(...)
@@ -52,24 +53,21 @@ async def run_langgraph_agent(input: TextInput, ctx: Context) -> TextOutput:
     return TextOutput(text=str(output))
 ```
 
-# Standardized agent interfaces
+## Standardized agent interfaces
 
-Agents are free to use any input/output schema they like by extending the base `Input` and `Output` schemas.
-However, if the author chooses to opt in into one of the standardized schemas, the agent will get a UI experience out
-of the box.
+Agents can define their own input/output schemas or opt into standardized schemas for automatic UI features.
 
-## Chat agents
-Agents that implement the `chat` interface must declare this in their metadata during agent registration and use the
-`MessageInput` and `MessageOutput` schemas.
+### Chat agents
+
+Chat agents use the `chat` interface, which requires the `MessageInput` and `MessageOutput` schemas. They must declare this interface in their metadata.
 
 <Note>
-    Chat agents are stateless and receive the entire conversation history on
-    input. This means that any state that the agent is keeping must be re-created on each invocation, for example by
-    setting
-    agent's memory.
+  In [ACP Pre-alpha](/acp/pre-alpha), chat agents are stateless and need to
+  re-create any persistent state, like memory, on each invocation. [ACP
+  Alpha](/acp/alpha) is introducing stateful agents.
 </Note>
 
-<Expandable title="Example chat agent implementation">
+<Expandable title="example">
 
 ```python
 import asyncio
@@ -116,34 +114,15 @@ def main():
 
     asyncio.run(run_agent_provider(server))
 ```
+
 </Expandable>
 
-You can then use the agent interactively using the CLI:
-```
-> beeai run chat-example
-┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃                              chat-example                                ┃
-┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+### Hands-off agents
 
-Chat with the user
+Hands-off agents support tasks that don’t require continuous interaction. They use the `TextInput` and `TextOutput` schemas and declare their type as `UiType.hands_off`.
 
-Running in interactive mode, use '/?' for help, type '/q' to quit.
+<Expandable title="example">
 
-🐝 Agent: Hello, How can I help you?
-
->>>
-```
-
-Or you can chat with the agent in the browser at:
-
-http://localhost:8333/agents/chat-example
-
-## Hands-off agent
-Similarly, you can define an agent that will use the `TextInput` and `TextOutput` and declare the type as
-`UiType.hands_off`. This agent is for single-prompt tasks that the user will hand off and come back for results.
-
-
-<Expandable title="Example hands off agent implementation">
 ```python
 import asyncio
 
@@ -156,7 +135,6 @@ from beeai_sdk.schemas.metadata import (
     UiDefinition,
     UiType
 )
-
 def main():
     server = Server("chat-agents")
     @server.agent(
@@ -178,7 +156,7 @@ def main():
     )
     def run_chat(input: TextInput, ctx: Context) -> TextOutput:
         return TextOutput(text=f"Hello {input}!")
-
     asyncio.run(run_agent_provider(server))
 ```
+
 </Expandable>

@@ -1,11 +1,14 @@
 ---
-title: 'Tools'
-description: 'Expose tools through the beeai platform'
-icon: 'screwdriver-wrench'
+title: "Tools"
+description: "Exposing tools through BeeAI"
+icon: "screwdriver-wrench"
 ---
 
-Tools in the beeai platform are implemented in line with the [Model Context Protocol](https://modelcontextprotocol.io/).
-Adding a tool to the provider is straightforward:
+Tools in BeeAI follow the [Model Context Protocol](https://modelcontextprotocol.io/). Adding a tool to a provider is simple and requires minimal setup.
+
+## Implementing a tool
+
+Below is an example of how to create and register a tool:
 
 ```python
 import asyncio
@@ -23,16 +26,25 @@ def main():
     asyncio.run(run_agent_provider(server))
 ```
 
-After registering the provider (see [Providers](/cocepts/providers)) to the platform, the tool will be available using
-the CLI. We can see it in `beeai tool list` and we can invoke it directly using:
+## Registering the provider
+
+After registering the provider (see [Providers](/concepts/providers)), the tool will be available via the command line. You can check for its presence using:
+
 ```sh
-> beeai tool run add '{"a": 1, "b": 2}'
+beeai tool list
 ```
 
-The tools can be used programmatically and by agents through the [acp-sdk](/acp/pre-alpha/sdk) package or even
-through the original [MCP](https://modelcontextprotocol.io/). This means that you can leverage adapters in frameworks
-such as:
-- [LangChain MCP Adapters](https://github.com/langchain-ai/langchain-mcp-adapters)
-- [BeeAI framework MCP Tool](https://i-am-bee.github.io/beeai-framework/#/python/tools?id=mcp-tool)
+To invoke the tool directly, run:
 
-to enrich agents with tools available in the beeai platform.
+```sh
+beeai tool run add '{"a": 1, "b": 2}'
+```
+
+## Agent usage
+
+Tools can be accessed programmatically by agents through the [ACP SDK](/acp/pre-alpha/sdk) package or directly via [MCP](https://modelcontextprotocol.io/). This enables integration with frameworks through adapters such as:
+
+- [BeeAI framework MCP Tool](https://i-am-bee.github.io/beeai-framework/#/python/tools?id=mcp-tool)
+- [LangChain MCP Adapters](https://github.com/langchain-ai/langchain-mcp-adapters)
+
+These integrations allow agents to leverage tools available within BeeAI effectively.
