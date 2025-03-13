@@ -1,11 +1,11 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "willow",
+  "theme": "maple",
   "name": "BeeAI",
   "colors": {
-    "primary": "#0f62fe",
-    "light": "#0f62fe",
-    "dark": "#0f62fe"
+    "primary": "#000000",
+    "light": "#ffffff",
+    "dark": "#000000"
   },
   "favicon": "/favicon.svg",
   "navigation": {
@@ -14,13 +14,13 @@
         "anchor": "Documentation",
         "groups": [
           {
-            "group": "Get Started",
-            "pages": ["/get-started/quickstart"]
+            "group": "Introduction",
+            "pages": ["/introduction/welcome", "/introduction/quickstart"]
           },
           {
-            "group": "Concepts",
+            "group": "Core Concepts",
             "pages": [
-              "/concepts/components",
+              "/concepts/architecture",
               "/concepts/providers",
               "/concepts/agents",
               "/concepts/tools"
@@ -28,11 +28,7 @@
           },
           {
             "group": "Agents",
-            "pages": [
-              "/agents/official-list",
-              "/agents/community-list",
-              "/agents/contribute"
-            ]
+            "pages": ["/agents/official-list", "/agents/community-list"]
           },
           {
             "group": "Agent Communication Protocol",
@@ -67,7 +63,7 @@
     "global": {
       "anchors": [
         {
-          "anchor": "Agent Library",
+          "anchor": "Agent Catalog",
           "href": "https://beeai.dev/agents",
           "icon": "robot"
         },
@@ -85,8 +81,8 @@
     }
   },
   "logo": {
-    "light": "/logo/beeai_logo_black.svg",
-    "dark": "/logo/beeai_logo_white.svg"
+    "light": "/logo/beeai-lockup.svg",
+    "dark": "/logo/beeai-lockup-white.svg"
   },
   "navbar": {
     "primary": {
@@ -96,7 +92,8 @@
   },
   "footer": {
     "socials": {
-      "github": "https://github.com/i-am-bee/beeai"
+      "github": "https://github.com/i-am-bee/beeai",
+      "discord": "https://discord.gg/AZFrp3UF5k"
     }
   }
 }
