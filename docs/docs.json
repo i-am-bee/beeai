@@ -9,80 +9,56 @@
   },
   "favicon": "/favicon.svg",
   "navigation": {
-    "anchors": [
+    "groups": [
       {
-        "anchor": "Documentation",
-        "groups": [
+        "group": "Introduction",
+        "pages": [
+          "/introduction/welcome",
+          "/introduction/quickstart",
+          "/introduction/installation"
+        ]
+      },
+      {
+        "group": "Core Concepts",
+        "pages": [
+          "/concepts/architecture",
+          "/concepts/providers",
+          "/concepts/agents",
+          "/concepts/tools"
+        ]
+      },
+      {
+        "group": "Agents",
+        "pages": ["/agents/official-list", "/agents/community-list"]
+      },
+      {
+        "group": "Agent Communication Protocol",
+        "pages": [
           {
-            "group": "Introduction",
-            "pages": [
-              "/introduction/welcome",
-              "/introduction/quickstart",
-              "/introduction/installation"
-            ]
+            "group": "Alpha",
+            "icon": "tag",
+            "pages": ["/acp/alpha/introduction", "/acp/alpha/architecture"]
           },
           {
-            "group": "Core Concepts",
+            "group": "Pre-alpha",
+            "icon": "tag",
             "pages": [
-              "/concepts/architecture",
-              "/concepts/providers",
-              "/concepts/agents",
-              "/concepts/tools"
-            ]
-          },
-          {
-            "group": "Agents",
-            "pages": ["/agents/official-list", "/agents/community-list"]
-          },
-          {
-            "group": "Agent Communication Protocol",
-            "pages": [
-              {
-                "group": "Alpha",
-                "icon": "tag",
-                "pages": ["/acp/alpha/introduction", "/acp/alpha/architecture"]
-              },
-              {
-                "group": "Pre-alpha",
-                "icon": "tag",
-                "pages": [
-                  "/acp/pre-alpha/introduction",
-                  "/acp/pre-alpha/architecture",
-                  "/acp/pre-alpha/specification",
-                  "/acp/pre-alpha/sdk"
-                ]
-              }
-            ]
-          },
-          {
-            "group": "Observability & Telemetry",
-            "pages": [
-              "/observability/agents-traceability",
-              "/observability/telemetry"
+              "/acp/pre-alpha/introduction",
+              "/acp/pre-alpha/architecture",
+              "/acp/pre-alpha/specification",
+              "/acp/pre-alpha/sdk"
             ]
           }
         ]
+      },
+      {
+        "group": "Observability & Telemetry",
+        "pages": [
+          "/observability/agents-traceability",
+          "/observability/telemetry"
+        ]
       }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Agent Catalog",
-          "href": "https://beeai.dev/agents",
-          "icon": "robot"
-        },
-        {
-          "anchor": "GitHub",
-          "href": "https://github.com/i-am-bee/beeai",
-          "icon": "github"
-        },
-        {
-          "anchor": "Discord",
-          "href": "https://discord.gg/AZFrp3UF5k",
-          "icon": "discord"
-        }
-      ]
-    }
+    ]
   },
   "logo": {
     "light": "/logo/beeai-lockup.svg",
@@ -90,14 +66,24 @@
   },
   "navbar": {
     "primary": {
-      "type": "github",
+      "type": "button",
+      "label": "GitHub",
       "href": "https://github.com/i-am-bee/beeai"
-    }
+    },
+    "links": [
+      {
+        "label": "Agent Catalog",
+        "href": "https://beeai.dev"
+      },
+      { "label": "Discord", "href": "https://discord.gg/AZFrp3UF5k" }
+    ]
   },
   "footer": {
     "socials": {
       "github": "https://github.com/i-am-bee/beeai",
-      "discord": "https://discord.gg/AZFrp3UF5k"
+      "discord": "https://discord.gg/AZFrp3UF5k",
+      "bluesky": "https://bsky.app/profile/beeaiagents.bsky.social",
+      "youtube": "https://www.youtube.com/@BeeAIAgents"
     }
   }
 }
