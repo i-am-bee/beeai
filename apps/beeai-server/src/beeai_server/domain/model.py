@@ -83,6 +83,11 @@ class BaseProvider(BaseModel, abc.ABC):
             raise MissingConfigurationError(missing_env=missing_env)
         return missing_env
 
+    def extract_env(self, env: dict[str, str] | None = None) -> dict[str, str]:
+        env = env or {}
+        declared_env_vars = {var.name for var in self.env}
+        return {var: env[var] for var in env if var in declared_env_vars}
+
     async def check_compatibility(self) -> None:
         pass
 
@@ -126,12 +131,11 @@ class ManagedProvider(BaseProvider, abc.ABC):
         env: dict[str, str] | None = None,
         with_dummy_env: bool = True,
     ) -> McpClient:
-        declared_env_vars = {var.name for var in self.env}
         required_env_vars = {var.name for var in self.env if var.required}
         env = {
             **self._global_env,
             **({var: "dummy" for var in required_env_vars} if with_dummy_env else {}),
-            **({var: env[var] for var in env if var in declared_env_vars}),
+            **(self.extract_env(env=env)),
         }
         command, args = command[0], command[1:]
         match (self.serverType, self.mcpTransport):
@@ -188,7 +192,7 @@ class NodeJsProvider(ManagedProvider):
     ) -> McpClient:  # noqa: F821
         await self.check_compatibility()
         if not with_dummy_env:
-            await self.check_env(env)
+            self.check_env(env)
 
         try:
             github_url = GithubUrl.model_validate(self.package)
@@ -249,7 +253,7 @@ class PythonProvider(ManagedProvider):
     async def mcp_client(self, *, env: dict[str, str] | None = None, with_dummy_env=True) -> McpClient:
         await self.check_compatibility()
         if not with_dummy_env:
-            await self.check_env(env)
+            self.check_env(env)
 
         python = [] if not self.pythonVersion else ["--python", self.pythonVersion]
         async with super()._get_mcp_client(

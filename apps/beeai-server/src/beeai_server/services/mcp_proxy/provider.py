@@ -77,6 +77,7 @@ class LoadedProvider:
     resources: list[Resource] = []
     prompts: list[Prompt] = []
     missing_configuration: list[EnvVar] = []
+    _env: dict[str, str] = {}
 
     def __init__(self, provider: Provider, env_repository: IEnvVariableRepository):
         self.provider = provider
@@ -176,7 +177,7 @@ class LoadedProvider:
 
         exit_task = asyncio.create_task(_listen_for_exit())
         try:
-            mcp_client = self.provider.mcp_client(env=await self._env_repository.get_all())
+            mcp_client = self.provider.mcp_client(env=self._env)
             read_stream, write_stream = await self._session_exit_stack.enter_async_context(mcp_client)
             session = await self._session_exit_stack.enter_async_context(ClientSession(read_stream, write_stream))
             with anyio.fail_after(self.INITIALIZE_TIMEOUT.total_seconds()):
@@ -208,13 +209,13 @@ class LoadedProvider:
             await self.provider.manifest.check_compatibility()
 
             env = await self._env_repository.get_all()
-            new_missing_configuration = self.provider.manifest.check_env(env=env, raise_error=False)
-            if self.session and self.missing_configuration == new_missing_configuration:
+            new_env = self.provider.manifest.extract_env(env=env)
+            if self.session and self._env == new_env:
                 with anyio.fail_after(self.PING_TIMEOUT.total_seconds()):
                     await self.session.send_ping()
                 return
-
-            self.missing_configuration = new_missing_configuration
+            self._env = new_env
+            self.missing_configuration = self.provider.manifest.check_env(env=env)
             self.status = LoadedProviderStatus.initializing
             await self._initialize_session()
             self.status = LoadedProviderStatus.ready
