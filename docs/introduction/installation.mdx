@@ -37,7 +37,7 @@ brew uninstall beeai
 
 ## PyPI
 
-This Python-native installation method is less recommended because it requires additional manual steps and does not manage dependencies or background services automatically.
+This Python-native installation method is not recommended because it requires additional manual steps and does not manage dependencies or background services automatically.
 
 ### Install
 
@@ -108,3 +108,71 @@ beeai provider list
 Ensure all providers display the `ready` state. Note that initial setup might take a few minutes.
 
 You may also wish to enable [Agent Traceability](/observability/agents-traceability).
+
+---
+
+## Setting up LLM provider
+
+We recommend setting up the LLM provider interactively using:
+
+```sh
+beeai env setup
+```
+
+If you prefer manual set up, use the following commands:
+
+```sh
+beeai env add LLM_MODEL=deepseek-r1-distill-llama-70b
+beeai env add LLM_API_BASE=https://api.groq.com/openai/v1
+beeai env add LLM_API_KEY=gsk_abc...
+```
+
+Here are examples for other providers:
+
+<AccordionGroup>
+   <Accordion title="OpenAI">
+
+```bash
+beeai env add LLM_MODEL=gpt-4o
+beeai env add LLM_API_BASE=https://api.openai.com/v1
+beeai env add LLM_API_KEY=sk_\[...] \# <- your API key here
+```
+
+   </Accordion>
+   <Accordion title="Anthropic">
+
+```bash
+beeai env add LLM_MODEL=claude-3-7-sonnet-20250219
+beeai env add LLM_API_BASE=https://api.anthropic.com/v1/
+beeai env add LLM_API_KEY=[...] # <- your API key here
+```
+
+   </Accordion>
+   <Accordion title="Groq">
+
+```bash
+beeai env add LLM_MODEL=deepseek-r1-distill-llama-70b
+beeai env add LLM_API_BASE=https://api.groq.com/openai/v1
+beeai env add LLM_API_KEY=gsk_[...] # <- your API key here
+```
+
+   </Accordion>
+   <Accordion title="Ollama">
+
+```bash
+beeai env add LLM_MODEL=llama3.3
+beeai env add LLM_API_BASE=http://localhost:11434/v1
+beeai env add LLM_API_KEY=ollama
+```
+
+   </Accordion>
+   <Accordion title="OpenRouter">
+
+```bash
+beeai env add LLM_MODEL=google/gemini-2.0-pro-exp-02-05:free
+beeai env add LLM_API_BASE=https://openrouter.ai/api/v1
+beeai env add LLM_API_KEY=sk-or-v1-[...] # <- your API key here
+```
+
+   </Accordion>
+</AccordionGroup>
