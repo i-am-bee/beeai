@@ -5,7 +5,8 @@ receivers:
         endpoint: 0.0.0.0:4318 # overriden by the server
 
 exporters:
-  debug: {}
+  debug:
+    verbosity: detailed
   otlp/phoenix:
     endpoint: 0.0.0.0:8336
     tls:
@@ -20,6 +21,7 @@ processors:
     traces:
       span:
         - 'resource.attributes["service.namespace"] != "beeai-agent-provider"'
+        - 'instrumentation_scope.name == "acp.shared.session" or instrumentation_scope.name == "acp"'
 
 extensions:
   health_check:
@@ -30,4 +32,4 @@ service:
     traces/phoenix:
       receivers: [otlp]
       processors: [memory_limiter, filter/phoenix, batch]
-      exporters: [otlp/phoenix]
+      exporters: [otlp/phoenix, debug]
