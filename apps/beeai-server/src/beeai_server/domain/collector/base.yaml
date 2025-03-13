@@ -32,4 +32,4 @@ service:
     traces/phoenix:
       receivers: [otlp]
       processors: [memory_limiter, filter/phoenix, batch]
-      exporters: [otlp/phoenix, debug]
+      exporters: [otlp/phoenix]
