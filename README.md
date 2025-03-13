@@ -33,7 +33,7 @@ BeeAI is an open platform to help you discover, run, and compose AI agents from 
 
 ## Quickstart
 
-1. **Install** BeeAI using [Homebrew](https://brew.sh/) (or see the [installation guide](https://docs.beeai.dev/get-started/installation) for other methods):
+1. **Install** BeeAI using [Homebrew](https://brew.sh/) (or see the [installation guide](https://docs.beeai.dev/introduction/installation) for other methods):
 
 ```sh
 brew install i-am-bee/beeai/beeai
