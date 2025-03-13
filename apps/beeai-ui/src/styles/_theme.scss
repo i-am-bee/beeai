@@ -26,6 +26,7 @@ $light: map.merge(
     background-inverse: $cool-gray-80,
     background-hover: $cool-gray-10,
     background-hover-50: rgba($cool-gray-10, 0.5),
+    background-transparent: rgba($white, 0),
     layer-01: $white,
     layer-02: $cool-gray-10,
     layer-03: $cool-gray-20,
@@ -58,6 +59,7 @@ $dark: map.merge(
     background-inverse: $cool-gray-10,
     background-hover: $cool-gray-80,
     background-hover-50: rgba($cool-gray-80, 0.5),
+    background-transparent: rgba($cool-gray-100, 0),
     layer-hover-01: $cool-gray-80,
 
     border-subtle-00: $cool-gray-80,
@@ -150,6 +152,7 @@ $grid-margin: var(--cds-grid-margin);
 $gap: $grid-margin;
 
 $background-hover-50: var(--cds-background-hover-50);
+$background-transparent: var(--cds-background-transparent);
 
 $text-dark: var(--cds-text-dark);
 

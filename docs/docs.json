@@ -15,17 +15,7 @@
         "groups": [
           {
             "group": "Get Started",
-            "pages": [
-              "/get-started/quickstart"
-            ]
-          },
-          {
-            "group": "Agents",
-            "pages": [
-              "/agents/official-list",
-              "/agents/community-list",
-              "/agents/contribute"
-            ]
+            "pages": ["/get-started/quickstart"]
           },
           {
             "group": "Concepts",
@@ -37,15 +27,20 @@
             ]
           },
           {
+            "group": "Agents",
+            "pages": [
+              "/agents/official-list",
+              "/agents/community-list",
+              "/agents/contribute"
+            ]
+          },
+          {
             "group": "Agent Communication Protocol",
             "pages": [
               {
                 "group": "Alpha",
                 "icon": "tag",
-                "pages": [
-                  "/acp/alpha/introduction",
-                  "/acp/alpha/architecture"
-                ]
+                "pages": ["/acp/alpha/introduction", "/acp/alpha/architecture"]
               },
               {
                 "group": "Pre-alpha",
@@ -53,6 +48,7 @@
                 "pages": [
                   "/acp/pre-alpha/introduction",
                   "/acp/pre-alpha/architecture",
+                  "/acp/pre-alpha/specification",
                   "/acp/pre-alpha/sdk"
                 ]
               }
@@ -60,13 +56,21 @@
           },
           {
             "group": "Observability & Telemetry",
-            "pages": ["/observability/agents", "/observability/sharing"]
+            "pages": [
+              "/observability/agents-traceability",
+              "/observability/telemetry"
+            ]
           }
         ]
       }
     ],
     "global": {
       "anchors": [
+        {
+          "anchor": "Agent Library",
+          "href": "https://beeai.dev/agents",
+          "icon": "robot"
+        },
         {
           "anchor": "GitHub",
           "href": "https://github.com/i-am-bee/beeai",

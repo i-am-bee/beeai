@@ -54,7 +54,7 @@ export function HandsOffInput() {
           }}
           isSubmitDisabled={isSubmitDisabled}
           inputProps={{
-            placeholder: 'Write your entry here…',
+            placeholder: 'Write the agent prompt here',
             ...register('input', { required: true }),
           }}
         >

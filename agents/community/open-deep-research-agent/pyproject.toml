@@ -1,6 +1,6 @@
 [project]
 name = "open-deep-research-agent"
-version = "0.0.1"
+version = "0.0.2"
 description = "An open replication of OpenAI's Deep Research by Hugging Face"
 readme = "README.md"
 authors = [
@@ -15,7 +15,7 @@ dependencies = [
     "audioop-lts<1.0; python_version >= '3.13'",
     "beautifulsoup4>=4.12.3",
     "datasets>=2.21.0",
-    "google_search_results>=2.4.2",
+    "google-search-results>=2.4.2",
     "huggingface_hub>=0.23.4",
     "mammoth>=1.8.0",
     "markdownify>=0.13.1",
@@ -32,7 +32,6 @@ dependencies = [
     "python-dotenv>=1.0.1",
     "python_pptx>=1.0.2",
     "Requests>=2.32.3",
-    "serpapi>=0.1.5",
     "tqdm>=4.66.4",
     "torch>=2.2.2",
     "torchvision>=0.17.2",
@@ -52,6 +51,7 @@ dependencies = [
     "SpeechRecognition",
     "pydantic-settings>=2.7.1",
     "pydantic>=2.10.6",
+    "serpapi>=0.1.5",
 ]
 
 [project.scripts]

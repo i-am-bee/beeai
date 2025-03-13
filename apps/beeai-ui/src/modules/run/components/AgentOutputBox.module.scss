@@ -14,13 +14,20 @@
  * limitations under the License.
  */
 
-import { ComposeTestView } from '#modules/compose/ComposeTestView.tsx';
-import { ComposeProvider } from '#modules/compose/contexts/ComposeProvider.tsx';
+.root {
+  @include scrollbar();
+  overflow-y: auto;
+  background-color: $layer;
+  padding: $spacing-08 $spacing-07 $spacing-07;
+  border-radius: $border-radius;
+  position: relative;
+  max-block-size: 100%;
+}
 
-export function ComposeTestPage() {
-  return (
-    <ComposeProvider>
-      <ComposeTestView />
-    </ComposeProvider>
-  );
+.actions {
+  --cds-icon-primary: currentColor;
+  display: flex;
+  position: absolute;
+  inset-block-start: $spacing-05;
+  inset-inline-end: $spacing-05;
 }

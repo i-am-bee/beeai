@@ -1,0 +1,119 @@
+/**
+ * Copyright 2025 IBM Corp.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.root {
+  position: relative;
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: $spacing-04;
+  transition: block-size $duration-fast-01 ease-in-out;
+
+  &:last-child {
+    .left::before,
+    .left::after {
+      display: none;
+    }
+  }
+
+  &.status-pending {
+    .bullet {
+      background-color: $background;
+    }
+  }
+  &.status-finished {
+    .left::after {
+      block-size: 100%;
+    }
+    .bullet {
+      background-color: $background-inverse;
+      color: $text-inverse;
+    }
+  }
+}
+
+.left {
+  position: relative;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset-inline-start: rem(16px);
+    inset-block-start: rem(8px);
+    inline-size: 1px;
+    block-size: 100%;
+    background-color: $border-subtle;
+  }
+  &::after {
+    block-size: 0;
+    background-color: $background-inverse;
+    transition: block-size $duration-slow-01 ease-out;
+  }
+
+  .bullet {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    block-size: rem(32px);
+    inline-size: rem(32px);
+    border-radius: 50%;
+    overflow: hidden;
+    font-size: rem(16px);
+    font-weight: 600;
+    background-color: $layer-02;
+  }
+}
+
+.content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  max-inline-size: 100%;
+  overflow: hidden;
+  padding-block-end: $spacing-05;
+}
+
+.name {
+  display: flex;
+  align-items: center;
+  min-block-size: rem(32px);
+  margin-block-end: $spacing-04;
+  padding-inline-end: $spacing-08;
+}
+
+.actions {
+  position: absolute;
+  inset-inline-end: 0;
+  inset-block-start: 0;
+}
+
+.input p {
+  @include type-style('body-01');
+  color: $text-secondary;
+}
+
+.textarea {
+  padding-block-end: $spacing-06;
+
+  &::after,
+  textarea {
+    @include type-style('body-compact-01');
+    border: 1px solid $border-subtle;
+    border-radius: $border-radius;
+  }
+}

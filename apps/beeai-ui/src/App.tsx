@@ -28,8 +28,8 @@ import { Agent } from './pages/agents/Agent';
 import { NotFound } from './pages/NotFound';
 import { AgentRunPage } from './pages/run/AgentRunPage';
 import { routeDefinitions } from './utils/router';
-import { ComposeLandingPage } from '#pages/compose/ComposeLandingPage.tsx';
-import { ComposeTestPage } from '#pages/compose/ComposeTestPage.tsx';
+import { ComposeSequential } from '#modules/compose/ComposeSequential.tsx';
+import { ComposeLanding } from '#modules/compose/ComposeLanding.tsx';
 
 export function App() {
   return (
@@ -48,8 +48,8 @@ export function App() {
                     <Route path={routeDefinitions.agents()} element={<Agents />} />
                     <Route path={routeDefinitions.agentDetail()} element={<Agent />} />
                     <Route path={routeDefinitions.agentRun()} element={<AgentRunPage />} />
-                    <Route path={routeDefinitions.compose()} element={<ComposeLandingPage />} />
-                    <Route path={routeDefinitions.composeSequential()} element={<ComposeTestPage />} />
+                    <Route path={routeDefinitions.compose()} element={<ComposeLanding />} />
+                    <Route path={routeDefinitions.composeSequential()} element={<ComposeSequential />} />
                     <Route path={routeDefinitions.settings()} element={<Settings />} />
 
                     <Route path="*" element={<NotFound />} />

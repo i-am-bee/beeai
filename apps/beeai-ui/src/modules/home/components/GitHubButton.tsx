@@ -23,7 +23,7 @@ export function GitHubButton() {
   return (
     <Button as="a" href={GITHUB_REPO_LINK} target="_blank" rel="noreferrer" size="md" className={classes.root}>
       <LogoGithub />
-      <span>Star on GitHub</span>
+      <span>GitHub</span>
     </Button>
   );
 }

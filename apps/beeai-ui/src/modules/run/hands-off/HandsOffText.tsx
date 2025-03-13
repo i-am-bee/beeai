@@ -14,26 +14,11 @@
  * limitations under the License.
  */
 
-import { MarkdownContent } from '#components/MarkdownContent/MarkdownContent.tsx';
-import { CopyButton } from '@carbon/react';
 import { useHandsOff } from '../contexts/hands-off';
-import { DownloadButton } from './DownloadButton';
-import classes from './HandsOffText.module.scss';
+import { AgentOutputBox } from '../components/AgentOutputBox';
 
 export function HandsOffText() {
   const { agent, text, isPending } = useHandsOff();
 
-  return text ? (
-    <div className={classes.root}>
-      {!isPending && (
-        <div className={classes.actions}>
-          <CopyButton kind="ghost" align="left" onClick={() => navigator.clipboard.writeText(text)} />
-
-          <DownloadButton filename={`${agent.name}-output.txt`} content={text} />
-        </div>
-      )}
-
-      <MarkdownContent>{text}</MarkdownContent>
-    </div>
-  ) : null;
+  return <AgentOutputBox text={text} isPending={isPending} downloadFileName={`${agent}-output`} />;
 }

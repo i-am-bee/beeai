@@ -1,0 +1,42 @@
+---
+title: "Agent Traceability"
+description: "Explore agent traces in the BeeAI platform"
+icon: "route"
+
+---
+
+Agents within the BeeAI platform can be instrumented using the [OpenTelemetry](https://opentelemetry.io/) standard.
+
+Traces from instrumented agents can be collected and sent to the [Arize Phoenix](https://phoenix.arize.com/) observability backend for storage and visualization.
+
+To visualize agent traces:
+
+<Steps>
+   <Step title="Install Arize Phoenix">
+
+Install and start Phoenix using [Homebrew](https://brew.sh/):
+
+```sh
+brew install i-am-bee/beeai/arize-phoenix
+brew services start arize-phoenix
+```
+
+   </Step>
+   <Step title="Run an instrumented agent">
+
+Execute the following command to run an example chat agent:
+
+```sh
+beeai run chat "Hello"
+```
+
+   </Step>
+   <Step title="View traces in Phoenix GUI">
+      Open http://localhost:6006 in your browser and navigate to the **default** project to explore the collected traces.
+   </Step>
+</Steps>
+
+<Tip>
+  For an enhanced user experience, consider instrumenting agents according to
+  the [OpenInference](https://github.com/Arize-ai/openinference/) standard.
+</Tip>

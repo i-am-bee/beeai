@@ -21,19 +21,36 @@
 
 .button {
   block-size: rem(52px);
-  inline-size: 100%;
-  max-inline-size: none;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  gap: $spacing-04;
+  max-inline-size: none;
+  inline-size: 100%;
   padding: 0;
-  color: $text-secondary;
 
-  &,
+  > span {
+    inline-size: rem(32px);
+    block-size: rem(32px);
+    border: 2px dashed $border-subtle;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+
+    transition: border-color $duration-fast-01 ease-out;
+  }
+  &:hover,
   &:active,
-  &:active:not(:focus) {
-    background-color: $layer-02;
-    border: 1px dashed $text-placeholder;
+  &.active,
+  &:focus {
+    background-color: transparent;
+    outline: none;
+    box-shadow: none;
+    border-color: transparent;
+    > span {
+      border-color: $text-primary;
+    }
   }
 }
 

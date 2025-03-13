@@ -34,21 +34,21 @@ Pending topics:
 
 ### Problem
 
-In the [Pre-alpha](/acp/pre-alpha/introduction) version of ACP, we introduced a tight coupling between agent providers and agents, meaning they run in the same runtime. To be discoverable, an agent must first be instantiated (dependencies installed, main process running). This presents several challenges:
+In the [Pre-alpha](/acp/pre-alpha/introduction) version of ACP, we introduced a tight coupling between agent providers and agents, meaning they run in the same runtime. To be discoverable, an agent must first be "installed" (including dependencies). This presents several challenges:
 
 - Agents are only discoverable if the provider is running.
-- Agents require instantiation to become discoverable, consuming significant resources.
-- Agents become discoverable only if successfully executed, but sometimes agents depend on external configurations that aren't available until discovery occurs.
-- Agents built using different languages or frameworks cannot coexist within the same provider.
+- Agents require installation to become discoverable, possibly consuming significant resources.
+- Agents become discoverable only if successfully installed, but sometimes agents depend on external configurations that aren't available until discovery occurs.
+- Agents built using different languages/runtimes cannot coexist within the same provider.
 - Environment management currently occurs on the agent provider's side, yet should be coupled directly to the agent.
-- Agents might depend on local resources (e.g., locally installed models) that must be prepared before runtime. The current design doesn't support this.
+- Agents might depend on local resources (e.g., locally installed models) that must be prepared before runtime.
 - Agent installation currently happens implicitly—it should instead occur explicitly at user request (to handle failures transparently).
 - A single agent should be deployable independently rather than deploying an entire provider.
 - Fatal errors in the provider or agent currently affect both, impacting stability.
 
 ### Current Implementation
 
-Currently, the platform functions as a service registry. Providers register via the `beeai provider add` command, pointing to a manifest file specifying deployment configurations. Providers then notify the platform through an JSON-RPC API about available agents embedded within their runtime.
+Currently, the platform functions as a service registry (through `provider-registry.yaml`). Providers register via the `beeai provider add` command, pointing to a manifest file specifying deployment configurations. Platform discovers the agents through providers.
 
 #### Discoverability Process
 
@@ -156,12 +156,12 @@ mcpTransport: sse
 
 ### Goal
 
-Reevaluate the agent manifest and provider concepts. While grouping agents under providers has usability advantages, it introduces complexities outlined above. We propose shifting the provider details directly into individual agent manifests, enabling offline discovery and simplifying deployment. The new agent manifest should clearly describe:
+Reevaluate the agent manifest and provider concepts. While grouping agents under providers has usability advantages (and is MCP-compatible approach), it introduces complexities outlined above. We propose shifting the provider details directly into individual agent manifests, enabling offline discovery and simplifying deployment. The new agent manifest should clearly describe:
 
-1. Deployment and consumption (as a service or deployable artifact).
-1. Interface definition (input/output schemas).
-1. Configuration requirements (secrets, environment variables).
-1. Dependencies (including other agents or external resources)
+1. Deployment and consumption (as a service or deployable artifact)
+1. Interface definition (input/output schemas)
+1. Configuration requirements (secrets, environment variables)
+1. Dependencies (including other agents, tools, or external resources)
 1. Capabilities (sessions, interruptions) and metadata (license, description, skills, etc.)
 
 ### Open Questions

@@ -21,8 +21,9 @@ import { AgentListOption } from './AgentListOption';
 import { useOnClickOutside } from 'usehooks-ts';
 import { useListAgents } from '#modules/agents/api/queries/useListAgents.ts';
 import { Agent } from '#modules/agents/api/types.ts';
-import { isValidForSequentialWorkflow } from '../sequential-workflow';
 import { SkeletonItems } from '#components/SkeletonItems/SkeletonItems.tsx';
+import { isValidForSequentialWorkflow } from '../sequential/utils';
+import { Add } from '@carbon/icons-react';
 
 interface Props {
   onSelectAgent: (agent: Agent) => void;
@@ -40,12 +41,15 @@ export function AddAgentButton({ onSelectAgent, isDisabled }: Props) {
 
   const { data, isPending } = useListAgents();
 
-  const availableAgents = useMemo(() => data?.filter(isValidForSequentialWorkflow), [data]);
+  const availableAgents = useMemo(
+    () => data?.filter(isValidForSequentialWorkflow).sort((a, b) => a.name.localeCompare(b.name)),
+    [data],
+  );
 
   return (
     <div className={classes.root} ref={selectorRef}>
       <Button
-        kind="tertiary"
+        kind="ghost"
         size="md"
         className={classes.button}
         aria-haspopup="listbox"
@@ -53,6 +57,9 @@ export function AddAgentButton({ onSelectAgent, isDisabled }: Props) {
         onClick={() => setExpanded(!expanded)}
         disabled={isDisabled}
       >
+        <span>
+          <Add size={20} />
+        </span>
         Add an agent
       </Button>
       <ul className={classes.list} role="listbox" tabIndex={0} id={`${id}:options`} aria-expanded={expanded}>

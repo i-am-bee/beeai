@@ -16,26 +16,17 @@
 
 import { JSONSchema, validateJsonSchema } from '#helpers/validateJsonSchema.ts';
 import { Agent } from '#modules/agents/api/types.ts';
-import { messageInputSchema, messageOutputSchema } from '@i-am-bee/beeai-sdk/schemas/message';
-import { textInputSchema, textOutputSchema } from '@i-am-bee/beeai-sdk/schemas/text';
-import zodToJsonSchema from 'zod-to-json-schema';
-
-export const SEQUENTIAL_COMPOSE_AGENT_NAME = 'sequential-workflow';
-
-export function getSequentialComposeAgent(agents?: Agent[]) {
-  return agents?.find(({ name }) => name === SEQUENTIAL_COMPOSE_AGENT_NAME);
-}
-
-const messageInputJsonSchema = zodToJsonSchema(messageInputSchema);
-const messageOutputJsonSchema = zodToJsonSchema(messageOutputSchema);
-const textInputJsonSchema = zodToJsonSchema(textInputSchema);
-const textOutputJsonSchema = zodToJsonSchema(textOutputSchema);
+import { UiType } from '#modules/run/types.ts';
+import { SEQUENTIAL_COMPOSE_AGENT_NAME, textInputJsonSchema, textOutputJsonSchema } from './constants';
 
 export function isValidForSequentialWorkflow(agent: Agent) {
   return (
-    (validateJsonSchema(agent.inputSchema as JSONSchema, messageInputJsonSchema as JSONSchema) &&
-      validateJsonSchema(agent.outputSchema as JSONSchema, messageOutputJsonSchema as JSONSchema)) ||
+    agent.ui?.type === UiType.HandsOff ||
     (validateJsonSchema(agent.inputSchema as JSONSchema, textInputJsonSchema as JSONSchema) &&
       validateJsonSchema(agent.outputSchema as JSONSchema, textOutputJsonSchema as JSONSchema))
   );
+}
+
+export function getSequentialComposeAgent(agents?: Agent[]) {
+  return agents?.find(({ name }) => name === SEQUENTIAL_COMPOSE_AGENT_NAME);
 }
