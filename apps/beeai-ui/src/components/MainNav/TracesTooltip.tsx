@@ -14,28 +14,22 @@
  * limitations under the License.
  */
 
-.root {
-  z-index: z('modal');
-}
-
-.content {
-  @include type-style(label-02);
-  background-color: $background-inverse;
-  color: $text-inverse;
-  border-radius: $border-radius;
-  max-inline-size: rem(264px);
-
-  .root.sm & {
-    padding: $spacing-02 $spacing-03;
-  }
-  .root.md & {
-    padding: $spacing-04 $spacing-05;
-  }
-  a {
-    color: $link-inverse;
-  }
-}
-
-.arrow {
-  fill: $background-inverse;
+export function TracesTooltip() {
+  return (
+    <>
+      <strong>Phoenix Server Unavailable 🚨</strong>
+      <br />
+      <br />
+      It looks like the Phoenix server is not running or cannot be reached.
+      <br />
+      <br />
+      To enable traceability and ensure everything works smoothly, please check your Phoenix setup by following the
+      instructions in the official documentation:
+      <br />
+      🔗{' '}
+      <a href="https://docs.beeai.dev/observability/agents-traceability" target={'_blank'}>
+        Set up Phoenix Server
+      </a>
+    </>
+  );
 }
