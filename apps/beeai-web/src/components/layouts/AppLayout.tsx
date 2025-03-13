@@ -16,14 +16,14 @@
 
 import { AppFooter, AppHeader, GitHubLink } from "@i-am-bee/beeai-ui";
 import { PropsWithChildren } from "react";
+import { MainNav } from '../MainNav/MainNav';
 import classes from "./AppLayout.module.scss";
-import { Navigation } from "./Navigation";
 
 export default function AppLayout({ children }: PropsWithChildren) {
   return (
     <div className={classes.root}>
       <AppHeader className={classes.header}>
-        <Navigation />
+        <MainNav />
 
         <GitHubLink />
       </AppHeader>
