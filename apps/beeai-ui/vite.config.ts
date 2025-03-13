@@ -4,6 +4,8 @@ import { fileURLToPath, URL } from 'url';
 import { defineConfig } from 'vite';
 import svgr from 'vite-plugin-svgr';
 
+const phoenixServerTarget = 'http://localhost:6006';
+
 export default defineConfig({
   plugins: [
     react(),
@@ -13,6 +15,7 @@ export default defineConfig({
   ],
   define: {
     __APP_NAME__: JSON.stringify('BeeAI'),
+    __PHOENIX_SERVER_TARGET__: JSON.stringify(phoenixServerTarget),
   },
   server: {
     proxy: {
@@ -22,6 +25,9 @@ export default defineConfig({
       '/api': {
         target: 'http://localhost:8333',
       },
+      '/phoenix': {
+        target: phoenixServerTarget
+      }
     },
   },
   resolve: {

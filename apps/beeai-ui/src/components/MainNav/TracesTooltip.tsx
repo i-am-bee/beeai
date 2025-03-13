@@ -14,8 +14,22 @@
  * limitations under the License.
  */
 
-/// <reference types="./@types/svg" />
-/// <reference types="vite/client" />
-
-declare const __APP_NAME__: string;
-declare const __PHOENIX_SERVER_TARGET__: string;
+export function TracesTooltip() {
+  return (
+    <>
+      <strong>Phoenix Server Unavailable 🚨</strong>
+      <br />
+      <br />
+      It looks like the Phoenix server is not running or cannot be reached.
+      <br />
+      <br />
+      To enable traceability and ensure everything works smoothly, please check your Phoenix setup by following the
+      instructions in the official documentation:
+      <br />
+      🔗{' '}
+      <a href="https://docs.beeai.dev/observability/agents-traceability" target={'_blank'}>
+        Set up Phoenix Server
+      </a>
+    </>
+  );
+}

@@ -14,8 +14,17 @@
  * limitations under the License.
  */
 
-/// <reference types="./@types/svg" />
-/// <reference types="vite/client" />
+import { useQuery } from '@tanstack/react-query';
 
-declare const __APP_NAME__: string;
-declare const __PHOENIX_SERVER_TARGET__: string;
+interface Props {
+  enabled: boolean;
+}
+
+export function usePhoenix({ enabled }: Props) {
+  return useQuery({
+    queryKey: ['phoenix'],
+    refetchInterval: 60_000,
+    enabled,
+    queryFn: () => fetch('/phoenix').then((res) => res.ok),
+  });
+}
