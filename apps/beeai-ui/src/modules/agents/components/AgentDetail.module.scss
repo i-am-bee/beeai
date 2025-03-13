@@ -23,6 +23,10 @@
     font-size: rem(50px);
     line-height: math.div(65, 50);
     margin-block-end: 0;
+
+    @include breakpoint-down(md) {
+      font-size: 8vw;
+    }
   }
 
   .metadata {
@@ -44,6 +48,7 @@
   .buttons {
     display: flex;
     align-items: flex-start;
+    flex-wrap: wrap;
     gap: $spacing-05;
     margin-block-start: $spacing-06;
   }

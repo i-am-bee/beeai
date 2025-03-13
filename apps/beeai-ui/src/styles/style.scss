@@ -26,6 +26,10 @@
 
 :root {
   @include theme($light);
+
+  @include breakpoint-down(md) {
+    --cds-grid-margin: #{$spacing-06};
+  }
 }
 
 // @media (prefers-color-scheme: dark) {
