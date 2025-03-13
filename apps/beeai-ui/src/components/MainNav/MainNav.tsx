@@ -38,8 +38,8 @@ export function MainNav() {
         }).map(({ label, to, section, target, rel, isDisabled }, idx) => (
           <li key={idx} className={clsx({ [classes.active]: section && isSectionActive(section) })}>
             {isDisabled ? (
-              <Tooltip asChild content={<TracesTooltip></TracesTooltip>}>
-                <Button kind="ghost" disabled>
+              <Tooltip asChild content={<TracesTooltip />}>
+                <Button kind="ghost" disabled className={classes.link}>
                   {label}
                 </Button>
               </Tooltip>
