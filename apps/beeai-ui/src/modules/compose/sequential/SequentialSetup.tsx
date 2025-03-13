@@ -15,20 +15,20 @@
  */
 
 import { Container } from '#components/layouts/Container.tsx';
+import { TransitionLink } from '#components/TransitionLink/TransitionLink.tsx';
 import { VersionTag } from '#components/VersionTag/VersionTag.tsx';
 import { Agent } from '#modules/agents/api/types.ts';
-import { AddAgentButton } from '../components/AddAgentButton';
-import classes from './SequentialSetup.module.scss';
-import { SequentialFormValues } from '../contexts/compose-context';
-import { useFormState } from 'react-hook-form';
-import { Button, IconButton } from '@carbon/react';
-import { ArrowLeft, PlayFilledAlt, StopOutlineFilled } from '@carbon/icons-react';
-import { useCompose } from '../contexts';
-import { ComposeStepListItem } from '../components/ComposeStepListItem';
-import clsx from 'clsx';
 import NewSession from '#modules/run/components/NewSession.svg';
 import { routes } from '#utils/router.ts';
-import { TransitionLink } from '#components/TransitionLink/TransitionLink.tsx';
+import { ArrowLeft, PlayFilledAlt, StopOutlineFilled } from '@carbon/icons-react';
+import { Button, IconButton } from '@carbon/react';
+import clsx from 'clsx';
+import { useFormState } from 'react-hook-form';
+import { AddAgentButton } from '../components/AddAgentButton';
+import { ComposeStepListItem } from '../components/ComposeStepListItem';
+import { useCompose } from '../contexts';
+import { SequentialFormValues } from '../contexts/compose-context';
+import classes from './SequentialSetup.module.scss';
 
 export function SequentialSetup() {
   const {
@@ -60,7 +60,7 @@ export function SequentialSetup() {
             {result ? (
               <>
                 <h1>Sequential workflow</h1>
-                <IconButton kind="tertiary" size="sm" label="New session" onClick={() => onReset()}>
+                <IconButton kind="tertiary" size="sm" label="New session" autoAlign onClick={() => onReset()}>
                   <NewSession />
                 </IconButton>
               </>
