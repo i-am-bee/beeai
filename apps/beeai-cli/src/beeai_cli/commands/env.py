@@ -90,6 +90,10 @@ async def setup() -> bool:
                 value=("DeepSeek", "https://api.deepseek.com/v1", "deepseek-reasoner"),
             ),
             Choice(
+                name="NVIDIA NIM".ljust(20) + "🚀 best performance",
+                value=("NVIDIA NIM", "https://integrate.api.nvidia.com/v1", "deepseek-ai/deepseek-r1"),
+            ),
+            Choice(
                 name="Groq".ljust(20) + "🆓 has a free tier",
                 value=("Groq", "https://api.groq.com/openai/v1", "deepseek-r1-distill-llama-70b"),
             ),
@@ -98,18 +102,17 @@ async def setup() -> bool:
                 value=("OpenRouter", "https://openrouter.ai/api/v1", "deepseek/deepseek-r1-distill-llama-70b:free"),
             ),
             Choice(
-                name="Anthropic Claude".ljust(20) + "🚧 experimental",
-                value=("Anthropic", "https://api.anthropic.com/v1", "claude-3-7-sonnet-20250219"),
+                name="Cohere".ljust(20) + "🚧 experimental 🆓 has a free tier",
+                value=("Cohere", "https://api.cohere.ai/compatibility/v1", "command-r-plus"),
             ),
             Choice(
-                name="NVIDIA NIM".ljust(20) + "🚧 experimental",
-                value=("NVIDIA NIM", "https://integrate.api.nvidia.com/v1", "deepseek-ai/deepseek-r1"),
+                name="Anthropic Claude".ljust(20) + "🚧 experimental",
+                value=("Anthropic", "http://localhost:12345/v1", "claude-3-7-sonnet-latest"),
             ),
-            Choice(name="Mistral".ljust(20) + "🚧 experimental", value=("Mistral", "https://api.mistral.ai/v1", None)),
-            # Choice(
-            #     name="Cohere".ljust(20) + "🚧 experimental",
-            #     value=("Cohere", "https://api.cohere.ai/compatibility/v1", "command-r-plus"),
-            # ),
+            Choice(
+                name="Mistral".ljust(20) + "🚧 experimental",
+                value=("Mistral", "https://api.mistral.ai/v1", "mistral-large-latest"),
+            ),
             Choice(
                 name="Perplexity".ljust(20) + "🚧 experimental", value=("Perplexity", "https://api.perplexity.ai", None)
             ),
@@ -142,7 +145,7 @@ async def setup() -> bool:
                     available_models = []
                 else:
                     response.raise_for_status()
-                    available_models = [m.get("id", "") for m in response.json().get("data", [])]
+                    available_models = [m.get("id", "") for m in response.json().get("data", []) or []]
     except httpx.HTTPStatusError:
         console.print("💥 [bold red]Error:[/bold red] API key was rejected. Please check your API key and re-try.")
         return False
@@ -166,29 +169,39 @@ async def setup() -> bool:
     if provider_name == "Ollama":
         available_models = [model for model in available_models if not model.endswith("-beeai")]
 
-    selected_model = (
-        recommended_model
-        if (
-            (not available_models or recommended_model in available_models or provider_name == "Ollama")
-            and await inquirer.confirm(
-                message=f"Do you want to use the recommended model '{recommended_model}'?"
-                + (
-                    " It will be pulled from Ollama now."
-                    if recommended_model not in available_models and provider_name == "Ollama"
-                    else ""
-                ),
-                default=True,
-            ).execute_async()
+    if provider_name == "Ollama" and not available_models:
+        if await inquirer.confirm(
+            message=f"There are no locally available models in Ollama. Do you want to pull the recommended model '{recommended_model}'?",
+            default=True,
+        ).execute_async():
+            selected_model = recommended_model
+        else:
+            console.print("[red]No model configured.[/red]")
+            return False
+    else:
+        selected_model = (
+            recommended_model
+            if (
+                (not available_models or recommended_model in available_models or provider_name == "Ollama")
+                and await inquirer.confirm(
+                    message=f"Do you want to use the recommended model '{recommended_model}'?"
+                    + (
+                        " It will be pulled from Ollama now."
+                        if recommended_model not in available_models and provider_name == "Ollama"
+                        else ""
+                    ),
+                    default=True,
+                ).execute_async()
+            )
+            else (
+                await inquirer.fuzzy(
+                    message="Select a model (type to filter):",
+                    choices=sorted(available_models),
+                ).execute_async()
+                if available_models
+                else await inquirer.text(message="Write a model name to use:").execute_async()
+            )
         )
-        else (
-            await inquirer.fuzzy(
-                message="Select a model (type to filter):",
-                choices=sorted(available_models),
-            ).execute_async()
-            if available_models
-            else await inquirer.text(message="Write a model name to use:").execute_async()
-        )
-    )
 
     if provider_name == "Ollama" and selected_model not in available_models:
         try:
