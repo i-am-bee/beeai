@@ -4,13 +4,11 @@ description: "Instructions for installing BeeAI"
 icon: "wrench"
 ---
 
-The BeeAI platform supports installation on **macOS** and **Linux** using multiple methods.
-
-<Info>Windows support will be available in the next `Alpha` release.</Info>
+The BeeAI platform supports installation on **macOS**, **Linux**, and **Windows** (via WSL) using multiple methods.
 
 ## Homebrew (recommended)
 
-Installing using [Homebrew](https://brew.sh/) is the recommended method for both macOS and Linux. It handles dependency installation and manages background services automatically.
+The preferred installation method is via [Homebrew](https://brew.sh/). Homebrew simplifies dependency management and automatically handles background services.
 
 ### Install
 
@@ -37,7 +35,7 @@ brew uninstall beeai
 
 ## PyPI
 
-This Python-native installation method is not recommended because it requires additional manual steps and does not manage dependencies or background services automatically.
+This method installs BeeAI using Python’s package manager but is **not recommended** due to additional manual setup requirements. It does not automatically manage dependencies or background services.
 
 ### Install
 
@@ -70,7 +68,7 @@ These are optional, but you won't be able to use agents, including built-in ones
     </Step>
     <Step title="Run BeeAI server:">
 
-You need to keep this command running in order to use the platform.
+The BeeAI server must remain running for the platform to function.
 
 ```sh
 beeai serve
@@ -91,43 +89,23 @@ pipx upgrade beeai
 pipx uninstall beeai
 ```
 
-## What's next?
+## Post-installation setup
 
-After installation, configure your API keys with the following command:
+### LLM provider setup
 
-```sh
-beeai env setup
-```
+After installation, configure your preferred LLM provider.
 
-Then, verify your setup by running:
-
-```sh
-beeai provider list
-```
-
-Ensure all providers display the `ready` state. Note that initial setup might take a few minutes.
-
-You may also wish to enable [Agent Traceability](/observability/agents-traceability).
-
----
-
-## Setting up LLM provider
-
-We recommend setting up the LLM provider interactively using:
+<Tabs>
+   <Tab title="Interactive setup">
 
 ```sh
 beeai env setup
 ```
 
-If you prefer manual set up, use the following commands:
+   </Tab>
+   <Tab title="Manual setup">
 
-```sh
-beeai env add LLM_MODEL=deepseek-r1-distill-llama-70b
-beeai env add LLM_API_BASE=https://api.groq.com/openai/v1
-beeai env add LLM_API_KEY=gsk_abc...
-```
-
-Here are examples for other providers:
+To configure manually, follow these examples:
 
 <AccordionGroup>
    <Accordion title="OpenAI">
@@ -176,3 +154,19 @@ beeai env add LLM_API_KEY=sk-or-v1-[...] # <- your API key here
 
    </Accordion>
 </AccordionGroup>
+
+
+   </Tab>
+</Tabs>
+
+### Verify installation
+
+To verify the installation, run:
+
+```sh
+beeai provider list
+```
+
+Ensure all providers display the `ready` status. Note that initial setup might take a few minutes.
+
+At this point, you may also wish to enable [Agent Traceability](/observability/agents-traceability).
