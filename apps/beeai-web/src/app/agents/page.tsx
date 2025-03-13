@@ -20,6 +20,7 @@ import { Container, ViewStack } from "@i-am-bee/beeai-ui";
 import { AgentsFilteredView } from "./AgentsFilteredView";
 
 export const dynamic = "force-dynamic"; // Opt out of static generation
+export const revalidate = 600;
 
 export default async function AgentsPage() {
   const agents = await getAgentsList();

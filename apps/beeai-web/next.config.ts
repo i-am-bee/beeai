@@ -35,12 +35,12 @@ const nextConfig: NextConfig = {
         resourceQuery: { not: [...fileLoaderRule.resourceQuery.not, /url/] }, // exclude if *.svg?url
         use: [
           {
-            loader: '@svgr/webpack',
+            loader: "@svgr/webpack",
             options: {
               svgoConfig: {
                 plugins: [
                   {
-                    name: 'preset-default',
+                    name: "preset-default",
                     params: {
                       overrides: {
                         removeViewBox: false,
@@ -78,8 +78,21 @@ const nextConfig: NextConfig = {
     //
     // https://github.com/vercel/next.js/issues/68207
     // https://github.com/vercel/next.js/issues/64921
-    cssChunking: false
-  }
+    cssChunking: false,
+  },
+  async headers() {
+    return [
+      {
+        source: "/agents/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=600",
+          },
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;
