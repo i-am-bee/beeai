@@ -13,18 +13,15 @@
 # limitations under the License.
 
 import logging
-import uuid
 import time
 from contextlib import asynccontextmanager
 from functools import cached_property
 
 import anyio
 from anyio.streams.memory import MemoryObjectReceiveStream, MemoryObjectSendStream
-from beeai_server.telemetry import INSTRUMENTATION_NAME
 from kink import inject
 from opentelemetry import metrics
 
-from beeai_server.services.mcp_proxy.constants import NotificationStreamType
 from acp import (
     ClientSession,
     CreateAgentRequest,
@@ -48,8 +45,9 @@ from acp.types import (
     DestroyAgentRequest,
     DestroyAgentResult,
 )
-
+from beeai_server.services.mcp_proxy.constants import NotificationStreamType
 from beeai_server.services.mcp_proxy.provider import ProviderContainer
+from beeai_server.telemetry import INSTRUMENTATION_NAME
 
 logger = logging.getLogger(__name__)
 
@@ -88,7 +86,6 @@ class MCPProxyServer:
         if forward_progress_notifications:
             async with self._forward_progress_notifications(server):
                 request.params.meta = server.request_context.meta or RequestParams.Meta()
-                request.params.meta.progressToken = request.params.meta.progressToken or uuid.uuid4().hex
                 resp = await client_session.send_request(ClientRequest(request), result_type)
         else:
             request = request.model_dump(exclude={"jsonrpc"})
