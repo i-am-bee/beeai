@@ -26,7 +26,10 @@ export function LogoBeeAI() {
 
   return (
     <div className={clsx(classes.container, { [classes.loaded]: loaded })}>
-      <Logo className={classes.placeholder} />
+      <div className={classes.placeholder}>
+        <Logo />
+      </div>
+
       <Lottie
         className={classes.animation}
         animationData={animationData}
