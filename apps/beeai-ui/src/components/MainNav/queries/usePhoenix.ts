@@ -23,8 +23,11 @@ interface Props {
 export function usePhoenix({ enabled }: Props) {
   return useQuery({
     queryKey: ['phoenix'],
-    refetchInterval: 60_000,
+    refetchInterval: 5_000,
     enabled,
-    queryFn: () => fetch('/phoenix').then((res) => res.ok),
+    queryFn: () =>
+      fetch(__PHOENIX_SERVER_TARGET__, { mode: 'no-cors' })
+        .then(() => true)
+        .catch(() => false),
   });
 }
