@@ -16,6 +16,10 @@
 
 @use 'styles/common' as *;
 
+.cds--popover-container {
+  position: relative;
+}
+
 .cds--popover--tab-tip > .cds--popover > .cds--popover-content {
   border-radius: $border-radius;
   padding: 1rem;

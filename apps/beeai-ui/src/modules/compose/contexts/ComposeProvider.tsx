@@ -18,16 +18,16 @@ import { useHandleError } from '#hooks/useHandleError.ts';
 import { usePrevious } from '#hooks/usePrevious.ts';
 import { useListAgents } from '#modules/agents/api/queries/useListAgents.ts';
 import { useRunAgent } from '#modules/run/api/mutations/useRunAgent.tsx';
+import { TextResult } from '#modules/run/api/types.ts';
 import { isNotNull } from '#utils/helpers.ts';
 import { PropsWithChildren, useCallback, useEffect, useMemo, useRef } from 'react';
+import { useFieldArray, useFormContext } from 'react-hook-form';
 import { useSearchParams } from 'react-router';
 import { SEQUENTIAL_COMPOSE_AGENT_NAME } from '../sequential/constants';
-import { ComposeNotificationDelta, ComposeNotificationSchema } from '../types';
-import { ComposeStep, ComposeContext, SequentialFormValues, RunStatus } from './compose-context';
-import { useFieldArray, useFormContext } from 'react-hook-form';
-import { TextResult } from '#modules/run/api/types.ts';
 import { SequentialWorkflowInput } from '../sequential/types';
 import { getSequentialComposeAgent } from '../sequential/utils';
+import { ComposeNotificationDelta, ComposeNotificationSchema } from '../types';
+import { ComposeContext, ComposeStep, RunStatus, SequentialFormValues } from './compose-context';
 
 export function ComposeProvider({ children }: PropsWithChildren) {
   const { data: availableAgents } = useListAgents();
@@ -136,7 +136,7 @@ export function ComposeProvider({ children }: PropsWithChildren) {
         stats: {
           startTime: step.stats?.startTime ?? Date.now(),
         },
-        result: `${step.result ?? ''}${delta.text}`,
+        result: `${step.result ?? ''}${delta.text ?? ''}`,
         logs: [...(step.logs ?? []), ...delta.logs.filter(isNotNull).map((item) => item.message)],
       };
 

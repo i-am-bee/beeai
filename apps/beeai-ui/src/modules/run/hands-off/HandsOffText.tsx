@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { useHandsOff } from '../contexts/hands-off';
 import { AgentOutputBox } from '../components/AgentOutputBox';
+import { useHandsOff } from '../contexts/hands-off';
 
 export function HandsOffText() {
   const { agent, text, isPending } = useHandsOff();
 
-  return <AgentOutputBox text={text} isPending={isPending} downloadFileName={`${agent}-output`} />;
+  return <AgentOutputBox text={text} isPending={isPending} downloadFileName={`${agent.name}-output`} />;
 }
