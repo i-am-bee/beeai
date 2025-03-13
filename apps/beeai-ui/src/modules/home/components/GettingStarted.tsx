@@ -21,9 +21,14 @@ import { Container } from '#components/layouts/Container.tsx';
 import { CopySnippet } from '#components/CopySnippet/CopySnippet.tsx';
 import { LogoBeeAI } from './LogoBeeAI';
 import { GitHubButton } from './GitHubButton';
+import { type VideoBeeAIProps, VideoBeeAI } from './VideoBeeAI';
 import classes from './GettingStarted.module.scss';
 
-export function GettingStarted() {
+interface GettingStartedProps {
+  video: VideoBeeAIProps;
+}
+
+export function GettingStarted({ video }: GettingStartedProps) {
   return (
     <div className={classes.root}>
       <Container size="xs">
@@ -37,6 +42,10 @@ export function GettingStarted() {
           <CopySnippet>{BREW_INSTALL_BEEAI}</CopySnippet>
           <GitHubButton />
         </div>
+      </Container>
+
+      <Container size="xlg">
+        <VideoBeeAI {...video} />
       </Container>
     </div>
   );

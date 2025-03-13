@@ -14,22 +14,14 @@
  * limitations under the License.
  */
 
-import { MainContent } from "@/layouts/MainContent";
-import { GettingStarted, type VideoBeeAIProps } from "@i-am-bee/beeai-ui";
-import poster from "../images/VideoBeeAIPoster.webp";
-import classes from "./page.module.scss";
+// Styles should match the center and edges of VideoBeeAIPoster.webp
+.video {
+  --container-background: linear-gradient(to bottom, #f3f3f3, #f0f0f0);
+  --play-button-background: white;
+  --play-button-fill: black;
 
-export default function Home() {
-  return (
-    <MainContent>
-      <GettingStarted video={video} />
-    </MainContent>
-  );
+  @media (prefers-color-scheme: dark) {
+    --container-background: var(--cds-layer);
+    --play-button-fill: var(--cds-layer);
+  }
 }
-
-const video: VideoBeeAIProps = {
-  className: classes.video,
-  src: "https://github.com/user-attachments/assets/10640dbd-631c-42d8-a246-9b7a72eddb5b",
-  type: "video/mp4",
-  poster: poster.src,
-};

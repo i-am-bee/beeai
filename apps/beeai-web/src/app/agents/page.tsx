@@ -15,7 +15,7 @@
  */
 
 import { getAgentsList } from "@/acp/api";
-import { MainContent } from "@/components/layouts/MainContent";
+import { MainContent } from "@/layouts/MainContent";
 import { Container, ViewStack } from "@i-am-bee/beeai-ui";
 import { AgentsFilteredView } from "./AgentsFilteredView";
 

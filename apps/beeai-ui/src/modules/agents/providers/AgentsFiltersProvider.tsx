@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+'use client';
+
 import type { PropsWithChildren } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 

@@ -14,22 +14,36 @@
  * limitations under the License.
  */
 
-import { MainContent } from "@/layouts/MainContent";
-import { GettingStarted, type VideoBeeAIProps } from "@i-am-bee/beeai-ui";
-import poster from "../images/VideoBeeAIPoster.webp";
-import classes from "./page.module.scss";
-
-export default function Home() {
-  return (
-    <MainContent>
-      <GettingStarted video={video} />
-    </MainContent>
-  );
+.root {
+  display: grid;
+  block-size: 100dvh;
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas:
+    "header"
+    "main"
+    "footer";
 }
 
-const video: VideoBeeAIProps = {
-  className: classes.video,
-  src: "https://github.com/user-attachments/assets/10640dbd-631c-42d8-a246-9b7a72eddb5b",
-  type: "video/mp4",
-  poster: poster.src,
-};
+.header {
+  grid-area: header;
+}
+
+.main {
+  overflow: hidden;
+  display: flex;
+  justify-content: stretch;
+  inline-size: 100%;
+  transition: opacity $duration-moderate-02;
+
+  &[data-route-transition="out"] {
+    opacity: 0;
+  }
+  &[data-route-transition="in"] {
+    opacity: 1;
+  }
+}
+
+.footer {
+  justify-self: flex-end;
+  padding: 1rem;
+}
