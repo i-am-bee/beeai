@@ -166,7 +166,7 @@ The agent returns an object with the following structure:
     },
     ui: {
       type: "hands-off",
-      userGreeting: "Provide source code of the AI agent you want to document.",
+      userGreeting: "Provide source code of the AI agent you want to document",
     },
     githubUrl:
       "https://github.com/i-am-bee/beeai/blob/main/agents/official/agent-docs-creator",
