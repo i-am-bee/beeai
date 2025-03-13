@@ -53,14 +53,15 @@ examples:
 
 ## Provider manifest
 
-The manifest file (typically named `beeai-provider.yaml`) determines how to instantiate the provider connection.
-The beeai-platform server typically uses it to spawn a new provider process. The supported kinds of providers are:
+The provider manifest (`beeai-provider.yaml`) defines how a provider connects to BeeAI. The platform uses it to start a new provider process.
+
+Below is the list of supported providers.
 
 ### Python provider
 
-Requires [uv](https://docs.astral.sh/uv/) installed globally (requirement is satisfied when installing beeai through brew)
+<Info>This provider uses [uv](https://docs.astral.sh/uv/).</Info>
 
-```yaml
+```yaml beeai-provider.yaml [expandable]
 manifestVersion: 1
 driver: python
 pythonVersion: "3.11" # optional, will be installed if not found on machine
@@ -89,11 +90,11 @@ env: # Environment variables consumed by this provider
     required: True
 ```
 
-### NodeJs provider
+### Node.js provider
 
-Requires [nodejs](https://nodejs.org) installed globally (requirement is satisfied when installing beeai through brew)
+<Info>This provider uses [Node.js](https://nodejs.org).</Info>
 
-```yaml
+```yaml beeai-provider.yaml [expandable]
 manifestVersion: 1
 driver: nodejs
 
@@ -118,10 +119,13 @@ env: [] # Environment variables (see above in python provider above)
 
 ### Container provider
 
-Requires [docker](https://www.docker.com/), [podman](https://podman.io/) or similar runtime installed, we recommend
-[Rancher Desktop](https://rancherdesktop.io/).
+<Warning>
+  This provider requires [Docker](https://www.docker.com/),
+  [Podman](https://podman.io/) or similar runtime installed, we recommend
+  [Rancher Desktop](https://rancherdesktop.io/).
+</Warning>
 
-```yaml
+```yaml beeai-provider.yaml [expandable]
 manifestVersion: 1
 driver: container
 
@@ -139,14 +143,16 @@ env: [] # Environment variables (see above in python provider above)
 
 ### Unmanaged provider
 
-This is a special kind of provider where the platform does not manage the lifecycle of the provider process. Instead,
-you may have a provider server running on a certain address:port already, and you simply want to connect it to the
-platform. This is especially useful when developing agents locally or for quick implementation.
+An unmanaged provider is a special case where the BeeAI platform does not manage the provider’s lifecycle. Instead, you register an already running provider.
 
-For example, if you have an agent server running locally when you clone the provider template
-and run `uv run beeai-agents`, you can register it using the following manifest:
+This is useful for:
 
-```yaml
+- Local development
+- Running agents on a separate infrastructure
+
+For example, if you're running an agent server locally (e.g., by cloning the provider template and executing `uv run beeai-agents`), you can register it using the following manifest:
+
+```yaml beeai-provider.yaml [expandable]
 manifestVersion: 1
 driver: unmanaged
 serverType: http
