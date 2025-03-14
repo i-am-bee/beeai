@@ -4,8 +4,8 @@
   "description": "Agent Communication Protocol implementation for TypeScript",
   "license": "MIT",
   "author": "IBM Corp.",
-  "homepage": "https://github.com/i-am-bee/acp-typescript-sdk",
-  "bugs": "https://github.com/i-am-bee/acp-typescript-sdk/issues",
+  "homepage": "https://github.com/i-am-bee/beeai/tree/main/packages/acp-typescript-sdk",
+  "bugs": "https://github.com/i-am-bee/beeai/issues",
   "type": "module",
   "repository": {
     "type": "git",
@@ -15,12 +15,36 @@
     "node": ">=18"
   },
   "keywords": [
-    "acp"
+    "acp",
+    "beeai"
   ],
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/esm/index.d.ts",
   "exports": {
+    "./package.json": {
+      "import": "./dist/esm/package.json",
+      "require": "./dist/cjs/package.json"
+    },
+    ".": {
+      "import": {
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/index.d.ts",
+        "default": "./dist/cjs/index.js"
+      }
+    },
     "./*": {
-      "import": "./dist/esm/*",
-      "require": "./dist/cjs/*"
+      "import": {
+        "types": "./dist/esm/*.d.ts",
+        "default": "./dist/esm/*.js"
+      },
+      "require": {
+        "types": "./dist/cjs/*.d.ts",
+        "default": "./dist/cjs/*.js"
+      }
     }
   },
   "typesVersions": {
@@ -31,7 +55,7 @@
     }
   },
   "files": [
-    "dist"
+    "dist/**/*"
   ],
   "scripts": {
     "build": "npm run build:esm && npm run build:cjs",

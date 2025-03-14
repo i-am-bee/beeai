@@ -15,9 +15,9 @@
  */
 
 import "server-only";
-import { Client } from "@i-am-bee/acp-sdk/client/index.js";
-import type { ServerCapabilities } from "@i-am-bee/acp-sdk/types.js";
-import { SSEClientTransport } from "@i-am-bee/acp-sdk/client/sse.js";
+import { Client } from "@i-am-bee/acp-sdk/client/index";
+import type { ServerCapabilities } from "@i-am-bee/acp-sdk/types";
+import { SSEClientTransport } from "@i-am-bee/acp-sdk/client/sse";
 import { ACP_CLIENT_SERVER_URL } from "@/constants";
 import { getNativeFetch } from "./native-fetch";
 
