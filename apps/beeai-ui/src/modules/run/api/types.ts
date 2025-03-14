@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { AgentRunProgressNotificationSchema, RunAgentResultSchema } from '@i-am-bee/acp-sdk/types.js';
+import { AgentRunProgressNotificationSchema, RunAgentResultSchema } from '@i-am-bee/acp-sdk/types';
 import { messageOutputSchema } from '@i-am-bee/beeai-sdk/schemas/message';
 import { textOutputSchema } from '@i-am-bee/beeai-sdk/schemas/text';
 import { z } from 'zod';

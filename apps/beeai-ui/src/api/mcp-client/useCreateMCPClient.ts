@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { Client as MCPClient } from '@i-am-bee/acp-sdk/client/index.js';
-import { SSEClientTransport } from '@i-am-bee/acp-sdk/client/sse.js';
+import { Client as MCPClient } from '@i-am-bee/acp-sdk/client/index';
+import { SSEClientTransport } from '@i-am-bee/acp-sdk/client/sse';
 import { useCallback, useEffect, useRef } from 'react';
 
 /**
