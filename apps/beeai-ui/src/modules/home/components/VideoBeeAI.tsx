@@ -20,13 +20,12 @@ import { PlayButton } from './PlayButton';
 import classes from './VideoBeeAI.module.scss';
 
 export interface VideoBeeAIProps {
-  className?: string;
   src: string;
   type: string;
   poster: string;
 }
 
-export function VideoBeeAI({ className, src, type, poster }: VideoBeeAIProps) {
+export function VideoBeeAI({ src, type, poster }: VideoBeeAIProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [playedOnce, setPlayedOnce] = useState(false);
 
@@ -42,7 +41,7 @@ export function VideoBeeAI({ className, src, type, poster }: VideoBeeAIProps) {
   };
 
   return (
-    <div className={clsx(classes.container, className, { [classes.playedOnce]: playedOnce })}>
+    <div className={clsx(classes.container, { [classes.playedOnce]: playedOnce })}>
       <div
         className={classes.videoContainer}
         tabIndex={playedOnce ? -1 : 0}

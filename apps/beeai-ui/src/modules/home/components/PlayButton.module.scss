@@ -19,11 +19,11 @@
   display: flex;
   justify-content: center;
   border-radius: 50%;
-  background: var(--play-button-background);
+  background: $white;
   cursor: pointer;
 
   > svg {
-    fill: var(--play-button-fill);
+    fill: $black;
     inline-size: var(--play-button-size);
     block-size: var(--play-button-size);
   }

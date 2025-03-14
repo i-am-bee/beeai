@@ -20,7 +20,7 @@
   padding-block: $spacing-07;
   padding-inline: $spacing-07;
   border-radius: $border-radius-lg;
-  background: var(--container-background);
+  background: $hero-background;
   transition: padding 0.2s;
 
   @include breakpoint-up(md) {
