@@ -17,8 +17,8 @@ import os
 import signal
 from contextlib import suppress
 
-import anyio
 import anyio.abc
+import anyio.to_thread
 from anyio import CancelScope
 
 logger = logging.getLogger(__name__)
@@ -26,8 +26,8 @@ logger = logging.getLogger(__name__)
 
 def _kill_process_group(process: anyio.abc.Process):
     with suppress(ProcessLookupError):
-        os.getpgid(process.pid)
-        os.killpg(process.pid, signal.SIGKILL)
+        pgid = os.getpgid(process.pid)
+        os.killpg(pgid, signal.SIGKILL)
 
 
 async def terminate_process(process: anyio.abc.Process, timeout: float | None = 1):
