@@ -44,7 +44,7 @@ export function useRunAgent<
     method: ZodLiteral<string>;
   }>,
 >({ notifications, queryMetadata }: Props<NotificationsSchema>) {
-  const createClient = useCreateMCPClient();
+  const { createClient } = useCreateMCPClient();
 
   const { mutateAsync, isPending } = useMutation({
     mutationFn: async ({ agent, input, abortController }: RunMutationProps<Input>) => {
