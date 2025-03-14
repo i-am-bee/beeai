@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { ComponentProps } from 'react';
+import type { ComponentProps } from 'react';
+import { Tag } from '@carbon/react';
 import { BEE_AI_FRAMEWORK_TAG } from '#utils/constants.ts';
 import { Tooltip } from '#components/Tooltip/Tooltip.tsx';
 import Bee from '#svgs/Bee.svg';
 import type { Agent } from '../api/types';
-import { Tag } from '@carbon/react';
 import classes from './BeeBadge.module.scss';
 
 interface Props {
@@ -33,7 +33,9 @@ export function BeeBadge({ agent, size }: Props) {
     <>
       {framework === BEE_AI_FRAMEWORK_TAG && (
         <Tooltip content="Built by the BeeAI team" placement="top" asChild>
-          <Tag type="green" renderIcon={Bee} size={size} className={classes.tag} />
+          <div className={classes.container}>
+            <Tag type="green" renderIcon={Bee} size={size} className={classes.tag} />
+          </div>
         </Tooltip>
       )}
     </>
