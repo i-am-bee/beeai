@@ -227,7 +227,7 @@ async def setup() -> bool:
         )
         > 2048
     ):
-        modified_model = f"{recommended_model}-beeai"
+        modified_model = f"{selected_model}-beeai"
         console.print(
             f"⚠️  [yellow]Warning[/yellow]: BeeAI will create and use a modified version of this model tagged [bold]{modified_model}[/bold] with default context window set to [bold]{num_ctx}[/bold]."
         )
