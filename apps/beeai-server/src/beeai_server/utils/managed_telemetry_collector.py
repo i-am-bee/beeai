@@ -18,10 +18,10 @@ from contextlib import asynccontextmanager
 import anyio
 import anyio.abc
 import anyio.to_thread
-from anyio import create_task_group, CancelScope
+from anyio import create_task_group
 from pydantic import BaseModel, Field
 
-from beeai_server.utils.managed_server_client import _kill_process_group
+from beeai_server.utils.process import terminate_process
 
 logger = logging.getLogger(__name__)
 
@@ -42,33 +42,22 @@ async def managed_telemetry_collector(params: ManagedTelemetryCollectorParameter
     )
 
     async def log_process_stdout():
-        with CancelScope(shield=True):
-            async for line in process.stdout:
-                logger.info(f"stdout: {line.decode().strip()}")
+        async for line in process.stdout:
+            logger.info(f"stdout: {line.decode().strip()}")
 
     async def log_process_stderr():
-        with CancelScope(shield=True):
-            async for line in process.stderr:
-                logger.info(f"stderr: {line.decode().strip()}")
+        async for line in process.stderr:
+            logger.info(f"stderr: {line.decode().strip()}")
 
-    async with process, create_task_group() as tg:
-        tg.start_soon(log_process_stdout)
-        tg.start_soon(log_process_stderr)
+    async with process:
         try:
-            # wait for boot, healthcheck
-            yield process
+            async with create_task_group() as tg:
+                tg.start_soon(log_process_stdout)
+                tg.start_soon(log_process_stderr)
+                try:
+                    # wait for boot, healthcheck
+                    yield process
+                finally:
+                    tg.cancel_scope.cancel()
         finally:
-            with CancelScope(shield=True):
-                with anyio.move_on_after(params.graceful_terminate_timeout) as cancel_scope:
-                    try:
-                        process.terminate()
-                        await process.wait()
-                    except ProcessLookupError:
-                        logger.warning("Collector process died prematurely")
-
-                if cancel_scope.cancel_called:
-                    logger.warning(
-                        f"Collector process did not terminate in {params.graceful_terminate_timeout}s, killing it."
-                    )
-                    await anyio.to_thread.run_sync(_kill_process_group, process)
-                tg.cancel_scope.cancel()
+            await terminate_process(process, timeout=params.graceful_terminate_timeout)
