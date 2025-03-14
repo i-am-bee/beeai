@@ -13,7 +13,10 @@
 # limitations under the License.
 
 import abc
+import contextlib
+import os
 import pathlib
+import re
 import uuid
 from contextlib import asynccontextmanager
 from enum import StrEnum
@@ -194,12 +197,29 @@ class NodeJsProvider(ManagedProvider):
         if not with_dummy_env:
             self.check_env(env)
 
+        with contextlib.suppress(FileNotFoundError):
+            proc = await anyio.run_process(["brew", "--cellar", "node"])
+            cellar_path = proc.stdout.decode().strip()
+
+            sorted_paths = sorted(
+                [path async for path in Path(cellar_path).glob("*/bin")],
+                key=lambda p: [
+                    int(text) if text.isdigit() else text.lower() for text in re.split(r"(\d+)", p.parent.name)
+                ],
+            )
+
+            if sorted_paths:
+                env = env or {}
+                env["PATH"] = f"{sorted_paths[-1]}:{os.environ.get('PATH', '')}"
+
         try:
             github_url = GithubUrl.model_validate(self.package)
             await github_url.resolve_version()
             repo_path = await download_repo(configuration.cache_dir / "github_npm", github_url)
             package_path = repo_path / (github_url.path or "")
-            await anyio.run_process(["npm", "install"], cwd=package_path)
+            await anyio.run_process(
+                ["npm", "install"], cwd=package_path, env={"PATH": env.get("PATH", os.environ.get("PATH", ""))}
+            )
             command = ["npm", "run", *self.command]
             cwd = package_path
         except ValueError:
