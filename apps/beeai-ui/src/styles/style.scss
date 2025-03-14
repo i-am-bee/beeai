@@ -24,7 +24,8 @@
 
 @use 'components';
 
-:root {
+:root,
+.cds--white {
   @include theme($light);
 
   @include breakpoint-down(md) {
@@ -32,11 +33,9 @@
   }
 }
 
-// @media (prefers-color-scheme: dark) {
-//   :root {
-//     @include theme($dark);
-//   }
-// }
+.cds--g90 {
+  @include theme($dark);
+}
 
 body {
   overflow: hidden;

@@ -14,16 +14,67 @@
  * limitations under the License.
  */
 
+import { useTheme } from '#contexts/Theme/index.ts';
+import { Theme } from '#contexts/Theme/types.ts';
 import { useViewTransition } from '#hooks/useViewTransition.ts';
 import LogoBluesky from '#svgs/LogoBluesky.svg';
 import { BLUESKY_LINK, DISCORD_LINK, DOCUMENTATION_LINK, GITHUB_REPO_LINK, YOUTUBE_LINK } from '#utils/constants.ts';
 import { routes } from '#utils/router.ts';
-import { ArrowUpRight, LogoDiscord, LogoGithub, LogoYoutube, Settings } from '@carbon/icons-react';
+import { ArrowUpRight, Asleep, Awake, LogoDiscord, LogoGithub, LogoYoutube, Settings } from '@carbon/icons-react';
 import { OverflowMenu, OverflowMenuItem } from '@carbon/react';
+import { useMemo } from 'react';
 import classes from './UserNav.module.scss';
 
 export function UserNav() {
   const { transitionTo } = useViewTransition();
+  const { theme, toggleTheme } = useTheme();
+
+  const items = useMemo(
+    () => [
+      {
+        itemText: 'App settings',
+        href: routes.settings(),
+        isInternal: true,
+      },
+      {
+        itemText: 'Toggle theme',
+        icon: theme === Theme.Light ? Awake : Asleep,
+        onClick: toggleTheme,
+      },
+      {
+        groupLabel: 'Get support',
+      },
+      {
+        itemText: 'Documentation',
+        href: DOCUMENTATION_LINK,
+        icon: ArrowUpRight,
+      },
+      {
+        itemText: 'Discord',
+        href: DISCORD_LINK,
+        icon: LogoDiscord,
+      },
+      {
+        groupLabel: 'Learn more',
+      },
+      {
+        itemText: 'GitHub',
+        href: GITHUB_REPO_LINK,
+        icon: LogoGithub,
+      },
+      {
+        itemText: 'YouTube',
+        href: YOUTUBE_LINK,
+        icon: LogoYoutube,
+      },
+      {
+        itemText: 'Bluesky',
+        href: BLUESKY_LINK,
+        icon: LogoBluesky,
+      },
+    ],
+    [theme, toggleTheme],
+  );
 
   return (
     <OverflowMenu
@@ -33,7 +84,7 @@ export function UserNav() {
       flipped
       menuOptionsClass={classes.options}
     >
-      {ITEMS.map(({ groupLabel, itemText, icon: Icon, isInternal, href, ...props }, idx) => {
+      {items.map(({ groupLabel, itemText, icon: Icon, isInternal, href, onClick, ...props }, idx) => {
         return groupLabel ? (
           <OverflowMenuItem
             key={idx}
@@ -48,14 +99,14 @@ export function UserNav() {
             {...props}
             href={href}
             target={!isInternal ? '_blank' : undefined}
-            onClick={
-              isInternal
-                ? (event) => {
-                    transitionTo(href);
-                    event.preventDefault();
-                  }
-                : undefined
-            }
+            onClick={(event) => {
+              if (isInternal) {
+                transitionTo(href);
+                event.preventDefault();
+              }
+
+              onClick?.();
+            }}
             itemText={
               Icon ? (
                 <>
@@ -71,42 +122,3 @@ export function UserNav() {
     </OverflowMenu>
   );
 }
-
-const ITEMS = [
-  {
-    itemText: 'App settings',
-    href: routes.settings(),
-    isInternal: true,
-  },
-  {
-    groupLabel: 'Get support',
-  },
-  {
-    itemText: 'Documentation',
-    href: DOCUMENTATION_LINK,
-    icon: ArrowUpRight,
-  },
-  {
-    itemText: 'Discord',
-    href: DISCORD_LINK,
-    icon: LogoDiscord,
-  },
-  {
-    groupLabel: 'Learn more',
-  },
-  {
-    itemText: 'GitHub',
-    href: GITHUB_REPO_LINK,
-    icon: LogoGithub,
-  },
-  {
-    itemText: 'YouTube',
-    href: YOUTUBE_LINK,
-    icon: LogoYoutube,
-  },
-  {
-    itemText: 'Bluesky',
-    href: BLUESKY_LINK,
-    icon: LogoBluesky,
-  },
-];

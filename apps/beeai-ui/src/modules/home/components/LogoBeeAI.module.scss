@@ -25,6 +25,9 @@
   block-size: rem(209px);
   margin-inline-start: rem(-27px);
   margin-block-start: rem(-68px);
+  path {
+    fill: currentColor;
+  }
 }
 
 .placeholder {

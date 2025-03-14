@@ -22,6 +22,9 @@
   &.cds--skeleton {
     overflow: hidden;
   }
+  .cds--inline-loading__text {
+    color: inherit;
+  }
 }
 
 .cds--btn--icon-only {
@@ -35,6 +38,15 @@
   &:active,
   &:focus {
     color: $button-tertiary;
+  }
+}
+
+.cds--btn--primary {
+  &,
+  &:hover,
+  &:active,
+  &:focus {
+    color: $button-primary-color;
   }
 }
 
@@ -55,5 +67,15 @@
     &:not(:focus) {
       border-color: $border-subtle-00;
     }
+  }
+}
+
+.cds--btn.cds--btn--disabled:not(.cds--btn--ghost) {
+  &,
+  &:hover,
+  &:focus {
+    background-color: $button-disabled;
+    border-color: $button-disabled;
+    color: $button-disabled-color;
   }
 }

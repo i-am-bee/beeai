@@ -44,6 +44,11 @@ $light: map.merge(
     layer-accent-03: $cool-gray-30,
 
     border-subtle-00: $cool-gray-20,
+    border-interactive: $black,
+
+    button-primary-color: $white,
+    button-disabled: $cool-gray-30,
+    button-disabled-color: $cool-gray-50,
 
     support-error-30: rgba($red-60, 0.3),
     text-dark: $black,
@@ -63,6 +68,11 @@ $dark: map.merge(
     layer-hover-01: $cool-gray-80,
 
     border-subtle-00: $cool-gray-80,
+    border-interactive: $white,
+
+    button-primary-color: $black,
+    button-disabled: $cool-gray-70,
+    button-disabled-color: $cool-gray-60,
 
     support-error-30: rgba($red-50, 0.3),
     text-dark: $white,
@@ -148,6 +158,16 @@ $dark: map.merge(
   )
 );
 
+@use '@carbon/styles/scss/components/notification/tokens' as notification-tokens with (
+  $notification-background-error: (
+    fallback: $red-10,
+    values: (
+      (theme: $light, value: $red-10),
+      (theme: $dark, value: $cool-gray-90),
+    ),
+  )
+);
+
 $grid-margin: var(--cds-grid-margin);
 $gap: $grid-margin;
 
@@ -161,8 +181,11 @@ $box-shadow-color: var(--cds-box-shadow-color);
 $box-shadow: 0px 2px 8px 0px $box-shadow-color;
 
 $button-primary: var(--cds-button-primary);
+$button-primary-color: var(--cds-button-primary-color);
 $button-tertiary: var(--cds-button-tertiary);
 $button-tertiary-hover: var(--cds-button-tertiary-hover);
+$button-disabled: var(--cds-button-disabled);
+$button-disabled-color: var(--cds-button-disabled-color);
 
 $support-error-30: var(--cds-support-error-30);
 

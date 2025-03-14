@@ -39,6 +39,7 @@ import { useMemo } from 'react';
 import { useDeleteProvider } from '../api/mutations/useDeleteProvider';
 import { useListProviders } from '../api/queries/useListProviders';
 import { getProviderSource, groupAgentsByProvider, stripProviderSourcePrefix } from '../utils';
+import classes from './ProvidersView.module.scss';
 
 export function ProvidersView() {
   const { openModal, openConfirmation } = useModal();
@@ -67,7 +68,11 @@ export function ProvidersView() {
                     size="sm"
                     onClick={() =>
                       openConfirmation({
-                        title: `Delete '${id}'?`,
+                        title: (
+                          <>
+                            Delete <span className={classes.deleteModalProviderId}>{id}</span>?
+                          </>
+                        ),
                         body: 'Are you sure you want to delete this provider? It can’t be undone.',
                         primaryButtonText: 'Delete',
                         danger: true,

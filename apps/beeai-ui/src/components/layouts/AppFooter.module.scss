@@ -17,7 +17,11 @@
 .holder {
   display: flex;
   column-gap: $gap;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
   padding-block: $spacing-05;
+}
+
+.communityNav {
+  margin-inline-start: auto;
 }

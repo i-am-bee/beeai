@@ -43,26 +43,24 @@
 
 .popoverContainer {
   position: absolute;
-  top: 0;
-  right: 0;
+  inset-block-start: 0;
+  inset-inline-end: 0;
 }
 
 .toggleButton {
-  --cds-button-primary: var(--cds-background-inverse, #393939);
-
   .searchBar:not(:focus-within) & {
     outline-offset: -1px;
-    outline: 1px solid var(--cds-border-subtle-00, #e0e0e0);
+    outline: 1px solid $border-subtle-00;
   }
 
   .searchBar:focus-within & {
     outline-offset: -2px;
-    outline: 2px solid var(--cds-button-primary);
+    outline: 2px solid $button-primary;
   }
 
   .arrayFiltersActive &:global(.cds--btn--primary) {
     outline-offset: -1px;
-    outline: 1px solid var(--cds-button-primary);
+    outline: 1px solid $button-primary;
   }
 }
 

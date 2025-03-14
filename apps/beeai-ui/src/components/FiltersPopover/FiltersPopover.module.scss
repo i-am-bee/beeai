@@ -34,15 +34,13 @@
   }
 
   button {
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
+    border-start-start-radius: 0;
+    border-end-start-radius: 0;
     inline-size: rem(48px);
   }
 }
 
 .clear {
+  @include type-style(body-compact-01);
   align-self: flex-end;
-  font-size: var(--cds-body-compact-01-font-size);
-  line-height: var(--cds-body-compact-01-line-height);
-  letter-spacing: var(--cds-body-compact-01-letter-spacing);
 }
