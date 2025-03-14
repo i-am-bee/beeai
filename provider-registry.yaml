@@ -1,7 +1,7 @@
 providers:
   # Official
   - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.55#path=/agents/official/composition
-  - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.56#path=/agents/official/beeai-framework
+  - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.57#path=/agents/official/beeai-framework
   - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.55#path=/agents/official/agent-docs-creator
   - url: git+https://github.com/i-am-bee/beeai@agents-v0.0.55#path=/agents/official/beeai-supervisor
   # Community

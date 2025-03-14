@@ -137,7 +137,7 @@ Your task is to rewrite the provided podcast transcript for a high-quality AI Te
     });
   };
 
-const agentName = "podcast-creator-2";
+const agentName = "podcast-creator";
 
 const exampleInputText =
   "Artificial intelligence is revolutionizing industries by automating complex tasks, improving efficiency, and enabling data-driven decision-making. In healthcare, AI is helping doctors diagnose diseases earlier and personalize treatments...";
