@@ -20,11 +20,11 @@ from contextlib import asynccontextmanager
 from typing import Iterable
 
 from beeai_server.domain.model import LoadedProviderStatus
+from beeai_server.utils.fastapi import NoCacheStaticFiles
 from fastapi import FastAPI, APIRouter
 from fastapi import HTTPException
 from fastapi.exception_handlers import http_exception_handler
 from fastapi.responses import ORJSONResponse
-from fastapi.staticfiles import StaticFiles
 from kink import inject, di
 from starlette.responses import FileResponse
 from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
@@ -77,7 +77,7 @@ def mount_routes(app: FastAPI):
         raise RuntimeError("Could not find static files -- ensure that beeai-ui is built: `mise build:beeai-ui`")
 
     ui_app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
-    ui_app.mount("/", StaticFiles(directory=static_directory, html=True))
+    ui_app.mount("/", NoCacheStaticFiles(directory=static_directory, html=True))
     ui_app.add_exception_handler(404, lambda _req, _exc: FileResponse(static_directory / "index.html", status_code=200))
 
     server_router = APIRouter()
