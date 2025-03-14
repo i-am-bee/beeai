@@ -1,0 +1,158 @@
+---
+title: "Run Agents"
+description: "Learn how to run agents"
+icon: "play"
+---
+
+## GUI
+
+The graphical user interface (GUI) provides an intuitive way to launch and manage agents.
+
+<Info>Not all agents support GUI interaction.</Info>
+
+<Steps>
+
+    <Step title="Launch the web interface">
+
+```sh
+beeai ui
+```
+
+    </Step>
+    <Step title="Launch the agent">
+
+    - Navigate to the **Agents** tab.
+    - Select you desired agent.
+    - Click the **Launch this agent** button.
+
+    </Step>
+
+</Steps>
+
+## CLI
+
+You can launch and interact with agents directly from your terminal using the command-line interface (CLI).
+
+Basic syntax:
+
+```sh
+beeai run <agent_name>
+```
+
+<Tip>To list all available agents, run: `beeai list`.</Tip>
+
+### Interactive interface
+
+Agents that implement a [standardized interface](http://localhost:3333/concepts/agents#standardized-agent-interfaces) support interactive mode.
+
+Example usage:
+
+```sh
+# Chat agents
+beeai run chat
+
+# Hands-off agents
+beeai run gpt-researcher
+```
+
+### Simplified interface
+
+Chat and hands-off agents support simplified invocation, accepting text part of an input as the first parameter:
+
+```sh
+# Chat agent example
+beeai run chat "Hello"
+
+# Hands-off agent example
+beeai run gpt-researcher "Impact of climate change on global agriculture"
+```
+
+### Complex inputs
+
+For agents that require complex inputs or configurations, use JSON-formatted input:
+
+```sh
+# Agent requiring complex JSON input
+beeai run content-judge '{
+  "text": "Generate a concise summary of the history of artificial intelligence.",
+  "agents": [
+    "gpt-researcher",
+    "ollama-deep-researcher"
+  ]
+}'
+
+# Configuring a chat agent with the weather tool
+beeai run chat '{
+  "config": {
+    "tools": ["weather"]
+  },
+  "messages": [{
+    "role": "user",
+    "content": "What is the weather in San Francisco?"
+  }]
+}'
+```
+
+## ACP SDK
+
+The [ACP (Agent Communication Protocol) SDK](/acp/pre-alpha/sdk) lets you programmatically interact with agents.
+
+Install it using:
+
+```sh
+uv add acp-sdk
+```
+
+Example of how to run an agent using ACP SDK:
+
+```python
+import asyncio
+
+from acp import ClientSession
+from acp.client.sse import sse_client
+
+
+async def run_client():
+    async with sse_client(url="http://localhost:8333/mcp/sse") as streams:
+        async with ClientSession(*streams) as session:
+            await session.initialize()
+
+            # Run the agent
+            resp = await session.run_agent("gpt-researcher", {"text": "Impact of climate change on global agriculture"})
+            print("Agent:", resp.output["text"])
+
+
+asyncio.run(run_client())
+```
+
+## BeeAI framework
+
+The [BeeAI Framework](https://github.com/i-am-bee/beeai-framework) provides advanced tools to build and manage agent-based applications.
+
+Install it via:
+
+```sh
+uv add beeai-framework
+```
+
+Example usage:
+
+```python
+import asyncio
+import json
+from beeai_framework.agents.experimental.remote.agent import RemoteAgent
+
+
+async def run():
+    response = await RemoteAgent(
+        url="http://localhost:8333/mcp/sse", agent_name="gpt-researcher"
+    ).run("why is Nvidia stock going up?")
+
+    print(json.loads(response.result.text))
+
+
+def main():
+    asyncio.run(run())
+```
+
+For more advanced examples, including partial updates and error logging, refer to the [BeeAI Framework repository](https://github.com/i-am-bee/beeai-framework).

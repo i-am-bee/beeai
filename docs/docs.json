@@ -19,6 +19,12 @@
         ]
       },
       {
+        "group": "How To",
+        "pages": [
+          "/how-to/run-agents"
+        ]
+      },
+      {
         "group": "Core Concepts",
         "pages": [
           "/concepts/architecture",
