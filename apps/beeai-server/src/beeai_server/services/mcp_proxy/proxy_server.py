@@ -44,6 +44,8 @@ from acp.types import (
     Request,
     DestroyAgentRequest,
     DestroyAgentResult,
+    CancelledNotification,
+    CancelledNotificationParams,
 )
 from beeai_server.services.mcp_proxy.constants import NotificationStreamType
 from beeai_server.services.mcp_proxy.provider import ProviderContainer
@@ -82,14 +84,33 @@ class MCPProxyServer:
         result_type: type[ReceiveResultT],
         forward_progress_notifications=True,
     ):
-        request.model_extra.clear()
-        if forward_progress_notifications:
-            async with self._forward_progress_notifications(server):
-                request.params.meta = server.request_context.meta or RequestParams.Meta()
+        request_id = None
+        try:
+            request.model_extra.clear()
+            if forward_progress_notifications:
+                async with self._forward_progress_notifications(server):
+                    request.params.meta = server.request_context.meta or RequestParams.Meta()
+                    # TODO there is no way to know whether the request_id is actually this request, this is hidden in ACP sdk
+                    request_id = client_session._request_id  # HACK: there is a possibility for race condition
+                    resp = await client_session.send_request(ClientRequest(request), result_type)
+            else:
+                request = request.model_dump(exclude={"jsonrpc"})
+                # TODO there is no way to know whether the request_id is actually this request, this is hidden in ACP sdk
+                request_id = client_session._request_id  # HACK: there is a possibility for race condition
                 resp = await client_session.send_request(ClientRequest(request), result_type)
-        else:
-            request = request.model_dump(exclude={"jsonrpc"})
-            resp = await client_session.send_request(ClientRequest(request), result_type)
+        except anyio.get_cancelled_exc_class():
+            if request_id:
+                try:
+                    with anyio.fail_after(delay=2, shield=True):
+                        await client_session.send_notification(
+                            CancelledNotification(
+                                method="notifications/cancelled",
+                                params=CancelledNotificationParams(requestId=request_id),
+                            )
+                        )
+                except Exception as ex:
+                    logger.warning(f"Failed to send cancellation notification: {ex}")
+            raise
         return resp
 
     @cached_property

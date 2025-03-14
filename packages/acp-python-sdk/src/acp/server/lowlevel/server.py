@@ -566,9 +566,13 @@ class Server:
                 case (
                     RequestResponder(request=types.ClientRequest(root=req)) as responder
                 ):
-                    with responder:
-                        await self._handle_request(
-                            message, req, session, raise_exceptions
+                    async with responder:
+                        responder.task_group.start_soon(
+                            self._handle_request,
+                            message,
+                            req,
+                            session,
+                            raise_exceptions,
                         )
                 case types.ClientNotification(root=notify):
                     await self._handle_notification(notify)
