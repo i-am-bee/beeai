@@ -78,7 +78,14 @@ def mount_routes(app: FastAPI):
 
     ui_app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
     ui_app.mount("/", NoCacheStaticFiles(directory=static_directory, html=True))
-    ui_app.add_exception_handler(404, lambda _req, _exc: FileResponse(static_directory / "index.html", status_code=200))
+    ui_app.add_exception_handler(
+        404,
+        lambda _req, _exc: FileResponse(
+            static_directory / "index.html",
+            status_code=200,
+            headers={"Cache-Control": "no-cache, no-store, must-revalidate", "Pragma": "no-cache", "Expires": "0"},
+        ),
+    )
 
     server_router = APIRouter()
     server_router.include_router(agent_router, prefix="/agent", tags=["agent"])
