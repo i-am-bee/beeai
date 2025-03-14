@@ -81,14 +81,12 @@ IT SHOULD STRICTLY BE THE DIALOGUES`),
       });
     const podcastDialogue = podcastResponse.getTextContent();
 
-    const structuredGenerationSchema = z
-      .array(
-        z.object({
-          speaker: z.number().min(1).max(2),
-          text: z.string(),
-        })
-      )
-      .min(1);
+    const structuredGenerationSchema = z.array(
+      z.object({
+        speaker: z.number().min(1).max(2),
+        text: z.string(),
+      })
+    );
 
     // Dramatise podcast
     const finalReponse = await model.createStructure({
@@ -126,12 +124,20 @@ Your task is to rewrite the provided podcast transcript for a high-quality AI Te
       maxRetries: 3,
     });
 
+    const conversation = finalReponse.object
+      // TODO: this is a temporary fix of a bug in framework
+      .flat()
+      .map((obj) => `**Speaker ${obj.speaker}**  \n${obj.text}`)
+      .join("\n\n");
+
+    // TODO: temporary solution to render this nicely in UI
     return outputSchema.parse({
-      text: JSON.stringify(finalReponse.object),
+      // text: `<pre>${JSON.stringify(finalReponse.object, null, 2)}</pre>`,
+      text: conversation,
     });
   };
 
-const agentName = "podcast-creator";
+const agentName = "podcast-creator-2";
 
 const exampleInputText =
   "Artificial intelligence is revolutionizing industries by automating complex tasks, improving efficiency, and enabling data-driven decision-making. In healthcare, AI is helping doctors diagnose diseases earlier and personalize treatments...";
