@@ -7,7 +7,8 @@ requires-python = ">=3.11,<4.0"
 dependencies = [
     "beeai-sdk==0.0.14",
     "acp-sdk", # version determined by beeai-sdk
-    "crewai[tools]>=0.102.0,<1.0.0"
+    "crewai[tools]>=0.102.0,<1.0.0",
+    "databricks-sdk>=0.46.0",
 ]
 
 [project.scripts]
