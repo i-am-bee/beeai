@@ -20,7 +20,8 @@ import { textOutputSchema } from '@i-am-bee/beeai-sdk/schemas/text';
 import { z } from 'zod';
 
 export const textNotificationSchema = AgentRunProgressNotificationSchema.extend({
-  params: z.object({ delta: textOutputSchema }),
+  // The text in delta should always be a string, but the agent could actually return undefined.
+  params: z.object({ delta: textOutputSchema.partial({ text: true }) }),
 });
 export type TextNotificationSchema = typeof textNotificationSchema;
 export type TextNotification = z.infer<TextNotificationSchema>;
