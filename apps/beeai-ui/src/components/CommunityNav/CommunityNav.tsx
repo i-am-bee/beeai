@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { LogoGithub, LogoDiscord, LogoYoutube } from '@carbon/icons-react';
+import { LogoDiscord, LogoYoutube } from '@carbon/icons-react';
 import LogoBluesky from '#svgs/LogoBluesky.svg';
-import { GITHUB_REPO_LINK, DISCORD_LINK, YOUTUBE_LINK, BLUESKY_LINK } from '#utils/constants.ts';
+import { DISCORD_LINK, YOUTUBE_LINK, BLUESKY_LINK } from '#utils/constants.ts';
 import classes from './CommunityNav.module.scss';
 
 interface Props {
@@ -40,11 +40,6 @@ export function CommunityNav({ className }: Props) {
 }
 
 const NAV_ITEMS = [
-  {
-    label: 'GitHub',
-    href: GITHUB_REPO_LINK,
-    Icon: LogoGithub,
-  },
   {
     label: 'Discord',
     href: DISCORD_LINK,

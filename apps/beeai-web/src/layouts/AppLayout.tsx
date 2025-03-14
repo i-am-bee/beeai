@@ -15,7 +15,7 @@
  */
 
 import type { PropsWithChildren } from "react";
-import { AppHeader, CommunityNav } from "@i-am-bee/beeai-ui";
+import { AppHeader, AppFooter } from "@i-am-bee/beeai-ui";
 import { MainNav } from '../components/MainNav/MainNav';
 import classes from "./AppLayout.module.scss";
 
@@ -30,9 +30,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
         {children}
       </main>
 
-      <footer className={classes.footer}>
-        <CommunityNav />
-      </footer>
+      <AppFooter className={classes.footer} />
     </div>
   );
 }
