@@ -18,16 +18,14 @@ import inspect
 import json
 import random
 
-from beeai_cli.commands.env import ensure_llm_env
 import jsonref
-from prompt_toolkit.completion import NestedCompleter
-from prompt_toolkit.validation import Validator
 from rich.box import HORIZONTALS
 from rich.console import ConsoleRenderable, Group, NewLine
 from rich.panel import Panel
 from rich.rule import Rule
 from rich.text import Text
-from rich.tree import Tree
+
+from beeai_cli.commands.env import ensure_llm_env
 
 try:
     # This is necessary for proper handling of arrow keys in interactive input
@@ -83,7 +81,6 @@ async def _run_agent(name: str, input: dict[str, Any], dump_files_path: Path | N
         if not status_stopped:
             status_stopped = True
             status.stop()
-            console.print("🐝 Agent: ")
 
         match message:
             case ServerNotification(
@@ -113,7 +110,7 @@ async def _run_agent(name: str, input: dict[str, Any], dump_files_path: Path | N
                         console.print(messages[-1]["content"], end="")
                     else:
                         console.print(result.model_dump())
-                console.print("\n")
+                console.print()
                 if dump_files_path is not None and (files := output_dict.get("files", {})):
                     files: dict[str, str]
                     dump_files_path.mkdir(parents=True, exist_ok=True)
@@ -250,10 +247,17 @@ class Help(InteractiveCommand):
 
     command = "?"
 
-    def __init__(self, commands: list[InteractiveCommand]):
+    def __init__(self, commands: list[InteractiveCommand], splash_screen: ConsoleRenderable | None = None):
+        [self.config_command] = [command for command in commands if isinstance(command, ShowConfig)] or [None]
+        self.splash_screen = splash_screen
         self.commands = [self, *commands]
 
     def handle(self, *_any):
+        if self.splash_screen:
+            console.print(self.splash_screen)
+        if self.config_command:
+            self.config_command.handle()
+        console.print()
         with create_table("command", "arguments", "description") as table:
             for command in self.commands:
                 table.add_row(f"/{command.command}", " ".join(command.args or ["n/a"]), inspect.getdoc(command))
@@ -265,11 +269,13 @@ def _create_input_handler(
     prompt: str | None = None,
     choice: list[str] | None = None,
     optional: bool = False,
+    placeholder: str | None = None,
+    splash_screen: ConsoleRenderable | None = None,
 ) -> Callable:
     choice = choice or []
     commands = [cmd for cmd in commands if cmd.enabled]
     commands = [Quit(), *commands]
-    commands = [Help(commands), *commands]
+    commands = [Help(commands, splash_screen=splash_screen), *commands]
     commands_router = {f"/{cmd.command}": cmd for cmd in commands}
     completer = {
         **{f"/{cmd.command}": cmd.completion_opts() for cmd in commands},
@@ -284,10 +290,14 @@ def _create_input_handler(
         return text in valid_options if choice else bool(text)
 
     def handler():
+        from prompt_toolkit.completion import NestedCompleter
+        from prompt_toolkit.validation import Validator
+
         while True:
             try:
                 input = prompt_user(
                     prompt=prompt,
+                    placeholder=placeholder,
                     completer=NestedCompleter.from_nested_dict(completer),
                     validator=Validator.from_callable(validate),
                     open_autocomplete_by_default=bool(choice),
@@ -307,7 +317,7 @@ def _create_input_handler(
     return handler
 
 
-def _setup_sequential_workflow(splash_screen: ConsoleRenderable, agents_by_name: dict[str, Agent]):
+def _setup_sequential_workflow(agents_by_name: dict[str, Agent], splash_screen: ConsoleRenderable | None = None):
     prompt_agents = {
         name: agent
         for name, agent in agents_by_name.items()
@@ -315,16 +325,19 @@ def _setup_sequential_workflow(splash_screen: ConsoleRenderable, agents_by_name:
     }
     steps = []
 
-    tree = Tree(label="")
-    screen = Group(splash_screen, Rule(title="Configure Workflow", style="yellow"), tree)
-    console.clear()
-    console.print(screen)
+    console.print(Rule(title="Configure Workflow", style="white"))
 
-    handle_input = _create_input_handler([], prompt="Add an agent: ", choice=list(prompt_agents))
-    handle_instruction_input = _create_input_handler([], prompt="Enter agent instruction: ")
+    handle_input = _create_input_handler(
+        [], prompt="Agent: ", choice=list(prompt_agents), placeholder="Select agent", splash_screen=splash_screen
+    )
+    handle_instruction_input = _create_input_handler(
+        [], prompt="Instruction: ", placeholder="Enter agent instruction", splash_screen=splash_screen
+    )
+    i = 0
 
     while True:
         if not (agent := handle_input()):
+            console.print(Rule(style="white"))
             break
         instruction = handle_instruction_input()
 
@@ -332,27 +345,23 @@ def _setup_sequential_workflow(splash_screen: ConsoleRenderable, agents_by_name:
             # change prompt for other passes
             handle_input = _create_input_handler(
                 [],
-                prompt="Add an agent [leave empty to execute]: ",
+                prompt="Agent: ",
+                placeholder="Select agent (Leave empty to execute)",
                 choice=list(prompt_agents),
                 optional=True,
+                splash_screen=splash_screen,
             )
             handle_instruction_input = _create_input_handler(
                 [],
-                prompt="Enter agent instruction [leave empty to pass raw output from previous agent]: ",
+                prompt="Instruction: ",
+                placeholder="Enter agent instruction (leave empty to pass raw output from previous agent)",
                 optional=True,
+                splash_screen=splash_screen,
             )
-
+        console.print(Rule(style="dim", characters="·"))
+        i += 1
         steps.append({"agent": agent, "instruction": instruction})
-        tree.add(
-            Panel(
-                Group(
-                    console.render_str(f"[b]Agent[/b]: {agent}"),
-                    console.render_str(f"[b]Prompt[/b]: {instruction or '<raw-previous-output>'}"),
-                )
-            )
-        )
-        console.clear()
-        console.print(screen)
+
     return steps
 
 
@@ -401,29 +410,23 @@ async def run_agent(
             err_console.print(Markdown("## Schema"), "")
             err_console.print(_render_schema(agent.inputSchema))
             exit(1)
-        console.clear()
+
+        config_schema = _get_config_schema(agent.inputSchema)
 
         splash_screen = Group(
             Markdown(f"# {agent.name}  \n{agent.description}"),
             NewLine(),
-            console.render_str("[b]Running in interactive mode, use '/?' for help, [red]type '/q' to quit.[/red][/b]"),
-            NewLine(),
         )
 
-        config_schema = _get_config_schema(agent.inputSchema)
+        handle_input = _create_input_handler(
+            [ShowConfig(config_schema, config), Set(config_schema, config)], splash_screen=splash_screen
+        )
 
-        console.print(splash_screen)
-
-        if config_schema:
-            ShowConfig(config_schema, config).handle()
-
-        handle_input = _create_input_handler([ShowConfig(config_schema, config), Set(config_schema, config)])
-
-        console.print()
+        # console.print()
 
         if ui_type == UiType.chat:
             messages = []
-            console.print(f"🐝 Agent: {user_greeting}\n")
+            console.print(f"{user_greeting}\n")
             input = handle_input()
             while True:
                 console.print()
@@ -437,16 +440,17 @@ async def run_agent(
                     messages.extend(new_messages)
                 else:
                     messages = new_messages
+                console.print()
                 input = handle_input()
 
         elif ui_type == UiType.hands_off:
             user_greeting = ui.get("userGreeting", None) or "Enter your instructions."
-            console.print(f"🐝 {user_greeting}\n")
+            console.print(f"{user_greeting}\n")
             input = handle_input()
             console.print()
             await _run_agent(name, {"text": input, "config": config}, dump_files_path=dump_files)
         elif is_sequential_workflow:
-            workflow_steps = _setup_sequential_workflow(splash_screen, agents_by_name)
+            workflow_steps = _setup_sequential_workflow(agents_by_name, splash_screen=splash_screen)
             console.print()
             input = filter_dict({**config, "steps": workflow_steps})
             await _run_agent(name, input, dump_files_path=dump_files)
