@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-.tag:global(.#{$prefix}--tag) {
+.container {
+  display: inline-block;
   margin-inline-start: $spacing-03;
 }
 
