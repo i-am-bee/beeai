@@ -37,7 +37,10 @@ export function VideoBeeAI({ src, type, poster }: VideoBeeAIProps) {
     event.preventDefault();
     setPlayedOnce(true);
     videoRef.current.play();
-    videoRef.current.scrollIntoView({ behavior: 'smooth' });
+    videoRef.current.scrollIntoView({
+      behavior: 'smooth',
+      block: 'center',
+    });
   };
 
   return (
