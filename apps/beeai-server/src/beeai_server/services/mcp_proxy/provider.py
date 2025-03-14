@@ -238,6 +238,7 @@ class LoadedProvider:
 
     async def __aenter__(self):
         self._stopping.clear()
+        self._stopped.clear()
         logger.info("Loading provider")
         await self._writer_exit_stack.enter_async_context(self._write_messages)
         await self._ensure_session_periodic.start()
