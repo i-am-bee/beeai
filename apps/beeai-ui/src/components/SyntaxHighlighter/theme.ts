@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-export { atomOneLight as style } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+import { atomOneLight as style } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+
+export { style };
 
 export const customStyle: React.CSSProperties = {
   padding: '1rem',

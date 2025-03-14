@@ -55,6 +55,7 @@ $light: map.merge(
     text-placeholder: $cool-gray-40,
     box-shadow-color: rgba(193, 199, 205, 0.45),
     modal-background: rgba($cool-gray-60, 0.5),
+    hero-background: $gray-10,
   )
 );
 
@@ -79,6 +80,7 @@ $dark: map.merge(
     text-placeholder: $cool-gray-60,
     box-shadow-color: rgba($cool-gray-70, 0.45),
     modal-background: rgba($cool-gray-100, 0.75),
+    hero-background: $layer-01,
   )
 );
 
@@ -177,6 +179,7 @@ $background-transparent: var(--cds-background-transparent);
 $text-dark: var(--cds-text-dark);
 
 $border-radius: $spacing-03;
+$border-radius-lg: $spacing-04;
 $box-shadow-color: var(--cds-box-shadow-color);
 $box-shadow: 0px 2px 8px 0px $box-shadow-color;
 
@@ -190,6 +193,7 @@ $button-disabled-color: var(--cds-button-disabled-color);
 $support-error-30: var(--cds-support-error-30);
 
 $modal-background: var(--cds-modal-background);
+$hero-background: var(--cds-hero-background);
 
 $letter-spacing: 0.16px;
 $letter-spacing-lg: 0.32px;

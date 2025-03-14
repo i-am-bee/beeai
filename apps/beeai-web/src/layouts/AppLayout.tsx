@@ -14,20 +14,24 @@
  * limitations under the License.
  */
 
-import { MainContent } from "@/layouts/MainContent";
-import { GettingStarted, type VideoBeeAIProps } from "@i-am-bee/beeai-ui";
-import poster from "../images/VideoBeeAIPoster.webp";
+import type { PropsWithChildren } from "react";
+import { AppHeader, AppFooter, GitHubLink } from "@i-am-bee/beeai-ui";
+import { MainNav } from '../components/MainNav/MainNav';
+import classes from "./AppLayout.module.scss";
 
-export default function Home() {
+export default function AppLayout({ children }: PropsWithChildren) {
   return (
-    <MainContent>
-      <GettingStarted video={video} />
-    </MainContent>
+    <div className={classes.root}>
+      <AppHeader className={classes.header}>
+        <MainNav />
+        <GitHubLink />
+      </AppHeader>
+
+      <main className={classes.main} data-route-transition>
+        {children}
+      </main>
+
+      <AppFooter className={classes.footer} />
+    </div>
   );
 }
-
-const video: VideoBeeAIProps = {
-  src: "https://github.com/user-attachments/assets/10640dbd-631c-42d8-a246-9b7a72eddb5b",
-  type: "video/mp4",
-  poster: poster.src,
-};

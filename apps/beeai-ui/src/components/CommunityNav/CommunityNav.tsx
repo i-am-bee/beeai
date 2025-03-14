@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import LogoBluesky from '#svgs/LogoBluesky.svg';
-import { BLUESKY_LINK, DISCORD_LINK, YOUTUBE_LINK } from '#utils/constants.ts';
 import { LogoDiscord, LogoYoutube } from '@carbon/icons-react';
+import LogoBluesky from '#svgs/LogoBluesky.svg';
+import { DISCORD_LINK, YOUTUBE_LINK, BLUESKY_LINK } from '#utils/constants.ts';
 import classes from './CommunityNav.module.scss';
 
 interface Props {

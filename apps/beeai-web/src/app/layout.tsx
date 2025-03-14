@@ -16,7 +16,7 @@
 
 import "../styles/style.scss";
 import type { Metadata } from "next";
-import AppLayout from "@/components/layouts/AppLayout";
+import AppLayout from "@/layouts/AppLayout";
 import Providers from "./providers";
 
 const darkModeScript = `

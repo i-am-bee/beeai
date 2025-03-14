@@ -14,35 +14,17 @@
  * limitations under the License.
  */
 
-.root {
-  display: grid;
-  block-size: 100dvh;
-  grid-template-rows: auto 1fr auto;
-  grid-template-areas:
-    "header"
-    "main"
-    "footer";
-}
-
-.header {
-  grid-area: header;
-}
-
-.footer {
-  grid-area: footer;
-}
-
-.main {
-  overflow: hidden;
+.button {
+  all: unset;
   display: flex;
-  justify-content: stretch;
-  inline-size: 100%;
-  transition: opacity $duration-moderate-02;
+  justify-content: center;
+  border-radius: 50%;
+  background: $white;
+  cursor: pointer;
 
-  &[data-route-transition="out"] {
-    opacity: 0;
-  }
-  &[data-route-transition="in"] {
-    opacity: 1;
+  > svg {
+    fill: $black;
+    inline-size: var(--play-button-size);
+    block-size: var(--play-button-size);
   }
 }

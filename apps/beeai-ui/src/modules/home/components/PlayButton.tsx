@@ -14,25 +14,18 @@
  * limitations under the License.
  */
 
-import { AppFooter, AppHeader, GitHubLink } from "@i-am-bee/beeai-ui";
-import { PropsWithChildren } from "react";
-import { MainNav } from '../MainNav/MainNav';
-import classes from "./AppLayout.module.scss";
+import { PlayFilled } from '@carbon/icons-react';
+import clsx from 'clsx';
+import classes from './PlayButton.module.scss';
 
-export default function AppLayout({ children }: PropsWithChildren) {
+interface Props {
+  className?: string;
+}
+
+export function PlayButton({ className }: Props) {
   return (
-    <div className={classes.root}>
-      <AppHeader className={classes.header}>
-        <MainNav />
-
-        <GitHubLink />
-      </AppHeader>
-
-      <main className={classes.main} data-route-transition>
-        {children}
-      </main>
-
-      <AppFooter className={classes.footer} />
-    </div>
+    <button type="button" tabIndex={-1} className={clsx(classes.button, className)}>
+      <PlayFilled />
+    </button>
   );
 }

@@ -20,8 +20,8 @@ import { ToTopButton } from "@i-am-bee/beeai-ui";
 import clsx from "clsx";
 import { usePathname } from "next/navigation";
 import {
-  PropsWithChildren,
-  UIEventHandler,
+  type PropsWithChildren,
+  type UIEventHandler,
   useCallback,
   useRef,
   useState,

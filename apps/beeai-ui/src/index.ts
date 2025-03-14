@@ -28,6 +28,7 @@ export * from './components/TryLocallyButton/TryLocallyButton';
 export * from './components/ViewStack/ViewStack';
 
 export * from './modules/home/components/GettingStarted';
+export type { VideoBeeAIProps } from './modules/home/components/VideoBeeAI';
 
 export * from './modules/agents/api/types';
 export * from './modules/agents/components/AgentCard';
