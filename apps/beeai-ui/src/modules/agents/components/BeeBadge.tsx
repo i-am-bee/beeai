@@ -18,7 +18,7 @@ import type { ComponentProps } from 'react';
 import { Tag } from '@carbon/react';
 import { BEE_AI_FRAMEWORK_TAG } from '#utils/constants.ts';
 import { Tooltip } from '#components/Tooltip/Tooltip.tsx';
-import Bee from '#svgs/Bee.svg';
+import Bee from '#svgs/bee.svg';
 import type { Agent } from '../api/types';
 import classes from './BeeBadge.module.scss';
 

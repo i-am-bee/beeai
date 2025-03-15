@@ -49,7 +49,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link rel="icon" type="image/svg+xml" href="/Bee.svg" />
+        <link rel="icon" type="image/svg+xml" href="/bee.svg" />
 
         <script dangerouslySetInnerHTML={{ __html: darkModeScript }} />
       </head>
