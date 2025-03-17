@@ -27,7 +27,9 @@ export function useCreateMCPClient() {
   const [status, setStatus] = useState<ClientStatus>(ClientStatus.Idle);
   const clientRef = useRef<MCPClient | null>(null);
   const transportRef = useRef<SSEClientTransport | null>(null);
-  const healthCheckTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const healthCheckIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const reconnectAttemptsRef = useRef<number>(0);
 
   const closeClient = useCallback(async () => {
     const client = clientRef.current;
@@ -37,6 +39,8 @@ export function useCreateMCPClient() {
       try {
         await client.close();
         await transport.close();
+      } catch (error) {
+        console.error('MCPClient closing failed:', error);
       } finally {
         clientRef.current = null;
         transportRef.current = null;
@@ -46,66 +50,101 @@ export function useCreateMCPClient() {
     }
   }, []);
 
-  const cleanup = useCallback(async () => {
-    const healthCheckTimeout = healthCheckTimeoutRef.current;
+  const stopHealthCheck = useCallback(() => {
+    const healthCheckInterval = healthCheckIntervalRef.current;
 
-    if (healthCheckTimeout) {
-      clearInterval(healthCheckTimeout);
-      healthCheckTimeoutRef.current = null;
+    if (healthCheckInterval) {
+      clearInterval(healthCheckInterval);
+      healthCheckIntervalRef.current = null;
     }
-
-    try {
-      await closeClient();
-    } catch (error) {
-      setStatus(ClientStatus.Error);
-
-      console.error('MCPClient cleanup failed:', error);
-    }
-  }, [closeClient]);
-
-  const startHealthCheck = useCallback((client: MCPClient) => {
-    healthCheckTimeoutRef.current = setInterval(async () => {
-      try {
-        await client.ping();
-      } catch (error) {
-        setStatus(ClientStatus.Error);
-
-        console.error('MCPClient health check failed. Trying to reconnect…', error);
-
-        // TODO: Add reconnect
-      }
-    }, MCP_HEALTH_CHECK_DELAY);
   }, []);
 
-  const createClient = useCallback(async () => {
-    const transport = new SSEClientTransport(MCP_SERVER_URL);
-    const client = new MCPClient(MCP_EXAMPLE_AGENT_CONFIG, MCP_EXAMPLE_AGENT_PARAMS);
+  const clearReconnectTimeout = useCallback(() => {
+    const reconnectTimeout = reconnectTimeoutRef.current;
 
-    try {
+    if (reconnectTimeout) {
+      clearTimeout(reconnectTimeout);
+      reconnectTimeoutRef.current = null;
+    }
+  }, []);
+
+  const cleanup = useCallback(async () => {
+    stopHealthCheck();
+    clearReconnectTimeout();
+
+    await closeClient();
+  }, [stopHealthCheck, clearReconnectTimeout, closeClient]);
+
+  const createClient = useCallback(
+    async ({ reconnectOnError = true }: { reconnectOnError?: boolean } = {}) => {
+      const reconnect = () => {
+        stopHealthCheck();
+        clearReconnectTimeout();
+
+        const delay = Math.min(RECONNECT_BASE_DELAY * 2 ** reconnectAttemptsRef.current, RECONNECT_MAX_DELAY);
+
+        reconnectAttemptsRef.current += 1;
+        reconnectTimeoutRef.current = setTimeout(async () => {
+          await createClient({ reconnectOnError });
+        }, delay);
+      };
+
+      const startHealthCheck = () => {
+        stopHealthCheck();
+
+        healthCheckIntervalRef.current = setInterval(async () => {
+          const client = clientRef.current;
+
+          if (!client) {
+            return;
+          }
+
+          try {
+            await client.ping();
+          } catch (error) {
+            setStatus(ClientStatus.Error);
+
+            console.error('MCPClient health check failed. Trying to reconnect…', error);
+
+            reconnect();
+          }
+        }, HEALTH_CHECK_DELAY);
+      };
+
       await cleanup();
 
       setStatus(ClientStatus.Connecting);
 
-      await client.connect(transport);
+      const transport = new SSEClientTransport(MCP_SERVER_URL);
+      const client = new MCPClient(MCP_EXAMPLE_AGENT_CONFIG, MCP_EXAMPLE_AGENT_PARAMS);
 
-      clientRef.current = client;
-      transportRef.current = transport;
+      try {
+        await client.connect(transport);
 
-      setStatus(ClientStatus.Conected);
+        clientRef.current = client;
+        transportRef.current = transport;
 
-      startHealthCheck(client);
-    } catch (error) {
-      setStatus(ClientStatus.Error);
+        setStatus(ClientStatus.Connected);
 
-      console.error('MCPClient connecting failed:', error);
+        reconnectAttemptsRef.current = 0;
 
-      // TODO: Add reconnect
+        if (reconnectOnError) {
+          startHealthCheck();
+        }
+      } catch (error) {
+        setStatus(ClientStatus.Error);
 
-      return null;
-    }
+        console.error('MCPClient connecting failed:', error);
 
-    return client;
-  }, [cleanup, startHealthCheck]);
+        if (reconnectOnError) {
+          reconnect();
+        }
+      }
+
+      return clientRef.current;
+    },
+    [stopHealthCheck, clearReconnectTimeout, cleanup],
+  );
 
   useEffect(() => {
     return () => {
@@ -113,7 +152,11 @@ export function useCreateMCPClient() {
     };
   }, [cleanup]);
 
-  return { createClient, status };
+  return {
+    createClient,
+    client: clientRef.current,
+    status,
+  };
 }
 
 const MCP_SERVER_URL = new URL('/mcp/sse', location.href);
@@ -124,4 +167,6 @@ const MCP_EXAMPLE_AGENT_CONFIG = {
 const MCP_EXAMPLE_AGENT_PARAMS = {
   capabilities: {},
 };
-const MCP_HEALTH_CHECK_DELAY = 1000;
+const HEALTH_CHECK_DELAY = 10_000;
+const RECONNECT_BASE_DELAY = 1_000;
+const RECONNECT_MAX_DELAY = 30_000;

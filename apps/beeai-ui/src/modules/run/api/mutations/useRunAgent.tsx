@@ -48,7 +48,7 @@ export function useRunAgent<
 
   const { mutateAsync, isPending } = useMutation({
     mutationFn: async ({ agent, input, abortController }: RunMutationProps<Input>) => {
-      const client = await createClient();
+      const client = await createClient({ reconnectOnError: false });
       if (!client) throw new Error('Connecting to MCP server failed.');
 
       if (notifications) {

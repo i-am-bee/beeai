@@ -17,7 +17,7 @@
 export enum ClientStatus {
   Idle = 'idle',
   Connecting = 'connecting',
-  Conected = 'connected',
+  Connected = 'connected',
   Disconnected = 'disconnected',
   Error = 'error',
 }
