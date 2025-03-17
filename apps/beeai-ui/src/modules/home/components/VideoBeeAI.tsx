@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { PlayButton } from './PlayButton';
 import classes from './VideoBeeAI.module.scss';
@@ -43,6 +43,31 @@ export function VideoBeeAI({ src, type, poster }: VideoBeeAIProps) {
     });
   };
 
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || playedOnce) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && entry.intersectionRatio >= AUTOPLAY_INTERSECTION_THRESHOLD) {
+          video
+            .play()
+            .catch((err) => console.error('Video play error:', err))
+            .then(() => {
+              setPlayedOnce(true);
+            });
+        } else {
+          video.pause();
+        }
+      },
+      { threshold: AUTOPLAY_INTERSECTION_THRESHOLD },
+    );
+
+    observer.observe(video);
+
+    return () => observer.disconnect();
+  }, [playedOnce]);
+
   return (
     <div className={clsx(classes.container, { [classes.playedOnce]: playedOnce })}>
       <div
@@ -68,3 +93,5 @@ export function VideoBeeAI({ src, type, poster }: VideoBeeAIProps) {
     </div>
   );
 }
+
+const AUTOPLAY_INTERSECTION_THRESHOLD = 0.75;
