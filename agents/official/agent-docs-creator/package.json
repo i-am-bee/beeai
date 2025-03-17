@@ -1,6 +1,6 @@
 {
   "name": "agent-docs-creator",
-  "version": "0.0.39",
+  "version": "0.0.59",
   "bin": {
     "server": "./src/server.ts"
   },
@@ -17,7 +17,7 @@
     "@ai-sdk/openai": "^1.1.13",
     "@i-am-bee/acp-sdk": "0.0.4",
     "@i-am-bee/beeai-sdk": "0.0.14",
-    "beeai-framework": "^0.1.2",
+    "beeai-framework": "0.1.2",
     "tsx": "^4.19.2",
     "zod": "^3.24.2"
   },
