@@ -19,7 +19,7 @@ dev = [
 
 [[package]]
 name = "acp-sdk"
-version = "0.0.4"
+version = "0.0.5"
 source = { editable = "packages/acp-python-sdk" }
 dependencies = [
     { name = "anyio" },

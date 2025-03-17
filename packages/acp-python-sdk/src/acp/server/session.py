@@ -126,7 +126,7 @@ class ServerSession(
             case types.InitializeRequest(params=params):
                 self._initialization_state = InitializationState.Initializing
                 self._client_params = params
-                with responder:
+                async with responder:
                     await responder.respond(
                         types.ServerResult(
                             types.InitializeResult(
