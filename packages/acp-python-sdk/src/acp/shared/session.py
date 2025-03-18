@@ -71,27 +71,27 @@ class RequestResponder(Generic[ReceiveRequestT, SendResultT]):
         self.request = request
         self._session = session
         self._completed = False
-        self._cancel_scope = anyio.CancelScope()
+        self.task_group = anyio.create_task_group()
         self._on_complete = on_complete
         self._entered = False  # Track if we're in a context manager
 
-    def __enter__(self) -> "RequestResponder[ReceiveRequestT, SendResultT]":
+    async def __aenter__(self) -> "RequestResponder[ReceiveRequestT, SendResultT]":
         """Enter the context manager, enabling request cancellation tracking."""
         self._entered = True
-        self._cancel_scope = anyio.CancelScope()
-        self._cancel_scope.__enter__()
+        self.task_group = anyio.create_task_group()
+        await self.task_group.__aenter__()
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+    async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
         """Exit the context manager, performing cleanup and notifying completion."""
         try:
+            if not self.task_group:
+                raise RuntimeError("No active cancel scope")
+            await self.task_group.__aexit__(exc_type, exc_val, exc_tb)
             if self._completed:
                 self._on_complete(self)
         finally:
             self._entered = False
-            if not self._cancel_scope:
-                raise RuntimeError("No active cancel scope")
-            self._cancel_scope.__exit__(exc_type, exc_val, exc_tb)
 
     async def respond(self, response: SendResultT | ErrorData) -> None:
         """Send a response for this request.
@@ -116,10 +116,10 @@ class RequestResponder(Generic[ReceiveRequestT, SendResultT]):
         """Cancel this request and mark it as completed."""
         if not self._entered:
             raise RuntimeError("RequestResponder must be used as a context manager")
-        if not self._cancel_scope:
+        if not self.task_group:
             raise RuntimeError("No active cancel scope")
 
-        self._cancel_scope.cancel()
+        self.task_group.cancel_scope.cancel()
         self._completed = True  # Mark as completed so it's removed from in_flight
         # Send an error response to indicate cancellation
         await self._session._send_response(
@@ -133,7 +133,9 @@ class RequestResponder(Generic[ReceiveRequestT, SendResultT]):
 
     @property
     def cancelled(self) -> bool:
-        return self._cancel_scope is not None and self._cancel_scope.cancel_called
+        return (
+            self.task_group is not None and self.task_group.cancel_scope.cancel_called
+        )
 
 
 class BaseSession(
@@ -203,6 +205,7 @@ class BaseSession(
         self,
         request: SendRequestT,
         result_type: type[ReceiveResultT],
+        request_id: RequestId | None = None,
     ) -> ReceiveResultT:
         """
         Sends a request and wait for a response. Raises an McpError if the
@@ -212,8 +215,9 @@ class BaseSession(
         instead.
         """
 
-        request_id = self._request_id
-        self._request_id = request_id + 1
+        if request_id is None:
+            request_id = self._request_id
+            self._request_id = request_id + 1
 
         response_stream, response_stream_reader = anyio.create_memory_object_stream[
             JSONRPCResponse | JSONRPCError

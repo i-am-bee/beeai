@@ -1,6 +1,6 @@
-import { Client as MCPClient } from "@i-am-bee/acp-sdk/client/index.js";
-import { SSEClientTransport } from "@i-am-bee/acp-sdk/client/sse.js";
-import { AgentRunProgressNotificationSchema } from "@i-am-bee/acp-sdk/types.js";
+import { Client as MCPClient } from "@i-am-bee/acp-sdk/client/index";
+import { SSEClientTransport } from "@i-am-bee/acp-sdk/client/sse";
+import { AgentRunProgressNotificationSchema } from "@i-am-bee/acp-sdk/types";
 import { Logger } from "beeai-framework";
 import { z } from "zod";
 

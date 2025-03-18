@@ -1,6 +1,6 @@
 {
   "name": "@i-am-bee/acp-sdk",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Agent Communication Protocol implementation for TypeScript",
   "license": "MIT",
   "author": "IBM Corp.",

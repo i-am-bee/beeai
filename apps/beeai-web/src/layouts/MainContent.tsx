@@ -16,7 +16,7 @@
 
 "use client";
 
-import { ToTopButton } from "@i-am-bee/beeai-ui";
+import { AppFooter, ToTopButton } from "@i-am-bee/beeai-ui";
 import clsx from "clsx";
 import { usePathname } from "next/navigation";
 import {
@@ -52,16 +52,19 @@ export function MainContent({ className, children }: PropsWithChildren<Props>) {
     }
   }, []);
 
+  const toTopButtonVisible = isAgentsRoute && isScrolled;
+
   return (
     <div
       ref={mainRef}
-      className={clsx(classes.root, className)}
+      className={clsx(classes.root, className, {
+        [classes.toTopButtonVisible]: toTopButtonVisible,
+      })}
       onScroll={handleScroll}
     >
       {children}
-      {isAgentsRoute && isScrolled && (
-        <ToTopButton onClick={handleToTopClick} />
-      )}
+      {toTopButtonVisible && <ToTopButton onClick={handleToTopClick} />}
+      <AppFooter className={classes.footer} showThemeToggle={false} />
     </div>
   );
 }

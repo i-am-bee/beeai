@@ -96,7 +96,7 @@ Special thanks to our contributors for helping us improve BeeAI.
 
 ## Acknowledgements
 
-Special thanks to these outstanding projects for their inspiration and influence:
+Special thanks to the following outstanding projects for their inspiration and influence:
 
 - [Model Context Protocol](https://github.com/modelcontextprotocol)
 - [Language Server Protocol](https://github.com/microsoft/language-server-protocol)

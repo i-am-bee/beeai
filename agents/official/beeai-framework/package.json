@@ -14,8 +14,8 @@
   "description": "",
   "dependencies": {
     "@ai-sdk/openai": "^1.1.14",
-    "@i-am-bee/acp-sdk": "0.0.4",
-    "@i-am-bee/beeai-sdk": "0.0.14",
+    "@i-am-bee/acp-sdk": "0.0.5",
+    "@i-am-bee/beeai-sdk": "0.0.16",
     "beeai-framework": "0.1.6",
     "ollama-ai-provider": "^1.2.0",
     "tsx": "^4.19.3",
@@ -24,5 +24,7 @@
   "devDependencies": {
     "typescript": "^5.7.3"
   },
-  "packageManager": "pnpm@9.9.0+sha512.60c18acd138bff695d339be6ad13f7e936eea6745660d4cc4a776d5247c540d0edee1a563695c183a66eb917ef88f2b4feb1fc25f32a7adcadc7aaf3438e99c1"
+  "overrides": {
+    "@i-am-bee/acp-sdk": "0.0.5"
+  }
 }

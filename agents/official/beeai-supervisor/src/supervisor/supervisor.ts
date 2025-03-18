@@ -1,4 +1,4 @@
-import { AcpServer } from "@i-am-bee/acp-sdk/server/acp.js";
+import { AcpServer } from "@i-am-bee/acp-sdk/server/acp";
 import { MessageOutput } from "@i-am-bee/beeai-sdk/schemas/message";
 import { Metadata } from "@i-am-bee/beeai-sdk/schemas/metadata";
 import {

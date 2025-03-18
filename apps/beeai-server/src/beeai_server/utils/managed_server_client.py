@@ -16,7 +16,7 @@ import asyncio
 import logging
 from pathlib import Path
 from contextlib import asynccontextmanager
-from typing import Any
+from typing import Any, TYPE_CHECKING, Optional
 
 import anyio
 import anyio.abc
@@ -31,6 +31,10 @@ from pydantic import BaseModel, Field
 
 from beeai_server.custom_types import McpClient
 from beeai_server.utils.process import terminate_process
+
+if TYPE_CHECKING:
+    # Circular import
+    from beeai_server.services.mcp_proxy.provider import ProviderLogsContainer
 
 logger = logging.getLogger(__name__)
 
@@ -59,7 +63,10 @@ class ManagedServerParameters(BaseModel):
 
 
 @asynccontextmanager
-async def managed_sse_client(server: ManagedServerParameters) -> McpClient:
+async def managed_sse_client(
+    server: ManagedServerParameters,
+    logs_container: Optional["ProviderLogsContainer"] = None,
+) -> McpClient:
     """
     Client transport for stdio: this will connect to a server by spawning a
     process and communicating with it over stdin/stdout.
@@ -75,11 +82,17 @@ async def managed_sse_client(server: ManagedServerParameters) -> McpClient:
 
     async def log_process_stdout():
         async for line in process.stdout:
-            logger.info(f"stdout: {line.decode().strip()}")
+            text = line.decode().strip()
+            logger.info(f"stdout: {text}")
+            if logs_container:
+                logs_container.add_stdout(text)
 
     async def log_process_stderr():
         async for line in process.stderr:
-            logger.info(f"stderr: {line.decode().strip()}")
+            text = line.decode().strip()
+            logger.info(f"stderr: {text}")
+            if logs_container:
+                logs_container.add_stderr(text)
 
     async with process:
         try:

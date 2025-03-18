@@ -16,8 +16,9 @@ import abc
 import pathlib
 import uuid
 from contextlib import asynccontextmanager
+from datetime import datetime, UTC
 from enum import StrEnum
-from typing import Literal
+from typing import Literal, TYPE_CHECKING, Optional
 
 import anyio
 import anyio.to_thread
@@ -40,6 +41,9 @@ from beeai_server.exceptions import UnsupportedProviderError, MissingConfigurati
 from beeai_server.utils.github import GithubUrl, download_repo
 from beeai_server.utils.managed_server_client import managed_sse_client, ManagedServerParameters
 from beeai_server.utils.utils import which
+
+if TYPE_CHECKING:
+    from beeai_server.services.mcp_proxy.provider import ProviderLogsContainer
 
 
 class ProviderDriver(StrEnum):
@@ -92,10 +96,17 @@ class BaseProvider(BaseModel, abc.ABC):
         pass
 
     @abc.abstractmethod
-    async def mcp_client(self, *, env: dict[str, str] | None = None, with_dummy_env: bool = True) -> McpClient:
+    async def mcp_client(
+        self,
+        *,
+        env: dict[str, str] | None = None,
+        with_dummy_env: bool = True,
+        logs_container: Optional["ProviderLogsContainer"] = None,
+    ) -> McpClient:
         """
         :param env: environment values passed to the process
         :param with_dummy_env: substitute all unfilled required variables from manifest by "dummy" value
+        :param logs_container: capture logs of the provider process (if managed)
         """
 
 
@@ -105,7 +116,13 @@ class UnmanagedProvider(BaseProvider):
     env: list[EnvVar] = Field(default_factory=list, description="Not supported for unmanaged provider", max_length=0)
 
     @asynccontextmanager
-    async def mcp_client(self, *, env: dict[str, str] | None = None, with_dummy_env: bool = True) -> McpClient:
+    async def mcp_client(
+        self,
+        *,
+        env: dict[str, str] | None = None,
+        with_dummy_env: bool = True,
+        logs_container: Optional["ProviderLogsContainer"] = None,
+    ) -> McpClient:
         match (self.serverType, self.mcpTransport):
             case (ServerType.http, McpTransport.sse):
                 async with sse_client(str(self.mcpEndpoint)) as client:
@@ -130,6 +147,7 @@ class ManagedProvider(BaseProvider, abc.ABC):
         cwd: Path | None = None,
         env: dict[str, str] | None = None,
         with_dummy_env: bool = True,
+        logs_container: Optional["ProviderLogsContainer"] = None,
     ) -> McpClient:
         required_env_vars = {var.name for var in self.env if var.required}
         env = {
@@ -151,7 +169,7 @@ class ManagedProvider(BaseProvider, abc.ABC):
                     endpoint=self.mcpEndpoint,
                     env={**env, **get_default_environment()},
                 )
-                async with managed_sse_client(params) as client:
+                async with managed_sse_client(params, logs_container=logs_container) as client:
                     yield client
             case _:
                 raise NotImplementedError(f"Transport {self.mcpTransport} not implemented")
@@ -189,6 +207,7 @@ class NodeJsProvider(ManagedProvider):
         env: dict[str, str] | None = None,
         with_dummy_env: bool = True,
         configuration: Configuration,
+        logs_container: Optional["ProviderLogsContainer"] = None,
     ) -> McpClient:  # noqa: F821
         await self.check_compatibility()
         if not with_dummy_env:
@@ -211,6 +230,7 @@ class NodeJsProvider(ManagedProvider):
             cwd=cwd,
             env=env,
             with_dummy_env=with_dummy_env,
+            logs_container=logs_container,
         ) as client:
             yield client
 
@@ -250,7 +270,13 @@ class PythonProvider(ManagedProvider):
         return value
 
     @asynccontextmanager
-    async def mcp_client(self, *, env: dict[str, str] | None = None, with_dummy_env=True) -> McpClient:
+    async def mcp_client(
+        self,
+        *,
+        env: dict[str, str] | None = None,
+        with_dummy_env=True,
+        logs_container: Optional["ProviderLogsContainer"] = None,
+    ) -> McpClient:
         await self.check_compatibility()
         if not with_dummy_env:
             self.check_env(env)
@@ -260,6 +286,7 @@ class PythonProvider(ManagedProvider):
             command=["uvx", *python, "--link-mode=hardlink", "--from", self.package, *self.command],
             env=env,
             with_dummy_env=with_dummy_env,
+            logs_container=logs_container,
         ) as client:
             yield client
 
@@ -281,7 +308,13 @@ class ContainerProvider(ManagedProvider):
         await super().check_compatibility()
 
     @asynccontextmanager
-    async def mcp_client(self, *, env: dict[str, str] | None = None, with_dummy_env: bool = True) -> McpClient:  # noqa: F821
+    async def mcp_client(
+        self,
+        *,
+        env: dict[str, str] | None = None,
+        with_dummy_env: bool = True,
+        logs_container: Optional["ProviderLogsContainer"] = None,
+    ) -> McpClient:  # noqa: F821
         await self.check_compatibility()
         if not with_dummy_env:
             self.check_env(env)
@@ -303,6 +336,7 @@ class ContainerProvider(ManagedProvider):
                 ],
                 env=env,
                 with_dummy_env=with_dummy_env,
+                logs_container=logs_container,
             ) as client:
                 yield client
         finally:
@@ -319,8 +353,16 @@ class Provider(BaseModel, extra="allow"):
     registry: GithubUrl | None = None
 
     @asynccontextmanager
-    async def mcp_client(self, *, env: dict[str, str] | None = None, with_dummy_env: bool = True) -> McpClient:
-        async with self.manifest.mcp_client(env=env, with_dummy_env=with_dummy_env) as client:
+    async def mcp_client(
+        self,
+        *,
+        env: dict[str, str] | None = None,
+        with_dummy_env: bool = True,
+        logs_container: Optional["ProviderLogsContainer"] = None,
+    ) -> McpClient:
+        async with self.manifest.mcp_client(
+            env=env, with_dummy_env=with_dummy_env, logs_container=logs_container
+        ) as client:
             yield client
 
 
@@ -406,3 +448,14 @@ class LocalFileManifestLocation(RootModel):
 
 
 ManifestLocation = GitHubManifestLocation | LocalFileManifestLocation
+
+
+class ProviderLogType(StrEnum):
+    stdout = "stdout"
+    stderr = "stderr"
+
+
+class ProviderLogMessage(BaseModel):
+    stream: ProviderLogType
+    message: str
+    time: datetime = Field(default_factory=lambda: datetime.now(UTC))
