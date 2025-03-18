@@ -91,7 +91,7 @@ async def setup() -> bool:
             ),
             Choice(
                 name="NVIDIA NIM".ljust(20) + "🚀 best performance",
-                value=("NVIDIA NIM", "https://integrate.api.nvidia.com/v1", "deepseek-ai/deepseek-r1"),
+                value=("NVIDIA", "https://integrate.api.nvidia.com/v1", "deepseek-ai/deepseek-r1"),
             ),
             Choice(
                 name="OpenRouter".ljust(20) + "🆓 has some free models",
@@ -111,7 +111,7 @@ async def setup() -> bool:
             ),
             Choice(
                 name="Anthropic Claude".ljust(20) + "🚧 experimental",
-                value=("Anthropic", "http://localhost:12345/v1", "claude-3-7-sonnet-latest"),
+                value=("Anthropic", "https://api.anthropic.com/v1", "claude-3-7-sonnet-latest"),
             ),
             Choice(
                 name="Perplexity".ljust(20) + "🚧 experimental", value=("Perplexity", "https://api.perplexity.ai", None)
@@ -129,26 +129,37 @@ async def setup() -> bool:
             transformer=lambda url: url.rstrip("/"),
         ).execute_async()
 
-    api_key = (
-        "dummy"
-        if provider_name in ["Ollama", "Jan"]
-        else await inquirer.secret(message="Enter API key:", validate=EmptyInputValidator()).execute_async()
-    )
+    if (api_key := os.environ.get(f"{provider_name.upper()}_API_KEY")) is None or not await inquirer.confirm(
+        message=f"Use the API key from environment variable '{provider_name.upper()}_API_KEY'?",
+        default=True,
+    ).execute_async():
+        api_key = (
+            "dummy"
+            if provider_name in ["Ollama", "Jan"]
+            else await inquirer.secret(message="Enter API key:", validate=EmptyInputValidator()).execute_async()
+        )
 
     try:
         with console.status("Loading available models...", spinner="dots"):
             async with httpx.AsyncClient() as client:
                 response = await client.get(
-                    f"{api_base}/models", headers={"Authorization": f"Bearer {api_key}"}, timeout=10.0
+                    f"{api_base}/models",
+                    headers={"Authorization": f"Bearer {api_key}"},
+                    timeout=10.0,
                 )
                 if response.status_code == 404:
                     available_models = []
+                elif response.status_code == 401:
+                    if provider_name == "Anthropic":  # Anthropic always returns 401 for /models
+                        available_models = []
+                    else:
+                        console.print(
+                            "💥 [bold red]Error:[/bold red] API key was rejected. Please check your API key and re-try."
+                        )
+                        return False
                 else:
                     response.raise_for_status()
                     available_models = [m.get("id", "") for m in response.json().get("data", []) or []]
-    except httpx.HTTPStatusError:
-        console.print("💥 [bold red]Error:[/bold red] API key was rejected. Please check your API key and re-try.")
-        return False
     except httpx.HTTPError as e:
         console.print(f"💥 [bold red]Error:[/bold red] {str(e)}")
         match provider_name:
@@ -262,7 +273,7 @@ async def setup() -> bool:
                             {"role": "user", "content": "Hello!"},
                         ],
                     },
-                    headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+                    headers={"Authorization": f"Bearer {api_key}"},
                     timeout=10.0,
                 )
         test_response.raise_for_status()
