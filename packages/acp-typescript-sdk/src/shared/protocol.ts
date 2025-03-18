@@ -65,6 +65,13 @@ export type RequestOptions = {
    * If not specified, `DEFAULT_REQUEST_TIMEOUT_MSEC` will be used as the timeout.
    */
   timeout?: number;
+
+  /**
+   * A deterministic message ID (must be unique), can be used for cancellation later
+   *
+   * If not specified a message ID from a monotonic sequence will be used
+   */
+  messageId?: number;
 };
 
 /**
@@ -405,7 +412,7 @@ export abstract class Protocol<
 
           options?.signal?.throwIfAborted();
 
-          const messageId = this._requestMessageId++;
+          const messageId = options?.messageId ?? this._requestMessageId++;
           const jsonrpcRequest: JSONRPCRequest = {
             ...request,
             jsonrpc: "2.0",
