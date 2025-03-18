@@ -14,8 +14,20 @@
  * limitations under the License.
  */
 
-.root {
-  font-size: rem(14px);
-  line-height: math.div(18, 14);
-  color: $text-secondary;
+import { PHOENIX_SERVER_TARGET } from '#utils/constants.ts';
+import { useQuery } from '@tanstack/react-query';
+import { phoenixKeys } from '../keys';
+
+export function usePhoenix() {
+  const query = useQuery({
+    queryKey: phoenixKeys.all(),
+    refetchInterval: 5_000,
+    enabled: Boolean(PHOENIX_SERVER_TARGET),
+    queryFn: () =>
+      fetch(PHOENIX_SERVER_TARGET, { mode: 'no-cors' })
+        .then(() => true)
+        .catch(() => false),
+  });
+
+  return query;
 }

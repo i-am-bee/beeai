@@ -14,20 +14,6 @@
  * limitations under the License.
  */
 
-import { useQuery } from '@tanstack/react-query';
-
-interface Props {
-  enabled: boolean;
-}
-
-export function usePhoenix({ enabled }: Props) {
-  return useQuery({
-    queryKey: ['phoenix'],
-    refetchInterval: 5_000,
-    enabled,
-    queryFn: () =>
-      fetch(__PHOENIX_SERVER_TARGET__, { mode: 'no-cors' })
-        .then(() => true)
-        .catch(() => false),
-  });
-}
+export const phoenixKeys = {
+  all: () => ['phoenix'] as const,
+};

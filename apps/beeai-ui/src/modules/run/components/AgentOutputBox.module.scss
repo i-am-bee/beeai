@@ -15,13 +15,15 @@
  */
 
 .root {
-  @include scrollbar();
-  overflow-y: auto;
   background-color: $layer;
   padding: $spacing-08 $spacing-07 $spacing-07;
   border-radius: $border-radius;
   position: relative;
-  max-block-size: 100%;
+  &.scrollable {
+    @include scrollbar();
+    overflow-y: auto;
+    max-block-size: 100%;
+  }
 }
 
 .actions {

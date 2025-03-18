@@ -19,21 +19,21 @@ import { StopFilled } from '@carbon/icons-react';
 import { Button } from '@carbon/react';
 import { ElapsedTime } from '../components/ElapsedTime';
 import { useHandsOff } from '../contexts/hands-off';
-import classes from './TaskRunningBar.module.scss';
+import classes from './TaskStatusBar.module.scss';
 
 interface Props {
   onStopClick?: () => void;
 }
 
-export function TaskRunningBar({ onStopClick }: Props) {
+export function TaskStatusBar({ onStopClick }: Props) {
   const { stats, isPending } = useHandsOff();
 
-  return isPending ? (
+  return stats ? (
     <div className={classes.root}>
       <div className={classes.label}>
-        <Spinner center />
+        {isPending && <Spinner center />}
         <span>
-          Task running for <ElapsedTime stats={stats} />
+          Task {isPending ? 'running for' : 'done in'} <ElapsedTime stats={stats} />
         </span>
       </div>
 

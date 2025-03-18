@@ -52,6 +52,7 @@
   display: flex;
   flex-direction: column;
   row-gap: $spacing-04;
+  min-inline-size: 0;
 }
 
 .heading {

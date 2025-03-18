@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { LineClampText } from '#components/LineClampText/LineClampText.tsx';
 import { PlayFilledAlt } from '@carbon/icons-react';
 import { Button } from '@carbon/react';
 import { useForm } from 'react-hook-form';
@@ -42,7 +43,9 @@ export function HandsOffInput() {
   return (
     <>
       {isPendingOrText ? (
-        <h2 className={classes.input}>{input?.text}</h2>
+        <h2 className={classes.input}>
+          <LineClampText lines={3}>{input?.text}</LineClampText>
+        </h2>
       ) : (
         <InputBar
           onSubmit={() => {

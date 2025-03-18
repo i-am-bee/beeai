@@ -21,8 +21,7 @@ import { useHandsOff } from '../contexts/hands-off';
 import classes from './HandsOff.module.scss';
 import { HandsOffInput } from './HandsOffInput';
 import { HandsOffView } from './HandsOffView';
-import { TaskCompleted } from './TaskCompleted';
-import { TaskRunningBar } from './TaskRunningBar';
+import { TaskStatusBar } from './TaskStatusBar';
 
 export function HandsOff() {
   const { agent, logs, text, isPending, onClear } = useHandsOff();
@@ -44,11 +43,9 @@ export function HandsOff() {
           <div className={classes.body}>
             <HandsOffInput />
 
-            <TaskCompleted />
-
             {logs && <AgentRunLogs logs={logs} toggleable={Boolean(text)} />}
 
-            <TaskRunningBar />
+            <TaskStatusBar />
           </div>
         </div>
       </div>

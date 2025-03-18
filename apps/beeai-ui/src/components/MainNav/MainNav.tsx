@@ -14,26 +14,27 @@
  * limitations under the License.
  */
 
-import { routes, sections } from '#utils/router.ts';
-import classes from './MainNav.module.scss';
-import { TransitionLink } from '../TransitionLink/TransitionLink';
-import { useIsNavSectionActive } from '#hooks/useIsNavSectionActive.ts';
-import clsx from 'clsx';
-import { usePhoenix } from './queries/usePhoenix';
-import { Button } from '@carbon/react';
 import { Tooltip } from '#components/Tooltip/Tooltip.tsx';
+import { useIsNavSectionActive } from '#hooks/useIsNavSectionActive.ts';
+import { usePhoenix } from '#modules/phoenix/api/queries/usePhoenix.ts';
+import { APP_NAME, PHOENIX_SERVER_TARGET } from '#utils/constants.ts';
+import { routes, sections } from '#utils/router.ts';
+import { Button } from '@carbon/react';
+import clsx from 'clsx';
+import { TransitionLink } from '../TransitionLink/TransitionLink';
+import classes from './MainNav.module.scss';
 import { TracesTooltip } from './TracesTooltip';
 
 export function MainNav() {
   const isSectionActive = useIsNavSectionActive();
-  const { isPending, error, data: showPhoenixTab } = usePhoenix({ enabled: Boolean(__PHOENIX_SERVER_TARGET__) });
+  const { isPending, error, data: showPhoenixTab } = usePhoenix();
 
   return (
     <nav>
       <ul className={classes.list}>
         {getNavItems({
-          appName: __APP_NAME__,
-          phoenixServerTarget: __PHOENIX_SERVER_TARGET__,
+          appName: APP_NAME,
+          phoenixServerTarget: PHOENIX_SERVER_TARGET,
           showPhoenixTab: Boolean(!isPending && !error && showPhoenixTab),
         }).map(({ label, to, section, target, rel, isDisabled }, idx) => (
           <li key={idx} className={clsx({ [classes.active]: section && isSectionActive(section) })}>
@@ -87,7 +88,7 @@ function getNavItems({
       label: 'Traces',
       to: `${phoenixServerTarget}/projects`,
       target: '_blank',
-      rel: 'noopener noreferrer', // Security best practice
+      rel: 'noreferrer',
       isDisabled: Boolean(!showPhoenixTab || !phoenixServerTarget),
     },
   ];
