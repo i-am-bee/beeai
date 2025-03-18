@@ -22,8 +22,8 @@ import typer
 from pydantic import ValidationError
 from rich.table import Column
 
-from beeai_cli.api import api_request
-from beeai_cli.async_typer import AsyncTyper, console, create_table
+from beeai_cli.api import api_request, api_stream
+from beeai_cli.async_typer import AsyncTyper, console, create_table, err_console
 
 app = AsyncTyper()
 
@@ -185,3 +185,19 @@ async def sync():
     """Sync provider registry (if you modified ~/.beeai/providers.yaml manually)."""
     await api_request("put", "provider/sync")
     console.print("Providers updated")
+
+
+@app.command("logs")
+async def stream_logs(
+    location_or_id: str = typer.Argument(
+        ..., help="Short ID or part of the URL of the provider manifest (from beeai provider list)"
+    ),
+):
+    location_or_id = _get_abs_location(location_or_id)
+    providers = (await api_request("get", "provider"))["items"]
+    provider = select_provider(location_or_id, providers)["id"]
+    async for line in api_stream("get", "provider/logs", params={"location": provider}):
+        if line["stream"] == "stderr":
+            err_console.print(line["message"])
+        elif line["stream"] == "stdout":
+            console.print(line["message"])

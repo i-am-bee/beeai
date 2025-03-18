@@ -13,8 +13,11 @@
 # limitations under the License.
 
 import fastapi
+from fastapi import Query
+from pydantic import RootModel
+from starlette.responses import StreamingResponse
 
-from beeai_server.domain.model import ProviderWithStatus
+from beeai_server.domain.model import ProviderWithStatus, ManifestLocation
 from beeai_server.routes.dependencies import ProviderServiceDependency
 from beeai_server.schema import PaginatedResponse, CreateProviderRequest, DeleteProviderRequest
 
@@ -50,3 +53,14 @@ async def delete_provider(request: DeleteProviderRequest, provider_service: Prov
 async def sync_provider_repository(provider_service: ProviderServiceDependency):
     """Sync external changes to a provider repository."""
     await provider_service.sync()
+
+
+@router.get("/logs", status_code=fastapi.status.HTTP_204_NO_CONTENT)
+async def stream_logs(
+    provider_service: ProviderServiceDependency, location: str = Query(..., description="Provider ID")
+) -> StreamingResponse:
+    location = RootModel[ManifestLocation].model_validate(location).root
+    return StreamingResponse(
+        provider_service.stream_logs(location=location),
+        media_type="text/event-stream",
+    )
