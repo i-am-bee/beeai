@@ -6,8 +6,8 @@ import {
   textInputSchema,
   textOutputSchema,
 } from "@i-am-bee/beeai-sdk/schemas/text";
-import { Client as ACPClient } from "@i-am-bee/acp-sdk/client/index.js";
-import { SSEClientTransport } from "@i-am-bee/acp-sdk/client/sse.js";
+import { Client as ACPClient } from "@i-am-bee/acp-sdk/client/index";
+import { SSEClientTransport } from "@i-am-bee/acp-sdk/client/sse";
 import { MODEL, API_BASE, API_KEY } from "../config.js";
 import { OpenAIChatModel } from "beeai-framework/adapters/openai/backend/chat";
 

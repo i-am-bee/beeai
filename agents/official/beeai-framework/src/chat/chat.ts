@@ -12,7 +12,7 @@ import { BeeAgent } from "beeai-framework/agents/bee/agent";
 import { DuckDuckGoSearchTool } from "beeai-framework/tools/search/duckDuckGoSearch";
 import { WikipediaTool } from "beeai-framework/tools/search/wikipedia";
 import { OpenMeteoTool } from "beeai-framework/tools/weather/openMeteo";
-import { AcpServer } from "@i-am-bee/acp-sdk/server/acp.js";
+import { AcpServer } from "@i-am-bee/acp-sdk/server/acp";
 import { OpenAIChatModel } from "beeai-framework/adapters/openai/backend/chat";
 
 const SupportedTool = {

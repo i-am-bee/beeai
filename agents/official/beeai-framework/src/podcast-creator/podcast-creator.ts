@@ -5,7 +5,7 @@ import {
   textOutputSchema,
 } from "@i-am-bee/beeai-sdk/schemas/text";
 import { SystemMessage, UserMessage } from "beeai-framework/backend/message";
-import { AcpServer } from "@i-am-bee/acp-sdk/server/acp.js";
+import { AcpServer } from "@i-am-bee/acp-sdk/server/acp";
 import { MODEL, API_BASE, API_KEY } from "../config.js";
 import { OpenAIChatModel } from "beeai-framework/adapters/openai/backend/chat";
 
@@ -23,14 +23,14 @@ const run =
     }: {
       params: { input: Input; _meta?: { progressToken?: string | number } };
     },
-    { signal }: { signal?: AbortSignal }
+    { signal }: { signal?: AbortSignal },
   ): Promise<Output> => {
     const { text } = params.input;
 
     const model = new OpenAIChatModel(
       MODEL,
       {},
-      { baseURL: API_BASE, apiKey: API_KEY, compatibility: "compatible" }
+      { baseURL: API_BASE, apiKey: API_KEY, compatibility: "compatible" },
     );
 
     const podcastResponse = await model
@@ -85,7 +85,7 @@ IT SHOULD STRICTLY BE THE DIALOGUES`),
       z.object({
         speaker: z.number().min(1).max(2),
         text: z.string(),
-      })
+      }),
     );
 
     // Dramatise podcast
