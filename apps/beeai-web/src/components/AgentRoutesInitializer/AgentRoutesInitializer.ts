@@ -30,9 +30,7 @@ export function AgentRoutesInitializer({ initialized }: Props) {
   useEffect(() => {
     if (!initialized)
       fetch("/api/init-agents")
-        .then((response) => {
-          if (response.ok) return response.json();
-        })
+        .then((response) => response.json())
         .then((data: InitAgentRoutesResponse) => {
           if (path.startsWith("/agents") && data.result) {
             router.refresh();
