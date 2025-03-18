@@ -15,9 +15,9 @@
  */
 
 import express from "express";
-import { AcpServer } from "@i-am-bee/acp-sdk/server/acp.js";
-import { SSEServerTransport } from "@i-am-bee/acp-sdk/server/sse.js";
-import { Implementation } from "@i-am-bee/acp-sdk/types.js";
+import { AcpServer } from "@i-am-bee/acp-sdk/server/acp";
+import { SSEServerTransport } from "@i-am-bee/acp-sdk/server/sse";
+import { Implementation } from "@i-am-bee/acp-sdk/types";
 import { NodeSDK, resources } from "@opentelemetry/sdk-node";
 import { trace, SpanStatusCode } from "@opentelemetry/api";
 import {
