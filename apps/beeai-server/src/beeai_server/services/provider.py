@@ -12,13 +12,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import annotations
+
+import json
+from typing import AsyncIterator
+
+import anyio
+from anyio import WouldBlock
+from fastapi import HTTPException
 from kink import inject
-from starlette.status import HTTP_400_BAD_REQUEST
+from starlette.status import HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND
 
 from beeai_server.adapters.interface import IProviderRepository, IEnvVariableRepository
-from beeai_server.domain.model import ManifestLocation, ProviderWithStatus, LoadedProviderStatus, Provider
+from beeai_server.domain.model import (
+    ManifestLocation,
+    ProviderWithStatus,
+    LoadedProviderStatus,
+    Provider,
+    ProviderLogMessage,
+)
 from beeai_server.exceptions import ManifestLoadError
-from beeai_server.services.mcp_proxy.provider import ProviderContainer
+from beeai_server.services.mcp_proxy.provider import ProviderContainer, logger
 from beeai_server.utils.github import GithubUrl
 
 
@@ -102,3 +116,29 @@ class ProviderService:
         await self._repository.sync()
         new_providers = [provider for provider in await self._repository.list()]
         self._loaded_provider_container.handle_providers_change(new_providers)
+
+    async def stream_logs(self, location: ManifestLocation) -> AsyncIterator[str]:
+        provider_by_id = {provider.id: provider for provider in self._loaded_provider_container.loaded_providers}
+
+        if not (provider := provider_by_id.get(str(location), None)):
+            raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="Provider not found")
+
+        stream_send, stream_receive = anyio.create_memory_object_stream(max_buffer_size=1000)
+
+        def _handle_message(log: ProviderLogMessage):
+            try:
+                stream_send.send_nowait(log)
+            except WouldBlock:
+                logger.error("Unable to stream logs to client due to a full buffer", extra={"provider": provider.id})
+
+        # Send existing logs
+        for message in provider.logs_container.logs:
+            yield json.dumps(message.model_dump(mode="json"))
+
+        try:
+            # Subscribe for new logs
+            provider.logs_container.subscribe(_handle_message)
+            async for message in stream_receive:
+                yield json.dumps(message.model_dump(mode="json"))
+        finally:
+            provider.logs_container.unsubscribe(_handle_message)

@@ -14,10 +14,11 @@
 
 import asyncio
 import logging
+from collections import deque
 from contextlib import AsyncExitStack
 from datetime import timedelta
 from enum import StrEnum
-from typing import Self, Literal, Final, TypeVar
+from typing import Self, Literal, Final, TypeVar, Callable, Iterable
 
 import anyio
 from anyio import create_task_group
@@ -37,6 +38,8 @@ from beeai_server.domain.model import (
     LoadedProviderStatus,
     LoadProviderErrorMessage,
     EnvVar,
+    ProviderLogMessage,
+    ProviderLogType,
 )
 from beeai_server.exceptions import UnsupportedProviderError, LoadFeaturesError
 from beeai_server.services.mcp_proxy.constants import NotificationStreamType
@@ -47,6 +50,47 @@ from beeai_server.utils.utils import extract_messages
 logger = logging.getLogger(__name__)
 
 BaseModelT = TypeVar("BaseModelT", bound=BaseModel)
+
+
+class ProviderLogsContainer:
+    def __init__(self, max_lines: int = 500):
+        self._logs: deque[ProviderLogMessage] = deque(maxlen=max_lines)
+        self._subscribers: set[Callable[[ProviderLogMessage], None]] = set()
+
+    def clear(self):
+        self._logs.clear()
+
+    def _notify_subscribers(self, log: ProviderLogMessage):
+        for subscriber in self._subscribers:
+            subscriber(log)
+
+    def _add(self, log: ProviderLogMessage):
+        self._logs.append(log)
+        self._notify_subscribers(log)
+
+    def add_stdout(self, text: str):
+        self._add(ProviderLogMessage(stream=ProviderLogType.stdout, message=text))
+
+    def add_stderr(self, text: str):
+        self._add(ProviderLogMessage(stream=ProviderLogType.stdout, message=text))
+
+    def subscribe(self, handler: Callable[[ProviderLogMessage], None]):
+        self._subscribers.add(handler)
+
+    def unsubscribe(self, handler: Callable[[ProviderLogMessage], None]):
+        self._subscribers.remove(handler)
+
+    @property
+    def logs(self) -> Iterable[ProviderLogMessage]:
+        return self._logs
+
+    @property
+    def stdout(self) -> list[str]:
+        return [log.message for log in self._logs if log.stream == ProviderLogType.stdout]
+
+    @property
+    def stderr(self) -> list[str]:
+        return [log.message for log in self._logs if log.stream == ProviderLogType.stderr]
 
 
 @inject
@@ -81,6 +125,7 @@ class LoadedProvider:
 
     def __init__(self, provider: Provider, env_repository: IEnvVariableRepository):
         self.provider = provider
+        self.logs_container = ProviderLogsContainer()
         self.id = provider.id
         self._open = False
         self._ensure_session_periodic = Periodic(
@@ -177,7 +222,7 @@ class LoadedProvider:
 
         exit_task = asyncio.create_task(_listen_for_exit())
         try:
-            mcp_client = self.provider.mcp_client(env=self._env)
+            mcp_client = self.provider.mcp_client(env=self._env, logs_container=self.logs_container)
             read_stream, write_stream = await self._session_exit_stack.enter_async_context(mcp_client)
             session = await self._session_exit_stack.enter_async_context(ClientSession(read_stream, write_stream))
             with anyio.fail_after(self.INITIALIZE_TIMEOUT.total_seconds()):

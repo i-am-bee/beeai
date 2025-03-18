@@ -13,14 +13,16 @@
 # limitations under the License.
 
 import contextlib
-import functools
 import enum
+import functools
 import json
 import os
 import subprocess
 import time
 import urllib
 import urllib.parse
+from datetime import timedelta
+from typing import AsyncIterator, Any
 
 import httpx
 import typer
@@ -113,6 +115,32 @@ async def api_request(method: str, path: str, json: dict | None = None) -> dict 
             raise HTTPStatusError(message=error, request=response.request, response=response)
         if response.content:
             return response.json()
+
+
+async def api_stream(
+    method: str, path: str, json: dict | None = None, params: dict[str, Any] | None = None
+) -> AsyncIterator[dict[str, Any]]:
+    """Make a streaming API request to the server."""
+    import json as jsonlib
+
+    async with httpx.AsyncClient() as client:
+        async with client.stream(
+            method,
+            urllib.parse.urljoin(API_BASE_URL, path),
+            json=json,
+            params=params,
+            timeout=timedelta(hours=1).total_seconds(),
+        ) as response:
+            response: httpx.Response
+            if response.is_error:
+                try:
+                    [error] = [jsonlib.loads(message) async for message in response.aiter_text()]
+                    error = error.get("detail", str(error))
+                except Exception:
+                    response.raise_for_status()
+                raise HTTPStatusError(message=error, request=response.request, response=response)
+            async for line in response.aiter_text():
+                yield jsonlib.loads(line)
 
 
 send_request_with_notifications = functools.partial(_send_request_with_notifications, MCP_URL)
