@@ -18,6 +18,8 @@ import { useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { PlayButton } from './PlayButton';
 import classes from './VideoBeeAI.module.scss';
+import { useIntersectionObserver } from 'usehooks-ts';
+import { mergeRefs } from 'react-merge-refs';
 
 export interface VideoBeeAIProps {
   src: string;
@@ -43,30 +45,25 @@ export function VideoBeeAI({ src, type, poster }: VideoBeeAIProps) {
     });
   };
 
+  const { isIntersecting, ref: intersectionRef } = useIntersectionObserver({
+    threshold: AUTOPLAY_INTERSECTION_THRESHOLD,
+  });
+
   useEffect(() => {
     const video = videoRef.current;
     if (!video || playedOnce) return;
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && entry.intersectionRatio >= AUTOPLAY_INTERSECTION_THRESHOLD) {
-          video
-            .play()
-            .catch((err) => console.error('Video play error:', err))
-            .then(() => {
-              setPlayedOnce(true);
-            });
-        } else {
-          video.pause();
-        }
-      },
-      { threshold: AUTOPLAY_INTERSECTION_THRESHOLD },
-    );
-
-    observer.observe(video);
-
-    return () => observer.disconnect();
-  }, [playedOnce]);
+    if (isIntersecting) {
+      video
+        .play()
+        .catch((err) => console.error('Video play error:', err))
+        .then(() => {
+          setPlayedOnce(true);
+        });
+    } else {
+      video.pause();
+    }
+  }, [isIntersecting, playedOnce]);
 
   return (
     <div className={clsx(classes.container, { [classes.playedOnce]: playedOnce })}>
@@ -86,7 +83,13 @@ export function VideoBeeAI({ src, type, poster }: VideoBeeAIProps) {
         }
       >
         {!playedOnce && <PlayButton className={classes.play} />}
-        <video ref={videoRef} poster={poster} className={classes.video} controls={playedOnce} muted>
+        <video
+          ref={mergeRefs([videoRef, intersectionRef])}
+          poster={poster}
+          className={classes.video}
+          controls={playedOnce}
+          muted
+        >
           <source src={src} type={type} />
         </video>
       </div>
