@@ -21,14 +21,15 @@ import { Container } from './Container';
 
 interface Props {
   className?: string;
+  showThemeToggle?: boolean;
 }
 
-export function AppFooter({ className }: Props) {
+export function AppFooter({ className, showThemeToggle = true }: Props) {
   return (
     <footer className={className}>
       <Container size="max">
         <div className={classes.holder}>
-          <ThemeToggle />
+          {showThemeToggle && <ThemeToggle />}
 
           <CommunityNav className={classes.communityNav} />
         </div>

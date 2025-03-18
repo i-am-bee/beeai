@@ -17,15 +17,7 @@
 .root {
   display: grid;
   block-size: 100dvh;
-  grid-template-rows: auto 1fr auto;
-  grid-template-areas:
-    "header"
-    "main"
-    "footer";
-}
-
-.header {
-  grid-area: header;
+  grid-template-rows: auto 1fr;
 }
 
 .main {
@@ -41,9 +33,4 @@
   &[data-route-transition="in"] {
     opacity: 1;
   }
-}
-
-.footer {
-  justify-self: flex-end;
-  padding: 1rem;
 }

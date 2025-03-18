@@ -15,8 +15,8 @@
  */
 
 import type { PropsWithChildren } from "react";
-import { AppHeader, AppFooter, GitHubLink } from "@i-am-bee/beeai-ui";
-import { MainNav } from '../components/MainNav/MainNav';
+import { AppHeader, GitHubLink } from "@i-am-bee/beeai-ui";
+import { MainNav } from "../components/MainNav/MainNav";
 import classes from "./AppLayout.module.scss";
 
 export default function AppLayout({ children }: PropsWithChildren) {
@@ -30,8 +30,6 @@ export default function AppLayout({ children }: PropsWithChildren) {
       <main className={classes.main} data-route-transition>
         {children}
       </main>
-
-      <AppFooter className={classes.footer} />
     </div>
   );
 }
