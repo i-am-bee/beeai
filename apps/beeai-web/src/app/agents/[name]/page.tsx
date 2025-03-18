@@ -19,7 +19,6 @@ import { MainContent } from "@/layouts/MainContent";
 import { AgentDetail, Container, TryLocallyButton } from "@i-am-bee/beeai-ui";
 import { notFound } from "next/navigation";
 
-export const dynamic = "force-dynamic"; // Opt out of static generation
 export const revalidate = 600;
 
 interface Props {

@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "NODE_OPTIONS=\"--no-experimental-global-navigator\" next dev",
-    "build": "NODE_OPTIONS=\"--no-experimental-global-navigator\" next build",
+    "build": "NODE_OPTIONS=\"--no-experimental-global-navigator\" next build --experimental-build-mode compile",
+    "generate": "NODE_OPTIONS=\"--no-experimental-global-navigator\" next build --experimental-build-mode generate",
     "start": "NODE_OPTIONS=\"--no-experimental-global-navigator\" next start",
     "lint": "next lint"
   },
@@ -22,7 +23,8 @@
     "@i-am-bee/beeai-ui": "workspace:*",
     "clsx": "^2.1.1",
     "next": "15.1.7",
-    "server-only": "^0.0.1"
+    "server-only": "^0.0.1",
+    "undici": "^7.5.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.0",

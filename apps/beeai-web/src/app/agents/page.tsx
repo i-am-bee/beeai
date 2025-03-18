@@ -19,10 +19,10 @@ import { MainContent } from "@/layouts/MainContent";
 import { Container, ViewStack } from "@i-am-bee/beeai-ui";
 import { AgentsFilteredView } from "./AgentsFilteredView";
 
-export const dynamic = "force-dynamic"; // Opt out of static generation
-export const revalidate = 600;
+export const revalidate = 30;
 
 export default async function AgentsPage() {
+  console.log("Render");
   const agents = await getAgentsList();
   return (
     <MainContent>
