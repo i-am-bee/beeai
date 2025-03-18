@@ -52,7 +52,7 @@ function NavItem({
   return (
     <li
       className={clsx({
-        [classes.active]: isSection && pathname.startsWith(href),
+        [classes.active]: isSection && pathname?.startsWith(href),
       })}
     >
       <LinkComponent

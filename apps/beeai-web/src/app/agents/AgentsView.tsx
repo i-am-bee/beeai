@@ -25,9 +25,10 @@ import {
   AgentCard,
 } from "@i-am-bee/beeai-ui";
 import { useFormContext } from "react-hook-form";
+import { SkeletonItems } from "../../../../beeai-ui/src/components/SkeletonItems/SkeletonItems";
 
 interface Props {
-  agents: Agent[];
+  agents: Agent[] | null;
 }
 
 export function AgentsView({ agents }: Props) {
@@ -36,18 +37,25 @@ export function AgentsView({ agents }: Props) {
 
   return (
     <>
-      <AgentsFilters agents={agents} />
-      <AgentsList agents={agents} filters={filters}>
-        {(filteredAgents) =>
-          filteredAgents.map((agent) => (
-            <AgentCard
-              key={agent.name}
-              agent={agent}
-              renderTitle={renderAgentTitle}
-            />
-          ))
-        }
-      </AgentsList>
+      {agents ? <AgentsFilters agents={agents} /> : <AgentsFilters.Skeleton />}
+      {agents ? (
+        <AgentsList agents={agents} filters={filters}>
+          {(filteredAgents) =>
+            filteredAgents.map((agent) => (
+              <AgentCard
+                key={agent.name}
+                agent={agent}
+                renderTitle={renderAgentTitle}
+              />
+            ))
+          }
+        </AgentsList>
+      ) : (
+        <SkeletonItems
+          count={5}
+          render={(idx) => <AgentCard.Skeleton key={idx} />}
+        />
+      )}
     </>
   );
 }

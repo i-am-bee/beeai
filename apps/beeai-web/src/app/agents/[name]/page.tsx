@@ -21,6 +21,10 @@ import { notFound } from "next/navigation";
 
 export const revalidate = 600;
 
+export async function generateStaticParams() {
+  return [];
+}
+
 interface Props {
   params: Promise<{ name: string }>;
 }

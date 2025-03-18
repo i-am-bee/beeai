@@ -53,14 +53,7 @@ export function AgentsView() {
               </li>
             ))
           ) : (
-            <SkeletonItems
-              count={5}
-              render={(idx) => (
-                <li key={idx}>
-                  <AgentCard.Skeleton />
-                </li>
-              )}
-            />
+            <SkeletonItems count={5} render={(idx) => <AgentCard.Skeleton key={idx} />} />
           )
         }
       </AgentsList>

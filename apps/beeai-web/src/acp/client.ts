@@ -33,6 +33,7 @@ export async function getAcpClient() {
       fetch: (url: string | URL, init?: RequestInit) =>
         undiciFetch(url, {
           ...init,
+          // @ts-expect-error body error
           body: init?.body ?? undefined,
           cache: "default",
         }),

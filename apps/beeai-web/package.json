@@ -4,8 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "NODE_OPTIONS=\"--no-experimental-global-navigator\" next dev",
-    "build": "NODE_OPTIONS=\"--no-experimental-global-navigator\" next build --experimental-build-mode compile",
-    "generate": "NODE_OPTIONS=\"--no-experimental-global-navigator\" next build --experimental-build-mode generate",
+    "build": "NODE_OPTIONS=\"--no-experimental-global-navigator\" next build",
     "start": "NODE_OPTIONS=\"--no-experimental-global-navigator\" next start",
     "lint": "next lint"
   },

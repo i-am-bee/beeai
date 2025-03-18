@@ -18,12 +18,23 @@ import { getAgentsList } from "@/acp/api";
 import { MainContent } from "@/layouts/MainContent";
 import { Container, ViewStack } from "@i-am-bee/beeai-ui";
 import { AgentsFilteredView } from "./AgentsFilteredView";
+import { initializeAgentRoutes } from "@/utils/initializeAgentRoutes";
+import { NEXT_PHASE_BUILD } from "@/constants";
 
-export const revalidate = 30;
+export const revalidate = 600;
 
 export default async function AgentsPage() {
-  console.log("Render");
-  const agents = await getAgentsList();
+  let agents = null;
+  if (!NEXT_PHASE_BUILD) {
+    try {
+      agents = await getAgentsList();
+    } catch (error) {
+      initializeAgentRoutes();
+
+      console.error(error);
+    }
+  }
+
   return (
     <MainContent>
       <Container>
