@@ -64,7 +64,7 @@ export function MainContent({ className, children }: PropsWithChildren<Props>) {
     >
       {children}
       {toTopButtonVisible && <ToTopButton onClick={handleToTopClick} />}
-      <AppFooter className={classes.footer} hideThemeToggle />
+      <AppFooter className={classes.footer} showThemeToggle={false} />
     </div>
   );
 }
