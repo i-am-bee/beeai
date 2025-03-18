@@ -474,8 +474,8 @@ importers:
   packages/beeai-sdk:
     dependencies:
       '@i-am-bee/acp-sdk':
-        specifier: 0.0.4
-        version: 0.0.4
+        specifier: 0.0.5
+        version: 0.0.5
       '@opentelemetry/api':
         specifier: ^1.9.0
         version: 1.9.0
@@ -1728,6 +1728,10 @@ packages:
 
   '@i-am-bee/acp-sdk@0.0.4':
     resolution: {integrity: sha512-bp0Nx1SibAeq+QbmavYf4cOBzW98crtn8gXfq4VCo0Vm7VIHEC0IGA40g+iFHx+OTAyAN/he0PAme2pGyGseXw==}
+    engines: {node: '>=18'}
+
+  '@i-am-bee/acp-sdk@0.0.5':
+    resolution: {integrity: sha512-GrrwyjWihJFQ3a+MaMQ1GtN74G8U6W15DTeYZaX/Wi/96UsW8b+A+SDNSFglTZEfm3uI+UqX+GB64b3v+ReoZQ==}
     engines: {node: '>=18'}
 
   '@i-am-bee/beeai-sdk@0.0.14':
@@ -10206,6 +10210,15 @@ snapshots:
   '@humanwhocodes/retry@0.4.2': {}
 
   '@i-am-bee/acp-sdk@0.0.4':
+    dependencies:
+      '@opentelemetry/api': 1.9.0
+      content-type: 1.0.5
+      eventsource: 3.0.5
+      raw-body: 3.0.0
+      zod: 3.24.2
+      zod-to-json-schema: 3.24.3(zod@3.24.2)
+
+  '@i-am-bee/acp-sdk@0.0.5':
     dependencies:
       '@opentelemetry/api': 1.9.0
       content-type: 1.0.5
