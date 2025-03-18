@@ -33,4 +33,6 @@ export function initializeAgentRoutes() {
   } catch (error) {
     console.error(error);
   }
+
+  return agentRoutesInitialized;
 }

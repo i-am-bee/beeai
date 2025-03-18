@@ -15,6 +15,7 @@
  */
 
 "use client";
+
 import { ToTopButton } from "@i-am-bee/beeai-ui";
 import clsx from "clsx";
 import { usePathname } from "next/navigation";

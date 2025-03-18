@@ -16,7 +16,7 @@
 
 "use client";
 
-import { InitAgentRoutesResponse } from "@/app/api/initialize-agents/route";
+import { InitAgentRoutesResponse } from "@/app/api/init-agents/route";
 import { routeDefinitions } from "@/utils/router";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -31,7 +31,7 @@ export function AgentRoutesInitializer({ initialized }: Props) {
 
   useEffect(() => {
     if (!initialized)
-      fetch(routeDefinitions.apiInitializeAgents)
+      fetch("/api/init-agents")
         .then((response) => {
           if (response.ok) return response.json();
         })

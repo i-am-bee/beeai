@@ -19,5 +19,4 @@ export const routeDefinitions = {
   notFound: "/not-found" as const,
   agents: `/agents` as const,
   agentDetail: `/agents/[name]` as const,
-  apiInitializeAgents: `/api/initialize-agents` as const,
 };
