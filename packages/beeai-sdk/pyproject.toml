@@ -1,11 +1,11 @@
 [project]
 name = "beeai-sdk"
-version = "0.0.14"
+version = "0.0.15"
 description = "BeeAI SDK"
 readme = "README.md"
 requires-python = ">=3.11,<4.0"
 dependencies = [
-    "acp-sdk==0.0.4",
+    "acp-sdk==0.0.5",
     "opentelemetry-exporter-otlp-proto-http>=1.30.0",
     "opentelemetry-sdk>=1.30.0",
     "pydantic>=2.10.6",
