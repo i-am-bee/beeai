@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 
+import { DownloadButton } from '#components/DownloadButton/DownloadButton.tsx';
 import { MarkdownContent } from '#components/MarkdownContent/MarkdownContent.tsx';
 import { CopyButton } from '@carbon/react';
+import clsx from 'clsx';
 import classes from './AgentOutputBox.module.scss';
-import { DownloadButton } from '#components/DownloadButton/DownloadButton.tsx';
 
 interface Props {
+  isPending: boolean;
   text?: string;
   downloadFileName?: string;
-  isPending: boolean;
+  scrollable?: boolean;
 }
 
-export function AgentOutputBox({ text, downloadFileName, isPending }: Props) {
+export function AgentOutputBox({ isPending, text, downloadFileName, scrollable }: Props) {
   return text ? (
-    <div className={classes.root}>
+    <div className={clsx(classes.root, { [classes.scrollable]: scrollable })}>
       {!isPending && (
         <div className={classes.actions}>
           <CopyButton kind="ghost" align="left" onClick={() => navigator.clipboard.writeText(text)} />

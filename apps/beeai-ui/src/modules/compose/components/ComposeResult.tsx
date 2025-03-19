@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import { useAutoScroll } from '#hooks/useAutoScroll.ts';
+import { AgentOutputBox } from '#modules/run/components/AgentOutputBox.tsx';
+import clsx from 'clsx';
 import { useCompose } from '../contexts';
 import classes from './ComposeResult.module.scss';
-import clsx from 'clsx';
-import { AgentOutputBox } from '#modules/run/components/AgentOutputBox.tsx';
-import { useAutoScroll } from '#hooks/useAutoScroll.ts';
 
 export function ComposeResult() {
   const { result, status } = useCompose();
@@ -27,7 +27,7 @@ export function ComposeResult() {
   return (
     <div className={clsx(classes.root, { [classes.expanded]: Boolean(result) })}>
       <div className={classes.content}>
-        <AgentOutputBox text={result} isPending={status === 'pending'} />
+        <AgentOutputBox text={result} isPending={status === 'pending'} scrollable />
       </div>
       <div ref={autoScrollRef} />
     </div>

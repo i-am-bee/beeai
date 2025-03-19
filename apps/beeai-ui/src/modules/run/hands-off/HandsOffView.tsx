@@ -16,29 +16,33 @@
 
 import { Container } from '#components/layouts/Container.tsx';
 import { MainContent } from '#components/layouts/MainContent.tsx';
+import { useScrollbarWidth } from '#hooks/useScrollbarWidth.ts';
 import clsx from 'clsx';
-import { PropsWithChildren } from 'react';
+import { CSSProperties, PropsWithChildren } from 'react';
 import { useHandsOff } from '../contexts/hands-off';
 import { HandsOffText } from './HandsOffText';
 import classes from './HandsOffView.module.scss';
 
 export function HandsOffView({ children }: PropsWithChildren) {
   const { text } = useHandsOff();
+  const { ref: leftPaneRef, scrollbarWidth } = useScrollbarWidth();
 
   return text ? (
-    <Container size="max">
-      <div className={clsx(classes.root, classes.split)}>
-        <div className={classes.leftPane}>
-          <div className={clsx(classes.content, classes.scrollable)}>{children}</div>
-        </div>
+    <div className={clsx(classes.root, classes.split)}>
+      <div
+        className={classes.leftPane}
+        ref={leftPaneRef}
+        style={{ '--scrollbar-width': `${scrollbarWidth}px` } as CSSProperties}
+      >
+        <div className={classes.content}>{children}</div>
+      </div>
 
-        <div className={classes.rightPane}>
-          <div className={classes.content}>
-            <HandsOffText />
-          </div>
+      <div className={classes.rightPane}>
+        <div className={classes.content}>
+          <HandsOffText />
         </div>
       </div>
-    </Container>
+    </div>
   ) : (
     <MainContent spacing="md">
       <div className={classes.root}>

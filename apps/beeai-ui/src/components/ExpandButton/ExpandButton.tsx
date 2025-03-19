@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import { ElapsedTime } from '../components/ElapsedTime';
-import { useHandsOff } from '../contexts/hands-off';
-import classes from './TaskCompleted.module.scss';
+import { ChevronDown } from '@carbon/icons-react';
+import { Button, ButtonBaseProps } from '@carbon/react';
+import classes from './ExpandButton.module.scss';
 
-export function TaskCompleted() {
-  const { stats, isPending } = useHandsOff();
+export function ExpandButton({ children, ...props }: Omit<ButtonBaseProps, 'ghost' | 'className'>) {
+  return (
+    <Button {...props} kind="ghost" className={classes.root}>
+      <span>{children}</span>
 
-  return stats?.startTime && stats.endTime && !isPending ? (
-    <p className={classes.root}>
-      Task completed in <ElapsedTime stats={stats} />
-    </p>
-  ) : null;
+      <ChevronDown />
+    </Button>
+  );
 }

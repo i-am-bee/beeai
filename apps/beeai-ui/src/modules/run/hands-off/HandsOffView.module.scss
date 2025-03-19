@@ -14,53 +14,48 @@
  * limitations under the License.
  */
 
+$max-container: get-value($grid-breakpoints, 'max.width');
+
 .root {
   min-block-size: 100%;
   display: flex;
   &.split {
     display: grid;
-    grid-template-columns: 1fr 2fr;
+    grid-template-columns: 1fr calc((100vw / 3 * 2) - ((100vw - #{$max-container}) / 2 / 3));
     block-size: 100%;
+    inline-size: 100%;
   }
 }
 
 .leftPane,
 .rightPane {
+  @include scrollbar();
+  overflow-y: auto;
   min-inline-size: 0;
-  position: relative;
+  padding: $grid-margin;
+  display: flex;
+  flex-direction: column;
   min-block-size: 0;
-  &::before {
-    content: '';
-    position: absolute;
-    inset-block: 0;
-    inline-size: 100vw;
-  }
 }
 
 .leftPane {
   background-color: $layer;
   border-inline-end: 1px solid $border-subtle-00;
-  margin-inline-start: calc($grid-margin * -1);
-  &::before {
-    inset-inline-end: 100%;
-    background-color: $layer;
+  .content {
+    max-inline-size: calc(math.div($max-container, 3) - var(--scrollbar-width, 0px));
+    margin-inline-start: auto;
   }
 }
 
 .rightPane {
   background-color: $layer-02;
-  margin-inline-end: calc($grid-margin * -1);
-  &::before {
-    inset-inline-start: 100%;
-    background-color: $layer-02;
+  .content {
+    max-inline-size: math.div($max-container, 3) * 2;
+    margin-inline-end: auto;
   }
 }
 
 .content {
-  padding: $grid-margin;
-  block-size: 100%;
-  &.scrollable {
-    @include scrollbar();
-    overflow-y: auto;
-  }
+  flex-grow: 1;
+  inline-size: 100%;
 }
