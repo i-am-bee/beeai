@@ -21,8 +21,8 @@ import { notFound } from "next/navigation";
 
 export const revalidate = 600;
 
-// This is needed to enable ISR; otherwise, Next.js will switch to dynamic rendering.
-// It tells Next.js that we don’t want any routes pre-rendered at build time, but we do want caching.
+// This is needed to enable ISR; otherwise, nextjs will switch to dynamic rendering.
+// It tells nextjs that we don’t want any routes pre-rendered at build time, but we do want caching.
 export async function generateStaticParams() {
   return [];
 }

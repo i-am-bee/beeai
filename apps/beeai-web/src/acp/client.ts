@@ -34,6 +34,7 @@ export async function getAcpClient() {
         undiciFetch(url, {
           ...init,
           body: init?.body ? (init.body as BodyInit) : undefined,
+          // prevents nextjs switching pages from ISR to dynamic render
           cache: "default",
         }),
     },
