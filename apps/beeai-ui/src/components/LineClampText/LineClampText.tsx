@@ -38,13 +38,14 @@ export function LineClampText({ lines, className, children }: PropsWithChildren<
       return;
     }
 
-    const lineHeight = parseFloat(getComputedStyle(element).lineHeight);
-    const height = lineHeight * lines;
     const { scrollHeight } = element;
 
     if (scrollHeight === 0) {
       return;
     }
+
+    const lineHeight = parseFloat(getComputedStyle(element).lineHeight);
+    const height = lineHeight * lines;
 
     if (scrollHeight > height) {
       setShowButton(true);
@@ -67,14 +68,17 @@ export function LineClampText({ lines, className, children }: PropsWithChildren<
     });
 
     resizeObserver.observe(element);
-    checkOverflow();
 
     return () => {
       if (element) {
         resizeObserver.unobserve(element);
       }
     };
-  }, [checkOverflow, debouncedCheckOverflow]);
+  }, [debouncedCheckOverflow]);
+
+  useEffect(() => {
+    checkOverflow();
+  }, [checkOverflow]);
 
   return (
     <span className={clsx(classes.root, className)}>

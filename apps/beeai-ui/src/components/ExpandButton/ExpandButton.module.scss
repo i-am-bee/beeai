@@ -14,37 +14,35 @@
  * limitations under the License.
  */
 
-.root {
-  &:global(.cds--btn) {
-    display: flex;
-    align-items: center;
-    column-gap: $spacing-03;
-    padding: 0;
-    border: 0;
-    min-block-size: 0;
-    font-size: rem(14px);
-    line-height: math.div(18, 14);
-    letter-spacing: $letter-spacing;
-    color: $expand-button-color;
-    &:hover,
-    &:active {
-      background-color: transparent;
-    }
-    &:focus {
-      box-shadow: none;
-    }
-    &:focus-visible {
-      @include focus-outline('outline');
-      outline-offset: 0;
-      border-radius: $spacing-02;
-    }
+.root:global(.cds--btn) {
+  display: flex;
+  align-items: center;
+  column-gap: $spacing-03;
+  padding: 0;
+  border: 0;
+  min-block-size: 0;
+  font-size: rem(14px);
+  line-height: math.div(18, 14);
+  letter-spacing: $letter-spacing;
+  color: $expand-button-color;
+  &:hover,
+  &:active {
+    background-color: transparent;
+  }
+  &:focus {
+    box-shadow: none;
+  }
+  &:focus-visible {
+    @include focus-outline('outline');
+    outline-offset: 0;
+    border-radius: $spacing-02;
+  }
 
-    > svg {
-      fill: currentColor;
-    }
+  > svg {
+    fill: currentColor;
+  }
 
-    &[aria-expanded='true'] > svg {
-      transform: scaleY(-1);
-    }
+  &[aria-expanded='true'] > svg {
+    transform: scaleY(-1);
   }
 }
