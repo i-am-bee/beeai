@@ -25,6 +25,10 @@ export const revalidate = 600;
 
 export default async function AgentsPage() {
   let agents = null;
+
+  // Bypass API calls at build time since the ACP server is not reachable.
+  // The page is revalidated on the first request via `api/init-agents`. From then on, the proper agents
+  // list is loaded and revalidated every 10 minutes.
   if (!NEXT_PHASE_BUILD) {
     try {
       agents = await getAgentsList();

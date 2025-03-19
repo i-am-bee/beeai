@@ -19,7 +19,7 @@ import { Client } from "@i-am-bee/acp-sdk/client/index";
 import type { ServerCapabilities } from "@i-am-bee/acp-sdk/types";
 import { SSEClientTransport } from "@i-am-bee/acp-sdk/client/sse";
 import { ACP_CLIENT_SERVER_URL } from "@/constants";
-import { fetch as undiciFetch } from "undici";
+import { fetch as undiciFetch, BodyInit } from "undici";
 
 export async function getAcpClient() {
   if (!ACP_CLIENT_SERVER_URL) {
@@ -28,13 +28,12 @@ export async function getAcpClient() {
 
   const transport = new SSEClientTransport(new URL(ACP_CLIENT_SERVER_URL), {
     eventSourceInit: {
-      // Use native nodejs fetch instead of nextjs patched one, we don't want
+      // Use undici fetch instead of nextjs patched one, we don't want
       // any nextjs caching/deduping behaviour here.
       fetch: (url: string | URL, init?: RequestInit) =>
         undiciFetch(url, {
           ...init,
-          // @ts-expect-error body error
-          body: init?.body ?? undefined,
+          body: init?.body ? (init.body as BodyInit) : undefined,
           cache: "default",
         }),
     },

@@ -53,7 +53,7 @@ export function AgentCard({ agent, renderTitle }: Props) {
 
 AgentCard.Skeleton = function AgentCardSkeleton() {
   return (
-    <li className={classes.root}>
+    <>
       <SkeletonText className={classes.name} width="50%" />
 
       <div className={classes.body}>
@@ -65,6 +65,6 @@ AgentCard.Skeleton = function AgentCardSkeleton() {
 
         <TagsList.Skeleton length={2} />
       </div>
-    </li>
+    </>
   );
 };

@@ -21,10 +21,6 @@
   display: flex;
   flex-direction: column;
   row-gap: $spacing-03;
-
-  &::marker {
-    display: none;
-  }
 }
 
 .name {

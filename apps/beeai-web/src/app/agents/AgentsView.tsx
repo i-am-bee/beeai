@@ -15,7 +15,6 @@
  */
 
 "use client";
-
 import { TransitionLink } from "@/components/TransitionLink/TransitionLink";
 import {
   type Agent,
@@ -25,7 +24,6 @@ import {
   AgentCard,
 } from "@i-am-bee/beeai-ui";
 import { useFormContext } from "react-hook-form";
-import { SkeletonItems } from "../../../../beeai-ui/src/components/SkeletonItems/SkeletonItems";
 
 interface Props {
   agents: Agent[] | null;
@@ -38,24 +36,23 @@ export function AgentsView({ agents }: Props) {
   return (
     <>
       {agents ? <AgentsFilters agents={agents} /> : <AgentsFilters.Skeleton />}
-      {agents ? (
-        <AgentsList agents={agents} filters={filters}>
-          {(filteredAgents) =>
-            filteredAgents.map((agent) => (
+      <AgentsList
+        agents={agents ?? undefined}
+        filters={filters}
+        isPending={agents == null}
+      >
+        {(filteredAgents) =>
+          filteredAgents.map((agent, idx) => (
+            <li key={idx}>
               <AgentCard
                 key={agent.name}
                 agent={agent}
                 renderTitle={renderAgentTitle}
               />
-            ))
-          }
-        </AgentsList>
-      ) : (
-        <SkeletonItems
-          count={5}
-          render={(idx) => <AgentCard.Skeleton key={idx} />}
-        />
-      )}
+            </li>
+          ))
+        }
+      </AgentsList>
     </>
   );
 }
