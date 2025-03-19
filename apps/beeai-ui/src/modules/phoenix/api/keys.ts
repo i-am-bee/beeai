@@ -14,16 +14,6 @@
  * limitations under the License.
  */
 
-import { ElapsedTime } from '../components/ElapsedTime';
-import { useHandsOff } from '../contexts/hands-off';
-import classes from './TaskCompleted.module.scss';
-
-export function TaskCompleted() {
-  const { stats, isPending } = useHandsOff();
-
-  return stats?.startTime && stats.endTime && !isPending ? (
-    <p className={classes.root}>
-      Task completed in <ElapsedTime stats={stats} />
-    </p>
-  ) : null;
-}
+export const phoenixKeys = {
+  all: () => ['phoenix'] as const,
+};

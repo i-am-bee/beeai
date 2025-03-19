@@ -14,25 +14,16 @@
  * limitations under the License.
  */
 
-import { AppFooter, AppHeader, GitHubLink } from "@i-am-bee/beeai-ui";
-import { PropsWithChildren } from "react";
-import { MainNav } from '../MainNav/MainNav';
-import classes from "./AppLayout.module.scss";
+import { ChevronDown } from '@carbon/icons-react';
+import { Button, ButtonBaseProps } from '@carbon/react';
+import classes from './ExpandButton.module.scss';
 
-export default function AppLayout({ children }: PropsWithChildren) {
+export function ExpandButton({ children, ...props }: Omit<ButtonBaseProps, 'ghost' | 'className'>) {
   return (
-    <div className={classes.root}>
-      <AppHeader className={classes.header}>
-        <MainNav />
+    <Button {...props} kind="ghost" className={classes.root}>
+      <span>{children}</span>
 
-        <GitHubLink />
-      </AppHeader>
-
-      <main className={classes.main} data-route-transition>
-        {children}
-      </main>
-
-      <AppFooter className={classes.footer} />
-    </div>
+      <ChevronDown />
+    </Button>
   );
 }

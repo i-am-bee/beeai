@@ -1,7 +1,7 @@
 manifestVersion: 1
 driver: python
 pythonVersion: "3.11"
-package: "git+https://github.com/i-am-bee/beeai.git@agents-v0.0.55#subdirectory=agents/community/langgraph-agents"
+package: "git+https://github.com/i-am-bee/beeai.git@agents-v0.0.61#subdirectory=agents/community/langgraph-agents"
 serverType: http
 mcpTransport: sse
 mcpEndpoint: /sse

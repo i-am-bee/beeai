@@ -14,13 +14,6 @@
  * limitations under the License.
  */
 
-.root {
-  inline-size: 100%;
-  @include scrollbar();
-  padding-block: $spacing-09;
-  overflow-x: hidden;
-  overflow-y: auto;
-  scrollbar-gutter: stable;
-  grid-area: main;
-  scroll-behavior: smooth;
-}
+export const APP_NAME = __APP_NAME__;
+
+export const PHOENIX_SERVER_TARGET = __PHOENIX_SERVER_TARGET__;

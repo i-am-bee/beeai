@@ -2,6 +2,7 @@ import asyncio
 from typing import Any
 
 from gpt_researcher import GPTResearcher
+from openinference.instrumentation.openai import OpenAIInstrumentor
 
 from acp.server.highlevel import Server
 from beeai_sdk.providers.agent import run_agent_provider
@@ -10,6 +11,7 @@ from beeai_sdk.schemas.metadata import Metadata, Examples, CliExample, UiDefinit
 from beeai_sdk.schemas.text import TextInput, TextOutput
 from gpt_researcher_agent.configuration import load_env
 
+OpenAIInstrumentor().instrument()
 load_env()  # GPT Researchers uses env variables for configuration
 
 agentName = "gpt-researcher"

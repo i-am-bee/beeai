@@ -1,6 +1,6 @@
 import asyncio
 
-
+from openinference.instrumentation.langchain import LangChainInstrumentor
 from acp.server.highlevel import Context, Server
 from beeai_sdk.providers.agent import run_agent_provider
 from beeai_sdk.schemas.metadata import Metadata, Examples, CliExample, UiDefinition, UiType
@@ -11,6 +11,7 @@ from langgraph_agents.configuration import load_env
 from langgraph_agents.ollama_deep_researcher.graph import graph
 from langgraph_agents.ollama_deep_researcher.state import SummaryStateInput
 
+LangChainInstrumentor().instrument()
 load_env()
 
 agentName = "ollama-deep-researcher"

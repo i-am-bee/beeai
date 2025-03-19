@@ -19,7 +19,7 @@ dev = [
 
 [[package]]
 name = "acp-sdk"
-version = "0.0.4"
+version = "0.0.5"
 source = { editable = "packages/acp-python-sdk" }
 dependencies = [
     { name = "anyio" },
@@ -219,7 +219,7 @@ wheels = [
 
 [[package]]
 name = "beeai-cli"
-version = "0.0.5"
+version = "0.0.8"
 source = { editable = "apps/beeai-cli" }
 dependencies = [
     { name = "acp-sdk" },
@@ -258,7 +258,7 @@ requires-dist = [
 
 [[package]]
 name = "beeai-sdk"
-version = "0.0.14"
+version = "0.0.16"
 source = { editable = "packages/beeai-sdk" }
 dependencies = [
     { name = "acp-sdk" },
@@ -277,7 +277,7 @@ requires-dist = [
 
 [[package]]
 name = "beeai-server"
-version = "0.0.4"
+version = "0.0.7"
 source = { editable = "apps/beeai-server" }
 dependencies = [
     { name = "acp-sdk" },

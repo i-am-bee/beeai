@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-$max-container: rem(1632px);
+$max-container: get-value($grid-breakpoints, 'max.width');
 
 .form {
   display: grid;
@@ -98,5 +98,5 @@ $max-container: rem(1632px);
   display: flex;
   gap: $spacing-03;
   align-items: center;
-  padding-right: $spacing-05;
+  padding-inline-end: $spacing-05;
 }

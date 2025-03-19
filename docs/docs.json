@@ -19,6 +19,16 @@
         ]
       },
       {
+        "group": "How To",
+        "pages": [
+          "/how-to/run-agents",
+          "/how-to/compose-agents",
+          "/how-to/build-agents",
+          "/how-to/import-agents",
+          "/how-to/share-agents"
+        ]
+      },
+      {
         "group": "Core Concepts",
         "pages": [
           "/concepts/architecture",

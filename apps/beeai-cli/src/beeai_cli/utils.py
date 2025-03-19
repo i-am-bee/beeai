@@ -14,17 +14,19 @@
 
 import json
 from copy import deepcopy
-from typing import Any, TypeVar, Iterable
+from typing import Any, TypeVar, Iterable, Optional, TYPE_CHECKING
+from prompt_toolkit import PromptSession
 
 import typer
 import yaml
 from cachetools import cached
 from jsf import JSF
-from prompt_toolkit import PromptSession
-from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
-from prompt_toolkit.completion import Completer, DummyCompleter
-from prompt_toolkit.validation import Validator, DummyValidator
+from prompt_toolkit.shortcuts import CompleteStyle
 from pydantic import BaseModel
+
+if TYPE_CHECKING:
+    from prompt_toolkit.completion import Completer
+    from prompt_toolkit.validation import Validator
 
 
 def format_model(value: BaseModel | list[BaseModel]) -> str:
@@ -108,18 +110,27 @@ def remove_nullable(schema: dict[str, Any]) -> dict[str, Any]:
     return schema
 
 
-prompt_session = PromptSession()
+prompt_session = None
 
 
 def prompt_user(
     prompt: str | None = None,
-    completer: Completer | None = None,
-    validator: Validator | None = None,
+    completer: Optional["Completer"] = None,
+    placeholder: str | None = None,
+    validator: Optional["Validator"] = None,
     open_autocomplete_by_default=False,
 ) -> str:
+    global prompt_session
     # This is necessary because we are in a weird sync-under-async situation and the PromptSession
     # tries calling asyncio.run
+    from prompt_toolkit import HTML
     from prompt_toolkit.application.current import get_app
+    from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
+    from prompt_toolkit.completion import DummyCompleter
+    from prompt_toolkit.validation import DummyValidator
+
+    if not prompt_session:
+        prompt_session = PromptSession()
 
     def prompt_autocomplete():
         buffer = get_app().current_buffer
@@ -128,9 +139,14 @@ def prompt_user(
         else:
             buffer.start_completion(select_first=False)
 
+    if placeholder is None:
+        placeholder = "Type your message (/? for help, /q to quit)"
+
     return prompt_session.prompt(
         prompt or ">>> ",
         auto_suggest=AutoSuggestFromHistory(),
+        placeholder=HTML(f"<ansibrightblack> {placeholder}</ansibrightblack>"),
+        complete_style=CompleteStyle.COLUMN,
         completer=completer or DummyCompleter(),
         pre_run=prompt_autocomplete if open_autocomplete_by_default else None,
         complete_while_typing=True,

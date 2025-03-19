@@ -90,7 +90,7 @@ npm install @i-am-bee/beeai-sdk
 Next, implement a simple server:
 
 ```typescript
-import { AcpServer } from "@i-am-bee/acp-sdk/server/acp.js";
+import { AcpServer } from "@i-am-bee/acp-sdk/server/acp";
 import { runAgentProvider } from "@i-am-bee/beeai-sdk/providers/agent";
 import {
   textInputSchema,
@@ -181,8 +181,8 @@ npm install @i-am-bee/acp-sdk
 Next, implement a simple client:
 
 ```typescript
-import { Client as ACPClient } from "@i-am-bee/acp-sdk/client/index.js";
-import { SSEClientTransport } from "@i-am-bee/acp-sdk/client/sse.js";
+import { Client as ACPClient } from "@i-am-bee/acp-sdk/client/index";
+import { SSEClientTransport } from "@i-am-bee/acp-sdk/client/sse";
 
 const client = new ACPClient({
   name: "my-client",

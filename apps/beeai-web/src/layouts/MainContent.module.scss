@@ -15,7 +15,30 @@
  */
 
 .root {
-  font-size: rem(14px);
-  line-height: math.div(18, 14);
-  color: $text-secondary;
+  inline-size: 100%;
+  @include scrollbar();
+  padding-block: $spacing-09;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  grid-area: main;
+  scroll-behavior: smooth;
+}
+
+.footer {
+  padding: 1rem;
+
+  @include breakpoint-up("xlg") {
+    position: absolute;
+    inset-inline-end: 0;
+    inset-block-end: 0;
+  }
+}
+
+.toTopButtonVisible {
+  .footer {
+    @include breakpoint-down("xlg") {
+      padding-inline-end: $spacing-09;
+    }
+  }
 }

@@ -48,7 +48,7 @@ export function HandsOffProvider({ agent, children }: PropsWithChildren<Props>) 
       ...logs,
       ...logsDelta.filter((log): log is NonNullable<typeof log> => isNotNull(log) && log.message !== ''),
     ]);
-    setText((text) => text.concat(textDelta));
+    setText((text) => (textDelta ? text.concat(textDelta) : text));
   }, []);
 
   const handleCancel = useCallback(() => {

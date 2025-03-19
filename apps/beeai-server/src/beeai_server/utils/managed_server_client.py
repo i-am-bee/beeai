@@ -14,17 +14,15 @@
 
 import asyncio
 import logging
-import os
 from pathlib import Path
-import signal
-from contextlib import asynccontextmanager, suppress
-from typing import Any
+from contextlib import asynccontextmanager
+from typing import Any, TYPE_CHECKING, Optional
 
 import anyio
 import anyio.abc
 import anyio.to_thread
 import psutil
-from anyio import create_task_group, CancelScope
+from anyio import create_task_group
 from httpx import ConnectError
 
 from acp.client.sse import sse_client
@@ -32,6 +30,11 @@ from acp.client.stdio import get_default_environment
 from pydantic import BaseModel, Field
 
 from beeai_server.custom_types import McpClient
+from beeai_server.utils.process import terminate_process
+
+if TYPE_CHECKING:
+    # Circular import
+    from beeai_server.services.mcp_proxy.provider import ProviderLogsContainer
 
 logger = logging.getLogger(__name__)
 
@@ -59,14 +62,11 @@ class ManagedServerParameters(BaseModel):
     endpoint: str = "/sse"
 
 
-def _kill_process_group(process: anyio.abc.Process):
-    with suppress(ProcessLookupError):
-        os.getpgid(process.pid)
-        os.killpg(process.pid, signal.SIGKILL)
-
-
 @asynccontextmanager
-async def managed_sse_client(server: ManagedServerParameters) -> McpClient:
+async def managed_sse_client(
+    server: ManagedServerParameters,
+    logs_container: Optional["ProviderLogsContainer"] = None,
+) -> McpClient:
     """
     Client transport for stdio: this will connect to a server by spawning a
     process and communicating with it over stdin/stdout.
@@ -82,46 +82,45 @@ async def managed_sse_client(server: ManagedServerParameters) -> McpClient:
 
     async def log_process_stdout():
         async for line in process.stdout:
-            logger.info(f"stdout: {line.decode().strip()}")
+            text = line.decode().strip()
+            logger.info(f"stdout: {text}")
+            if logs_container:
+                logs_container.add_stdout(text)
 
     async def log_process_stderr():
         async for line in process.stderr:
-            logger.info(f"stderr: {line.decode().strip()}")
+            text = line.decode().strip()
+            logger.info(f"stderr: {text}")
+            if logs_container:
+                logs_container.add_stderr(text)
 
-    async with process, create_task_group() as tg:
-        tg.start_soon(log_process_stdout)
-        tg.start_soon(log_process_stderr)
+    async with process:
         try:
-            for attempt in range(8):
+            async with create_task_group() as tg:
+                tg.start_soon(log_process_stdout)
+                tg.start_soon(log_process_stderr)
                 try:
-                    async with sse_client(
-                        url=f"http://localhost:{port}/{server.endpoint.lstrip('/')}", timeout=60
-                    ) as streams:
-                        yield streams
-                        break
-                except* ConnectError as ex:
-                    if process.returncode or not (await anyio.to_thread.run_sync(psutil.pid_exists, process.pid)):
-                        raise ConnectionError(f"Provider process exited with code {process.returncode}")
-                    timeout = 2**attempt
-                    logger.warning(f"Failed to connect to provider. Reconnecting in {timeout} seconds: {ex!r}")
-                    await asyncio.sleep(timeout)
-            else:
-                raise ConnectionError("Failed to connect to provider.")
+                    for attempt in range(8):
+                        try:
+                            async with sse_client(
+                                url=f"http://localhost:{port}/{server.endpoint.lstrip('/')}", timeout=60
+                            ) as streams:
+                                yield streams
+                                break
+                        except* ConnectError as ex:
+                            if process.returncode or not (
+                                await anyio.to_thread.run_sync(psutil.pid_exists, process.pid)
+                            ):
+                                raise ConnectionError(f"Provider process exited with code {process.returncode}")
+                            timeout = 2**attempt
+                            logger.warning(f"Failed to connect to provider. Reconnecting in {timeout} seconds: {ex!r}")
+                            await asyncio.sleep(timeout)
+                    else:
+                        raise ConnectionError("Failed to connect to provider.")
+                finally:
+                    tg.cancel_scope.cancel()
         finally:
-            with CancelScope(shield=True):
-                with anyio.move_on_after(server.graceful_terminate_timeout) as cancel_scope:
-                    try:
-                        process.terminate()
-                        await process.wait()
-                    except ProcessLookupError:
-                        logger.warning("Provider process died prematurely")
-
-                if cancel_scope.cancel_called:
-                    logger.warning(
-                        f"Provider process did not terminate in {server.graceful_terminate_timeout}s, killing it."
-                    )
-                    await anyio.to_thread.run_sync(_kill_process_group, process)
-                tg.cancel_scope.cancel()
+            await terminate_process(process, server.graceful_terminate_timeout)
 
 
 async def find_free_port():

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-$max-container: rem(1632px);
+$max-container: get-value($grid-breakpoints, 'max.width');
 $third-of-max-container: math.div($max-container, 3);
 $to-two-thirds-of-max-container: calc(2 * $third-of-max-container + calc((100vw - $max-container) / 2));
 

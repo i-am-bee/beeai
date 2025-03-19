@@ -45,3 +45,4 @@ RunAgentInput = RootModel[dict[str, Any]]
 
 
 DeleteProviderRequest = CreateProviderRequest
+StreamLogsRequest = CreateProviderRequest

@@ -25,8 +25,9 @@
     white-space: nowrap;
     text-overflow: ellipsis;
   } @else {
+    --line-clamp-lines: #{$lines};
     display: -webkit-box;
-    -webkit-line-clamp: #{$lines};
+    -webkit-line-clamp: var(--line-clamp-lines);
     -webkit-box-orient: vertical;
   }
 }

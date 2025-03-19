@@ -5,7 +5,7 @@ import {
   textOutputSchema,
 } from "@i-am-bee/beeai-sdk/schemas/text";
 import { SystemMessage, UserMessage } from "beeai-framework/backend/message";
-import { AcpServer } from "@i-am-bee/acp-sdk/server/acp.js";
+import { AcpServer } from "@i-am-bee/acp-sdk/server/acp";
 import { MODEL, API_BASE, API_KEY } from "../config.js";
 import { OpenAIChatModel } from "beeai-framework/adapters/openai/backend/chat";
 
@@ -23,14 +23,14 @@ const run =
     }: {
       params: { input: Input; _meta?: { progressToken?: string | number } };
     },
-    { signal }: { signal?: AbortSignal }
+    { signal }: { signal?: AbortSignal },
   ): Promise<Output> => {
     const { text } = params.input;
 
     const model = new OpenAIChatModel(
       MODEL,
       {},
-      { baseURL: API_BASE, apiKey: API_KEY, compatibility: "compatible" }
+      { baseURL: API_BASE, apiKey: API_KEY, compatibility: "compatible" },
     );
 
     const podcastResponse = await model
@@ -81,14 +81,12 @@ IT SHOULD STRICTLY BE THE DIALOGUES`),
       });
     const podcastDialogue = podcastResponse.getTextContent();
 
-    const structuredGenerationSchema = z
-      .array(
-        z.object({
-          speaker: z.number().min(1).max(2),
-          text: z.string(),
-        })
-      )
-      .min(1);
+    const structuredGenerationSchema = z.array(
+      z.object({
+        speaker: z.number().min(1).max(2),
+        text: z.string(),
+      }),
+    );
 
     // Dramatise podcast
     const finalReponse = await model.createStructure({
@@ -126,8 +124,16 @@ Your task is to rewrite the provided podcast transcript for a high-quality AI Te
       maxRetries: 3,
     });
 
+    const conversation = finalReponse.object
+      // TODO: this is a temporary fix of a bug in framework
+      .flat()
+      .map((obj) => `**Speaker ${obj.speaker}**  \n${obj.text}`)
+      .join("\n\n");
+
+    // TODO: temporary solution to render this nicely in UI
     return outputSchema.parse({
-      text: JSON.stringify(finalReponse.object),
+      // text: `<pre>${JSON.stringify(finalReponse.object, null, 2)}</pre>`,
+      text: conversation,
     });
   };
 

@@ -1,6 +1,8 @@
 import asyncio
 import json
 
+from openinference.instrumentation.crewai import CrewAIInstrumentor
+from openinference.instrumentation.langchain import LangChainInstrumentor
 from beeai_sdk.providers.agent import run_agent_provider
 from beeai_sdk.schemas.base import Log, LogLevel
 from beeai_sdk.schemas.metadata import Metadata, Examples, CliExample, UiDefinition, UiType
@@ -13,6 +15,8 @@ from crewai_agents.marketing_strategy.crew import MarketingPostsCrew
 
 from beeai_sdk.schemas.text import TextInput, TextOutput
 
+CrewAIInstrumentor().instrument()
+LangChainInstrumentor().instrument()
 load_env()
 
 agentName = "marketing-strategy"

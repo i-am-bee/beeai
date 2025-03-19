@@ -14,20 +14,18 @@
  * limitations under the License.
  */
 
-import { useQuery } from '@tanstack/react-query';
+import { PlayFilled } from '@carbon/icons-react';
+import clsx from 'clsx';
+import classes from './PlayButton.module.scss';
 
 interface Props {
-  enabled: boolean;
+  className?: string;
 }
 
-export function usePhoenix({ enabled }: Props) {
-  return useQuery({
-    queryKey: ['phoenix'],
-    refetchInterval: 5_000,
-    enabled,
-    queryFn: () =>
-      fetch(__PHOENIX_SERVER_TARGET__, { mode: 'no-cors' })
-        .then(() => true)
-        .catch(() => false),
-  });
+export function PlayButton({ className }: Props) {
+  return (
+    <button type="button" tabIndex={-1} className={clsx(classes.button, className)}>
+      <PlayFilled />
+    </button>
+  );
 }
