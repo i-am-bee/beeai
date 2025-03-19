@@ -14,18 +14,6 @@
  * limitations under the License.
  */
 
-export const GITHUB_REPO_LINK = 'https://github.com/i-am-bee/beeai';
+export const APP_NAME = __APP_NAME__;
 
-export const DISCORD_LINK = 'https://discord.gg/NradeA6ZNF';
-
-export const YOUTUBE_LINK = 'https://www.youtube.com/@BeeAIAgents';
-
-export const BLUESKY_LINK = 'https://bsky.app/profile/beeaiagents.bsky.social';
-
-export const DOCUMENTATION_LINK = 'https://docs.beeai.dev';
-
-export const BEE_AI_FRAMEWORK_TAG = 'BeeAI';
-
-export const BREW_INSTALL_BEEAI = 'brew install i-am-bee/beeai/beeai';
-
-export const TRY_LOCALLY_LINK = `${DOCUMENTATION_LINK}/introduction/quickstart`;
+export const PHOENIX_SERVER_TARGET = __PHOENIX_SERVER_TARGET__;

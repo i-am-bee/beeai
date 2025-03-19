@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { PHOENIX_SERVER_TARGET } from '#utils/constants.ts';
+import { PHOENIX_SERVER_TARGET } from '#utils/vite-constants.ts';
 import { useQuery } from '@tanstack/react-query';
 import { phoenixKeys } from '../keys';
 
