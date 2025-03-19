@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { ChatModel } from "beeai-framework/backend/chat";
 import { SystemMessage, UserMessage } from "beeai-framework/backend/message";
 import { Metadata } from "@i-am-bee/beeai-sdk/schemas/metadata";
 import {

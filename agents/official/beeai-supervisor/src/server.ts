@@ -1,5 +1,5 @@
-#!/usr/bin/env -S BEE_FRAMEWORK_INSTRUMENTATION_ENABLED=true npx -y tsx@latest --inspect
-
+#!/usr/bin/env -S npx -y tsx@latest --inspect
+import "./instrumentation.js";
 import "dotenv/config";
 
 process.env.OPENAI_API_KEY ??= process.env.LLM_API_KEY;

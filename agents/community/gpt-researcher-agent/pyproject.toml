@@ -12,6 +12,7 @@ dependencies = [
     "duckduckgo-search>=7.3.2,<8.0.0",
     "pydantic-settings>=2.7.1",
     "pydantic>=2.10.6",
+    "openinference-instrumentation-openai>=0.1.22",
 ]
 
 [project.scripts]
