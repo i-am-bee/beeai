@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { JSONSchema, validateJsonSchema } from '#helpers/validateJsonSchema.ts';
-import { Agent } from '#modules/agents/api/types.ts';
+import type { JSONSchema } from '#helpers/validateJsonSchema.ts';
+import { validateJsonSchema } from '#helpers/validateJsonSchema.ts';
+import type { Agent } from '#modules/agents/api/types.ts';
 import { UiType } from '#modules/run/types.ts';
 import { SEQUENTIAL_COMPOSE_AGENT_NAME, textInputJsonSchema, textOutputJsonSchema } from './constants';
 

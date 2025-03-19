@@ -15,7 +15,7 @@
  */
 
 import { ActionableNotification, Button, InlineLoading } from '@carbon/react';
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import classes from './ErrorMessage.module.scss';
 
 interface Props {

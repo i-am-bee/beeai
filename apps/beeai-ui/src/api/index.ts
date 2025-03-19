@@ -15,7 +15,7 @@
  */
 
 import createClient from 'openapi-fetch';
-import { paths } from './schema';
+import type { paths } from './schema';
 
 export const api = createClient<paths>({
   baseUrl: '/',

@@ -16,10 +16,12 @@
 
 import { Button, ToastNotification } from '@carbon/react';
 import clsx from 'clsx';
-import { PropsWithChildren, useCallback, useMemo, useState } from 'react';
+import type { PropsWithChildren } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 import classes from './ToastProvider.module.scss';
-import { Toast, ToastContext, ToastWithKey } from './toast-context';
+import type { Toast, ToastWithKey } from './toast-context';
+import { ToastContext } from './toast-context';
 
 export function ToastProvider({ children }: PropsWithChildren) {
   const [toasts, setToasts] = useState<ToastWithKey[]>([]);

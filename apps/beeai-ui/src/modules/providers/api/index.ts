@@ -15,7 +15,7 @@
  */
 
 import { api } from '#api/index.ts';
-import { CreateProviderBody } from './types';
+import type { CreateProviderBody } from './types';
 
 export async function createProvider({ body }: { body: CreateProviderBody }) {
   const response = await api.POST('/api/v1/provider', { body });

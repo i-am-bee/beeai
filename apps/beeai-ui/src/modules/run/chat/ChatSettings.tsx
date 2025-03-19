@@ -30,7 +30,8 @@ import {
   useRole,
 } from '@floating-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { RefObject, useState } from 'react';
+import type { RefObject } from 'react';
+import { useState } from 'react';
 import classes from './ChatSettings.module.scss';
 import { ChatTools } from './ChatTools';
 

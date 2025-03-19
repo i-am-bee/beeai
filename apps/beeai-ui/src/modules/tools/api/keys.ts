@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ListToolsParams } from './types';
+import type { ListToolsParams } from './types';
 
 export const toolKeys = {
   all: () => ['tools'] as const,

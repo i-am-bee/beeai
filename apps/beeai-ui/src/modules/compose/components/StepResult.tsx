@@ -18,7 +18,7 @@ import { MarkdownContent } from '#components/MarkdownContent/MarkdownContent.tsx
 import { Accordion, AccordionItem } from '@carbon/react';
 import clsx from 'clsx';
 import classes from './StepResult.module.scss';
-import { ComposeStep } from '../contexts/compose-context';
+import type { ComposeStep } from '../contexts/compose-context';
 import { useAutoScroll } from '#hooks/useAutoScroll.ts';
 import { AgentRunLogItem } from '#modules/run/components/AgentRunLogItem.tsx';
 

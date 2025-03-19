@@ -16,7 +16,7 @@
 
 import { useViewTransition } from '#hooks/useViewTransition.ts';
 import { Slot } from '@radix-ui/react-slot';
-import { HTMLProps } from 'react';
+import type { HTMLProps } from 'react';
 
 interface Props extends Omit<HTMLProps<HTMLAnchorElement>, 'href'> {
   to?: string;

@@ -18,7 +18,8 @@ import { moderate02 } from '@carbon/motion';
 import { ComposedModal } from '@carbon/react';
 import clsx from 'clsx';
 import { AnimatePresence, motion } from 'framer-motion';
-import { HTMLAttributes, KeyboardEventHandler, ReactNode, useEffect, useId, useRef, useState } from 'react';
+import type { HTMLAttributes, KeyboardEventHandler, ReactNode } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import classes from './Modal.module.scss';
 
 type Props = {

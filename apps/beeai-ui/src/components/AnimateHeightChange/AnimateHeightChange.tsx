@@ -18,7 +18,8 @@ import { parseCarbonMotion } from '#utils/fadeProps.ts';
 import { motion as carbonMotion, moderate02 } from '@carbon/motion';
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
-import { PropsWithChildren, useEffect, useRef, useState } from 'react';
+import type { PropsWithChildren } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import classes from './AnimateHeightChange.module.scss';
 
 interface Props {

@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-import { ApiRequestBody } from '#@types/utils.ts';
+import type { ApiRequestBody } from '#@types/utils.ts';
 
 export type CreateEnvBody = ApiRequestBody<'/api/v1/env', 'put'>;

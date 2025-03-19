@@ -16,7 +16,8 @@
 
 import { routes } from '#utils/router.js';
 import clsx from 'clsx';
-import { PropsWithChildren, UIEventHandler, useCallback, useRef, useState } from 'react';
+import type { PropsWithChildren, UIEventHandler } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { useLocation } from 'react-router';
 import { ToTopButton } from '../ToTopButton/ToTopButton';
 import classes from './MainContent.module.scss';

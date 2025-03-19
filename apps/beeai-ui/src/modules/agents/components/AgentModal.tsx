@@ -16,10 +16,10 @@
 
 import { CopySnippet } from '#components/CopySnippet/CopySnippet.tsx';
 import { Modal } from '#components/Modal/Modal.tsx';
-import { ModalProps } from '#contexts/Modal/modal-context.ts';
+import type { ModalProps } from '#contexts/Modal/modal-context.ts';
 import { ArrowUpRight } from '@carbon/icons-react';
 import { Button, ModalBody, ModalHeader } from '@carbon/react';
-import { Agent } from '../api/types';
+import type { Agent } from '../api/types';
 import { AgentMetadata } from './AgentMetadata';
 import classes from './AgentModal.module.scss';
 import { AgentTags } from './AgentTags';

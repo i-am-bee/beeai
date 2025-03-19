@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ApiRequestBody, ApiResponse } from '#@types/utils.ts';
+import type { ApiRequestBody, ApiResponse } from '#@types/utils.ts';
 
 export type ProvidersList = ApiResponse<'/api/v1/provider'>;
 

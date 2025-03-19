@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ExtendedJSONSchema } from 'json-schema-to-ts';
+import type { ExtendedJSONSchema } from 'json-schema-to-ts';
 
 export type JSONSchema = Exclude<ExtendedJSONSchema, boolean>;
 

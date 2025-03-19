@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ComposeNotificationDelta } from './types';
+import type { ComposeNotificationDelta } from './types';
 
 export function getComposeDeltaResultText(result: ComposeNotificationDelta) {
   return Array.isArray(result.messages) ? result.messages.at(-1)?.content : (result.text ?? '');

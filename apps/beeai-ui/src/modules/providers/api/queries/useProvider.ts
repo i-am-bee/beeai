@@ -17,7 +17,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { getProviders } from '..';
 import { providerKeys } from '../keys';
-import { Provider, ProvidersList } from '../types';
+import type { Provider, ProvidersList } from '../types';
 
 interface Props {
   id?: string;

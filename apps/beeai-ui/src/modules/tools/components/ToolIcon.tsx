@@ -16,7 +16,7 @@
 
 import Wikipedia from '#svgs/Wikipedia.svg';
 import { IbmWatsonDiscovery, PartlyCloudy, Tools } from '@carbon/icons-react';
-import { Tool } from '../api/types';
+import type { Tool } from '../api/types';
 import classes from './ToolIcon.module.scss';
 
 interface Props {

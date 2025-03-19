@@ -15,7 +15,7 @@
  */
 
 import { createContext } from 'react';
-import { Theme } from './types';
+import type { Theme } from './types';
 
 export const ThemeContext = createContext<ThemeContextValue>({} as ThemeContextValue);
 

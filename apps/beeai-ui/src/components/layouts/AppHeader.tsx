@@ -15,7 +15,7 @@
  */
 
 import clsx from 'clsx';
-import { PropsWithChildren } from 'react';
+import type { PropsWithChildren } from 'react';
 import classes from './AppHeader.module.scss';
 import { Container } from './Container';
 

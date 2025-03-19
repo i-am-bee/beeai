@@ -15,12 +15,13 @@
  */
 
 import { useImmerWithGetter } from '#hooks/useImmerWithGetter.ts';
-import { Agent } from '#modules/agents/api/types.ts';
+import type { Agent } from '#modules/agents/api/types.ts';
 import { useRunAgent } from '#modules/run/api/mutations/useRunAgent.tsx';
-import { MessagesNotificationSchema, MessagesResult } from '#modules/run/api/types.ts';
-import { AgentMessage, ChatMessage, SendMessageParams } from '#modules/run/chat/types.ts';
-import { MessageInput } from '@i-am-bee/beeai-sdk/schemas/message';
-import { PropsWithChildren, useCallback, useMemo, useRef } from 'react';
+import type { MessagesNotificationSchema, MessagesResult } from '#modules/run/api/types.ts';
+import type { AgentMessage, ChatMessage, SendMessageParams } from '#modules/run/chat/types.ts';
+import type { MessageInput } from '@i-am-bee/beeai-sdk/schemas/message';
+import type { PropsWithChildren } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import { v4 as uuid } from 'uuid';
 import { ChatContext, ChatMessagesContext } from './chat-context';
 

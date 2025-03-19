@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ListAgentsParams } from './types';
+import type { ListAgentsParams } from './types';
 
 export const agentKeys = {
   all: () => ['agents'] as const,
