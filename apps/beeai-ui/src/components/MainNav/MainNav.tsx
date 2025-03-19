@@ -17,8 +17,8 @@
 import { Tooltip } from '#components/Tooltip/Tooltip.tsx';
 import { useIsNavSectionActive } from '#hooks/useIsNavSectionActive.ts';
 import { usePhoenix } from '#modules/phoenix/api/queries/usePhoenix.ts';
-import { APP_NAME, PHOENIX_SERVER_TARGET } from '#utils/constants.ts';
 import { routes, sections } from '#utils/router.ts';
+import { APP_NAME, PHOENIX_SERVER_TARGET } from '#utils/vite-constants.ts';
 import { Button } from '@carbon/react';
 import clsx from 'clsx';
 import { TransitionLink } from '../TransitionLink/TransitionLink';
