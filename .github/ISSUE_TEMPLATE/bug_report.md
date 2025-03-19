@@ -7,7 +7,7 @@ assignees: ""
 ---
 
 **Pre-requisities**
-[ ] I am using the newest version of the platform (`brew upgrade i-am-bee/beeai/beeai`)
+- [ ] I am using the newest version of the platform (`brew upgrade i-am-bee/beeai/beeai`)
 
 **Describe the bug**
 A clear and concise description of what the bug is.
