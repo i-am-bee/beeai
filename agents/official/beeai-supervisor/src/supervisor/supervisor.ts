@@ -101,15 +101,17 @@ const run =
     };
   };
 
+const agentName = "supervisor";
+
 export const agent = {
-  name: "supervisor",
+  name: agentName,
   description:
     "The agent autonomously breaks down tasks, assigns them to suitable agents, manages execution, evaluates outcomes, adapts workflows dynamically, and iterates until achieving an optimal solution.",
   inputSchema,
   outputSchema,
   run,
   metadata: {
-    fullDescription: `The agent is an AI-powered, supervisor-led, task-driven system with the **BeeAI platform** integrated into the agent registry. The supervisor is a ReAct agent built with the **BeeAI framework**, which uses the *Task Manager* and *Agent Registry* tools to autonomously solve complex tasks.
+    fullDescription: `The agent is an AI-powered, supervisor-led, task-driven system with the **BeeAI platform** integrated into the agent registry. The ${agentName} is a ReAct agent built with the **BeeAI framework**, which uses the *Task Manager* and *Agent Registry* tools to autonomously solve complex tasks.
 
 ## How It Works
 
@@ -147,7 +149,7 @@ Free text, depending on the output of the agents used.
     examples: {
       cli: [
         {
-          command: `beeai agent run supervisor '{"text":"Prepare a marketing strategy to sell most selling mobile phones in 2024 in Europe on my eshop. Ensure the strategy is based on top of thorough research of the market.", "availableAgents":["gpt-researcher","marketing-strategy"]}'`,
+          command: `beeai agent run ${agentName} '{"text":"Prepare a marketing strategy to sell most selling mobile phones in 2024 in Europe on my eshop. Ensure the strategy is based on top of thorough research of the market.", "availableAgents":["gpt-researcher","marketing-strategy"]}'`,
           name: "Marketing strategy",
           description:
             "Creates a marketing strategy for top-selling European mobile phones through supervisor-orchestrated workflow in the BeeAI platform. The supervisor agent intelligently coordinates a multi-step process where the gpt-researcher agent first conducts comprehensive market research, then passes these insights to the marketing-strategy agent which transforms the raw data into a tailored, actionable marketing plan for your e-shop. This demonstrates the platform's dynamic task orchestration and adaptive decision-making capabilities, delivering an integrated solution without requiring manual intervention between steps.",
