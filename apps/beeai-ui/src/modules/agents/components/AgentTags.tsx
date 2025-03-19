@@ -19,7 +19,7 @@ import { Tag } from '@carbon/react';
 import { TagsList } from '#components/TagsList/TagsList.tsx';
 import { isNotNull } from '#utils/helpers.ts';
 import type { Agent } from '../api/types';
-import { TagBaseProps } from '@carbon/react/lib/components/Tag/Tag';
+import type { TagBaseProps } from '@carbon/react/lib/components/Tag/Tag';
 
 interface Props {
   agent: Agent;

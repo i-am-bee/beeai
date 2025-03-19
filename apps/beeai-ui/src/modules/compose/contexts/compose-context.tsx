@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { Agent } from '#modules/agents/api/types.ts';
-import { RunStats } from '#modules/run/types.ts';
+import type { Agent } from '#modules/agents/api/types.ts';
+import type { RunStats } from '#modules/run/types.ts';
 import { createContext } from 'react';
-import { UseFieldArrayReturn } from 'react-hook-form';
+import type { UseFieldArrayReturn } from 'react-hook-form';
 
 export const ComposeContext = createContext<ComposeContextValue | null>(null);
 

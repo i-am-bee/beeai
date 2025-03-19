@@ -18,11 +18,11 @@
 
 import { SkeletonText } from '@carbon/react';
 import pluralize from 'pluralize';
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { useFilteredAgents } from '../hooks/useFilteredAgents';
-import { AgentsFiltersParams } from '../providers/AgentsFiltersProvider';
+import type { AgentsFiltersParams } from '../providers/AgentsFiltersProvider';
 import classes from './AgentsList.module.scss';
-import { Agent } from '../api/types';
+import type { Agent } from '../api/types';
 import { SkeletonItems } from '#components/SkeletonItems/SkeletonItems.tsx';
 import { AgentCard } from './AgentCard';
 

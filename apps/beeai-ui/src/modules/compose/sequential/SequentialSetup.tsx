@@ -17,7 +17,7 @@
 import { Container } from '#components/layouts/Container.tsx';
 import { TransitionLink } from '#components/TransitionLink/TransitionLink.tsx';
 import { VersionTag } from '#components/VersionTag/VersionTag.tsx';
-import { Agent } from '#modules/agents/api/types.ts';
+import type { Agent } from '#modules/agents/api/types.ts';
 import NewSession from '#modules/run/components/NewSession.svg';
 import { routes } from '#utils/router.ts';
 import { ArrowLeft, PlayFilledAlt, StopOutlineFilled } from '@carbon/icons-react';
@@ -27,7 +27,7 @@ import { useFormState } from 'react-hook-form';
 import { AddAgentButton } from '../components/AddAgentButton';
 import { ComposeStepListItem } from '../components/ComposeStepListItem';
 import { useCompose } from '../contexts';
-import { SequentialFormValues } from '../contexts/compose-context';
+import type { SequentialFormValues } from '../contexts/compose-context';
 import classes from './SequentialSetup.module.scss';
 
 export function SequentialSetup() {

@@ -15,11 +15,11 @@
  */
 
 import { TagsList } from '#components/TagsList/TagsList.tsx';
-import { Agent } from '#modules/agents/api/types.ts';
+import type { Agent } from '#modules/agents/api/types.ts';
 import { AgentTags } from '#modules/agents/components/AgentTags.tsx';
 import { SkeletonText } from '@carbon/react';
 import clsx from 'clsx';
-import { MouseEvent } from 'react';
+import type { MouseEvent } from 'react';
 import classes from './AgentListOption.module.scss';
 import { BeeBadge } from '#modules/agents/components/BeeBadge.tsx';
 

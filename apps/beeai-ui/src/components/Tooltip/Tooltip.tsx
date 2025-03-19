@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { Placement } from '@floating-ui/react';
 import {
   arrow,
   autoUpdate,
@@ -21,7 +22,6 @@ import {
   FloatingArrow,
   FloatingPortal,
   offset,
-  Placement,
   safePolygon,
   shift,
   useDismiss,
@@ -33,7 +33,8 @@ import {
 } from '@floating-ui/react';
 import { Slot } from '@radix-ui/react-slot';
 import clsx from 'clsx';
-import { PropsWithChildren, ReactNode, useRef, useState } from 'react';
+import type { PropsWithChildren, ReactNode } from 'react';
+import { useRef, useState } from 'react';
 import classes from './Tooltip.module.scss';
 
 interface Props {

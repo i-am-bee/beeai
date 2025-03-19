@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { PropsWithChildren } from 'react';
+import type { PropsWithChildren } from 'react';
 import classes from './TableViewActions.module.scss';
 
 export function TableViewActions({ children }: PropsWithChildren) {

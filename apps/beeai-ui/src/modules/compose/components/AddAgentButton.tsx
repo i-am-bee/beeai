@@ -16,11 +16,12 @@
 
 import { Button } from '@carbon/react';
 import classes from './AddAgentButton.module.scss';
-import { RefObject, useId, useMemo, useRef, useState } from 'react';
+import type { RefObject } from 'react';
+import { useId, useMemo, useRef, useState } from 'react';
 import { AgentListOption } from './AgentListOption';
 import { useOnClickOutside } from 'usehooks-ts';
 import { useListAgents } from '#modules/agents/api/queries/useListAgents.ts';
-import { Agent } from '#modules/agents/api/types.ts';
+import type { Agent } from '#modules/agents/api/types.ts';
 import { SkeletonItems } from '#components/SkeletonItems/SkeletonItems.tsx';
 import { isValidForSequentialWorkflow } from '../sequential/utils';
 import { Add } from '@carbon/icons-react';

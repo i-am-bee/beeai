@@ -18,7 +18,7 @@ import { useAutoScroll } from '#hooks/useAutoScroll.ts';
 import { ChevronDown } from '@carbon/icons-react';
 import clsx from 'clsx';
 import { useState } from 'react';
-import { TextNotificationLogs } from '../api/types';
+import type { TextNotificationLogs } from '../api/types';
 import { AgentRunLogItem } from './AgentRunLogItem';
 import classes from './AgentRunLogs.module.scss';
 

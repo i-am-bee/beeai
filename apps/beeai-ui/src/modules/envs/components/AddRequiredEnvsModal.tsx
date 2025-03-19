@@ -15,8 +15,8 @@
  */
 
 import { Modal } from '#components/Modal/Modal.tsx';
-import { ModalProps } from '#contexts/Modal/modal-context.ts';
-import { MissingEnvs } from '#modules/providers/api/types.ts';
+import type { ModalProps } from '#contexts/Modal/modal-context.ts';
+import type { MissingEnvs } from '#modules/providers/api/types.ts';
 import { Button, InlineLoading, ModalBody, ModalFooter, ModalHeader, TextInput } from '@carbon/react';
 import { useCallback } from 'react';
 import { useForm } from 'react-hook-form';

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Agent } from '#modules/agents/api/types.ts';
+import type { Agent } from '#modules/agents/api/types.ts';
 import groupBy from 'lodash/groupBy';
 import { ProviderSourcePrefixes } from './constants';
 

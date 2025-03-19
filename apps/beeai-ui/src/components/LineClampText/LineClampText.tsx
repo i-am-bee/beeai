@@ -16,7 +16,8 @@
 
 import { ExpandButton } from '#components/ExpandButton/ExpandButton.tsx';
 import clsx from 'clsx';
-import { CSSProperties, PropsWithChildren, useCallback, useEffect, useId, useRef, useState } from 'react';
+import type { CSSProperties, PropsWithChildren } from 'react';
+import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { useDebounceCallback } from 'usehooks-ts';
 import classes from './LineClampText.module.scss';
 

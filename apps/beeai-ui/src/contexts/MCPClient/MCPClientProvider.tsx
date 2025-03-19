@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import { PropsWithChildren, useEffect, useState } from 'react';
+import type { PropsWithChildren } from 'react';
+import { useEffect, useState } from 'react';
 import { MCPClientContext } from './mcp-client-context';
 import { useCreateMCPClient } from '#api/mcp-client/useCreateMCPClient.ts';
-import { Client as MCPClient } from '@i-am-bee/acp-sdk/client/index';
+import type { Client as MCPClient } from '@i-am-bee/acp-sdk/client/index';
 
 export function MCPClientProvider({ children }: PropsWithChildren) {
   const [client, setClient] = useState<MCPClient | null>(null);

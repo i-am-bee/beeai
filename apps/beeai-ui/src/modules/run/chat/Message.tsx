@@ -20,7 +20,7 @@ import clsx from 'clsx';
 import { AgentIcon } from '../components/AgentIcon';
 import { useChat } from '../contexts/chat';
 import classes from './Message.module.scss';
-import { ChatMessage } from './types';
+import type { ChatMessage } from './types';
 import { UserIcon } from './UserIcon';
 
 interface Props {

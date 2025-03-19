@@ -18,16 +18,18 @@ import { useHandleError } from '#hooks/useHandleError.ts';
 import { usePrevious } from '#hooks/usePrevious.ts';
 import { useListAgents } from '#modules/agents/api/queries/useListAgents.ts';
 import { useRunAgent } from '#modules/run/api/mutations/useRunAgent.tsx';
-import { TextResult } from '#modules/run/api/types.ts';
+import type { TextResult } from '#modules/run/api/types.ts';
 import { isNotNull } from '#utils/helpers.ts';
-import { PropsWithChildren, useCallback, useEffect, useMemo, useRef } from 'react';
+import type { PropsWithChildren } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { useSearchParams } from 'react-router';
 import { SEQUENTIAL_COMPOSE_AGENT_NAME } from '../sequential/constants';
-import { SequentialWorkflowInput } from '../sequential/types';
+import type { SequentialWorkflowInput } from '../sequential/types';
 import { getSequentialComposeAgent } from '../sequential/utils';
-import { ComposeNotificationDelta, ComposeNotificationSchema } from '../types';
-import { ComposeContext, ComposeStep, RunStatus, SequentialFormValues } from './compose-context';
+import type { ComposeNotificationDelta, ComposeNotificationSchema } from '../types';
+import type { ComposeStep, RunStatus, SequentialFormValues } from './compose-context';
+import { ComposeContext } from './compose-context';
 
 export function ComposeProvider({ children }: PropsWithChildren) {
   const { data: availableAgents } = useListAgents();

@@ -15,11 +15,12 @@
  */
 
 import { useCreateMCPClient } from '#api/mcp-client/useCreateMCPClient.ts';
-import { QueryMetadata } from '#contexts/QueryProvider/types.ts';
-import { Agent } from '#modules/agents/api/types.ts';
+import type { QueryMetadata } from '#contexts/QueryProvider/types.ts';
+import type { Agent } from '#modules/agents/api/types.ts';
 import { AgentRunProgressNotificationSchema } from '@i-am-bee/acp-sdk/types';
 import { useMutation } from '@tanstack/react-query';
-import z, { ZodLiteral, ZodObject } from 'zod';
+import type { ZodLiteral, ZodObject } from 'zod';
+import type z from 'zod';
 
 interface Props<
   NotificationsSchema extends ZodObject<{

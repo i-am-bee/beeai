@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { paths } from '#api/schema.js';
+import type { paths } from '#api/schema.js';
 
 export type ApiResponse<
   Path extends keyof paths,

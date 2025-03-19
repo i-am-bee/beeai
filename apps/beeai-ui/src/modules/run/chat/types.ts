@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { MessageInput } from '@i-am-bee/beeai-sdk/schemas/message';
+import type { MessageInput } from '@i-am-bee/beeai-sdk/schemas/message';
 
 export interface MessageBase {
   key: string;

@@ -17,7 +17,7 @@
 import { useMCPClient } from '#contexts/MCPClient/index.ts';
 import { useQuery } from '@tanstack/react-query';
 import { toolKeys } from '../keys';
-import { ListToolsParams } from '../types';
+import type { ListToolsParams } from '../types';
 
 interface Props {
   params?: ListToolsParams;

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { Updater } from '#hooks/useImmerWithGetter.ts';
-import { Agent } from '#modules/agents/api/types.ts';
-import { ChatMessage, SendMessageParams } from '#modules/run/chat/types.ts';
+import type { Updater } from '#hooks/useImmerWithGetter.ts';
+import type { Agent } from '#modules/agents/api/types.ts';
+import type { ChatMessage, SendMessageParams } from '#modules/run/chat/types.ts';
 import { createContext } from 'react';
 
 export const ChatContext = createContext<ChatContextValue | null>(null);

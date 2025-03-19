@@ -18,7 +18,8 @@ import { AnimateHeightChange } from '#components/AnimateHeightChange/AnimateHeig
 import { ChevronDown } from '@carbon/icons-react';
 import { IconButton } from '@carbon/react';
 import clsx from 'clsx';
-import { PropsWithChildren, useEffect, useRef, useState } from 'react';
+import type { PropsWithChildren } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import classes from './AgentRunLogItem.module.scss';
 
 export function AgentRunLogItem({ children }: PropsWithChildren) {

@@ -18,7 +18,7 @@ import { Container } from '#components/layouts/Container.tsx';
 import { MainContent } from '#components/layouts/MainContent.tsx';
 import { useScrollbarWidth } from '#hooks/useScrollbarWidth.ts';
 import clsx from 'clsx';
-import { CSSProperties, PropsWithChildren } from 'react';
+import type { CSSProperties, PropsWithChildren } from 'react';
 import { useHandsOff } from '../contexts/hands-off';
 import { HandsOffText } from './HandsOffText';
 import classes from './HandsOffView.module.scss';

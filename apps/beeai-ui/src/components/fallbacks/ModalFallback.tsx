@@ -17,7 +17,7 @@
 import { ModalBody, ModalFooter, ModalHeader } from '@carbon/react';
 import type { FallbackProps } from 'react-error-boundary';
 import { Modal } from '../Modal/Modal';
-import { ModalProps } from '#contexts/Modal/modal-context.ts';
+import type { ModalProps } from '#contexts/Modal/modal-context.ts';
 
 interface Props extends FallbackProps, ModalProps {}
 

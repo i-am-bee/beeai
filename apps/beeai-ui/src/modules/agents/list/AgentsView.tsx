@@ -19,12 +19,12 @@ import { TransitionLink } from '#components/TransitionLink/TransitionLink.tsx';
 import { routes } from '#utils/router.ts';
 import { useFormContext } from 'react-hook-form';
 import { useListAgents } from '../api/queries/useListAgents';
-import { Agent } from '../api/types';
+import type { Agent } from '../api/types';
 import { AgentCard } from '../components/AgentCard';
 import { AgentsFilters } from '../components/AgentsFilters';
 import { AgentsList } from '../components/AgentsList';
 import { ImportAgents } from '../components/ImportAgents';
-import { AgentsFiltersParams } from '../providers/AgentsFiltersProvider';
+import type { AgentsFiltersParams } from '../providers/AgentsFiltersProvider';
 
 export function AgentsView() {
   const { data, isPending, error, refetch, isRefetching } = useListAgents();

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { ListAgentsRequest, Agent as SdkAgent } from '@i-am-bee/acp-sdk/types';
-import { Metadata } from '@i-am-bee/beeai-sdk/schemas/metadata';
+import type { ListAgentsRequest, Agent as SdkAgent } from '@i-am-bee/acp-sdk/types';
+import type { Metadata } from '@i-am-bee/beeai-sdk/schemas/metadata';
 
 export type Agent = SdkAgent & Metadata;
 

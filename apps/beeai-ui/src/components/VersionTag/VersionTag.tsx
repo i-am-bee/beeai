@@ -16,7 +16,7 @@
 
 import { Tag } from '@carbon/react';
 import classes from './VersionTag.module.scss';
-import { ComponentProps, PropsWithChildren } from 'react';
+import type { ComponentProps, PropsWithChildren } from 'react';
 
 type Props = ComponentProps<typeof Tag>;
 

@@ -16,9 +16,9 @@
 
 import { ErrorMessage } from '#components/ErrorMessage/ErrorMessage.tsx';
 import { Modal } from '#components/Modal/Modal.tsx';
-import { ModalProps } from '#contexts/Modal/modal-context.ts';
+import type { ModalProps } from '#contexts/Modal/modal-context.ts';
 import { useCreateProvider } from '#modules/providers/api/mutations/useCreateProvider.ts';
-import { CreateProviderBody } from '#modules/providers/api/types.ts';
+import type { CreateProviderBody } from '#modules/providers/api/types.ts';
 import { ProviderSourcePrefixes } from '#modules/providers/constants.ts';
 import { useMonitorProvider } from '#modules/providers/hooks/useMonitorProviderStatus.ts';
 import { ProviderSource } from '#modules/providers/types.ts';

@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { IconProps } from '@carbon/icons-react/lib/Icon';
-import { ComponentType, createContext, ReactNode } from 'react';
+import type { IconProps } from '@carbon/icons-react/lib/Icon';
+import type { ComponentType, ReactNode } from 'react';
+import { createContext } from 'react';
 
 export interface Toast {
   /**

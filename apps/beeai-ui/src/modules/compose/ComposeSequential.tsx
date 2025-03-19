@@ -18,7 +18,7 @@ import { ComposeResult } from './components/ComposeResult';
 import { SequentialSetup } from './sequential/SequentialSetup';
 import classes from './ComposeSequential.module.scss';
 import { FormProvider, useForm } from 'react-hook-form';
-import { SequentialFormValues } from './contexts/compose-context';
+import type { SequentialFormValues } from './contexts/compose-context';
 import { ComposeProvider } from './contexts/ComposeProvider';
 
 export function ComposeSequential() {
