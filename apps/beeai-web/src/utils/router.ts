@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-export const ACP_CLIENT_SERVER_URL = process.env.ACP_CLIENT_SERVER_URL;
-
-export const NEXT_PHASE_BUILD =
-  process.env.NEXT_PHASE === "phase-production-build";
+export const routeDefinitions = {
+  home: "/" as const,
+  notFound: "/not-found" as const,
+  agents: `/agents` as const,
+  agentDetail: `/agents/[name]` as const,
+};

@@ -18,12 +18,27 @@ import { getAgentsList } from "@/acp/api";
 import { MainContent } from "@/layouts/MainContent";
 import { Container, ViewStack } from "@i-am-bee/beeai-ui";
 import { AgentsFilteredView } from "./AgentsFilteredView";
+import { initializeAgentRoutes } from "@/utils/initializeAgentRoutes";
+import { NEXT_PHASE_BUILD } from "@/constants";
 
-export const dynamic = "force-dynamic"; // Opt out of static generation
 export const revalidate = 600;
 
 export default async function AgentsPage() {
-  const agents = await getAgentsList();
+  let agents = null;
+
+  // Bypass API calls at build time since the ACP server is not reachable.
+  // The page is revalidated on the first request via `api/init-agents`.
+  // From then on, the proper agents list is loaded and revalidated every 10 minutes.
+  if (!NEXT_PHASE_BUILD) {
+    try {
+      agents = await getAgentsList();
+    } catch (error) {
+      initializeAgentRoutes();
+
+      console.error(error);
+    }
+  }
+
   return (
     <MainContent>
       <Container>

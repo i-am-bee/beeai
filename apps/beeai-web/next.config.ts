@@ -80,19 +80,6 @@ const nextConfig: NextConfig = {
     // https://github.com/vercel/next.js/issues/64921
     cssChunking: false,
   },
-  async headers() {
-    return [
-      {
-        source: "/agents/:path*",
-        headers: [
-          {
-            key: "Cache-Control",
-            value: "public, max-age=600",
-          },
-        ],
-      },
-    ];
-  },
 };
 
 export default nextConfig;

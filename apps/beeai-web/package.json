@@ -22,7 +22,8 @@
     "@i-am-bee/beeai-ui": "workspace:*",
     "clsx": "^2.1.1",
     "next": "15.1.7",
-    "server-only": "^0.0.1"
+    "server-only": "^0.0.1",
+    "undici": "^7.5.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.0",

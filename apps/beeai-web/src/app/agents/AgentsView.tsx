@@ -15,7 +15,6 @@
  */
 
 "use client";
-
 import { TransitionLink } from "@/components/TransitionLink/TransitionLink";
 import {
   type Agent,
@@ -27,7 +26,7 @@ import {
 import { useFormContext } from "react-hook-form";
 
 interface Props {
-  agents: Agent[];
+  agents: Agent[] | null;
 }
 
 export function AgentsView({ agents }: Props) {
@@ -36,15 +35,21 @@ export function AgentsView({ agents }: Props) {
 
   return (
     <>
-      <AgentsFilters agents={agents} />
-      <AgentsList agents={agents} filters={filters}>
+      {agents ? <AgentsFilters agents={agents} /> : <AgentsFilters.Skeleton />}
+      <AgentsList
+        agents={agents ?? undefined}
+        filters={filters}
+        isPending={agents == null}
+      >
         {(filteredAgents) =>
-          filteredAgents.map((agent) => (
-            <AgentCard
-              key={agent.name}
-              agent={agent}
-              renderTitle={renderAgentTitle}
-            />
+          filteredAgents.map((agent, idx) => (
+            <li key={idx}>
+              <AgentCard
+                key={agent.name}
+                agent={agent}
+                renderTitle={renderAgentTitle}
+              />
+            </li>
           ))
         }
       </AgentsList>

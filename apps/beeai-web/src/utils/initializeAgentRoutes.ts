@@ -14,7 +14,25 @@
  * limitations under the License.
  */
 
-export const ACP_CLIENT_SERVER_URL = process.env.ACP_CLIENT_SERVER_URL;
+import { revalidatePath } from "next/cache";
+import { routeDefinitions } from "./router";
+import { NEXT_PHASE_BUILD } from "@/constants";
 
-export const NEXT_PHASE_BUILD =
-  process.env.NEXT_PHASE === "phase-production-build";
+export let agentRoutesInitialized = false;
+
+export function initializeAgentRoutes() {
+  if (NEXT_PHASE_BUILD || agentRoutesInitialized) return;
+
+  try {
+    revalidatePath(routeDefinitions.agents, "page");
+    revalidatePath(routeDefinitions.agentDetail, "page");
+
+    agentRoutesInitialized = true;
+
+    return true;
+  } catch (error) {
+    console.error(error);
+  }
+
+  return agentRoutesInitialized;
+}

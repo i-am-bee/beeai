@@ -15,7 +15,6 @@
  */
 
 import { ErrorMessage } from '#components/ErrorMessage/ErrorMessage.tsx';
-import { SkeletonItems } from '#components/SkeletonItems/SkeletonItems.tsx';
 import { TransitionLink } from '#components/TransitionLink/TransitionLink.tsx';
 import { routes } from '#utils/router.ts';
 import { useFormContext } from 'react-hook-form';
@@ -44,24 +43,13 @@ export function AgentsView() {
       );
 
     return (
-      <AgentsList agents={data} filters={filters} action={<ImportAgents />}>
+      <AgentsList agents={data} filters={filters} action={<ImportAgents />} isPending={isPending}>
         {(filteredAgents) =>
-          !isPending ? (
-            filteredAgents?.map((agent, idx) => (
-              <li key={idx}>
-                <AgentCard agent={agent} renderTitle={renderAgentTitle} />
-              </li>
-            ))
-          ) : (
-            <SkeletonItems
-              count={5}
-              render={(idx) => (
-                <li key={idx}>
-                  <AgentCard.Skeleton />
-                </li>
-              )}
-            />
-          )
+          filteredAgents?.map((agent, idx) => (
+            <li key={idx}>
+              <AgentCard agent={agent} renderTitle={renderAgentTitle} />
+            </li>
+          ))
         }
       </AgentsList>
     );

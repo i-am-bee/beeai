@@ -23,15 +23,18 @@ import { useFilteredAgents } from '../hooks/useFilteredAgents';
 import { AgentsFiltersParams } from '../providers/AgentsFiltersProvider';
 import classes from './AgentsList.module.scss';
 import { Agent } from '../api/types';
+import { SkeletonItems } from '#components/SkeletonItems/SkeletonItems.tsx';
+import { AgentCard } from './AgentCard';
 
 interface Props {
   agents: Agent[] | undefined;
   filters: AgentsFiltersParams;
   action?: ReactNode;
+  isPending: boolean;
   children: (filteredAgents: Agent[]) => ReactNode;
 }
 
-export function AgentsList({ agents, filters, action, children }: Props) {
+export function AgentsList({ agents, filters, action, isPending, children }: Props) {
   const { filteredAgents, filteredCount } = useFilteredAgents({ agents: agents ?? [], filters });
   const totalCount = agents?.length;
   return (
@@ -50,7 +53,20 @@ export function AgentsList({ agents, filters, action, children }: Props) {
         {action}
       </div>
 
-      <ul className={classes.list}>{children(filteredAgents)}</ul>
+      <ul className={classes.list}>
+        {!isPending ? (
+          children(filteredAgents)
+        ) : (
+          <SkeletonItems
+            count={5}
+            render={(idx) => (
+              <li key={idx}>
+                <AgentCard.Skeleton />
+              </li>
+            )}
+          />
+        )}
+      </ul>
     </div>
   );
 }
