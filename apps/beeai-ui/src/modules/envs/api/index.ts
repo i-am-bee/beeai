@@ -22,7 +22,7 @@ export async function createEnv({ body }: { body: CreateEnvBody['env'] }) {
     body: { env: body },
   });
 
-  if (response.error) {
+  if (response.error != null) {
     throw new Error('Failed to create env variable.');
   }
 
@@ -36,7 +36,7 @@ export async function deleteEnv({ name }: { name: string }) {
     },
   });
 
-  if (response.error) {
+  if (response.error != null) {
     throw new Error('Failed to create env variable.');
   }
 
@@ -46,7 +46,7 @@ export async function deleteEnv({ name }: { name: string }) {
 export async function getEnvs() {
   const response = await api.GET('/api/v1/env');
 
-  if (response.error) {
+  if (response.error != null) {
     throw new Error('Failed to get envs.');
   }
 
