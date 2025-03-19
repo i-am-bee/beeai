@@ -28,7 +28,7 @@
 .footer {
   padding: 1rem;
 
-  @include breakpoint-up("xlg") {
+  @include breakpoint-up('xlg') {
     position: absolute;
     inset-inline-end: 0;
     inset-block-end: 0;
@@ -37,7 +37,7 @@
 
 .toTopButtonVisible {
   .footer {
-    @include breakpoint-down("xlg") {
+    @include breakpoint-down('xlg') {
       padding-inline-end: $spacing-09;
     }
   }

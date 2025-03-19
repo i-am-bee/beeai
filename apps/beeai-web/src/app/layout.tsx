@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import "../styles/style.scss";
-import type { Metadata } from "next";
-import AppLayout from "@/layouts/AppLayout";
-import Providers from "./providers";
-import { agentRoutesInitialized } from "@/utils/initializeAgentRoutes";
-import { AgentRoutesInitializer } from "@/components/AgentRoutesInitializer/AgentRoutesInitializer";
+import '../styles/style.scss';
+import type { Metadata } from 'next';
+import AppLayout from '@/layouts/AppLayout';
+import Providers from './providers';
+import { agentRoutesInitialized } from '@/utils/initializeAgentRoutes';
+import { AgentRoutesInitializer } from '@/components/AgentRoutesInitializer/AgentRoutesInitializer';
 
 const darkModeScript = `
 (() => {
@@ -40,7 +40,7 @@ const darkModeScript = `
 `;
 
 export const metadata: Metadata = {
-  title: "BeeAI",
+  title: 'BeeAI',
 };
 
 export default function RootLayout({
@@ -49,7 +49,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang='en' suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="icon" type="image/svg+xml" href="/bee.svg" />
 

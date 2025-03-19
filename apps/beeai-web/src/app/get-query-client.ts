@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  QueryClient,
-  defaultShouldDehydrateQuery,
-  isServer,
-} from "@tanstack/react-query";
+import { QueryClient, defaultShouldDehydrateQuery, isServer } from '@tanstack/react-query';
 
 function makeQueryClient() {
   return new QueryClient({
@@ -28,9 +24,7 @@ function makeQueryClient() {
       },
       dehydrate: {
         // include pending queries in dehydration
-        shouldDehydrateQuery: (query) =>
-          defaultShouldDehydrateQuery(query) ||
-          query.state.status === "pending",
+        shouldDehydrateQuery: (query) => defaultShouldDehydrateQuery(query) || query.state.status === 'pending',
       },
     },
   });

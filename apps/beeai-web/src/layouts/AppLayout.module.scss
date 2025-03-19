@@ -27,10 +27,10 @@
   inline-size: 100%;
   transition: opacity $duration-moderate-02;
 
-  &[data-route-transition="out"] {
+  &[data-route-transition='out'] {
     opacity: 0;
   }
-  &[data-route-transition="in"] {
+  &[data-route-transition='in'] {
     opacity: 1;
   }
 }

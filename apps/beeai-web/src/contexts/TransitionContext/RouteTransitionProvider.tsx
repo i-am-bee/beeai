@@ -14,18 +14,12 @@
  * limitations under the License.
  */
 
-import {
-  PropsWithChildren,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-} from "react";
-import { RouteTransitionContext } from "./context";
-import { usePathname } from "next/navigation";
-import { NavigateOptions } from "next/dist/shared/lib/app-router-context.shared-runtime";
-import { moderate02 } from "@carbon/motion";
-import { useRouter } from "@bprogress/next/app";
+import { PropsWithChildren, useCallback, useEffect, useMemo, useRef } from 'react';
+import { RouteTransitionContext } from './context';
+import { usePathname } from 'next/navigation';
+import { NavigateOptions } from 'next/dist/shared/lib/app-router-context.shared-runtime';
+import { moderate02 } from '@carbon/motion';
+import { useRouter } from '@bprogress/next/app';
 
 export function RouteTransitionProvider({ children }: PropsWithChildren) {
   const router = useRouter();
@@ -43,29 +37,26 @@ export function RouteTransitionProvider({ children }: PropsWithChildren) {
 
   useEffect(() => {
     if (transitionControlRef.current) {
-      transitionControlRef.current.element.setAttribute(
-        "data-route-transition",
-        "in"
-      );
+      transitionControlRef.current.element.setAttribute('data-route-transition', 'in');
       transitionControlRef.current = null;
     }
   }, [pathname]);
 
   const transitionTo = useCallback(
     async (href: string, options: NavigateOptions) => {
-      const element = document.querySelector("[data-route-transition]");
+      const element = document.querySelector('[data-route-transition]');
       if (!element || href === pathnameRef.current) {
         router.push(href, options);
         return;
       }
 
-      element.setAttribute("data-route-transition", "out");
+      element.setAttribute('data-route-transition', 'out');
       const sourcePathname = pathnameRef.current;
       setTimeout(() => {
         router.push(href, options);
 
         if (sourcePathname !== pathnameRef.current) {
-          element.setAttribute("data-route-transition", "in");
+          element.setAttribute('data-route-transition', 'in');
         } else {
           transitionControlRef.current = {
             sourcePath: sourcePathname,
@@ -74,16 +65,12 @@ export function RouteTransitionProvider({ children }: PropsWithChildren) {
         }
       }, duration);
     },
-    [router]
+    [router],
   );
 
   const value = useMemo(() => ({ transitionTo }), [transitionTo]);
 
-  return (
-    <RouteTransitionContext.Provider value={value}>
-      {children}
-    </RouteTransitionContext.Provider>
-  );
+  return <RouteTransitionContext.Provider value={value}>{children}</RouteTransitionContext.Provider>;
 }
 
 const duration = parseFloat(moderate02);

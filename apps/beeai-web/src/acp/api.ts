@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { cache } from "react";
-import { getAcpClient } from "./client";
+import { cache } from 'react';
+import { getAcpClient } from './client';
 
 export const getAgentsList = cache(async () => {
   let client: Awaited<ReturnType<typeof getAcpClient>> | undefined;

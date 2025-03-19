@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { initializeAgentRoutes } from "@/utils/initializeAgentRoutes";
-import { NextResponse } from "next/server";
+import { initializeAgentRoutes } from '@/utils/initializeAgentRoutes';
+import { NextResponse } from 'next/server';
 
 export async function GET() {
   const result = initializeAgentRoutes();
