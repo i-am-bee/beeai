@@ -15,6 +15,7 @@
 from __future__ import annotations
 
 import json
+from contextlib import suppress
 from typing import AsyncIterator
 
 import anyio
@@ -79,7 +80,8 @@ class ProviderService:
             raise ManifestLoadError(location=location, message=str(ex)) from ex
 
     async def delete_provider(self, *, location: ManifestLocation):
-        await location.resolve()
+        with suppress(ValueError):  # if provider is not fully resolved (e.g. file was deleted), try removing it anyway
+            await location.resolve()
         await self._repository.delete(provider_id=str(location))
         await self.sync()
 
