@@ -19,6 +19,3 @@ server = "composition.server:main"
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
-
-[tool.uv.sources]
-beeai-sdk = { path = "../../../packages/beeai-sdk", editable = true }
