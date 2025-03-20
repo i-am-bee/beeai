@@ -43,4 +43,5 @@ jobs:
         with:
           context: ./agents/${{ matrix.agent }}
           push: true
+          platforms: linux/amd64,linux/arm64
           tags: ghcr.io/${{ github.repository }}/${{ matrix.agent }}:${{ github.ref_name }},ghcr.io/${{ github.repository }}/${{ matrix.agent }}:latest
