@@ -22,7 +22,6 @@ jobs:
           - community/crewai-agents
           - community/gpt-researcher-agent
           - community/langgraph-agents
-          - community/open-deep-research-agent
 
     steps:
       - name: Checkout code
