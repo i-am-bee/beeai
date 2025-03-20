@@ -3,9 +3,16 @@
 ["beeai-web:check"]
 depends = ["beeai-web:check:*"]
 
+["beeai-web:check:next"]
+depends = ["setup:pnpm"]
+dir = "{{config_root}}/apps/beeai-web"
+run = "pnpm next lint"
+sources = ["src/**/*.js", "src/**/*.jsx", "src/**/*.ts", "src/**/*.tsx"]
+outputs = { auto = true }
+
 ["beeai-web:check:prettier"]
 depends = ["setup:pnpm"]
-dir = "{{config_root}}/apps/beeai-ui"
+dir = "{{config_root}}/apps/beeai-web"
 run = "pnpm prettier --log-level silent --check src"
 sources = ["src/**/*.js", "src/**/*.jsx", "src/**/*.ts", "src/**/*.tsx", "src/**/*.html", "src/**/*.css", "src/**/*.scss"]
 outputs = { auto = true }
@@ -18,7 +25,7 @@ sources = ["src/**/*.js", "src/**/*.jsx", "src/**/*.ts", "src/**/*.tsx"]
 outputs = { auto = true }
 
 ["beeai-web:check:tsc"]
-depends = ["setup:pnpm", "beeai-sdk:build:js", "acp-typescript-sdk:build"]
+depends = ["setup:pnpm", "beeai-sdk:build:js", "acp-typescript-sdk:build", "beeai-web:check:next"]
 dir = "{{config_root}}/apps/beeai-web"
 run = "pnpm tsc --noEmit -p tsconfig.json"
 sources = ["src/**/*.ts", "src/**/*.tsx"]
@@ -72,7 +79,7 @@ depends = ["setup:pnpm", "beeai-sdk:build:js", "acp-typescript-sdk:build"]
 dir = "{{config_root}}/apps/beeai-web"
 run = "pnpm build"
 sources = ["*.json", "*.js", "index.html", "src/**/*.tsx", "src/**/*.ts"]
-outputs = ["dist/**/*"]
+outputs = [".next/**/*"]
 
 # clean
 
