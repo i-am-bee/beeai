@@ -6,7 +6,7 @@ ENV UV_LINK_MODE=copy
 ADD . /app
 WORKDIR /app
 
-RUN --mount=type=cache,target=/root/.cache/uv uv sync
+RUN uv sync
 
 ENV API_BASE=http://host.docker.internal:11434 \
     PATH="/app/.venv/bin:$PATH"
