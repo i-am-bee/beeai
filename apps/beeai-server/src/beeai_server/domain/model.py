@@ -73,6 +73,7 @@ class BaseProvider(BaseModel, abc.ABC):
     manifestVersion: int
     mcpTransport: McpTransport = Field(default=McpTransport.sse, description="Valid for serverType http")
     mcpEndpoint: str = Field(default="/sse", description="Valid for serverType http")
+    serverType: Literal[ServerType.http] = ServerType.http
     ui: list[str] = Field(default_factory=list)
     env: list[EnvVar] = Field(default_factory=list, description="For configuration -- passed to the process")
 
@@ -112,7 +113,6 @@ class BaseProvider(BaseModel, abc.ABC):
 
 class UnmanagedProvider(BaseProvider):
     driver: Literal[ProviderDriver.unmanaged] = ProviderDriver.unmanaged
-    serverType: Literal[ServerType.http] = ServerType.http
     env: list[EnvVar] = Field(default_factory=list, description="Not supported for unmanaged provider", max_length=0)
 
     @asynccontextmanager
@@ -132,7 +132,6 @@ class UnmanagedProvider(BaseProvider):
 
 
 class ManagedProvider(BaseProvider, abc.ABC):
-    serverType: ServerType = ServerType.stdio
     command: list[str] = Field(description="Command with arguments to run")
 
     @property

@@ -1,0 +1,9 @@
+providers:
+  # Official
+  - url: git+https://github.com/i-am-bee/beeai@add-docker-provider-manifests#path=/agents/official/composition/beeai-provider-docker.yaml
+  # Community
+  - url: git+https://github.com/i-am-bee/beeai@add-docker-provider-manifests#path=/agents/community/gpt-researcher-agent/beeai-provider-docker.yaml
+  - url: git+https://github.com/i-am-bee/beeai@add-docker-provider-manifests#path=/agents/community/crewai-agents/beeai-provider-docker.yaml
+  - url: git+https://github.com/i-am-bee/beeai@add-docker-provider-manifests#path=/agents/community/langgraph-agents/beeai-provider-docker.yaml
+  - url: git+https://github.com/i-am-bee/beeai@add-docker-provider-manifests#path=/agents/community/aider-agent/beeai-provider-docker.yaml
+  - url: git+https://github.com/i-am-bee/beeai@add-docker-provider-manifests#path=/agents/community/autogen-agents/beeai-provider-docker.yaml

@@ -1,9 +1,7 @@
 manifestVersion: 1
-driver: python
-pythonVersion: "3.11"
-package: "git+https://github.com/i-am-bee/beeai.git@agents-v0.0.61#subdirectory=agents/community/aider-agent"
-serverType: http
-command: ["server"]
+driver: container
+image: ghcr.io/i-am-bee/beeai/community/aider-agent:agents-v0.0.64
+
 env:
 - name: LLM_MODEL
   required: false

@@ -1,8 +1,7 @@
 manifestVersion: 1
-driver: nodejs
-package: "git+https://github.com/i-am-bee/beeai@agents-v0.0.61#path=agents/official/beeai-framework"
-serverType: http
-command: ["server"]
+driver: container
+image: ghcr.io/i-am-bee/beeai/community/langgraph-agents:agents-v0.0.64
+
 env:
 - name: LLM_MODEL
   required: false
