@@ -16,7 +16,7 @@ dependencies = [
 ]
 
 [project.scripts]
-gpt-researcher-agent = "gpt_researcher_agent.agent:main"
+server = "gpt_researcher_agent.agent:main"
 
 [build-system]
 requires = ["hatchling"]

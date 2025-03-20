@@ -22,7 +22,7 @@ dependencies = [
 ]
 
 [project.scripts]
-langgraph-agents = "langgraph_agents.server:main"
+server = "langgraph_agents.server:main"
 
 [build-system]
 requires = ["hatchling"]

@@ -14,7 +14,7 @@ dependencies = [
 ]
 
 [project.scripts]
-composition-agent = "composition.server:main"
+server = "composition.server:main"
 
 [build-system]
 requires = ["hatchling"]

@@ -5,4 +5,4 @@ package: "git+https://github.com/i-am-bee/beeai@agents-v0.0.61#subdirectory=agen
 serverType: http
 mcpTransport: sse
 mcpEndpoint: /sse
-command: [ "composition-agent" ]
+command: [ "server" ]
