@@ -56,7 +56,7 @@ dependencies = [
 ]
 
 [project.scripts]
-open-deep-research-agent = "open_deep_research_agent.server:main"
+server = "open_deep_research_agent.server:main"
 
 [build-system]
 requires = ["hatchling"]

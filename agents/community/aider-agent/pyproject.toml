@@ -15,7 +15,7 @@ dependencies = [
 ]
 
 [project.scripts]
-aider-agent = "aider_agent.agent:main"
+server = "aider_agent.agent:main"
 
 [build-system]
 requires = ["hatchling"]
