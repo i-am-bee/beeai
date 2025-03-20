@@ -14,47 +14,14 @@
  * limitations under the License.
  */
 
-import { routes } from '#utils/router.js';
-import clsx from 'clsx';
-import type { PropsWithChildren, UIEventHandler } from 'react';
-import { useCallback, useRef, useState } from 'react';
+import type { MainContentViewProps } from '#components/MainContentView/MainContentView.tsx';
+import { MainContentView } from '#components/MainContentView/MainContentView.tsx';
+import { routes } from '#utils/router.ts';
 import { useLocation } from 'react-router';
-import { ToTopButton } from '../ToTopButton/ToTopButton';
-import classes from './MainContent.module.scss';
 
-interface Props {
-  spacing?: 'md' | 'lg' | false;
-  className?: string;
-}
-
-export function MainContent({ spacing = 'lg', className, children }: PropsWithChildren<Props>) {
-  const mainRef = useRef<HTMLDivElement>(null);
-  const [isScrolled, setIsScrolled] = useState(false);
-
+export function MainContent({ ...props }: MainContentViewProps) {
   const { pathname } = useLocation();
   const isAgentsRoute = pathname === routes.agents();
 
-  const handleScroll: UIEventHandler = useCallback((event) => {
-    const { scrollTop } = event.currentTarget;
-
-    setIsScrolled(scrollTop > SCROLLED_OFFSET);
-  }, []);
-
-  const handleToTopClick = useCallback(() => {
-    const mainElement = mainRef.current;
-
-    if (mainElement) {
-      mainElement.scrollTo({ top: 0 });
-    }
-  }, []);
-
-  return (
-    <div ref={mainRef} className={clsx(classes.root, spacing && classes[spacing], className)} onScroll={handleScroll}>
-      {children}
-
-      {isAgentsRoute && isScrolled && <ToTopButton onClick={handleToTopClick} />}
-    </div>
-  );
+  return <MainContentView enableToTopButton={isAgentsRoute} {...props} />;
 }
-
-const SCROLLED_OFFSET = 48;

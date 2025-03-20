@@ -17,13 +17,14 @@
 .container {
   display: flex;
   justify-content: center;
-  padding-block: $spacing-07;
-  padding-inline: $spacing-07;
+  padding-block: $spacing-05;
+  padding-inline: $spacing-05;
   border-radius: $border-radius-lg;
   background: $hero-background;
   transition: padding 0.2s;
 
   @include breakpoint-up(md) {
+    padding-block: $spacing-07;
     padding-inline: $spacing-11;
   }
 }

@@ -30,7 +30,6 @@ $max-container: get-value($grid-breakpoints, 'max.width');
 .leftPane,
 .rightPane {
   @include scrollbar();
-  overflow-y: auto;
   min-inline-size: 0;
   padding: $grid-margin;
   display: flex;

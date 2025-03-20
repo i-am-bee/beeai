@@ -15,7 +15,6 @@
  */
 
 .root {
-  padding-block-start: $spacing-05;
   display: flex;
   flex-direction: column;
 
@@ -71,5 +70,11 @@
     font-weight: 600;
     line-height: rem(20px);
     letter-spacing: $letter-spacing-lg;
+  }
+}
+
+@include breakpoint-up(md) {
+  .root {
+    padding-block-start: $spacing-05;
   }
 }

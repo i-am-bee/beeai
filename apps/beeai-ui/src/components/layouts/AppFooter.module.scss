@@ -18,8 +18,20 @@
   display: flex;
   column-gap: $gap;
   justify-content: space-between;
-  align-items: center;
-  padding-block: $spacing-05;
+  align-items: flex-end;
+  padding-block: $spacing-05 $spacing-06;
+}
+
+.copyright {
+  font-size: rem(12px);
+  line-height: math.div(16, 12);
+  color: $text-helper;
+  a {
+    color: inherit;
+    &:hover {
+      text-decoration: none;
+    }
+  }
 }
 
 .communityNav {

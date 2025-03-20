@@ -47,7 +47,7 @@ export function AgentLaunchButton({ agent }: Props) {
       {...(isEmpty(missingEnvs)
         ? {
             as: TransitionLink,
-            to: routes.agentRun({ name: agent.name }),
+            href: routes.agentRun({ name: agent.name }),
           }
         : {
             onClick: () => {
