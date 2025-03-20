@@ -14,19 +14,14 @@
  * limitations under the License.
  */
 
-"use client";
+'use client';
 
-import { PropsWithChildren } from "react";
-import { ProgressProvider } from "@bprogress/next/app";
+import { PropsWithChildren } from 'react';
+import { ProgressProvider } from '@bprogress/next/app';
 
 export function ProgressBarProvider({ children }: PropsWithChildren) {
   return (
-    <ProgressProvider
-      color="#0f62fe"
-      height="3px"
-      options={{ showSpinner: false }}
-      shallowRouting
-    >
+    <ProgressProvider color="#0f62fe" height="3px" options={{ showSpinner: false }} shallowRouting>
       {children}
     </ProgressProvider>
   );

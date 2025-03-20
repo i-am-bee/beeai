@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-"use client";
-import { InitAgentRoutesResponse } from "@/app/api/init-agents/route";
-import { usePathname, useRouter } from "next/navigation";
-import { useEffect } from "react";
+'use client';
+import { InitAgentRoutesResponse } from '@/app/api/init-agents/route';
+import { usePathname, useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 interface Props {
   initialized: boolean;
@@ -29,10 +29,10 @@ export function AgentRoutesInitializer({ initialized }: Props) {
 
   useEffect(() => {
     if (!initialized)
-      fetch("/api/init-agents")
+      fetch('/api/init-agents')
         .then((response) => response.json())
         .then((data: InitAgentRoutesResponse) => {
-          if (path.startsWith("/agents") && data.result) {
+          if (path.startsWith('/agents') && data.result) {
             router.refresh();
           }
         });

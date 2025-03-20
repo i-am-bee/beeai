@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import { NavigateOptions } from "next/dist/shared/lib/app-router-context.shared-runtime";
-import { createContext } from "react";
+import { NavigateOptions } from 'next/dist/shared/lib/app-router-context.shared-runtime';
+import { createContext } from 'react';
 
 interface RouteTransitionContextValue {
   transitionTo: (href: string, options: NavigateOptions) => Promise<void>;
 }
 
-export const RouteTransitionContext =
-  createContext<RouteTransitionContextValue>(
-    null as unknown as RouteTransitionContextValue
-  );
+export const RouteTransitionContext = createContext<RouteTransitionContextValue>(
+  null as unknown as RouteTransitionContextValue,
+);

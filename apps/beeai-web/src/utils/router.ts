@@ -15,8 +15,8 @@
  */
 
 export const routeDefinitions = {
-  home: "/" as const,
-  notFound: "/not-found" as const,
+  home: '/' as const,
+  notFound: '/not-found' as const,
   agents: `/agents` as const,
   agentDetail: `/agents/[name]` as const,
 };

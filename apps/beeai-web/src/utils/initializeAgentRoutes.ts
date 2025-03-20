@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { revalidatePath } from "next/cache";
-import { routeDefinitions } from "./router";
-import { NEXT_PHASE_BUILD } from "@/constants";
+import { revalidatePath } from 'next/cache';
+import { routeDefinitions } from './router';
+import { NEXT_PHASE_BUILD } from '@/constants';
 
 export let agentRoutesInitialized = false;
 
@@ -24,8 +24,8 @@ export function initializeAgentRoutes() {
   if (NEXT_PHASE_BUILD || agentRoutesInitialized) return;
 
   try {
-    revalidatePath(routeDefinitions.agents, "page");
-    revalidatePath(routeDefinitions.agentDetail, "page");
+    revalidatePath(routeDefinitions.agents, 'page');
+    revalidatePath(routeDefinitions.agentDetail, 'page');
 
     agentRoutesInitialized = true;
 

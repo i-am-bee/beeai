@@ -14,16 +14,10 @@
  * limitations under the License.
  */
 
-"use client";
-import { TransitionLink } from "@/components/TransitionLink/TransitionLink";
-import {
-  type Agent,
-  type AgentsFiltersParams,
-  AgentsFilters,
-  AgentsList,
-  AgentCard,
-} from "@i-am-bee/beeai-ui";
-import { useFormContext } from "react-hook-form";
+'use client';
+import { TransitionLink } from '@/components/TransitionLink/TransitionLink';
+import { type Agent, type AgentsFiltersParams, AgentsFilters, AgentsList, AgentCard } from '@i-am-bee/beeai-ui';
+import { useFormContext } from 'react-hook-form';
 
 interface Props {
   agents: Agent[] | null;
@@ -36,19 +30,11 @@ export function AgentsView({ agents }: Props) {
   return (
     <>
       {agents ? <AgentsFilters agents={agents} /> : <AgentsFilters.Skeleton />}
-      <AgentsList
-        agents={agents ?? undefined}
-        filters={filters}
-        isPending={agents == null}
-      >
+      <AgentsList agents={agents ?? undefined} filters={filters} isPending={agents == null}>
         {(filteredAgents) =>
           filteredAgents.map((agent, idx) => (
             <li key={idx}>
-              <AgentCard
-                key={agent.name}
-                agent={agent}
-                renderTitle={renderAgentTitle}
-              />
+              <AgentCard key={agent.name} agent={agent} renderTitle={renderAgentTitle} />
             </li>
           ))
         }

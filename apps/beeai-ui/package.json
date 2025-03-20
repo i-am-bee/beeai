@@ -7,8 +7,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "check": "prettier --log-level silent --check src && eslint src && tsc --noEmit -p tsconfig.app.json && stylelint src/styles",
-    "fix": "prettier --log-level silent --write src && eslint --fix src && stylelint --fix=lax src/styles",
+    "check": "prettier --log-level silent --check src && eslint src && tsc --noEmit -p tsconfig.app.json && stylelint src/**/*.css src/**/*.scss",
+    "fix": "prettier --log-level silent --write src && eslint --fix src && stylelint --fix=lax src/**/*.css src/**/*.scss",
     "preview": "vite preview",
     "clean": "rm -rf node_modules && rm -rf dist",
     "schema:generate": "pnpm dlx openapi-typescript 'http://localhost:8333/api/v1/openapi.json' -o ./src/api/schema.d.ts --alphabetize"

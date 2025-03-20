@@ -1,94 +1,88 @@
 # check
 
-["beeai-ui:check"]
-depends = ["beeai-ui:check:*"]
+["beeai-web:check"]
+depends = ["beeai-web:check:*"]
 
-["beeai-ui:check:prettier"]
+["beeai-web:check:next"]
 depends = ["setup:pnpm"]
-dir = "{{config_root}}/apps/beeai-ui"
+dir = "{{config_root}}/apps/beeai-web"
+run = "pnpm next lint"
+sources = ["src/**/*.js", "src/**/*.jsx", "src/**/*.ts", "src/**/*.tsx"]
+outputs = { auto = true }
+
+["beeai-web:check:prettier"]
+depends = ["setup:pnpm"]
+dir = "{{config_root}}/apps/beeai-web"
 run = "pnpm prettier --log-level silent --check src"
 sources = ["src/**/*.js", "src/**/*.jsx", "src/**/*.ts", "src/**/*.tsx", "src/**/*.html", "src/**/*.css", "src/**/*.scss"]
 outputs = { auto = true }
 
-["beeai-ui:check:eslint"]
+["beeai-web:check:eslint"]
 depends = ["setup:pnpm"]
-dir = "{{config_root}}/apps/beeai-ui"
+dir = "{{config_root}}/apps/beeai-web"
 run = "pnpm eslint src"
 sources = ["src/**/*.js", "src/**/*.jsx", "src/**/*.ts", "src/**/*.tsx"]
 outputs = { auto = true }
 
-["beeai-ui:check:tsc"]
-depends = ["setup:pnpm", "beeai-sdk:build:js", "acp-typescript-sdk:build"]
-dir = "{{config_root}}/apps/beeai-ui"
-run = "pnpm tsc --noEmit -p tsconfig.app.json"
+["beeai-web:check:tsc"]
+depends = ["setup:pnpm", "beeai-sdk:build:js", "acp-typescript-sdk:build", "beeai-web:check:next"]
+dir = "{{config_root}}/apps/beeai-web"
+run = "pnpm tsc --noEmit -p tsconfig.json"
 sources = ["src/**/*.ts", "src/**/*.tsx"]
 outputs = { auto = true }
 
-["beeai-ui:check:stylelint"]
+["beeai-web:check:stylelint"]
 depends = ["setup:pnpm"]
-dir = "{{config_root}}/apps/beeai-ui"
+dir = "{{config_root}}/apps/beeai-web"
 run = "pnpm stylelint src/**/*.css src/**/*.scss"
 sources = ["src/**/*.css", "src/**/*.scss"]
 outputs = { auto = true }
 
 # fix
 
-["beeai-ui:fix"]
-depends = ["beeai-ui:fix:*"]
+["beeai-web:fix"]
+depends = ["beeai-web:fix:*"]
 
-["beeai-ui:fix:prettier"]
+["beeai-web:fix:prettier"]
 depends = ["setup:pnpm"]
-dir = "{{config_root}}/apps/beeai-ui"
+dir = "{{config_root}}/apps/beeai-web"
 run = "pnpm prettier --log-level silent --write src"
 sources = ["src/**/*.js", "src/**/*.jsx", "src/**/*.ts", "src/**/*.tsx", "src/**/*.html", "src/**/*.css", "src/**/*.scss"]
 outputs = { auto = true }
 
-["beeai-ui:fix:eslint"]
+["beeai-web:fix:eslint"]
 depends = ["setup:pnpm"]
-dir = "{{config_root}}/apps/beeai-ui"
+dir = "{{config_root}}/apps/beeai-web"
 run = "pnpm eslint --fix src"
 sources = ["src/**/*.js", "src/**/*.jsx", "src/**/*.ts", "src/**/*.tsx"]
 outputs = { auto = true }
 
-["beeai-ui:fix:stylelint"]
+["beeai-web:fix:stylelint"]
 depends = ["setup:pnpm"]
-dir = "{{config_root}}/apps/beeai-ui"
+dir = "{{config_root}}/apps/beeai-web"
 run = "pnpm stylelint --fix=lax src/**/*.css src/**/*.scss"
 sources = ["src/**/*.css", "src/**/*.scss"]
 outputs = { auto = true }
 
 # run
 
-["beeai-ui:run"]
+["beeai-web:run"]
 description = "NOTE: You also need to have `beeai-server` running for the backend"
 depends = ["setup:pnpm", "beeai-sdk:build:js", "acp-typescript-sdk:build"]
-dir = "{{config_root}}/apps/beeai-ui"
+dir = "{{config_root}}/apps/beeai-web"
 run = "pnpm dev"
 
 # build
 
-["beeai-ui:build"]
+["beeai-web:build"]
 depends = ["setup:pnpm", "beeai-sdk:build:js", "acp-typescript-sdk:build"]
-dir = "{{config_root}}/apps/beeai-ui"
+dir = "{{config_root}}/apps/beeai-web"
 run = "pnpm build"
 sources = ["*.json", "*.js", "index.html", "src/**/*.tsx", "src/**/*.ts"]
-outputs = ["dist/**/*"]
-
-# preview
-
-["beeai-ui:preview"]
-depends = ["setup:pnpm", "beeai-sdk:build:js", "acp-typescript-sdk:build"]
-dir = "{{config_root}}/apps/beeai-ui"
-run = "pnpm preview"
+outputs = [".next/**/*"]
 
 # clean
 
-["beeai-ui:clean"]
-dir = "{{config_root}}/apps/beeai-ui"
-run = "rm -rf ./dist"
-
-# schema
-
-["beeai-ui:schema:generate"]
-dir = "{{config_root}}/apps/beeai-ui"
-run = "pnpm schema:generate"
+["beeai-web:clean"]
+dir = "{{config_root}}/apps/beeai-web"
+run = "rm -rf ./.next"

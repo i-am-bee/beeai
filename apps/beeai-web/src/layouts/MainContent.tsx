@@ -14,19 +14,13 @@
  * limitations under the License.
  */
 
-"use client";
+'use client';
 
-import { AppFooter, ToTopButton } from "@i-am-bee/beeai-ui";
-import clsx from "clsx";
-import { usePathname } from "next/navigation";
-import {
-  type PropsWithChildren,
-  type UIEventHandler,
-  useCallback,
-  useRef,
-  useState,
-} from "react";
-import classes from "./MainContent.module.scss";
+import { AppFooter, ToTopButton } from '@i-am-bee/beeai-ui';
+import clsx from 'clsx';
+import { usePathname } from 'next/navigation';
+import { type PropsWithChildren, type UIEventHandler, useCallback, useRef, useState } from 'react';
+import classes from './MainContent.module.scss';
 
 interface Props {
   className?: string;
@@ -36,7 +30,7 @@ export function MainContent({ className, children }: PropsWithChildren<Props>) {
   const mainRef = useRef<HTMLDivElement>(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const pathname = usePathname();
-  const isAgentsRoute = pathname === "/agents";
+  const isAgentsRoute = pathname === '/agents';
 
   const handleScroll: UIEventHandler = useCallback((event) => {
     const { scrollTop } = event.currentTarget;
