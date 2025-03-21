@@ -16,20 +16,17 @@
 
 import { useAutoScroll } from '#hooks/useAutoScroll.ts';
 import { AgentOutputBox } from '#modules/run/components/AgentOutputBox.tsx';
-import clsx from 'clsx';
 import { useCompose } from '../contexts';
-import classes from './ComposeResult.module.scss';
 
 export function ComposeResult() {
   const { result, status } = useCompose();
   const { ref: autoScrollRef } = useAutoScroll([result]);
 
   return (
-    <div className={clsx(classes.root, { [classes.expanded]: Boolean(result) })}>
-      <div className={classes.content}>
-        <AgentOutputBox text={result} isPending={status === 'pending'} scrollable />
-      </div>
+    <>
+      <AgentOutputBox text={result} isPending={status === 'pending'} />
+
       <div ref={autoScrollRef} />
-    </div>
+    </>
   );
 }

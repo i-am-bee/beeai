@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-.root {
-  @include scrollbar();
-  block-size: 100%;
-  inline-size: 100%;
-  overflow-x: hidden;
-  overflow-y: auto;
-  scrollbar-gutter: stable;
-  &.md {
-    padding-block: $spacing-07;
-  }
-  &.lg {
-    padding-block: $spacing-09;
-  }
+import { SplitPanesView } from '#components/SplitPanesView/SplitPanesView.tsx';
+import { useCompose } from '../contexts';
+import { SequentialSetup } from '../sequential/SequentialSetup';
+import { ComposeResult } from './ComposeResult';
+
+export function ComposeView() {
+  const { result } = useCompose();
+
+  return <SplitPanesView leftPane={<SequentialSetup />} rightPane={<ComposeResult />} isSplit={Boolean(result)} />;
 }

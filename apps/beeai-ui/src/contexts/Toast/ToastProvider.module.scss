@@ -24,7 +24,6 @@
   inset-inline-end: $spacing-05;
   max-block-size: calc(100% - rem(49px));
   padding: $spacing-05;
-  overflow-y: auto;
   z-index: z('modal') + 1;
   pointer-events: none;
 

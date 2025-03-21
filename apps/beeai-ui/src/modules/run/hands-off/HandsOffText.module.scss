@@ -16,7 +16,6 @@
 
 .root {
   @include scrollbar();
-  overflow-y: auto;
   background-color: $layer;
   padding: $spacing-08 $spacing-07 $spacing-07;
   border-radius: $border-radius;

@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-import { ComposeResult } from './components/ComposeResult';
-import { SequentialSetup } from './sequential/SequentialSetup';
-import classes from './ComposeSequential.module.scss';
 import { FormProvider, useForm } from 'react-hook-form';
+import { ComposeView } from './components/ComposeView';
 import type { SequentialFormValues } from './contexts/compose-context';
 import { ComposeProvider } from './contexts/ComposeProvider';
 
@@ -30,10 +28,7 @@ export function ComposeSequential() {
   return (
     <FormProvider {...formReturn}>
       <ComposeProvider>
-        <div className={classes.root}>
-          <SequentialSetup />
-          <ComposeResult />
-        </div>
+        <ComposeView />
       </ComposeProvider>
     </FormProvider>
   );

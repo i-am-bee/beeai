@@ -16,51 +16,13 @@
 
 'use client';
 
-import { AppFooter, ToTopButton } from '@i-am-bee/beeai-ui';
-import clsx from 'clsx';
+import type { MainContentViewProps } from '@i-am-bee/beeai-ui';
+import { MainContentView } from '@i-am-bee/beeai-ui';
 import { usePathname } from 'next/navigation';
-import { type PropsWithChildren, type UIEventHandler, useCallback, useRef, useState } from 'react';
-import classes from './MainContent.module.scss';
 
-interface Props {
-  className?: string;
-}
-
-export function MainContent({ className, children }: PropsWithChildren<Props>) {
-  const mainRef = useRef<HTMLDivElement>(null);
-  const [isScrolled, setIsScrolled] = useState(false);
+export function MainContent({ ...props }: MainContentViewProps) {
   const pathname = usePathname();
   const isAgentsRoute = pathname === '/agents';
 
-  const handleScroll: UIEventHandler = useCallback((event) => {
-    const { scrollTop } = event.currentTarget;
-
-    setIsScrolled(scrollTop > SCROLLED_OFFSET);
-  }, []);
-
-  const handleToTopClick = useCallback(() => {
-    const mainElement = mainRef.current;
-
-    if (mainElement) {
-      mainElement.scrollTo({ top: 0 });
-    }
-  }, []);
-
-  const toTopButtonVisible = isAgentsRoute && isScrolled;
-
-  return (
-    <div
-      ref={mainRef}
-      className={clsx(classes.root, className, {
-        [classes.toTopButtonVisible]: toTopButtonVisible,
-      })}
-      onScroll={handleScroll}
-    >
-      {children}
-      {toTopButtonVisible && <ToTopButton onClick={handleToTopClick} />}
-      <AppFooter className={classes.footer} showThemeToggle={false} />
-    </div>
-  );
+  return <MainContentView enableToTopButton={isAgentsRoute} showFooter {...props} />;
 }
-
-const SCROLLED_OFFSET = 48;

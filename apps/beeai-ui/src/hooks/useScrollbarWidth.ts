@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+'use client';
+
 import type { RefCallback } from 'react';
 import { useCallback, useEffect, useState } from 'react';
 import { useDebounceCallback } from 'usehooks-ts';

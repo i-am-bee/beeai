@@ -17,19 +17,17 @@
 import { DownloadButton } from '#components/DownloadButton/DownloadButton.tsx';
 import { MarkdownContent } from '#components/MarkdownContent/MarkdownContent.tsx';
 import { CopyButton } from '@carbon/react';
-import clsx from 'clsx';
 import classes from './AgentOutputBox.module.scss';
 
 interface Props {
   isPending: boolean;
   text?: string;
   downloadFileName?: string;
-  scrollable?: boolean;
 }
 
-export function AgentOutputBox({ isPending, text, downloadFileName, scrollable }: Props) {
+export function AgentOutputBox({ isPending, text, downloadFileName }: Props) {
   return text ? (
-    <div className={clsx(classes.root, { [classes.scrollable]: scrollable })}>
+    <div className={classes.root}>
       {!isPending && (
         <div className={classes.actions}>
           <CopyButton kind="ghost" align="left" onClick={() => navigator.clipboard.writeText(text)} />

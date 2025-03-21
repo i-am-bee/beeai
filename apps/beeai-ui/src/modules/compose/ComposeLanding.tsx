@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import { MainContent } from '#components/layouts/MainContent.tsx';
-import { Container } from '#components/layouts/Container.tsx';
-import classes from './ComposeLanding.module.scss';
-import { VersionTag } from '#components/VersionTag/VersionTag.tsx';
-import { routes } from '#utils/router.ts';
 import { TransitionLink } from '#components/TransitionLink/TransitionLink.tsx';
+import { VersionTag } from '#components/VersionTag/VersionTag.tsx';
+import { Container } from '#components/layouts/Container.tsx';
+import { MainContent } from '#components/layouts/MainContent.tsx';
+import { routes } from '#utils/router.ts';
+import { ArrowRight } from '@carbon/icons-react';
+import { Button } from '@carbon/react';
+import { useState } from 'react';
+import classes from './ComposeLanding.module.scss';
 import SequentialIllustration from './assets/sequential.svg';
 import SupervisorIllustration from './assets/supervisor.svg';
-import { useState } from 'react';
-import { Button } from '@carbon/react';
-import { ArrowRight } from '@carbon/icons-react';
 
 export function ComposeLanding() {
   const [selected, setSelected] = useState<Workflow>(WORKFLOWS.at(0)!);
@@ -61,7 +61,7 @@ export function ComposeLanding() {
         </ul>
 
         <div className={classes.actionBar}>
-          <TransitionLink to={selected.route} asChild>
+          <TransitionLink href={selected.route} asChild>
             <Button renderIcon={ArrowRight} href={selected.route} className={classes.startBtn}>
               Start composing
             </Button>

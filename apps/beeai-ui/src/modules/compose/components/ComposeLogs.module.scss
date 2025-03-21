@@ -153,8 +153,6 @@
 .logs {
   @include scrollbar();
   max-block-size: 40vh;
-  overflow-y: auto;
-  overflow-x: hidden;
   display: flex;
   flex-direction: column;
   padding-block-end: $spacing-05;

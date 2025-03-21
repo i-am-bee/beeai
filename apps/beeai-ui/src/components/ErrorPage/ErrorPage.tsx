@@ -19,8 +19,8 @@ import { routes } from '#utils/router.ts';
 import { ArrowRight } from '@carbon/icons-react';
 import { Button } from '@carbon/react';
 import { Container } from '../layouts/Container';
-import classes from './ErrorPage.module.scss';
 import { TransitionLink } from '../TransitionLink/TransitionLink';
+import classes from './ErrorPage.module.scss';
 
 export function ErrorPage() {
   return (
@@ -32,7 +32,7 @@ export function ErrorPage() {
 
         <p className={classes.description}>We couldn’t find the page you are looking for.</p>
 
-        <Button as={TransitionLink} to={routes.home()} renderIcon={ArrowRight} className={classes.button}>
+        <Button as={TransitionLink} href={routes.home()} renderIcon={ArrowRight} className={classes.button}>
           Buzz back to safety!
         </Button>
       </Container>

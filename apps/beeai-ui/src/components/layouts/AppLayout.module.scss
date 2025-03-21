@@ -17,11 +17,10 @@
 .root {
   display: grid;
   block-size: 100dvh;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: auto 1fr;
   grid-template-areas:
     'header'
-    'main'
-    'footer';
+    'main';
 }
 
 .header {
@@ -33,8 +32,4 @@
   display: flex;
   overflow: hidden;
   view-transition-name: main;
-}
-
-.footer {
-  grid-area: footer;
 }

@@ -14,22 +14,28 @@
  * limitations under the License.
  */
 
-import { ThemeToggle } from '#components/ThemeToggle/ThemeToggle.tsx';
 import { CommunityNav } from '../CommunityNav/CommunityNav';
 import classes from './AppFooter.module.scss';
 import { Container } from './Container';
 
 interface Props {
   className?: string;
-  showThemeToggle?: boolean;
 }
 
-export function AppFooter({ className, showThemeToggle = true }: Props) {
+export function AppFooter({ className }: Props) {
   return (
     <footer className={className}>
       <Container size="max">
         <div className={classes.holder}>
-          {showThemeToggle && <ThemeToggle />}
+          <p className={classes.copyright}>
+            Copyright © BeeAI a Series of LF Projects, LLC
+            <br />
+            For web site terms of use, trademark policy and other project policies please see{' '}
+            <a href="https://lfprojects.org/" target="_blank" rel="noreferrer">
+              https://lfprojects.org/
+            </a>
+            .
+          </p>
 
           <CommunityNav className={classes.communityNav} />
         </div>

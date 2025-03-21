@@ -14,21 +14,17 @@
  * limitations under the License.
  */
 
-import { MainNav } from '#components/MainNav/MainNav.tsx';
 import { UserNav } from '#components/UserNav/UserNav.tsx';
-import { routes } from '#utils/router.js';
-import { Outlet, useLocation } from 'react-router';
-import { AppFooter } from './AppFooter';
+import { Outlet } from 'react-router';
 import { AppHeader } from './AppHeader';
 import classes from './AppLayout.module.scss';
+import { Navigation } from './Navigation';
 
 export function AppLayout() {
-  const { pathname } = useLocation();
-  const isHomeRoute = pathname === routes.home();
   return (
     <div className={classes.root}>
       <AppHeader className={classes.header}>
-        <MainNav />
+        <Navigation />
 
         <UserNav />
       </AppHeader>
@@ -36,8 +32,6 @@ export function AppLayout() {
       <main className={classes.main} data-transition>
         <Outlet />
       </main>
-
-      {isHomeRoute && <AppFooter className={classes.footer} />}
     </div>
   );
 }

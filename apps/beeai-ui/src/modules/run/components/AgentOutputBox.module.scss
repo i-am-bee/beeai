@@ -19,11 +19,6 @@
   padding: $spacing-08 $spacing-07 $spacing-07;
   border-radius: $border-radius;
   position: relative;
-  &.scrollable {
-    @include scrollbar();
-    overflow-y: auto;
-    max-block-size: 100%;
-  }
 }
 
 .actions {
