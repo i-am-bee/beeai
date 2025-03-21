@@ -14,9 +14,20 @@
  * limitations under the License.
  */
 
-.root {
-  display: grid;
-  grid-template-columns: 1fr max-content;
-  inline-size: 100%;
-  overflow: hidden;
+import { SplitPanesView } from '#components/SplitPanesView/SplitPanesView.tsx';
+import { useCompose } from '../contexts';
+import { SequentialSetup } from '../sequential/SequentialSetup';
+import { ComposeResult } from './ComposeResult';
+
+export function ComposeView() {
+  const { result } = useCompose();
+
+  return (
+    <SplitPanesView
+      key="split-panes-view"
+      leftPane={<SequentialSetup />}
+      rightPane={<ComposeResult />}
+      isSplit={Boolean(result)}
+    />
+  );
 }
