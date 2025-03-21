@@ -22,12 +22,5 @@ import { ComposeResult } from './ComposeResult';
 export function ComposeView() {
   const { result } = useCompose();
 
-  return (
-    <SplitPanesView
-      key="split-panes-view"
-      leftPane={<SequentialSetup />}
-      rightPane={<ComposeResult />}
-      isSplit={Boolean(result)}
-    />
-  );
+  return <SplitPanesView leftPane={<SequentialSetup />} rightPane={<ComposeResult />} isSplit={Boolean(result)} />;
 }
