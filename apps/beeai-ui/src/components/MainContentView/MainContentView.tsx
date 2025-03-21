@@ -14,26 +14,43 @@
  * limitations under the License.
  */
 
+import { AppFooter } from '#components/layouts/AppFooter.tsx';
+import { useScrollbarWidth } from '#hooks/useScrollbarWidth.ts';
 import { useToTopButton } from '#hooks/useToTopButton.ts';
 import clsx from 'clsx';
-import type { PropsWithChildren } from 'react';
+import type { CSSProperties, PropsWithChildren } from 'react';
+import { mergeRefs } from 'react-merge-refs';
 import { ToTopButton } from '../ToTopButton/ToTopButton';
 import classes from './MainContentView.module.scss';
 
 export interface MainContentViewProps extends PropsWithChildren {
   spacing?: 'md' | 'lg' | false;
   enableToTopButton?: boolean;
+  showFooter?: boolean;
   className?: string;
 }
 
-export function MainContentView({ spacing = 'lg', enableToTopButton, className, children }: MainContentViewProps) {
-  const { ref, showButton, handleToTopClick } = useToTopButton({ enabled: enableToTopButton });
+export function MainContentView({
+  spacing = 'lg',
+  enableToTopButton,
+  showFooter,
+  className,
+  children,
+}: MainContentViewProps) {
+  const { ref: toTopRef, showButton, handleToTopClick } = useToTopButton({ enabled: enableToTopButton });
+  const { ref: scrollbarRef, scrollbarWidth } = useScrollbarWidth();
 
   return (
-    <div ref={ref} className={clsx(classes.root, spacing && classes[spacing], className)}>
-      {children}
+    <div
+      ref={mergeRefs([toTopRef, scrollbarRef])}
+      className={clsx(classes.root, spacing && classes[spacing], className)}
+      style={{ '--scrollbar-width': `${scrollbarWidth}px` } as CSSProperties}
+    >
+      <div className={classes.body}>{children}</div>
 
       {showButton && <ToTopButton onClick={handleToTopClick} />}
+
+      {showFooter && <AppFooter className={classes.footer} />}
     </div>
   );
 }

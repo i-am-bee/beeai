@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { AppFooter, AppHeader, GitHubLink } from '@i-am-bee/beeai-ui';
+import { AppHeader, GitHubLink } from '@i-am-bee/beeai-ui';
 import type { PropsWithChildren } from 'react';
 import classes from './AppLayout.module.scss';
 import { Navigation } from './Navigation';
@@ -31,8 +31,6 @@ export default function AppLayout({ children }: PropsWithChildren) {
       <main className={classes.main} data-route-transition>
         {children}
       </main>
-
-      <AppFooter />
     </div>
   );
 }

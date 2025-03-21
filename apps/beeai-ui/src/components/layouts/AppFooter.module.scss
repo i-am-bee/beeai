@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+$max-container: get-value($grid-breakpoints, 'max.width');
+
 .holder {
   display: flex;
   column-gap: $gap;
@@ -36,4 +38,21 @@
 
 .communityNav {
   margin-inline-start: auto;
+}
+
+@include breakpoint-up(lg) {
+  .communityNav {
+    position: absolute;
+    inset-block-end: $spacing-06;
+    scrollbar-gutter: stable;
+    inset-inline-end: $grid-margin;
+  }
+}
+
+@media (min-width: 107rem) {
+  .communityNav {
+    inset-inline-end: auto;
+    inset-inline-start: calc(50% + math.div($max-container, 2) - var(--scrollbar-width, 0));
+    transform: translateX(-50%);
+  }
 }

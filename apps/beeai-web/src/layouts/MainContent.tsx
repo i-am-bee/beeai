@@ -24,5 +24,5 @@ export function MainContent({ ...props }: MainContentViewProps) {
   const pathname = usePathname();
   const isAgentsRoute = pathname === '/agents';
 
-  return <MainContentView enableToTopButton={isAgentsRoute} {...props} />;
+  return <MainContentView enableToTopButton={isAgentsRoute} showFooter {...props} />;
 }
