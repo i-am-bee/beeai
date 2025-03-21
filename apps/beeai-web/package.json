@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "NODE_OPTIONS=\"--no-experimental-global-navigator\" next dev",
     "build": "NODE_OPTIONS=\"--no-experimental-global-navigator\" next build",
-    "start": "NODE_OPTIONS=\"--no-experimental-global-navigator\" next start",
+    "preview": "NODE_OPTIONS=\"--no-experimental-global-navigator\" next start",
     "check": "prettier --log-level silent --check src && eslint src && tsc --noEmit -p tsconfig.json && stylelint src/**/*.css src/**/*.scss",
     "fix": "prettier --log-level silent --write src && eslint --fix src && stylelint --fix=lax src/**/*.css src/**/*.scss",
     "lint": "next lint"
