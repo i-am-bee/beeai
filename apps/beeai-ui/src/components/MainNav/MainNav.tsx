@@ -20,13 +20,22 @@ import { Tooltip } from '#components/Tooltip/Tooltip.tsx';
 import type { CarbonIconType } from '@carbon/icons-react';
 import { Button } from '@carbon/react';
 import clsx from 'clsx';
-import type { ComponentType, PropsWithChildren, ReactNode } from 'react';
+import type { ComponentType, ReactNode } from 'react';
 import classes from './MainNav.module.scss';
 
-export function MainNav({ children }: PropsWithChildren) {
+interface Props {
+  items: MainNavItem[];
+  linkComponent: ComponentType;
+}
+
+export function MainNav({ items, linkComponent }: Props) {
   return (
     <nav>
-      <ul className={classes.list}>{children}</ul>
+      <ul className={classes.list}>
+        {items.map((item) => (
+          <MainNavItem key={item.href} linkComponent={linkComponent} item={item} />
+        ))}
+      </ul>
     </nav>
   );
 }
@@ -41,14 +50,14 @@ interface MainNavItem {
   disabledTooltip?: ReactNode;
 }
 
-export function MainNavItem({
-  component,
+function MainNavItem({
+  linkComponent,
   item: { label, href, Icon, isExternal, isActive, isDisabled, disabledTooltip },
 }: {
-  component: ComponentType;
+  linkComponent: ComponentType;
   item: MainNavItem;
 }) {
-  const LinkComponent = isExternal ? 'a' : component;
+  const LinkComponent = isExternal ? 'a' : linkComponent;
   const linkProps = isExternal ? { target: '_blank', rel: 'noreferrer' } : null;
 
   return (

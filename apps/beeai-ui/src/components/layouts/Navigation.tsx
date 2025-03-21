@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { MainNav, MainNavItem } from '#components/MainNav/MainNav.tsx';
+import { MainNav } from '#components/MainNav/MainNav.tsx';
 import { TracesTooltip } from '#components/MainNav/TracesTooltip.tsx';
 import { TransitionLink } from '#components/TransitionLink/TransitionLink.tsx';
 import { useIsNavSectionActive } from '#hooks/useIsNavSectionActive.ts';
@@ -55,19 +55,9 @@ export function Navigation() {
   );
 
   return (
-    <MainNav>
-      {items.map(({ section, ...props }) => {
-        return (
-          <MainNavItem
-            key={props.href}
-            component={TransitionLink}
-            item={{
-              ...props,
-              isActive: section && isSectionActive(section),
-            }}
-          />
-        );
-      })}
-    </MainNav>
+    <MainNav
+      linkComponent={TransitionLink}
+      items={items.map(({ section, ...item }) => ({ ...item, isActive: section && isSectionActive(section) }))}
+    />
   );
 }
