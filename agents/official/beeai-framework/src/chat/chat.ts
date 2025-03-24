@@ -8,7 +8,7 @@ import {
   messageOutputSchema,
 } from "@i-am-bee/beeai-sdk/schemas/message";
 import { UnconstrainedMemory } from "beeai-framework/memory/unconstrainedMemory";
-import { BeeAgent } from "beeai-framework/agents/bee/agent";
+import { ReActAgent } from "beeai-framework/agents/react/agent";
 import { DuckDuckGoSearchTool } from "beeai-framework/tools/search/duckDuckGoSearch";
 import { WikipediaTool } from "beeai-framework/tools/search/wikipedia";
 import { OpenMeteoTool } from "beeai-framework/tools/weather/openMeteo";
@@ -61,7 +61,7 @@ const run =
     await memory.addMany(
       messages.map(({ role, content }) => Message.of({ role, text: content }))
     );
-    const agent = new BeeAgent({
+    const agent = new ReActAgent({
       llm: new OpenAIChatModel(
         MODEL,
         {},
