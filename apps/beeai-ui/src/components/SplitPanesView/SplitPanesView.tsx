@@ -18,9 +18,10 @@ import { Container } from '#components/layouts/Container.tsx';
 import { MainContent } from '#components/layouts/MainContent.tsx';
 import type { MainContentViewProps } from '#components/MainContentView/MainContentView.tsx';
 import { useScrollbarWidth } from '#hooks/useScrollbarWidth.ts';
+import { createScrollbarStyles } from '#utils/createScrollbarStyles.ts';
 import { moderate02 } from '@carbon/motion';
 import { AnimatePresence, motion } from 'framer-motion';
-import type { CSSProperties, PropsWithChildren, ReactNode } from 'react';
+import type { PropsWithChildren, ReactNode } from 'react';
 import classes from './SplitPanesView.module.scss';
 
 interface Props {
@@ -37,11 +38,7 @@ export function SplitPanesView({ leftPane, rightPane, isSplit, spacing }: Props)
     <AnimatePresence mode="wait">
       {isSplit ? (
         <Wrapper key="split-view" className={classes.splitView} immediateExit>
-          <div
-            className={classes.leftPane}
-            ref={leftPaneRef}
-            style={{ '--scrollbar-width': `${scrollbarWidth}px` } as CSSProperties}
-          >
+          <div className={classes.leftPane} ref={leftPaneRef} {...createScrollbarStyles({ width: scrollbarWidth })}>
             <div className={classes.content}>{leftPane}</div>
           </div>
 

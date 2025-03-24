@@ -46,13 +46,14 @@ interface MainNavItem {
   Icon?: CarbonIconType;
   isExternal?: boolean;
   isActive?: boolean;
-  isDisabled?: boolean;
-  disabledTooltip?: ReactNode;
+  disabled?: {
+    tooltip: ReactNode;
+  };
 }
 
 function MainNavItem({
   linkComponent,
-  item: { label, href, Icon, isExternal, isActive, isDisabled, disabledTooltip },
+  item: { label, href, Icon, isExternal, isActive, disabled },
 }: {
   linkComponent: ComponentType;
   item: MainNavItem;
@@ -62,8 +63,8 @@ function MainNavItem({
 
   return (
     <li className={clsx({ [classes.active]: isActive })}>
-      {isDisabled && disabledTooltip ? (
-        <Tooltip asChild content={disabledTooltip}>
+      {disabled ? (
+        <Tooltip asChild content={disabled.tooltip}>
           <Button kind="ghost" disabled className={classes.link}>
             {label}
 

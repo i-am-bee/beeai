@@ -17,14 +17,15 @@
 import { AppFooter } from '#components/layouts/AppFooter.tsx';
 import { useScrollbarWidth } from '#hooks/useScrollbarWidth.ts';
 import { useToTopButton } from '#hooks/useToTopButton.ts';
+import { createScrollbarStyles } from '#utils/createScrollbarStyles.ts';
 import clsx from 'clsx';
-import type { CSSProperties, PropsWithChildren } from 'react';
+import type { PropsWithChildren } from 'react';
 import { mergeRefs } from 'react-merge-refs';
 import { ToTopButton } from '../ToTopButton/ToTopButton';
 import classes from './MainContentView.module.scss';
 
 export interface MainContentViewProps extends PropsWithChildren {
-  spacing?: 'md' | 'lg' | false;
+  spacing?: 'md' | 'lg';
   enableToTopButton?: boolean;
   showFooter?: boolean;
   className?: string;
@@ -43,8 +44,8 @@ export function MainContentView({
   return (
     <div
       ref={mergeRefs([toTopRef, scrollbarRef])}
-      className={clsx(classes.root, spacing && classes[spacing], className)}
-      style={{ '--scrollbar-width': `${scrollbarWidth}px` } as CSSProperties}
+      className={clsx(classes.root, classes[spacing], className)}
+      {...createScrollbarStyles({ width: scrollbarWidth })}
     >
       <div className={classes.body}>{children}</div>
 

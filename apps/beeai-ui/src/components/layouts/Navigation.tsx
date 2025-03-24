@@ -47,8 +47,12 @@ export function Navigation() {
         label: 'Traces',
         href: `${PHOENIX_SERVER_TARGET}/projects`,
         isExternal: true,
-        isDisabled: Boolean(isPending || error || !showPhoenixTab || !PHOENIX_SERVER_TARGET),
-        disabledTooltip: <TracesTooltip />,
+        disabled:
+          isPending || error || !showPhoenixTab || !PHOENIX_SERVER_TARGET
+            ? {
+                tooltip: <TracesTooltip />,
+              }
+            : undefined,
       },
     ],
     [error, isPending, showPhoenixTab],

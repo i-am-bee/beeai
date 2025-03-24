@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-'use client';
-
 import type { Placement } from '@floating-ui/react';
 import {
   arrow,
