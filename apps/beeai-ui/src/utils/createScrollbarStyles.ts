@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-.root {
-  display: grid;
-  grid-template-columns: 1fr max-content;
-  inline-size: 100%;
-  overflow: hidden;
+import type { CSSProperties } from 'react';
+
+export function createScrollbarStyles({ width }: { width: number }) {
+  return {
+    style: { '--scrollbar-width': `${width}px` } as CSSProperties,
+  };
 }

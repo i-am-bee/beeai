@@ -14,11 +14,19 @@
  * limitations under the License.
  */
 
+import { useAutoScroll } from '#hooks/useAutoScroll.ts';
 import { AgentOutputBox } from '../components/AgentOutputBox';
 import { useHandsOff } from '../contexts/hands-off';
 
 export function HandsOffText() {
   const { agent, text, isPending } = useHandsOff();
+  const { ref: autoScrollRef } = useAutoScroll([text]);
 
-  return <AgentOutputBox text={text} isPending={isPending} downloadFileName={`${agent.name}-output`} />;
+  return (
+    <>
+      <AgentOutputBox text={text} isPending={isPending} downloadFileName={`${agent.name}-output`} />
+
+      <div ref={autoScrollRef} />
+    </>
+  );
 }

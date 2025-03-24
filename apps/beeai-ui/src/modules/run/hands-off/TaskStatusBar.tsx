@@ -28,7 +28,7 @@ interface Props {
 export function TaskStatusBar({ onStopClick }: Props) {
   const { stats, isPending } = useHandsOff();
 
-  return stats ? (
+  return stats?.startTime ? (
     <div className={classes.root}>
       <div className={classes.label}>
         {isPending && <Spinner center />}

@@ -14,82 +14,70 @@
  * limitations under the License.
  */
 
+'use client';
+
 import { Tooltip } from '#components/Tooltip/Tooltip.tsx';
-import { useIsNavSectionActive } from '#hooks/useIsNavSectionActive.ts';
-import { usePhoenix } from '#modules/phoenix/api/queries/usePhoenix.ts';
-import { routes, sections } from '#utils/router.ts';
-import { APP_NAME, PHOENIX_SERVER_TARGET } from '#utils/vite-constants.ts';
+import type { CarbonIconType } from '@carbon/icons-react';
 import { Button } from '@carbon/react';
 import clsx from 'clsx';
-import { TransitionLink } from '../TransitionLink/TransitionLink';
+import type { ComponentType, ReactNode } from 'react';
 import classes from './MainNav.module.scss';
-import { TracesTooltip } from './TracesTooltip';
 
-export function MainNav() {
-  const isSectionActive = useIsNavSectionActive();
-  const { isPending, error, data: showPhoenixTab } = usePhoenix();
+interface Props {
+  items: MainNavItem[];
+  linkComponent: ComponentType;
+}
 
+export function MainNav({ items, linkComponent }: Props) {
   return (
     <nav>
       <ul className={classes.list}>
-        {getNavItems({
-          appName: APP_NAME,
-          phoenixServerTarget: PHOENIX_SERVER_TARGET,
-          showPhoenixTab: Boolean(!isPending && !error && showPhoenixTab),
-        }).map(({ label, to, section, target, rel, isDisabled }, idx) => (
-          <li key={idx} className={clsx({ [classes.active]: section && isSectionActive(section) })}>
-            {isDisabled ? (
-              <Tooltip asChild content={<TracesTooltip />}>
-                <Button kind="ghost" disabled className={classes.link}>
-                  {label}
-                </Button>
-              </Tooltip>
-            ) : target ? (
-              <a href={to} className={classes.link} target={target} rel={rel}>
-                {label}
-              </a>
-            ) : (
-              <TransitionLink to={to} className={classes.link}>
-                {label}
-              </TransitionLink>
-            )}
-          </li>
+        {items.map((item) => (
+          <MainNavItem key={item.href} linkComponent={linkComponent} item={item} />
         ))}
       </ul>
     </nav>
   );
 }
 
-function getNavItems({
-  appName,
-  phoenixServerTarget,
-  showPhoenixTab,
+interface MainNavItem {
+  label: ReactNode;
+  href: string;
+  Icon?: CarbonIconType;
+  isExternal?: boolean;
+  isActive?: boolean;
+  disabled?: {
+    tooltip: ReactNode;
+  };
+}
+
+function MainNavItem({
+  linkComponent,
+  item: { label, href, Icon, isExternal, isActive, disabled },
 }: {
-  appName: string;
-  phoenixServerTarget: string;
-  showPhoenixTab: boolean;
+  linkComponent: ComponentType;
+  item: MainNavItem;
 }) {
-  return [
-    {
-      label: <strong>{appName}</strong>,
-      to: routes.home(),
-    },
-    {
-      label: 'Agents',
-      to: routes.agents(),
-      section: sections.agents,
-    },
-    {
-      label: 'Compose playground',
-      to: routes.compose(),
-      section: sections.compose,
-    },
-    {
-      label: 'Traces',
-      to: `${phoenixServerTarget}/projects`,
-      target: '_blank',
-      rel: 'noreferrer',
-      isDisabled: Boolean(!showPhoenixTab || !phoenixServerTarget),
-    },
-  ];
+  const LinkComponent = isExternal ? 'a' : linkComponent;
+  const linkProps = isExternal ? { target: '_blank', rel: 'noreferrer' } : null;
+
+  return (
+    <li className={clsx({ [classes.active]: isActive })}>
+      {disabled ? (
+        <Tooltip asChild content={disabled.tooltip}>
+          <Button kind="ghost" disabled className={classes.link}>
+            {label}
+
+            {Icon && <Icon />}
+          </Button>
+        </Tooltip>
+      ) : (
+        <LinkComponent {...linkProps} href={href} className={classes.link}>
+          {label}
+
+          {Icon && <Icon />}
+        </LinkComponent>
+      )}
+    </li>
+  );
 }
