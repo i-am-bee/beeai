@@ -27,8 +27,8 @@ outputs = { auto = true }
 ["beeai-ui:check:stylelint"]
 depends = ["setup:pnpm"]
 dir = "{{config_root}}/apps/beeai-ui"
-run = "pnpm stylelint src/styles"
-sources = ["src/styles/**/*.css", "src/styles/**/*.scss"]
+run = "pnpm stylelint src/**/*.css src/**/*.scss"
+sources = ["src/**/*.css", "src/**/*.scss"]
 outputs = { auto = true }
 
 # fix
@@ -53,8 +53,8 @@ outputs = { auto = true }
 ["beeai-ui:fix:stylelint"]
 depends = ["setup:pnpm"]
 dir = "{{config_root}}/apps/beeai-ui"
-run = "pnpm stylelint --fix=lax src/styles"
-sources = ["src/styles/**/*.css", "src/styles/**/*.scss"]
+run = "pnpm stylelint --fix=lax src/**/*.css src/**/*.scss"
+sources = ["src/**/*.css", "src/**/*.scss"]
 outputs = { auto = true }
 
 # run

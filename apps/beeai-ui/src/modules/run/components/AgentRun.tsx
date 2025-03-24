@@ -17,7 +17,7 @@
 import { ErrorMessage } from '#components/ErrorMessage/ErrorMessage.tsx';
 import { Container } from '#components/layouts/Container.tsx';
 import { MainContent } from '#components/layouts/MainContent.tsx';
-import { Agent } from '#modules/agents/api/types.ts';
+import type { Agent } from '#modules/agents/api/types.ts';
 import { Loading } from '@carbon/react';
 import { useAgent } from '../../agents/api/queries/useAgent';
 import { Chat } from '../chat/Chat';

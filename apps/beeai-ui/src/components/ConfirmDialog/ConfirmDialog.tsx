@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { ModalProps } from '#contexts/Modal/modal-context.ts';
+import type { ModalProps } from '#contexts/Modal/modal-context.ts';
 import { Button, ModalBody, ModalFooter, ModalHeader } from '@carbon/react';
 import { TrashCan } from '@carbon/react/icons';
 import clsx from 'clsx';
-import { ComponentType, ReactNode } from 'react';
+import type { ComponentType, ReactNode } from 'react';
 import { Modal } from '../Modal/Modal';
 import classes from './ConfirmDialog.module.scss';
 

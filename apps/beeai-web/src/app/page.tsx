@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { MainContent } from "@/layouts/MainContent";
-import { GettingStarted, type VideoBeeAIProps } from "@i-am-bee/beeai-ui";
-import poster from "../images/VideoBeeAIPoster.webp";
+import { MainContent } from '@/layouts/MainContent';
+import { GettingStarted, type VideoBeeAIProps } from '@i-am-bee/beeai-ui';
+import poster from '../images/VideoBeeAIPoster.webp';
 
 export default function Home() {
   return (
@@ -27,7 +27,7 @@ export default function Home() {
 }
 
 const video: VideoBeeAIProps = {
-  src: "https://github.com/user-attachments/assets/10640dbd-631c-42d8-a246-9b7a72eddb5b",
-  type: "video/mp4",
+  src: 'https://github.com/user-attachments/assets/10640dbd-631c-42d8-a246-9b7a72eddb5b',
+  type: 'video/mp4',
   poster: poster.src,
 };

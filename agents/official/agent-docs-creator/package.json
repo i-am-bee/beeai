@@ -15,9 +15,10 @@
   "description": "",
   "dependencies": {
     "@ai-sdk/openai": "^1.1.13",
+    "@arizeai/openinference-instrumentation-beeai": "^1.1.1",
     "@i-am-bee/acp-sdk": "0.0.5",
     "@i-am-bee/beeai-sdk": "0.0.16",
-    "beeai-framework": "0.1.6",
+    "beeai-framework": "0.1.10",
     "tsx": "^4.19.2",
     "zod": "^3.24.2"
   },

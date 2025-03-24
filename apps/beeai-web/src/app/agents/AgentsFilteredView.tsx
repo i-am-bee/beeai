@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-"use client";
+'use client';
 
-import { type Agent, AgentsFiltersProvider } from "@i-am-bee/beeai-ui";
-import { AgentsView } from "./AgentsView";
+import { type Agent, AgentsFiltersProvider } from '@i-am-bee/beeai-ui';
+import { AgentsView } from './AgentsView';
 
 interface Props {
-  agents: Agent[];
+  agents: Agent[] | null;
 }
 
 export function AgentsFilteredView({ agents }: Props) {

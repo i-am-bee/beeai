@@ -21,6 +21,7 @@ includes = [
     "apps/beeai-cli/tasks.toml",
     "apps/beeai-server/tasks.toml",
     "apps/beeai-ui/tasks.toml",
+    "apps/beeai-web/tasks.toml",
     "docs/tasks.toml",
     "packages/acp-python-sdk/tasks.toml",
     "packages/acp-typescript-sdk/tasks.toml",

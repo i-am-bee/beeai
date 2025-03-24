@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Tool } from '../api/types';
+import type { Tool } from '../api/types';
 
 interface Props {
   name: Tool['name'];

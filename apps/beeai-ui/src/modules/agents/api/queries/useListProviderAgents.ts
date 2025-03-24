@@ -17,7 +17,7 @@
 import { useMCPClient } from '#contexts/MCPClient/index.ts';
 import { useQuery } from '@tanstack/react-query';
 import { agentKeys } from '../keys';
-import { ListAgentsParams } from '../types';
+import type { ListAgentsParams } from '../types';
 
 interface Props {
   provider?: string;

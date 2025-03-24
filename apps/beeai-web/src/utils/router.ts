@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-export async function register() {
-  const { storeNativeFetch } = await import('./acp/native-fetch');
-  storeNativeFetch();
-}
+export const routeDefinitions = {
+  home: '/' as const,
+  notFound: '/not-found' as const,
+  agents: `/agents` as const,
+  agentDetail: `/agents/[name]` as const,
+};

@@ -14,9 +14,16 @@
  * limitations under the License.
  */
 
-.root {
-  display: grid;
-  grid-template-columns: 1fr max-content;
-  inline-size: 100%;
-  overflow: hidden;
+import { initializeAgentRoutes } from '@/utils/initializeAgentRoutes';
+import { NextResponse } from 'next/server';
+
+export async function GET() {
+  const result = initializeAgentRoutes();
+  return NextResponse.json({
+    result,
+  } satisfies InitAgentRoutesResponse);
+}
+
+export interface InitAgentRoutesResponse {
+  result?: boolean;
 }

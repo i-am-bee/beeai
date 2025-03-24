@@ -15,7 +15,7 @@
  */
 
 import { motion as carbonMotion, moderate02 } from '@carbon/motion';
-import { Variant } from 'framer-motion';
+import type { Variant } from 'framer-motion';
 
 export function parseCarbonMotion(string: string): number[] {
   const matches = string.match(/-?\d*\.?\d+/g);

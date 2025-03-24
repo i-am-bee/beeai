@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-"use client";
-
-import { ProgressBarProvider } from "@/contexts/ProgressBar/ProgressBarProvider";
-import { RouteTransitionProvider } from "@/contexts/TransitionContext/RouteTransitionProvider";
+'use client';
+import { ProgressBarProvider } from '@/contexts/ProgressBar/ProgressBarProvider';
+import { RouteTransitionProvider } from '@/contexts/TransitionContext/RouteTransitionProvider';
 import { ThemeProvider } from '@i-am-bee/beeai-ui';
-import { QueryClientProvider } from "@tanstack/react-query";
-import { PropsWithChildren } from "react";
-import { getQueryClient } from "./get-query-client";
+import { QueryClientProvider } from '@tanstack/react-query';
+import { PropsWithChildren } from 'react';
+import { getQueryClient } from './get-query-client';
 
 export default function Providers({ children }: PropsWithChildren) {
   const queryClient = getQueryClient();
+
   return (
     <QueryClientProvider client={queryClient}>
       <ProgressBarProvider>

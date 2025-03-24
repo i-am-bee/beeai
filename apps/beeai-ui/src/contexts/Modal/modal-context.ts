@@ -15,7 +15,8 @@
  */
 
 import { noop } from '#utils/helpers.ts';
-import { createContext, ReactNode } from 'react';
+import type { ReactNode } from 'react';
+import { createContext } from 'react';
 
 export interface ModalProps {
   /** True if modal is open */

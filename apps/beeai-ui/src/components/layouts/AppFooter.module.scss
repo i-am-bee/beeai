@@ -14,14 +14,45 @@
  * limitations under the License.
  */
 
+$max-container: get-value($grid-breakpoints, 'max.width');
+
 .holder {
   display: flex;
   column-gap: $gap;
   justify-content: space-between;
-  align-items: center;
-  padding-block: $spacing-05;
+  align-items: flex-end;
+  padding-block: $spacing-05 $spacing-06;
+}
+
+.copyright {
+  font-size: rem(12px);
+  line-height: math.div(16, 12);
+  color: $text-helper;
+  a {
+    color: inherit;
+    &:hover {
+      text-decoration: none;
+    }
+  }
 }
 
 .communityNav {
   margin-inline-start: auto;
+}
+
+@include breakpoint-up(lg) {
+  .communityNav {
+    position: absolute;
+    inset-block-end: $spacing-06;
+    scrollbar-gutter: stable;
+    inset-inline-end: $grid-margin;
+  }
+}
+
+@media (min-width: 107rem) {
+  .communityNav {
+    inset-inline-end: auto;
+    inset-inline-start: calc(50% + math.div($max-container, 2) - var(--scrollbar-width, 0));
+    transform: translateX(-50%);
+  }
 }

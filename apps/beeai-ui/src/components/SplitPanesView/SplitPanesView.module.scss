@@ -16,21 +16,21 @@
 
 $max-container: get-value($grid-breakpoints, 'max.width');
 
-.root {
+.splitView {
+  display: grid;
+  grid-template-columns: 1fr calc((100vw / 3 * 2) - (max(100vw - #{$max-container}, 0px) / 2 / 3));
+  block-size: 100%;
+  inline-size: 100%;
+}
+
+.simpleView {
   min-block-size: 100%;
   display: flex;
-  &.split {
-    display: grid;
-    grid-template-columns: 1fr calc((100vw / 3 * 2) - ((100vw - #{$max-container}) / 2 / 3));
-    block-size: 100%;
-    inline-size: 100%;
-  }
 }
 
 .leftPane,
 .rightPane {
   @include scrollbar();
-  overflow-y: auto;
   min-inline-size: 0;
   padding: $grid-margin;
   display: flex;

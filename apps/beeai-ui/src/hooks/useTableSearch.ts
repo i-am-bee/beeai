@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { ChangeEvent, useCallback, useMemo, useState } from 'react';
+import type { ChangeEvent } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 interface Props<T> {
   entries: T[];

@@ -17,7 +17,8 @@
 'use client';
 
 import { ArrowUp } from '@carbon/icons-react';
-import { IconButton, IconButtonProps } from '@carbon/react';
+import type { IconButtonProps } from '@carbon/react';
+import { IconButton } from '@carbon/react';
 import classes from './ToTopButton.module.scss';
 
 interface Props {

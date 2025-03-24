@@ -17,8 +17,8 @@
 import { Container } from '#components/layouts/Container.tsx';
 import { MainContent } from '#components/layouts/MainContent.tsx';
 import { ViewStack } from '#components/ViewStack/ViewStack.tsx';
-import { AgentsFiltersProvider } from '#modules/agents/providers/AgentsFiltersProvider.tsx';
 import { AgentsView } from '#modules/agents/list/AgentsView.tsx';
+import { AgentsFiltersProvider } from '#modules/agents/providers/AgentsFiltersProvider.tsx';
 
 export function Agents() {
   return (

@@ -15,16 +15,8 @@
  */
 
 import clsx from 'clsx';
-import {
-  CSSProperties,
-  ChangeEvent,
-  TextareaHTMLAttributes,
-  forwardRef,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import type { CSSProperties, ChangeEvent, TextareaHTMLAttributes } from 'react';
+import { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
 import { mergeRefs } from 'react-merge-refs';
 import classes from './TextAreaAutoHeight.module.scss';
 import { Resizable } from 'react-resizable';

@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
-import { getAgentsList } from "@/acp/api";
-import { MainContent } from "@/layouts/MainContent";
-import { AgentDetail, Container, TryLocallyButton } from "@i-am-bee/beeai-ui";
-import { notFound } from "next/navigation";
+import { getAgentsList } from '@/acp/api';
+import { MainContent } from '@/layouts/MainContent';
+import { AgentDetail, Container, TryLocallyButton } from '@i-am-bee/beeai-ui';
+import { notFound } from 'next/navigation';
 
-export const dynamic = "force-dynamic"; // Opt out of static generation
 export const revalidate = 600;
+
+// This is needed to enable ISR; otherwise, nextjs will switch to dynamic rendering.
+// It tells nextjs that we don’t want any routes pre-rendered at build time, but we do want caching.
+export async function generateStaticParams() {
+  return [];
+}
 
 interface Props {
   params: Promise<{ name: string }>;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Agent } from '#modules/agents/api/types.ts';
+import type { Agent } from '#modules/agents/api/types.ts';
 import { IconButton } from '@carbon/react';
 import clsx from 'clsx';
 import { AgentIcon } from '../components/AgentIcon';

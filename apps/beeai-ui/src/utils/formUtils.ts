@@ -15,7 +15,7 @@
  */
 
 import { CODE_ENTER } from 'keycode-js';
-import { KeyboardEvent } from 'react';
+import type { KeyboardEvent } from 'react';
 
 export function submitFormOnEnter(event: KeyboardEvent<HTMLTextAreaElement>) {
   if (event.code === CODE_ENTER && !event.shiftKey) {

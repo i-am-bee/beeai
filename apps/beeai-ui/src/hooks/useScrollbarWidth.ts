@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { RefCallback, useCallback, useEffect, useState } from 'react';
+'use client';
+
+import type { RefCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useDebounceCallback } from 'usehooks-ts';
 
 export function useScrollbarWidth() {

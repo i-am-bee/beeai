@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { QueryMetadata } from '#contexts/QueryProvider/types.ts';
+import type { QueryMetadata } from '#contexts/QueryProvider/types.ts';
 import { useToast } from '#contexts/Toast/index.ts';
 import { useCallback } from 'react';
 

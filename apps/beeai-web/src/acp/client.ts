@@ -14,46 +14,49 @@
  * limitations under the License.
  */
 
-import "server-only";
-import { Client } from "@i-am-bee/acp-sdk/client/index";
-import type { ServerCapabilities } from "@i-am-bee/acp-sdk/types";
-import { SSEClientTransport } from "@i-am-bee/acp-sdk/client/sse";
-import { ACP_CLIENT_SERVER_URL } from "@/constants";
-import { getNativeFetch } from "./native-fetch";
+import 'server-only';
+import { Client } from '@i-am-bee/acp-sdk/client/index';
+import type { ServerCapabilities } from '@i-am-bee/acp-sdk/types';
+import { SSEClientTransport } from '@i-am-bee/acp-sdk/client/sse';
+import { ACP_CLIENT_SERVER_URL } from '@/constants';
+import { fetch as undiciFetch, BodyInit } from 'undici';
 
 export async function getAcpClient() {
   if (!ACP_CLIENT_SERVER_URL) {
-    throw new Error("ACP Transport has not been set");
+    throw new Error('ACP Transport has not been set');
   }
 
   const transport = new SSEClientTransport(new URL(ACP_CLIENT_SERVER_URL), {
     eventSourceInit: {
-      // Use native nodejs fetch instead of nextjs patched one, we don't want
+      // Use undici fetch instead of nextjs patched one, we don't want
       // any nextjs caching/deduping behaviour here.
-      fetch: getNativeFetch(),
+      fetch: (url: string | URL, init?: RequestInit) =>
+        undiciFetch(url, {
+          ...init,
+          body: init?.body ? (init.body as BodyInit) : undefined,
+          // prevents nextjs switching pages from ISR to dynamic render
+          cache: 'default',
+        }),
     },
   });
   const client = new Client(ACP_EXAMPLE_AGENT_CONFIG, ACP_EXAMPLE_AGENT_PARAMS);
   await client.connect(transport);
 
   const capabilities = client.getServerCapabilities();
-  assertServerCapability(capabilities, "agents");
+  assertServerCapability(capabilities, 'agents');
 
   return client;
 }
 
-function assertServerCapability(
-  capabilities: ServerCapabilities | undefined,
-  capability: keyof ServerCapabilities
-) {
+function assertServerCapability(capabilities: ServerCapabilities | undefined, capability: keyof ServerCapabilities) {
   if (!capabilities?.[capability]) {
     throw new Error(`ACP Server does not support ${capability}`);
   }
 }
 
 const ACP_EXAMPLE_AGENT_CONFIG = {
-  name: "example-client",
-  version: "1.0.0",
+  name: 'example-client',
+  version: '1.0.0',
 };
 const ACP_EXAMPLE_AGENT_PARAMS = {
   capabilities: {},

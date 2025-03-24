@@ -17,7 +17,7 @@
 import { SkeletonItems } from '#components/SkeletonItems/SkeletonItems.tsx';
 import { TagSkeleton } from '@carbon/react';
 import clsx from 'clsx';
-import { ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import classes from './TagsList.module.scss';
 
 interface Props {

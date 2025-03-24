@@ -14,31 +14,25 @@
  * limitations under the License.
  */
 
-.root {
-  inline-size: 100%;
-  @include scrollbar();
-  padding-block: $spacing-09;
-  overflow-x: hidden;
-  overflow-y: auto;
-  scrollbar-gutter: stable;
-  grid-area: main;
-  scroll-behavior: smooth;
-}
+import { revalidatePath } from 'next/cache';
+import { routeDefinitions } from './router';
+import { NEXT_PHASE_BUILD } from '@/constants';
 
-.footer {
-  padding: 1rem;
+export let agentRoutesInitialized = false;
 
-  @include breakpoint-up("xlg") {
-    position: absolute;
-    inset-inline-end: 0;
-    inset-block-end: 0;
+export function initializeAgentRoutes() {
+  if (NEXT_PHASE_BUILD || agentRoutesInitialized) return;
+
+  try {
+    revalidatePath(routeDefinitions.agents, 'page');
+    revalidatePath(routeDefinitions.agentDetail, 'page');
+
+    agentRoutesInitialized = true;
+
+    return true;
+  } catch (error) {
+    console.error(error);
   }
-}
 
-.toTopButtonVisible {
-  .footer {
-    @include breakpoint-down("xlg") {
-      padding-inline-end: $spacing-09;
-    }
-  }
+  return agentRoutesInitialized;
 }

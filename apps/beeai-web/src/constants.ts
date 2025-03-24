@@ -15,3 +15,5 @@
  */
 
 export const ACP_CLIENT_SERVER_URL = process.env.ACP_CLIENT_SERVER_URL;
+
+export const NEXT_PHASE_BUILD = process.env.NEXT_PHASE === 'phase-production-build';

@@ -15,7 +15,7 @@
  */
 
 import { useProvider } from '#modules/providers/api/queries/useProvider.ts';
-import { Agent } from '../api/types';
+import type { Agent } from '../api/types';
 
 interface Props {
   agent?: Agent;

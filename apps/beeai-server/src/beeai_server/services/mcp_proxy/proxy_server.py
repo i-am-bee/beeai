@@ -48,6 +48,7 @@ from acp.types import (
     CancelledNotification,
     CancelledNotificationParams,
 )
+from beeai_server.domain.model import LoadedProviderStatus
 from beeai_server.services.mcp_proxy.constants import NotificationStreamType
 from beeai_server.services.mcp_proxy.provider import ProviderContainer
 from beeai_server.telemetry import INSTRUMENTATION_NAME
@@ -84,7 +85,7 @@ class MCPProxyServer:
         request: Request,
         result_type: type[ReceiveResultT],
         forward_progress_notifications=True,
-    ):
+    ) -> ReceiveResultT:
         try:
             request.model_extra.clear()
             request_id = str(uuid.uuid4())
@@ -109,6 +110,12 @@ class MCPProxyServer:
                 logger.warning(f"Failed to send cancellation notification: {ex}")
             raise
         return resp
+
+    def _get_provider_session(self, object_id: str) -> ClientSession:
+        provider = self._provider_container.get_provider(object_id)
+        if provider.status != LoadedProviderStatus.ready:
+            raise RuntimeError(f"Provider is not in ready state: {provider.id}")
+        return provider.session
 
     @cached_property
     def app(self):
@@ -139,9 +146,8 @@ class MCPProxyServer:
             result = "success"
             start_time = time.perf_counter()
             try:
-                provider = self._provider_container.get_provider(f"tool/{name}")
                 resp = await self._send_request_with_token(
-                    provider.session,
+                    self._get_provider_session(f"tool/{name}"),
                     server,
                     CallToolRequest(method="tools/call", params=CallToolRequestParams(name=name, arguments=arguments)),
                     CallToolResult,
@@ -158,16 +164,16 @@ class MCPProxyServer:
 
         @server.create_agent()
         async def create_agent(req: CreateAgentRequest) -> CreateAgentResult:
-            provider = self._provider_container.get_provider(f"agent_template/{req.params.templateName}")
-            return await self._send_request_with_token(provider.session, server, req, CreateAgentResult)
+            session = self._get_provider_session(f"agent_template/{req.params.templateName}")
+            return await self._send_request_with_token(session, server, req, CreateAgentResult)
 
         @server.run_agent()
         async def run_agent(req: RunAgentRequest) -> RunAgentResult:
             result = "success"
             start_time = time.perf_counter()
             try:
-                provider = self._provider_container.get_provider(f"agent/{req.params.name}")
-                return await self._send_request_with_token(provider.session, server, req, RunAgentResult)
+                session = self._get_provider_session(f"agent/{req.params.name}")
+                return await self._send_request_with_token(session, server, req, RunAgentResult)
             except:
                 result = "failure"
                 raise
@@ -179,8 +185,8 @@ class MCPProxyServer:
 
         @server.destroy_agent()
         async def destroy_agent(req: DestroyAgentRequest) -> DestroyAgentResult:
-            provider = self._provider_container.get_provider(f"agent/{req.params.name}")
-            return await self._send_request_with_token(provider.session, server, req, DestroyAgentResult)
+            session = self._get_provider_session(f"agent/{req.params.name}")
+            return await self._send_request_with_token(session, server, req, DestroyAgentResult)
 
         return server
 

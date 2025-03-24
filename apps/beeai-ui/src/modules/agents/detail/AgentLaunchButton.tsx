@@ -18,7 +18,7 @@ import { TransitionLink } from '#components/TransitionLink/TransitionLink.tsx';
 import { useModal } from '#contexts/Modal/index.tsx';
 import { AddRequiredEnvsModal } from '#modules/envs/components/AddRequiredEnvsModal.tsx';
 import { SupportedUis } from '#modules/run/constants.ts';
-import { UiType } from '#modules/run/types.ts';
+import type { UiType } from '#modules/run/types.ts';
 import { routes } from '#utils/router.ts';
 import { ArrowRight } from '@carbon/icons-react';
 import { Button, ButtonSkeleton } from '@carbon/react';
@@ -47,7 +47,7 @@ export function AgentLaunchButton({ agent }: Props) {
       {...(isEmpty(missingEnvs)
         ? {
             as: TransitionLink,
-            to: routes.agentRun({ name: agent.name }),
+            href: routes.agentRun({ name: agent.name }),
           }
         : {
             onClick: () => {

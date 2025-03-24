@@ -16,7 +16,8 @@
 
 import { useCreateMCPClient } from '#api/mcp-client/useCreateMCPClient.ts';
 import { useQueryClient } from '@tanstack/react-query';
-import { PropsWithChildren, useEffect } from 'react';
+import type { PropsWithChildren } from 'react';
+import { useEffect } from 'react';
 import { MCPClientContext } from './mcp-client-context';
 
 export function MCPClientProvider({ children }: PropsWithChildren) {

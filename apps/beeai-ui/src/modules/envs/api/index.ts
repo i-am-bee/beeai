@@ -15,7 +15,7 @@
  */
 
 import { api } from '#api/index.ts';
-import { CreateEnvBody } from './types';
+import type { CreateEnvBody } from './types';
 
 export async function createEnv({ body }: { body: CreateEnvBody['env'] }) {
   const response = await api.PUT('/api/v1/env', {

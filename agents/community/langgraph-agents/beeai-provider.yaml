@@ -5,7 +5,7 @@ package: "git+https://github.com/i-am-bee/beeai.git@agents-v0.0.61#subdirectory=
 serverType: http
 mcpTransport: sse
 mcpEndpoint: /sse
-command: ["langgraph-agents"]
+command: ["server"]
 env:
 - name: LLM_MODEL
   required: false

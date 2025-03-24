@@ -21,9 +21,8 @@
 
 .modal {
   &:global(.cds--modal) {
+    @include scrollbar();
     background-color: $modal-background;
-    scrollbar-gutter: stable;
-    overflow-y: auto;
   }
 
   :global(.cds--modal-container) {

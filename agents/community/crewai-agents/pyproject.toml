@@ -14,7 +14,7 @@ dependencies = [
 ]
 
 [project.scripts]
-crewai-agents = "crewai_agents.server:main"
+server = "crewai_agents.server:main"
 
 [tool.ruff]
 line-length = 120

@@ -15,17 +15,16 @@
  */
 
 import { ErrorMessage } from '#components/ErrorMessage/ErrorMessage.tsx';
-import { SkeletonItems } from '#components/SkeletonItems/SkeletonItems.tsx';
 import { TransitionLink } from '#components/TransitionLink/TransitionLink.tsx';
 import { routes } from '#utils/router.ts';
 import { useFormContext } from 'react-hook-form';
 import { useListAgents } from '../api/queries/useListAgents';
-import { Agent } from '../api/types';
+import type { Agent } from '../api/types';
 import { AgentCard } from '../components/AgentCard';
 import { AgentsFilters } from '../components/AgentsFilters';
 import { AgentsList } from '../components/AgentsList';
 import { ImportAgents } from '../components/ImportAgents';
-import { AgentsFiltersParams } from '../providers/AgentsFiltersProvider';
+import type { AgentsFiltersParams } from '../providers/AgentsFiltersProvider';
 
 export function AgentsView() {
   const { data, isPending, error, refetch, isRefetching } = useListAgents();
@@ -44,24 +43,13 @@ export function AgentsView() {
       );
 
     return (
-      <AgentsList agents={data} filters={filters} action={<ImportAgents />}>
+      <AgentsList agents={data} filters={filters} action={<ImportAgents />} isPending={isPending}>
         {(filteredAgents) =>
-          !isPending ? (
-            filteredAgents?.map((agent, idx) => (
-              <li key={idx}>
-                <AgentCard agent={agent} renderTitle={renderAgentTitle} />
-              </li>
-            ))
-          ) : (
-            <SkeletonItems
-              count={5}
-              render={(idx) => (
-                <li key={idx}>
-                  <AgentCard.Skeleton />
-                </li>
-              )}
-            />
-          )
+          filteredAgents?.map((agent, idx) => (
+            <li key={idx}>
+              <AgentCard agent={agent} renderTitle={renderAgentTitle} />
+            </li>
+          ))
         }
       </AgentsList>
     );
@@ -78,7 +66,7 @@ export function AgentsView() {
 const renderAgentTitle = ({ className, agent }: { className: string; agent: Agent }) => {
   const route = routes.agentDetail({ name: agent.name });
   return (
-    <TransitionLink className={className} to={route}>
+    <TransitionLink className={className} href={route}>
       {agent.name}
     </TransitionLink>
   );

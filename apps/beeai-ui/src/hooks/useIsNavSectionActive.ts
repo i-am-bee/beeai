@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { NavSectionName } from '#utils/router.ts';
+import type { NavSectionName } from '#utils/router.ts';
 import { useCallback } from 'react';
 import { useLocation } from 'react-router';
 

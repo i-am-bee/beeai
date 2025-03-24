@@ -14,7 +14,7 @@ dependencies = [
 ]
 
 [project.scripts]
-autogen-agents = "autogen_agents.server:main"
+server = "autogen_agents.server:main"
 
 [build-system]
 requires = ["hatchling"]

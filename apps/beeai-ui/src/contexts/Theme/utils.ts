@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-import { Theme } from './types';
+import type { Theme } from './types';
 
 export const getThemeClassName = (theme: Theme) => `cds--${theme}`;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { PropsWithChildren } from 'react';
+import type { PropsWithChildren } from 'react';
 import { Container } from './Container';
 import classes from './ErrorLayout.module.scss';
 

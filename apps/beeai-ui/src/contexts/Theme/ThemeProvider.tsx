@@ -16,7 +16,8 @@
 
 'use client';
 
-import { PropsWithChildren, useCallback, useEffect, useMemo } from 'react';
+import type { PropsWithChildren } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useLocalStorage, useMediaQuery } from 'usehooks-ts';
 import { ThemeContext } from './theme-context';
 import { Theme } from './types';
