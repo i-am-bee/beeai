@@ -153,9 +153,10 @@ export function useCreateMCPClient() {
   }, [cleanup]);
 
   return {
-    createClient,
     client: clientRef.current,
     status,
+    createClient,
+    closeClient,
   };
 }
 
