@@ -44,9 +44,9 @@
       {
         "group": "Agent Communication Protocol",
         "pages": [
-          "/acp/spec/agent-manifest",
-          "/acp/spec/agent-list",
-          "/acp/spec/agent-get",
+          "/acp/spec/agents-manifest",
+          "/acp/spec/agents-list",
+          "/acp/spec/agents-get",
           {
             "group": "Alpha",
             "icon": "tag",
@@ -60,6 +60,7 @@
                     "group": "Run",
                     "icon": "tag",
                     "pages": [
+                      "/acp/spec/intro",
                       "/acp/spec/run-create",
                       "/acp/spec/run-get",
                       {

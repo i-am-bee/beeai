@@ -19,7 +19,7 @@ tags:
   - name: agent
     description: Operations about agent
 paths:
-  /agent:
+  /agents:
     get:
       tags:
         - agent
@@ -59,7 +59,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  /agent/{agentName}:
+  /agents/{agentName}:
     get:
       tags:
         - agent
