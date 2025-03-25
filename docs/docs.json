@@ -50,7 +50,31 @@
           {
             "group": "Alpha",
             "icon": "tag",
-            "pages": ["/acp/alpha/introduction", "/acp/alpha/architecture"]
+            "pages": [
+              "/acp/alpha/introduction",
+              "/acp/alpha/architecture",
+              {
+                "group": "Specification",
+                "pages": [
+                  {
+                    "group": "Run",
+                    "icon": "tag",
+                    "pages": [
+                      "/acp/spec/run-create",
+                      "/acp/spec/run-get",
+                      {
+                        "group": "Streaming",
+                        "icon": "tag",
+                        "pages": [
+                          "/acp/spec/run-create-stream",
+                          "/acp/spec/run-get-stream"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
           },
           {
             "group": "Pre-alpha",

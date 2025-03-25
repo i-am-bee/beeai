@@ -90,8 +90,122 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /runs:
+    post:
+      tags:
+        - run
+      summary: Run agent
+      description: Multiple filter values can be provided
+      operationId: run
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Run"
+        "400":
+          description: Invalid input
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /runs/stream:
+    post:
+      tags:
+        - run
+      summary: Run agent
+      description: Multiple filter values can be provided
+      operationId: run
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RunDelta"
+        "400":
+          description: Invalid input
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /runs/{runId}:
+    get:
+      tags:
+        - run
+      summary: Run agent
+      description: Multiple filter values can be provided
+      operationId: run
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Run"
+        "400":
+          description: Invalid input
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /runs/{runId}/stream:
+    get:
+      tags:
+        - run
+      summary: Run agent
+      description: Multiple filter values can be provided
+      operationId: run
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RunDelta"
+        "400":
+          description: Invalid input
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 components:
   schemas:
+    Run:
+      type: object
+      required:
+        - id
+        - status
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+          enum: [pending, in-progress, interrupted, completed]
+        result:
+          type: object
+    RunDelta:
+      type: object
+      required:
+        - id
+        - status
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+          enum: [pending, in-progress, interrupted, completed]
+        result:
+          type: object
     Agent:
       required:
         - name
