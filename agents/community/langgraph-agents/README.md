@@ -7,12 +7,12 @@
 
 ```shell
 # Run MCP server
-uv run langgraph-agents
+uv run server
 ```
 
 ```shell
 # Test MCP server with beeai-cli
 env BEEAI__HOST=http://localhost:8000 \
     BEEAI__MCP_SSE_PATH='/sse' \
-    uv run beeai agent run ollama-deep-researcher '{"prompt": "hello"}'
+    uv run beeai agent run ollama-deep-researcher 'hello'
 ```
