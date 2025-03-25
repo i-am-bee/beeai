@@ -17,5 +17,5 @@ catalog:
   stylelint-config-css-modules: "^4.4.0"
   stylelint-config-recommended-scss: "^14.1.0"
   stylelint-plugin-logical-css: "^1.2.2"
-  typescript-eslint: "^8.27.0"
+  typescript-eslint: "^8.28.0"
   typescript: "^5.8.2"
