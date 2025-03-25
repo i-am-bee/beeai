@@ -1,8 +1,6 @@
 manifestVersion: 1
-driver: nodejs
-package: "git+https://github.com/i-am-bee/beeai@agents-v0.0.61#path=agents/official/beeai-framework"
-serverType: http
-command: ["server"]
+name: "crewai-agent"
+
 env:
 - name: LLM_MODEL
   required: false

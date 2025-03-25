@@ -17,12 +17,11 @@ jobs:
       matrix:
         agent:
           - official/composition
-          - community/aider-agent
-          - community/autogen-agents
-          - community/crewai-agents
-          - community/gpt-researcher-agent
-          - community/langgraph-agents
-
+          - community/aider
+          - community/gpt-researcher
+          - community/literature-review
+          - community/marketing-strategy
+          - community/ollama-deep-reserarcher
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -36,7 +35,11 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
+      - name: Read agent manifest
+        id: agent-manifest
+        run: |
+          AGENT_MANIFEST=$(cat ./agents/${{ matrix.agent }}/agent.yaml | base64 -w 0)
+          echo "content=$AGENT_MANIFEST" >> $GITHUB_OUTPUT
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
@@ -44,3 +47,5 @@ jobs:
           push: true
           platforms: linux/amd64,linux/arm64
           tags: ghcr.io/${{ github.repository }}/${{ matrix.agent }}:${{ github.ref_name }},ghcr.io/${{ github.repository }}/${{ matrix.agent }}:latest
+          labels: |
+            beeai.dev.agent.yaml=${{ steps.agent-manifest.outputs.content }}

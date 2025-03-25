@@ -1,0 +1,19 @@
+manifestVersion: 1
+name: "literature-review"
+
+env:
+  - name: LLM_MODEL
+    required: false
+    description: "Model to use from the specified OpenAI-compatible API."
+  - name: LLM_API_BASE
+    required: false
+    description: "Base URL for OpenAI-compatible API endpoint"
+  - name: LLM_API_KEY
+    required: false
+    description: "API key for OpenAI-compatible API endpoint"
+  - name: GOOGLE_API_KEY
+    required: false
+    description: "Google Search API key"
+  - name: GOOGLE_SEARCH_ENGINE_ID
+    required: false
+    description: "Google Search Engine ID"
