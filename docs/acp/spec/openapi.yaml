@@ -95,17 +95,24 @@ paths:
       tags:
         - run
       summary: Run agent
-      description: Multiple filter values can be provided
+      description: Run agent in a background
       operationId: run
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RunCreateBody"
       responses:
         "200":
-          description: successful operation
+          description: Run successfully created 
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Run"
         "400":
           description: Invalid input
+        "404":
+          description: Not found
         default:
           description: Unexpected error
           content:
@@ -117,17 +124,24 @@ paths:
       tags:
         - run
       summary: Run agent
-      description: Multiple filter values can be provided
+      description: Run agent and consume its output stream
       operationId: run
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RunCreateBody"
       responses:
         "200":
-          description: successful operation
+          description: Run successfully created 
           content:
-            application/json:
+            text/event-stream:
               schema:
                 $ref: "#/components/schemas/RunDelta"
         "400":
           description: Invalid input
+        "404":
+          description: Not found
         default:
           description: Unexpected error
           content:
@@ -138,8 +152,8 @@ paths:
     get:
       tags:
         - run
-      summary: Run agent
-      description: Multiple filter values can be provided
+      summary: Read run
+      description: Read state of a run
       operationId: run
       responses:
         "200":
@@ -150,6 +164,27 @@ paths:
                 $ref: "#/components/schemas/Run"
         "400":
           description: Invalid input
+        "404":
+          description: Not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      tags:
+        - run
+      summary: Delete run
+      description: Delete a run, unfinished run will be cancelled
+      operationId: run
+      responses:
+        "201":
+          description: Run successfully deleted
+        "400":
+          description: Invalid input
+        "404":
+          description: Not found
         default:
           description: Unexpected error
           content:
@@ -160,14 +195,14 @@ paths:
     get:
       tags:
         - run
-      summary: Run agent
-      description: Multiple filter values can be provided
+      summary: Stream run
+      description: Consume output stream of a run, only the events emitted after the request is made will be sent.
       operationId: run
       responses:
         "200":
           description: successful operation
           content:
-            application/json:
+            text/event-stream:
               schema:
                 $ref: "#/components/schemas/RunDelta"
         "400":
@@ -180,6 +215,13 @@ paths:
                 $ref: "#/components/schemas/Error"
 components:
   schemas:
+    RunCreateBody:
+      type: object
+      required:
+        - agentId
+      properties:
+        agentId:
+          type: string
     Run:
       type: object
       required:
