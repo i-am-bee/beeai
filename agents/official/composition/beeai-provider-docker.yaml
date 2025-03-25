@@ -1,3 +1,0 @@
-manifestVersion: 1
-driver: container
-image: ghcr.io/i-am-bee/beeai/official/composition:agents-v0.0.64
