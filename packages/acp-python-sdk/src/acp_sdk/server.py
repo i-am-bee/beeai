@@ -1,4 +1,7 @@
-from fastapi import FastAPI
+import asyncio
+import uuid
+
+from fastapi import FastAPI, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
@@ -14,7 +17,8 @@ class RunInput(BaseModel):
 
 
 class RunOutput(BaseModel):
-    output: Output
+    id: str = uuid.uuid4()
+    output: Output | None = None
 
 
 def encode_sse(model: BaseModel):
@@ -24,8 +28,10 @@ def encode_sse(model: BaseModel):
 async def serve(agent: Agent):
     app = FastAPI()
 
+    run_tasks: dict[str, asyncio.Task] = dict()
+
     @app.post("/runs")
-    async def run(run: RunInput) -> RunOutput:
+    async def _(run: RunInput) -> RunOutput:
         if run.stream:
 
             async def stream_outputs():
@@ -38,8 +44,20 @@ async def serve(agent: Agent):
                 media_type="text/event-stream",
             )
         else:
-            output = await agent.run(run.input)
-            return RunOutput(output=output)
+            output = RunOutput()
+            task = asyncio.create_task(agent.run(run.input))
+            dict[output.id] = task
+            return output
+
+    @app.get("/runs/{run_id}")
+    async def _(run_id: str) -> RunOutput:
+        task = run_tasks.get(run_id, None)
+        if not task:
+            raise HTTPException(status_code=404, detail=f"Run {run_id} not found")
+        output = RunOutput(id=run_id)
+        if task.done:
+            output.output = task.result
+        return output
 
     config = uvicorn.Config(app=app, host="0.0.0.0", port=8000, log_level="info")
     server = uvicorn.Server(config)
