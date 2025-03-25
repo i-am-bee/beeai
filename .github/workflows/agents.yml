@@ -16,7 +16,7 @@ jobs:
     strategy:
       matrix:
         agent:
-          - official/composition
+          - official/sequential-workflow
           - community/aider
           - community/gpt-researcher
           - community/literature-review
