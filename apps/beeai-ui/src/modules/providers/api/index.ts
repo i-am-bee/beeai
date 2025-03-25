@@ -20,7 +20,7 @@ import type { CreateProviderBody } from './types';
 export async function createProvider({ body }: { body: CreateProviderBody }) {
   const response = await api.POST('/api/v1/provider', { body });
 
-  if (response.error) {
+  if (response.error != null) {
     throw new Error('Failed to create provider.');
   }
 
@@ -32,7 +32,7 @@ export async function deleteProvider({ id }: { id: string }) {
     body: { location: id },
   });
 
-  if (response.error) {
+  if (response.error != null) {
     throw new Error('Failed to delete provider.');
   }
 
@@ -42,7 +42,7 @@ export async function deleteProvider({ id }: { id: string }) {
 export async function getProviders() {
   const response = await api.GET('/api/v1/provider');
 
-  if (response.error) {
+  if (response.error != null) {
     throw new Error('Failed to get providers.');
   }
 

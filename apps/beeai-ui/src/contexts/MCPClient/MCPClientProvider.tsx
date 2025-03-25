@@ -14,20 +14,25 @@
  * limitations under the License.
  */
 
-import type { PropsWithChildren } from 'react';
-import { useEffect, useState } from 'react';
-import { MCPClientContext } from './mcp-client-context';
 import { useCreateMCPClient } from '#api/mcp-client/useCreateMCPClient.ts';
-import type { Client as MCPClient } from '@i-am-bee/acp-sdk/client/index';
+import { useQueryClient } from '@tanstack/react-query';
+import type { PropsWithChildren } from 'react';
+import { useEffect } from 'react';
+import { MCPClientContext } from './mcp-client-context';
 
 export function MCPClientProvider({ children }: PropsWithChildren) {
-  const [client, setClient] = useState<MCPClient | null>(null);
-
-  const createClient = useCreateMCPClient();
+  const { createClient, client } = useCreateMCPClient();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
-    createClient().then((client) => setClient(client));
+    createClient();
   }, [createClient]);
+
+  useEffect(() => {
+    if (client) {
+      queryClient.invalidateQueries();
+    }
+  }, [client, queryClient]);
 
   return <MCPClientContext.Provider value={client}>{children}</MCPClientContext.Provider>;
 }
