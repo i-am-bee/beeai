@@ -1,0 +1,251 @@
+openapi: 3.1.1
+info:
+  title: ACP - Agent Communication Protocol
+  description: >-
+    TBD
+  contact:
+    name: BeeAI
+    url: https://beeai.dev
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: 0.1.0
+externalDocs:
+  description: Find out more about BeeAI
+  url: https://docs.beeai.dev
+servers:
+  - url: http://localhost:8333/api/v0
+tags:
+  - name: agent
+    description: Operations about agent
+paths:
+  /agent:
+    get:
+      tags:
+        - agent
+      summary: List agents
+      description: Multiple filter values can be provided
+      operationId: listAgents
+      parameters:
+        - name: limit
+          in: query
+          description: Maximum number to return
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+            maximum: 1000
+        - name: offset
+          in: query
+          description: Offset to start from
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Agent"
+        "400":
+          description: Invalid input
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /agent/{agentName}:
+    get:
+      tags:
+        - agent
+      summary: Get agent by name.
+      description: Returns a single pet.
+      operationId: getAgentByName
+      parameters:
+        - name: agentName
+          in: path
+          description: Name of agent to return
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Agent"
+        "400":
+          description: Invalid Name supplied
+        "404":
+          description: Agent not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+components:
+  schemas:
+    Agent:
+      required:
+        - name
+        - description
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the agent
+          examples:
+            - gpt-researcher
+        description:
+          type: string
+          examples:
+            - Conducts in-depth local and web research
+        capabilities:
+          $ref: "#/components/schemas/Capabilities"
+        schemas:
+          $ref: "#/components/schemas/Schemas"
+        metadata:
+          $ref: "#/components/schemas/Metadata"
+        status:
+          $ref: "#/components/schemas/Status"
+    Capabilities:
+      type: object
+      required:
+        - threads
+        - interrupts
+        - streaming
+      properties:
+        threads:
+          type: boolean
+          default: false
+        interrupts:
+          type: boolean
+          default: false
+        streaming:
+          type: boolean
+          default: false
+    Schemas:
+      type: object
+      properties:
+        input:
+          $ref: "#/components/schemas/GeneralSchema"
+        output:
+          $ref: "#/components/schemas/GeneralSchema"
+        interrupts:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Unique name of the interrupt
+              request:
+                $ref: "#/components/schemas/GeneralSchema"
+              response:
+                $ref: "#/components/schemas/GeneralSchema"
+    Status:
+      type: object
+      description: Runtime related information
+    Tag:
+      anyOf:
+        - type: string
+        - enum:
+            - Chat
+            - RAG
+            - Canvas
+            - Code
+            - Researcher
+    Metadata:
+      type: object
+      properties:
+        documentation:
+          type: string
+          description: Full agent documentation in markdown
+        license:
+          type: string
+          description: >-
+            SPDX license ID: https://spdx.org/licenses/
+        language:
+          type: string
+          description: >-
+            Programming language, supported values: https://docs.github.com/en/get-started/learning-about-github/github-language-support
+        framework:
+          type: string
+          description: For example BeeAI, crewAI, Autogen, AG2
+          examples:
+            - BeeAI
+            - AG2
+        tags:
+          type: array
+          items:
+            $ref: "#/components/schemas/Tag"
+        createdAt:
+          $ref: "#/components/schemas/Timestamp"
+        updatedAt:
+          $ref: "#/components/schemas/Timestamp"
+        author:
+          $ref: "#/components/schemas/Person"
+        contributors:
+          type: array
+          items:
+            $ref: "#/components/schemas/Person"
+        links:
+          type: array
+          items:
+            $ref: "#/components/schemas/Link"
+
+    GeneralSchema:
+      oneOf:
+        - $ref: "#/components/schemas/JsonSchema"
+        - enum:
+            - chat
+            - text
+    JsonSchema:
+      type: object
+    Link:
+      type: object
+      properties:
+        type:
+          enum:
+            - source-code
+            - docker-image
+            - homepage
+            - documentation
+        url:
+          type: string
+          format: uri
+    Timestamp:
+      type: string
+      format: date-time
+      description: >-
+        Timestamp in RFC3339 format: https://www.rfc-editor.org/rfc/rfc3339.html
+    Person:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        url:
+          type: string
+          format: uri
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+      required:
+        - code
+        - message
