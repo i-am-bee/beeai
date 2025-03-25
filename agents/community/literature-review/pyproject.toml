@@ -1,5 +1,5 @@
 [project]
-name = "literature_review"
+name = "literature-review"
 version = "0.0.1"
 description = "Collection of autogen agents"
 readme = "README.md"
