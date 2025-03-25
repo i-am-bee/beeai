@@ -5,33 +5,9 @@ import { AcpServer } from "@i-am-bee/acp-sdk/server/acp";
 
 import { Version } from "beeai-framework";
 import { runAgentProvider } from "@i-am-bee/beeai-sdk/providers/agent";
-import { agent as chat } from "./chat/chat.js";
-import { agent as contentJudge } from "./content-judge/content-judge.js";
-import { agent as podcastCreator } from "./podcast-creator/podcast-creator.js";
-
-async function registerTools(server: AcpServer) {
-  await chat.registerTools(server);
-}
+import { agent as podcastCreator } from "./podcast-creator.js";
 
 async function registerAgents(server: AcpServer) {
-  server.agent(
-    chat.name,
-    chat.description,
-    chat.inputSchema,
-    chat.outputSchema,
-    chat.run(server),
-    chat.metadata
-  );
-
-  server.agent(
-    contentJudge.name,
-    contentJudge.description,
-    contentJudge.inputSchema,
-    contentJudge.outputSchema,
-    contentJudge.run,
-    contentJudge.metadata
-  );
-
   server.agent(
     podcastCreator.name,
     podcastCreator.description,
@@ -44,10 +20,9 @@ async function registerAgents(server: AcpServer) {
 
 export async function createServer() {
   const server = new AcpServer({
-    name: "beeai-framework",
+    name: "podcast-creator",
     version: Version,
   });
-  await registerTools(server);
   await registerAgents(server);
   return server;
 }
