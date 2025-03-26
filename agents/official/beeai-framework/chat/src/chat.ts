@@ -1,7 +1,7 @@
 import { z, ZodRawShape } from "zod";
 import { Metadata } from "@i-am-bee/beeai-sdk/schemas/metadata";
 import { Message } from "beeai-framework/backend/message";
-import { API_BASE, API_KEY, MODEL } from "../config.js";
+import { API_BASE, API_KEY, MODEL } from "./config.js";
 import {
   messageInputSchema,
   MessageOutput,

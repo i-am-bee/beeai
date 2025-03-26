@@ -6,7 +6,7 @@ import {
 } from "@i-am-bee/beeai-sdk/schemas/text";
 import { SystemMessage, UserMessage } from "beeai-framework/backend/message";
 import { AcpServer } from "@i-am-bee/acp-sdk/server/acp";
-import { MODEL, API_BASE, API_KEY } from "../config.js";
+import { MODEL, API_BASE, API_KEY } from "./config.js";
 import { OpenAIChatModel } from "beeai-framework/adapters/openai/backend/chat";
 
 const inputSchema = textInputSchema;
