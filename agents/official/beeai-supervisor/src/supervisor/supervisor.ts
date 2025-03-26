@@ -104,7 +104,7 @@ const run =
     };
   };
 
-const agentName = "supervisor-local";
+const agentName = "supervisor";
 
 export const agent = {
   name: agentName,
