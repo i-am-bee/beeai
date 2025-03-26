@@ -5,7 +5,7 @@ providers:
   - location: ghcr.io/i-am-bee/beeai/official/beeai-supervisor:agents-v0.0.66
   - location: ghcr.io/i-am-bee/beeai/official/agent-docs-creator:agents-v0.0.66
   - location: ghcr.io/i-am-bee/beeai/official/beeai-framework/chat:agents-v0.0.66
-  - location: ghcr.io/i-am-bee/beeai/official/beeai-framework/context-judge:agents-v0.0.66
+  - location: ghcr.io/i-am-bee/beeai/official/beeai-framework/content-judge:agents-v0.0.66
   - location: ghcr.io/i-am-bee/beeai/official/beeai-framework/podcast-creator:agents-v0.0.66
   # Community
   - location: ghcr.io/i-am-bee/beeai/community/aider:agents-v0.0.66

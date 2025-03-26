@@ -26,7 +26,7 @@ jobs:
           - community/gpt-researcher
           - community/literature-review
           - community/marketing-strategy
-          - community/ollama-deep-reserarcher
+          - community/ollama-deep-researcher
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
