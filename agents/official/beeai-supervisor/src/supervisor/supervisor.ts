@@ -1,5 +1,4 @@
 import { AcpServer } from "@i-am-bee/acp-sdk/server/acp";
-import { MessageOutput } from "@i-am-bee/beeai-sdk/schemas/message";
 import { Metadata } from "@i-am-bee/beeai-sdk/schemas/metadata";
 import {
   textInputSchema,
@@ -10,10 +9,10 @@ import {
   RuntimeOutputMethod,
 } from "@i-am-bee/beeai-supervisor";
 import { CreateAgentConfig } from "@i-am-bee/beeai-supervisor/agents/registry/registry.js";
+import { Logger } from "beeai-framework";
 import { z } from "zod";
 import { AgentFactory } from "./agent-factory.js";
 import { PlatformSdk } from "./platform-sdk.js";
-import { Logger } from "beeai-framework";
 
 const inputSchema = textInputSchema.extend({
   availableAgents: z.array(z.string()),
@@ -55,7 +54,7 @@ const run =
           instructions: "Not used",
           tools: [],
           maxPoolSize: 10,
-        } as CreateAgentConfig)
+        }) as CreateAgentConfig
     );
 
     const supervisorAgent = await createSupervisor({
@@ -94,9 +93,13 @@ const run =
       }
     };
 
-    const response = await supervisorAgent.run(input.text, output);
+    const response = await supervisorAgent.run(
+      input.text,
+      output,
+      signal ?? new AbortController().signal
+    ); // FIXME
     return {
-      text: response,
+      text: response || '',
       logs: [],
     };
   };
