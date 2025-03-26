@@ -237,9 +237,15 @@ paths:
                 $ref: "#/components/schemas/Error"
 components:
   schemas:
+    AgentId:
+      type: string
+      description: Identifier if an agent
     RunId:
       type: string
-      description: Identifier of the run
+      description: Identifier of a run
+    ThreadId:
+      type: string
+      description: Identifier if a thread
     RunStatus:
         type: string
         enum: [created, in-progress, interrupted, cancelled, completed, failed]
@@ -247,26 +253,31 @@ components:
     RunCreateBody:
       type: object
       required:
-        - agentName
-        - input
+        - agent_id
       properties:
-        agentName:
-          type: string
+        agent_id:
+          $ref: "#/components/schemas/AgentId"
+        thread_id:
+          $ref: "#/components/schemas/ThreadId"
         input:
           type: object
     Run:
       type: object
       required:
-        - id
+        - run_id
+        - agent_id
         - status
       properties:
-        id:
+        run_id:
           $ref: "#/components/schemas/RunId"
+        agent_id:
+          $ref: "#/components/schemas/AgentId"
+        thread_id:
+          $ref: "#/components/schemas/ThreadId"
         status:
           $ref: "#/components/schemas/RunStatus"
         output:
           type: object
-          nullable: true
           description: Output of the run, only available once run has completed
     RunDelta:
       type: object
@@ -274,8 +285,12 @@ components:
         - id
         - status
       properties:
-        id:
+        run_id:
           $ref: "#/components/schemas/RunId"
+        agent_id:
+          $ref: "#/components/schemas/AgentId"
+        thread_id:
+          $ref: "#/components/schemas/ThreadId"
         status:
           $ref: "#/components/schemas/RunStatus"
         delta:
