@@ -213,6 +213,28 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /runs/{runId}/cancel:
+    post:
+      tags:
+        - run
+      summary: Cancel run
+      description: Cancel run
+      operationId: run
+      responses:
+        "200":
+          description: Run successfully cancelled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Run"
+        "400":
+          description: Invalid input
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 components:
   schemas:
     RunId:
@@ -220,15 +242,18 @@ components:
       description: Identifier of the run
     RunStatus:
         type: string
-        enum: [created, in-progress, interrupted, completed, failed]
+        enum: [created, in-progress, interrupted, cancelled, completed, failed]
         description: Status of the run
     RunCreateBody:
       type: object
       required:
         - agentName
+        - input
       properties:
         agentName:
           type: string
+        input:
+          type: object
     Run:
       type: object
       required:
@@ -239,10 +264,10 @@ components:
           $ref: "#/components/schemas/RunId"
         status:
           $ref: "#/components/schemas/RunStatus"
-        result:
+        output:
           type: object
           nullable: true
-          description: Result of the run, only available once run has completed
+          description: Output of the run, only available once run has completed
     RunDelta:
       type: object
       required:

@@ -63,6 +63,7 @@
                       "/acp/spec/intro",
                       "/acp/spec/run-create",
                       "/acp/spec/run-get",
+                      "/acp/spec/run-cancel",
                       "/acp/spec/run-delete",
                       {
                         "group": "Streaming",
