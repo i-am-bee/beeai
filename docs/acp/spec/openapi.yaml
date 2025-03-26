@@ -157,7 +157,7 @@ paths:
       operationId: run
       responses:
         "200":
-          description: successful operation
+          description: Status successfully read
           content:
             application/json:
               schema:
@@ -196,11 +196,11 @@ paths:
       tags:
         - run
       summary: Stream run
-      description: Consume output stream of a run, only the events emitted after the request is made will be sent.
+      description: Consume output stream of a run, only the events emitted after the request is made will be sent. Request will fail if the run has already finished.
       operationId: run
       responses:
         "200":
-          description: successful operation
+          description: Stream successfully resumed
           content:
             text/event-stream:
               schema:
@@ -215,12 +215,19 @@ paths:
                 $ref: "#/components/schemas/Error"
 components:
   schemas:
+    RunId:
+      type: string
+      description: Identifier of the run
+    RunStatus:
+        type: string
+        enum: [created, in-progress, interrupted, completed, failed]
+        description: Status of the run
     RunCreateBody:
       type: object
       required:
-        - agentId
+        - agentName
       properties:
-        agentId:
+        agentName:
           type: string
     Run:
       type: object
@@ -229,12 +236,13 @@ components:
         - status
       properties:
         id:
-          type: string
+          $ref: "#/components/schemas/RunId"
         status:
-          type: string
-          enum: [pending, in-progress, interrupted, completed]
+          $ref: "#/components/schemas/RunStatus"
         result:
           type: object
+          nullable: true
+          description: Result of the run, only available once run has completed
     RunDelta:
       type: object
       required:
@@ -242,12 +250,12 @@ components:
         - status
       properties:
         id:
-          type: string
+          $ref: "#/components/schemas/RunId"
         status:
-          type: string
-          enum: [pending, in-progress, interrupted, completed]
-        result:
+          $ref: "#/components/schemas/RunStatus"
+        delta:
           type: object
+          description: Delta of the output
     Agent:
       required:
         - name
