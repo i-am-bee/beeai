@@ -1,4 +1,4 @@
-import { BeeAgent } from "beeai-framework/agents/bee/agent";
+import { ReActAgent } from "beeai-framework/agents/react/agent";
 import {
   BaseAgentFactory,
   CreateAgentInput,
@@ -32,7 +32,7 @@ class BeeAiAgent {
   }
 }
 
-export type AgentType = BeeAiAgent | BeeAgent;
+export type AgentType = BeeAiAgent | ReActAgent;
 
 export class AgentFactory extends BaseAgentFactory<AgentType> {
   createAgent(
@@ -45,7 +45,7 @@ export class AgentFactory extends BaseAgentFactory<AgentType> {
         const llm = getChatLLM(input.agentKind);
         const tools = toolsFactory.createTools(input.tools);
 
-        return new BeeAgent({
+        return new ReActAgent({
           meta: {
             name: input.agentId,
             description: input.description,
@@ -78,7 +78,7 @@ export class AgentFactory extends BaseAgentFactory<AgentType> {
     onUpdate: (key: string, value: string) => void,
     signal?: AbortSignal
   ) {
-    if (agent instanceof BeeAgent) {
+    if (agent instanceof ReActAgent) {
       const resp = await agent
         .run(
           { prompt },
