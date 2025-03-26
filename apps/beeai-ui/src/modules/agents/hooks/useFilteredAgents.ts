@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
+import { compareStrings } from '#utils/helpers.ts';
+import intersection from 'lodash/intersection';
 import { useMemo } from 'react';
 import type { Agent } from '../api/types';
 import type { AgentsFiltersParams } from '../providers/AgentsFiltersProvider';
-import intersection from 'lodash/intersection';
 
 interface Props {
   agents: Agent[];
@@ -57,7 +58,7 @@ export function useFilteredAgents({ agents, filters }: Props) {
 
         return true;
       })
-      .sort((a, b) => a.name.localeCompare(b.name));
+      .sort((a, b) => compareStrings(a.name, b.name));
   }, [agents, filters]);
 
   return { filteredAgents, filteredCount: filteredAgents.length };

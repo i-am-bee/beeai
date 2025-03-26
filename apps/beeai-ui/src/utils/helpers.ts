@@ -29,3 +29,7 @@ export const noop = () => {};
 export function isNotNull<T>(value: T | null | undefined): value is T {
   return value != null;
 }
+
+export function compareStrings(a: string, b: string): number {
+  return a.localeCompare(b, 'en', { sensitivity: 'base' });
+}

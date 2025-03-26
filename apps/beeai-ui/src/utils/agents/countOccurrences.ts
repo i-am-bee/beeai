@@ -16,6 +16,7 @@
 
 import type { Agent } from '#modules/agents/api/types.ts';
 import { BEE_AI_FRAMEWORK_TAG } from '#utils/constants.ts';
+import { compareStrings } from '#utils/helpers.ts';
 
 type AgentsCounts = Record<string, number>;
 export type AgentsCountedOccurrence = { label: string; count: number }[];
@@ -79,8 +80,8 @@ function sort(counts: AgentsCounts, prioritize?: string): AgentsCountedOccurrenc
         return countB - countA;
       }
 
-      // If counts are the same, sort the keys alphabetically using localeCompare
-      return keyA.localeCompare(keyB, undefined, { sensitivity: 'base' });
+      // If counts are the same, sort the keys alphabetically
+      return compareStrings(keyA, keyB);
     })
     .map(([key, count]) => ({ label: key, count }));
 }

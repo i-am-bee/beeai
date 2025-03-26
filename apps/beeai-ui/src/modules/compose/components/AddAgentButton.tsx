@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-import { Button } from '@carbon/react';
-import classes from './AddAgentButton.module.scss';
-import type { RefObject } from 'react';
-import { useId, useMemo, useRef, useState } from 'react';
-import { AgentListOption } from './AgentListOption';
-import { useOnClickOutside } from 'usehooks-ts';
+import { SkeletonItems } from '#components/SkeletonItems/SkeletonItems.tsx';
 import { useListAgents } from '#modules/agents/api/queries/useListAgents.ts';
 import type { Agent } from '#modules/agents/api/types.ts';
-import { SkeletonItems } from '#components/SkeletonItems/SkeletonItems.tsx';
-import { isValidForSequentialWorkflow } from '../sequential/utils';
+import { compareStrings } from '#utils/helpers.ts';
 import { Add } from '@carbon/icons-react';
+import { Button } from '@carbon/react';
+import type { RefObject } from 'react';
+import { useId, useMemo, useRef, useState } from 'react';
+import { useOnClickOutside } from 'usehooks-ts';
+import { isValidForSequentialWorkflow } from '../sequential/utils';
+import classes from './AddAgentButton.module.scss';
+import { AgentListOption } from './AgentListOption';
 
 interface Props {
   onSelectAgent: (agent: Agent) => void;
@@ -43,7 +44,7 @@ export function AddAgentButton({ onSelectAgent, isDisabled }: Props) {
   const { data, isPending } = useListAgents();
 
   const availableAgents = useMemo(
-    () => data?.filter(isValidForSequentialWorkflow).sort((a, b) => a.name.localeCompare(b.name)),
+    () => data?.filter(isValidForSequentialWorkflow).sort((a, b) => compareStrings(a.name, b.name)),
     [data],
   );
 
