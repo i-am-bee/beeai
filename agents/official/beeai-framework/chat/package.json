@@ -14,7 +14,7 @@
   "description": "",
   "dependencies": {
     "@ai-sdk/openai": "^1.1.14",
-    "@arizeai/openinference-instrumentation-beeai": "^1.1.1",
+    "@arizeai/openinference-instrumentation-beeai": "1.1.2",
     "@i-am-bee/acp-sdk": "0.0.5",
     "@i-am-bee/beeai-sdk": "0.0.16",
     "beeai-framework": "0.1.10",
