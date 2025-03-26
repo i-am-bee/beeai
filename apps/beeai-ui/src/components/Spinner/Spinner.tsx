@@ -15,9 +15,12 @@
  */
 
 import clsx from 'clsx';
-import Lottie from 'lottie-react';
+import { lazy } from 'react';
 import SpinnerAnimation from './BouncingDotsAnimation.json';
 import classes from './Spinner.module.scss';
+
+// Needs to be lazily loaded due to an error when used with Next.js https://github.com/Gamote/lottie-react/issues/123
+const Lottie = lazy(() => import('lottie-react'));
 
 interface Props {
   size?: 'sm' | 'md';
