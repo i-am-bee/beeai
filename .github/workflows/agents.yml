@@ -17,6 +17,11 @@ jobs:
       matrix:
         agent:
           - official/sequential-workflow
+          - official/agent-docs-creator
+          - official/beeai-framework/content-judge
+          - official/beeai-framework/chat
+          - official/beeai-framework/podcast-creator
+          - official/beeai-supervisor
           - community/aider
           - community/gpt-researcher
           - community/literature-review
