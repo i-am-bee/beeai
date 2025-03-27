@@ -228,10 +228,47 @@ components:
       enum: [sync, async, stream]
       default: sync
       description: Mode of the request
+    Message:
+      type: array
+      items:
+        oneOf:
+        - type: object
+          required:
+            - type
+            - content
+          properties:
+            type:
+              type: string
+              const: text
+            content: 
+              type: string
+        - type: object
+          required:
+            - type
+            - contentUrl
+          properties:
+            type:
+                type: string
+                const: image
+            contentUrl: 
+              type: string
+        - type: object
+          required:
+            - type
+            - contentUrl
+            - name
+          properties:  
+            type:
+              type: string
+              const: artifact
+            contentUrl: 
+              type: string
+            name:
+              type: string
     RunInput:
-      type: object
+      $ref: "#/components/schemas/Message"
     RunOutput:
-      type: object
+      $ref: "#/components/schemas/Message"
     RunCreateBody:
       type: object
       required:
@@ -298,8 +335,14 @@ components:
         status:
           $ref: "#/components/schemas/RunStatus"
         delta:
-          type: object
-          description: Delta of the output
+          oneOf:
+          - type: object
+            properties:
+              type:
+                type: string
+                const: output
+              output:
+                $ref: "#/components/schemas/RunOutput"
     Agent:
       required:
         - name
