@@ -95,7 +95,7 @@ paths:
       tags:
         - run
       summary: Run agent
-      description: Run agent in a background
+      description: Run an agent
       operationId: run
       requestBody:
         content:
@@ -104,69 +104,20 @@ paths:
               $ref: "#/components/schemas/RunCreateBody"
       responses:
         "200":
-          description: Run successfully created 
+          description: Run created
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Run"
-        "400":
-          description: Invalid input
-        "404":
-          description: Not found
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-  /runs/wait:
-    post:
-      tags:
-        - run
-      summary: Run agent
-      description: Run agent and wait for completion.
-      operationId: run
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/RunCreateBody"
-      responses:
-        "200":
-          description: Run successfully created 
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Run"
-        "400":
-          description: Invalid input
-        "404":
-          description: Not found
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-  /runs/stream:
-    post:
-      tags:
-        - run
-      summary: Run agent
-      description: Run agent and consume its output stream
-      operationId: run
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/RunCreateBody"
-      responses:
-        "200":
-          description: Run successfully created 
-          content:
             text/event-stream:
               schema:
                 $ref: "#/components/schemas/RunDelta"
+        "202":
+          description: Run created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Run"
         "400":
           description: Invalid input
         "404":
@@ -209,7 +160,7 @@ paths:
       operationId: run
       responses:
         "201":
-          description: Run successfully deleted
+          description: Run deleted
         "400":
           description: Invalid input
         "404":
@@ -223,8 +174,8 @@ paths:
     post:
       tags:
         - run
-      summary: Run agent
-      description: Run agent and wait for completion.
+      summary: Resume run
+      description: Resume interrupted run.
       operationId: run
       requestBody:
         content:
@@ -233,58 +184,16 @@ paths:
               $ref: "#/components/schemas/RunCreateBody"
       responses:
         "200":
-          description: Run successfully created 
+          description: Run resumed
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Run"
-        "400":
-          description: Invalid input
-        "404":
-          description: Not found
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-  /runs/{run_id}/stream:
-    post:
-      tags:
-        - run
-      summary: Stream run
-      description: Consume output stream of a run, only the events emitted after the request is made will be sent. Request will fail if the run has already finished.
-      operationId: run
-      responses:
-        "200":
-          description: Stream successfully resumed
-          content:
             text/event-stream:
               schema:
                 $ref: "#/components/schemas/RunDelta"
-        "400":
-          description: Invalid input
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-  /runs/{run_id}/wait:
-    post:
-      tags:
-        - run
-      summary: Run agent
-      description: Run agent and wait for completion.
-      operationId: run
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/RunCreateBody"
-      responses:
-        "200":
-          description: Run successfully created 
+        "202":
+          description: Run resumed
           content:
             application/json:
               schema:
@@ -308,7 +217,7 @@ paths:
       operationId: run
       responses:
         "200":
-          description: Run successfully cancelled
+          description: Run cancelled
           content:
             application/json:
               schema:
@@ -336,6 +245,11 @@ components:
         type: string
         enum: [created, in-progress, interrupted, cancelled, completed, failed]
         description: Status of the run
+    RunMode:
+        type: string
+        enum: [sync, async, stream]
+        default: sync
+        description: Mode of the request
     RunCreateBody:
       type: object
       required:
@@ -347,6 +261,8 @@ components:
           $ref: "#/components/schemas/ThreadId"
         input:
           type: object
+        mode:
+          $ref: "#/components/schemas/RunMode"
     Run:
       type: object
       required:
