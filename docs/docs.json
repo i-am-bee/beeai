@@ -45,30 +45,17 @@
         "group": "Agent Communication Protocol",
         "pages": [
           "/acp/spec/agents-manifest",
-          "/acp/spec/agents-list",
-          "/acp/spec/agents-get",
           {
             "group": "Alpha",
             "icon": "tag",
             "pages": [
               "/acp/alpha/introduction",
               "/acp/alpha/architecture",
-              {
-                "group": "Specification",
-                "pages": [
-                  {
-                    "group": "Run",
-                    "icon": "tag",
-                    "pages": [
-                      "/acp/spec/intro",
-                      "/acp/spec/run-create",
-                      "/acp/spec/run-get",
-                      "/acp/spec/run-resume",
-                      "/acp/spec/run-cancel"
-                    ]
-                  }
-                ]
-              }
+              "/acp/spec/agent-get",
+              "/acp/spec/run-create",
+              "/acp/spec/run-get",
+              "/acp/spec/run-resume",
+              "/acp/spec/run-cancel"
             ]
           },
           {

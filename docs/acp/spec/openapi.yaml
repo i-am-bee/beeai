@@ -19,60 +19,13 @@ tags:
   - name: agent
     description: Operations about agent
 paths:
-  /agents:
+  /agent:
     get:
       tags:
         - agent
-      summary: List agents
-      description: Multiple filter values can be provided
-      operationId: listAgents
-      parameters:
-        - name: limit
-          in: query
-          description: Maximum number to return
-          schema:
-            type: integer
-            default: 10
-            minimum: 1
-            maximum: 1000
-        - name: offset
-          in: query
-          description: Offset to start from
-          schema:
-            type: integer
-            default: 0
-            minimum: 0
-      responses:
-        "200":
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Agent"
-        "400":
-          description: Invalid input
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-  /agents/{agentName}:
-    get:
-      tags:
-        - agent
-      summary: Get agent by name.
-      description: Returns a single pet.
-      operationId: getAgentByName
-      parameters:
-        - name: agentName
-          in: path
-          description: Name of agent to return
-          required: true
-          schema:
-            type: string
+      summary: Agent descriptor.
+      description: Returns agent descriptor.
+      operationId: agent
       responses:
         "200":
           description: successful operation
@@ -213,9 +166,6 @@ paths:
                 $ref: "#/components/schemas/Error"
 components:
   schemas:
-    AgentId:
-      type: string
-      description: Identifier if an agent
     RunId:
       type: string
       description: Identifier of a run
@@ -272,11 +222,8 @@ components:
     RunCreateBody:
       type: object
       required:
-        - agent_id
         - input
       properties:
-        agent_id:
-          $ref: "#/components/schemas/AgentId"
         input:
           $ref: "#/components/schemas/RunInput"
         mode:
@@ -304,8 +251,6 @@ components:
     Run:
       type: object
       properties:
-        agent_id:
-          $ref: "#/components/schemas/AgentId"
         run_id:
           $ref: "#/components/schemas/RunId"
         status:
@@ -330,8 +275,6 @@ components:
       properties:
         run_id:
           $ref: "#/components/schemas/RunId"
-        agent_id:
-          $ref: "#/components/schemas/AgentId"
         status:
           $ref: "#/components/schemas/RunStatus"
         step:
