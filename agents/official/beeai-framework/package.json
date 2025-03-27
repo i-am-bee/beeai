@@ -16,7 +16,10 @@
     "@ai-sdk/openai": "^1.1.14",
     "@i-am-bee/acp-sdk": "0.0.5",
     "@i-am-bee/beeai-sdk": "0.0.16",
-    "beeai-framework": "0.1.6",
+    "@arizeai/openinference-instrumentation-beeai": "1.1.2",
+    "@arizeai/openinference-semantic-conventions": "1.0.1",
+    "@opentelemetry/api": "^1.9.0",
+    "beeai-framework": "0.1.10",
     "ollama-ai-provider": "^1.2.0",
     "tsx": "^4.19.3",
     "zod": "^3.24.2"

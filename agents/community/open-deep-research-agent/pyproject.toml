@@ -52,6 +52,7 @@ dependencies = [
     "pydantic-settings>=2.7.1",
     "pydantic>=2.10.6",
     "serpapi>=0.1.5",
+    "openinference-instrumentation-smolagents>=0.1.6",
 ]
 
 [project.scripts]

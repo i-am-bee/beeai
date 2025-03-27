@@ -9,6 +9,8 @@ dependencies = [
     "acp-sdk", # version determined by beeai-sdk
     "crewai[tools]>=0.102.0,<1.0.0",
     "databricks-sdk>=0.46.0",
+    "openinference-instrumentation-crewai>=0.1.7",
+    "openinference-instrumentation-langchain>=0.1.37",
 ]
 
 [project.scripts]

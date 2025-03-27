@@ -10,6 +10,8 @@ import { Client as ACPClient } from "@i-am-bee/acp-sdk/client/index";
 import { SSEClientTransport } from "@i-am-bee/acp-sdk/client/sse";
 import { MODEL, API_BASE, API_KEY } from "../config.js";
 import { OpenAIChatModel } from "beeai-framework/adapters/openai/backend/chat";
+import { context, trace } from "@opentelemetry/api";
+import { OpenInferenceSpanKind, SemanticConventions } from "@arizeai/openinference-semantic-conventions";
 
 const inputSchema = textInputSchema.extend({
   documents: z.array(z.string()).default([]).optional(),
@@ -113,6 +115,9 @@ const retrieveDocuments = async ({
   }
 };
 
+const agentName = "content-judge";
+const tracer = trace.getTracer(agentName);
+
 const run = async (
   {
     params,
@@ -122,48 +127,74 @@ const run = async (
   { signal }: { signal?: AbortSignal }
 ): Promise<Output> => {
   const { text, documents, agents } = params.input;
-  if (!documents?.length && !agents?.length)
-    return outputSchema.parse({ text: "No documents or agents provided." });
+  const span = tracer.startSpan(agentName, {
+    attributes: {
+      source: agentName,
+      [SemanticConventions.INPUT_VALUE]: text,
+      [SemanticConventions.OPENINFERENCE_SPAN_KIND]: OpenInferenceSpanKind.AGENT
+    }
+  });
+  return await context.with(trace.setSpan(context.active(), span), async () => {
+    try {
+      if (!documents?.length && !agents?.length) {
+        const response =  "No documents or agents provided.";
+        span.setAttribute(SemanticConventions.OUTPUT_VALUE, response);
+        return outputSchema.parse({ text: response });
+      }
+        
+      let finalDocuments = documents || [];
+      if (agents?.length) {
+        finalDocuments = [
+          ...finalDocuments,
+          ...(await retrieveDocuments({ text, agents, signal })),
+        ];
+      }
 
-  let finalDocuments = documents || [];
-  if (agents?.length) {
-    finalDocuments = [
-      ...finalDocuments,
-      ...(await retrieveDocuments({ text, agents, signal })),
-    ];
-  }
+      const model = new OpenAIChatModel(
+        MODEL,
+        {},
+        { baseURL: API_BASE, apiKey: API_KEY, compatibility: "compatible" }
+      );
 
-  const model = new OpenAIChatModel(
-    MODEL,
-    {},
-    { baseURL: API_BASE, apiKey: API_KEY, compatibility: "compatible" }
-  );
+      const results = await Promise.all(
+        finalDocuments.map((document) =>
+          // TODO: add progress update
+          model.createStructure({
+            schema: structuredGenerationSchema,
+            messages: [
+              // REVIEW: this essentially adds second system message because of the internal implementation of `createStructure`
+              new SystemMessage(EVALUATION_PROMPT),
+              new UserMessage(`Research prompt: ${text}\n\n Document: ${document}`),
+            ],
+            abortSignal: signal,
+          })
+        )
+      );
 
-  const results = await Promise.all(
-    finalDocuments.map((document) =>
-      // TODO: add progress update
-      model.createStructure({
-        schema: structuredGenerationSchema,
-        messages: [
-          // REVIEW: this essentially adds second system message because of the internal implementation of `createStructure`
-          new SystemMessage(EVALUATION_PROMPT),
-          new UserMessage(`Research prompt: ${text}\n\n Document: ${document}`),
-        ],
-        abortSignal: signal,
-      })
-    )
-  );
+      const scores = results.map((result) => calculateScore(result.object));
+      const highestValueIndex = scores.reduce(
+        (maxIndex, score, index, arr) => (score > arr[maxIndex] ? index : maxIndex),
+        0
+      );
 
-  const scores = results.map((result) => calculateScore(result.object));
-  const highestValueIndex = scores.reduce(
-    (maxIndex, score, index, arr) => (score > arr[maxIndex] ? index : maxIndex),
-    0
-  );
-
-  return outputSchema.parse({ text: finalDocuments[highestValueIndex] });
+      span.setAttribute(SemanticConventions.OUTPUT_VALUE, finalDocuments[highestValueIndex]);
+      return outputSchema.parse({ text: finalDocuments[highestValueIndex] });
+    } catch (err) {
+      if (err instanceof Error) {
+        span.recordException(err);
+        span.setStatus({ code: 2, message: err.message });
+      } else {
+        // Fallback in case it's not an Error object
+        span.recordException({ name: 'UnknownError', message: String(err) });
+        span.setStatus({ code: 2, message: String(err) });
+      }
+      throw err;
+    } finally {
+      // End the span
+      span.end();
+    }
+  });
 };
-
-const agentName = "content-judge";
 
 const exampleInputAgents: Input = {
   text: "Generate a concise summary of the history of artificial intelligence.",

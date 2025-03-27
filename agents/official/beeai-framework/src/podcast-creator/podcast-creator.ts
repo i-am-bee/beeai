@@ -8,12 +8,20 @@ import { SystemMessage, UserMessage } from "beeai-framework/backend/message";
 import { AcpServer } from "@i-am-bee/acp-sdk/server/acp";
 import { MODEL, API_BASE, API_KEY } from "../config.js";
 import { OpenAIChatModel } from "beeai-framework/adapters/openai/backend/chat";
+import { trace, context } from '@opentelemetry/api';
+import {
+  OpenInferenceSpanKind,
+  SemanticConventions,
+} from "@arizeai/openinference-semantic-conventions";
 
 const inputSchema = textInputSchema;
 type Input = z.output<typeof inputSchema>;
 // TODO: type appropriately
 const outputSchema = textOutputSchema;
 type Output = z.output<typeof outputSchema>;
+
+const agentName = "podcast-creator";
+const tracer = trace.getTracer(agentName);
 
 const run =
   (server: AcpServer) =>
@@ -33,111 +41,136 @@ const run =
       { baseURL: API_BASE, apiKey: API_KEY, compatibility: "compatible" },
     );
 
-    const podcastResponse = await model
-      .create({
-        messages: [
-          new SystemMessage(`You are the a world-class podcast writer, you have worked as a ghost writer for Joe Rogan, Lex Fridman, Ben Shapiro, Tim Ferris. 
+    const span = tracer.startSpan(agentName, {
+      attributes: {
+        source: agentName,
+        [SemanticConventions.INPUT_VALUE]: text,
+        [SemanticConventions.OPENINFERENCE_SPAN_KIND]: OpenInferenceSpanKind.AGENT
+      }
+    });
 
-We are in an alternate universe where actually you have been writing every line they say and they just stream it into their brains.
+    return await context.with(trace.setSpan(context.active(), span), async () => {
+      try {
+        const podcastResponse = await model
+          .create({
+            messages: [
+              new SystemMessage(`You are the a world-class podcast writer, you have worked as a ghost writer for Joe Rogan, Lex Fridman, Ben Shapiro, Tim Ferris. 
 
-You have won multiple podcast awards for your writing.
- 
-Your job is to write word by word, even "umm, hmmm, right" interruptions by the second speaker based on the content provided by user. Keep it extremely engaging, the speakers can get derailed now and then but should discuss the topic. 
+    We are in an alternate universe where actually you have been writing every line they say and they just stream it into their brains.
 
-Remember Speaker 2 is new to the topic and the conversation should always have realistic anecdotes and analogies sprinkled throughout. The questions should have real world example follow ups etc
+    You have won multiple podcast awards for your writing.
+    
+    Your job is to write word by word, even "umm, hmmm, right" interruptions by the second speaker based on the content provided by user. Keep it extremely engaging, the speakers can get derailed now and then but should discuss the topic. 
 
-Speaker 1: Leads the conversation and teaches the speaker 2, gives incredible anecdotes and analogies when explaining. Is a captivating teacher that gives great anecdotes
+    Remember Speaker 2 is new to the topic and the conversation should always have realistic anecdotes and analogies sprinkled throughout. The questions should have real world example follow ups etc
 
-Speaker 2: Keeps the conversation on track by asking follow up questions. Gets super excited or confused when asking questions. Is a curious mindset that asks very interesting confirmation questions
+    Speaker 1: Leads the conversation and teaches the speaker 2, gives incredible anecdotes and analogies when explaining. Is a captivating teacher that gives great anecdotes
 
-Make sure the tangents speaker 2 provides are quite wild or interesting. 
+    Speaker 2: Keeps the conversation on track by asking follow up questions. Gets super excited or confused when asking questions. Is a curious mindset that asks very interesting confirmation questions
 
-Ensure there are interruptions during explanations or there are "hmm" and "umm" injected throughout from the second speaker. 
+    Make sure the tangents speaker 2 provides are quite wild or interesting. 
 
-It should be a real podcast with every fine nuance documented in as much detail as possible. Welcome the listeners with a super fun overview and keep it really catchy and almost borderline click bait
+    Ensure there are interruptions during explanations or there are "hmm" and "umm" injected throughout from the second speaker. 
 
-ALWAYS START YOUR RESPONSE DIRECTLY WITH Speaker 1: 
-DO NOT GIVE EPISODE TITLES SEPARATELY, LET Speaker 1 TITLE IT IN HER SPEECH
-DO NOT GIVE CHAPTER TITLES
-IT SHOULD STRICTLY BE THE DIALOGUES`),
-          new UserMessage(text),
-        ],
-        maxTokens: 8126,
-        temperature: 0.7,
-        abortSignal: signal,
-      })
-      .observe((emitter) => {
-        emitter.on("newToken", async (token) => {
-          params._meta?.progressToken &&
-            (await server.server.sendAgentRunProgress({
-              progressToken: params._meta.progressToken,
-              delta: {
-                logs: [
-                  { level: "info", message: token.value.getTextContent() },
-                ],
-              },
-            }));
+    It should be a real podcast with every fine nuance documented in as much detail as possible. Welcome the listeners with a super fun overview and keep it really catchy and almost borderline click bait
+
+    ALWAYS START YOUR RESPONSE DIRECTLY WITH Speaker 1: 
+    DO NOT GIVE EPISODE TITLES SEPARATELY, LET Speaker 1 TITLE IT IN HER SPEECH
+    DO NOT GIVE CHAPTER TITLES
+    IT SHOULD STRICTLY BE THE DIALOGUES`),
+              new UserMessage(text),
+            ],
+            maxTokens: 8126,
+            temperature: 0.7,
+            abortSignal: signal,
+          })
+          .observe((emitter) => {
+            emitter.on("newToken", async (token) => {
+              params._meta?.progressToken &&
+                (await server.server.sendAgentRunProgress({
+                  progressToken: params._meta.progressToken,
+                  delta: {
+                    logs: [
+                      { level: "info", message: token.value.getTextContent() },
+                    ],
+                  },
+                }));
+            });
+          });
+        const podcastDialogue = podcastResponse.getTextContent();
+        span.setAttribute(SemanticConventions.OUTPUT_VALUE, podcastDialogue);
+
+        const structuredGenerationSchema = z.array(
+          z.object({
+            speaker: z.number().min(1).max(2),
+            text: z.string(),
+          }),
+        );
+
+        // Dramatise podcast
+        const finalReponse = await model.createStructure({
+          schema: structuredGenerationSchema,
+          // REVIEW: this essentially adds second system message because of the internal implementation of `createStructure`
+          messages: [
+            new SystemMessage(`You are an internationally acclaimed, Oscar-winning screenwriter with extensive experience collaborating with award-winning podcasters.
+
+    Your task is to rewrite the provided podcast transcript for a high-quality AI Text-To-Speech (TTS) pipeline. The original script was poorly composed by a basic AI, and now it's your job to transform it into engaging, conversational content suitable for audio presentation.
+
+    ## Roles:
+
+    - Speaker 1: Leads the conversation, educates Speaker 2, and captivates listeners with exceptional, relatable anecdotes and insightful analogies. Speaker 1 should be authoritative yet approachable.
+    - Speaker 2: A curious newcomer who keeps the discussion lively by asking enthusiastic, sometimes confused questions, providing engaging tangents, and showing genuine excitement or puzzlement.
+
+    ## Rules:
+
+    - The rewritten dialogue must feel realistic, conversational, and highly engaging.
+    - Ensure Speaker 2 frequently injects natural verbal expressions like "umm," "hmm," "[sigh]," and "[laughs]." **Use only these expressions for Speaker 2.**
+    - Speaker 1 should avoid filler expressions like "umm" or "hmm" entirely, as the TTS engine does not handle them well.
+    - Introduce realistic interruptions or interjections from Speaker 2 during explanations to enhance authenticity.
+    - Include vivid, real-world anecdotes and examples to illustrate key points clearly.
+    - Begin the podcast with a catchy, borderline clickbait introduction that immediately grabs listener attention.
+
+    ## Instructions:
+
+    - Always begin with Speaker 1.
+    - Make your rewritten dialogue as vibrant, characteristic, and nuanced as possible to create an authentic podcast experience.
+    `),
+            new UserMessage(podcastDialogue),
+          ],
+          maxTokens: 8126,
+          temperature: 0.9,
+          abortSignal: signal,
+          maxRetries: 3,
         });
-      });
-    const podcastDialogue = podcastResponse.getTextContent();
 
-    const structuredGenerationSchema = z.array(
-      z.object({
-        speaker: z.number().min(1).max(2),
-        text: z.string(),
-      }),
-    );
+        const conversation = finalReponse.object
+          // TODO: this is a temporary fix of a bug in framework
+          .flat()
+          .map((obj) => `**Speaker ${obj.speaker}**  \n${obj.text}`)
+          .join("\n\n");
 
-    // Dramatise podcast
-    const finalReponse = await model.createStructure({
-      schema: structuredGenerationSchema,
-      // REVIEW: this essentially adds second system message because of the internal implementation of `createStructure`
-      messages: [
-        new SystemMessage(`You are an internationally acclaimed, Oscar-winning screenwriter with extensive experience collaborating with award-winning podcasters.
-
-Your task is to rewrite the provided podcast transcript for a high-quality AI Text-To-Speech (TTS) pipeline. The original script was poorly composed by a basic AI, and now it's your job to transform it into engaging, conversational content suitable for audio presentation.
-
-## Roles:
-
-- Speaker 1: Leads the conversation, educates Speaker 2, and captivates listeners with exceptional, relatable anecdotes and insightful analogies. Speaker 1 should be authoritative yet approachable.
-- Speaker 2: A curious newcomer who keeps the discussion lively by asking enthusiastic, sometimes confused questions, providing engaging tangents, and showing genuine excitement or puzzlement.
-
-## Rules:
-
-- The rewritten dialogue must feel realistic, conversational, and highly engaging.
-- Ensure Speaker 2 frequently injects natural verbal expressions like "umm," "hmm," "[sigh]," and "[laughs]." **Use only these expressions for Speaker 2.**
-- Speaker 1 should avoid filler expressions like "umm" or "hmm" entirely, as the TTS engine does not handle them well.
-- Introduce realistic interruptions or interjections from Speaker 2 during explanations to enhance authenticity.
-- Include vivid, real-world anecdotes and examples to illustrate key points clearly.
-- Begin the podcast with a catchy, borderline clickbait introduction that immediately grabs listener attention.
-
-## Instructions:
-
-- Always begin with Speaker 1.
-- Make your rewritten dialogue as vibrant, characteristic, and nuanced as possible to create an authentic podcast experience.
-`),
-        new UserMessage(podcastDialogue),
-      ],
-      maxTokens: 8126,
-      temperature: 0.9,
-      abortSignal: signal,
-      maxRetries: 3,
-    });
-
-    const conversation = finalReponse.object
-      // TODO: this is a temporary fix of a bug in framework
-      .flat()
-      .map((obj) => `**Speaker ${obj.speaker}**  \n${obj.text}`)
-      .join("\n\n");
-
-    // TODO: temporary solution to render this nicely in UI
-    return outputSchema.parse({
-      // text: `<pre>${JSON.stringify(finalReponse.object, null, 2)}</pre>`,
-      text: conversation,
-    });
+        span.setAttribute(SemanticConventions.OUTPUT_VALUE, conversation);  
+        // TODO: temporary solution to render this nicely in UI
+        return outputSchema.parse({
+          // text: `<pre>${JSON.stringify(finalReponse.object, null, 2)}</pre>`,
+          text: conversation,
+        });
+      } catch (err) {
+        if (err instanceof Error) {
+          span.recordException(err);
+          span.setStatus({ code: 2, message: err.message });
+        } else {
+          // Fallback in case it's not an Error object
+          span.recordException({ name: 'UnknownError', message: String(err) });
+          span.setStatus({ code: 2, message: String(err) });
+        }
+        throw err;
+      } finally {
+        // End the span
+        span.end();
+      }
+    }); 
   };
-
-const agentName = "podcast-creator";
 
 const exampleInputText =
   "Artificial intelligence is revolutionizing industries by automating complex tasks, improving efficiency, and enabling data-driven decision-making. In healthcare, AI is helping doctors diagnose diseases earlier and personalize treatments...";

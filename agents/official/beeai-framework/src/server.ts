@@ -1,5 +1,6 @@
-#!/usr/bin/env -S BEE_FRAMEWORK_INSTRUMENTATION_ENABLED=true npx -y tsx@latest
+#!/usr/bin/env -S npx -y tsx@latest
 
+import "./instrumentation.js";
 import { AcpServer } from "@i-am-bee/acp-sdk/server/acp";
 
 import { Version } from "beeai-framework";

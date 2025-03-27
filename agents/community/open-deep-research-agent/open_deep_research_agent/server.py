@@ -11,6 +11,7 @@ from beeai_sdk.schemas.base import Log
 from beeai_sdk.schemas.metadata import Metadata, UiDefinition, UiType
 from beeai_sdk.schemas.text import TextInput, TextOutput
 
+from openinference.instrumentation.smolagents import SmolagentsInstrumentor
 from pydantic import Field
 from dotenv import load_dotenv
 from huggingface_hub import login
@@ -61,6 +62,7 @@ AUTHORIZED_IMPORTS = [
     "fractions",
     "csv",
 ]
+SmolagentsInstrumentor().instrument()
 load_dotenv(override=True)
 login(os.getenv("HF_TOKEN"))
 

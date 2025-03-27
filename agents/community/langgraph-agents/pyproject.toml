@@ -18,6 +18,7 @@ dependencies = [
     "duckduckgo-search>=7.3.0",
     "beautifulsoup4>=4.13.3",
     "langchain-openai>=0.3.7",
+    "openinference-instrumentation-langchain>=0.1.37",
 ]
 
 [project.scripts]
