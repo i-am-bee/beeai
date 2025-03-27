@@ -119,6 +119,35 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /runs/wait:
+    post:
+      tags:
+        - run
+      summary: Run agent
+      description: Run agent and wait for completion.
+      operationId: run
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RunCreateBody"
+      responses:
+        "200":
+          description: Run successfully created 
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Run"
+        "400":
+          description: Invalid input
+        "404":
+          description: Not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /runs/stream:
     post:
       tags:
@@ -148,7 +177,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  /runs/{runId}:
+  /runs/{run_id}:
     get:
       tags:
         - run
@@ -191,8 +220,36 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  /runs/{runId}/stream:
-    get:
+    post:
+      tags:
+        - run
+      summary: Run agent
+      description: Run agent and wait for completion.
+      operationId: run
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RunCreateBody"
+      responses:
+        "200":
+          description: Run successfully created 
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Run"
+        "400":
+          description: Invalid input
+        "404":
+          description: Not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /runs/{run_id}/stream:
+    post:
       tags:
         - run
       summary: Stream run
@@ -213,7 +270,36 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  /runs/{runId}/cancel:
+  /runs/{run_id}/wait:
+    post:
+      tags:
+        - run
+      summary: Run agent
+      description: Run agent and wait for completion.
+      operationId: run
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RunCreateBody"
+      responses:
+        "200":
+          description: Run successfully created 
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Run"
+        "400":
+          description: Invalid input
+        "404":
+          description: Not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /runs/{run_id}/cancel:
     post:
       tags:
         - run
@@ -240,7 +326,7 @@ components:
     AgentId:
       type: string
       description: Identifier if an agent
-    RunId:
+    run_id:
       type: string
       description: Identifier of a run
     ThreadId:
@@ -269,7 +355,7 @@ components:
         - status
       properties:
         run_id:
-          $ref: "#/components/schemas/RunId"
+          $ref: "#/components/schemas/run_id"
         agent_id:
           $ref: "#/components/schemas/AgentId"
         thread_id:
@@ -286,7 +372,7 @@ components:
         - status
       properties:
         run_id:
-          $ref: "#/components/schemas/RunId"
+          $ref: "#/components/schemas/run_id"
         agent_id:
           $ref: "#/components/schemas/AgentId"
         thread_id:

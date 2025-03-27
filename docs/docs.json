@@ -62,15 +62,17 @@
                     "pages": [
                       "/acp/spec/intro",
                       "/acp/spec/run-create",
+                      "/acp/spec/run-create-stream",
+                      "/acp/spec/run-create-wait",
                       "/acp/spec/run-get",
                       "/acp/spec/run-cancel",
                       "/acp/spec/run-delete",
                       {
-                        "group": "Streaming",
-                        "icon": "tag",
+                        "group": "Interrupts",
                         "pages": [
-                          "/acp/spec/run-create-stream",
-                          "/acp/spec/run-get-stream"
+                          "/acp/spec/run-resume",
+                          "/acp/spec/run-resume-stream",
+                          "/acp/spec/run-resume-wait"
                         ]
                       }
                     ]
