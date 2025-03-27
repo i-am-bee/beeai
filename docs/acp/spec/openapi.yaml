@@ -162,7 +162,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/RunCreateBody"
+              $ref: "#/components/schemas/RunResumeBody"
       responses:
         "200":
           description: Run resumed
@@ -220,47 +220,81 @@ components:
       type: string
       description: Identifier of a run
     RunStatus:
-        type: string
-        enum: [created, in-progress, interrupted, cancelled, completed, failed]
-        description: Status of the run
+      type: string
+      enum: [created, in-progress, interrupted, cancelled, completed, failed]
+      description: Status of the run
     RunMode:
-        type: string
-        enum: [sync, async, stream]
-        default: sync
-        description: Mode of the request
+      type: string
+      enum: [sync, async, stream]
+      default: sync
+      description: Mode of the request
+    RunInput:
+      type: object
+    RunOutput:
+      type: object
     RunCreateBody:
       type: object
       required:
         - agent_id
+        - input
       properties:
         agent_id:
           $ref: "#/components/schemas/AgentId"
         input:
-          type: object
+          $ref: "#/components/schemas/RunInput"
+        mode:
+          $ref: "#/components/schemas/RunMode"
+    RunResumeBody:
+      type: object
+      required:
+        - run_id
+        - interrupt
+      properties:
+        run_id:
+          $ref: "#/components/schemas/RunId"
+        interrupt:
+          oneOf:
+          - type: object
+            description: Interrupt expected to resume the run, only available when status is **interrupted**
+            properties:
+              type: 
+                type: string
+                const: output
+              input:
+                $ref: "#/components/schemas/RunInput"
         mode:
           $ref: "#/components/schemas/RunMode"
     Run:
       type: object
       properties:
-        run_id:
-          $ref: "#/components/schemas/RunId"
         agent_id:
           $ref: "#/components/schemas/AgentId"
+        run_id:
+          $ref: "#/components/schemas/RunId"
         status:
           $ref: "#/components/schemas/RunStatus"
+        interrupt:
+          oneOf:
+          - type: object
+            description: Interrupt expected to resume the run, only available when status is **interrupted**
+            properties:
+              type: 
+                type: string
+                const: output
+              output:
+                $ref: "#/components/schemas/RunOutput"
+            nullable: true
         output:
-          type: object
+          $ref: "#/components/schemas/RunOutput"
           description: Output of the run, only available once run has completed
           nullable: true
     RunDelta:
       type: object
       properties:
         run_id:
-          $ref: "#/components/schemas/run_id"
+          $ref: "#/components/schemas/RunId"
         agent_id:
           $ref: "#/components/schemas/AgentId"
-        thread_id:
-          $ref: "#/components/schemas/ThreadId"
         status:
           $ref: "#/components/schemas/RunStatus"
         delta:
