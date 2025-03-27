@@ -380,8 +380,12 @@ components:
       properties:
         input:
           $ref: "#/components/schemas/GeneralSchema"
+          examples:
+          - text
         output:
           $ref: "#/components/schemas/GeneralSchema"
+          examples:
+          - text
         interrupts:
           type: array
           items:
@@ -406,6 +410,8 @@ components:
             - Canvas
             - Code
             - Researcher
+      examples:
+        - Researcher
     Metadata:
       type: object
       properties:
@@ -416,16 +422,32 @@ components:
           type: string
           description: >-
             SPDX license ID: https://spdx.org/licenses/
+          examples:
+            - Apache-2.0
         language:
           type: string
           description: >-
             Programming language, supported values: https://docs.github.com/en/get-started/learning-about-github/github-language-support
+          examples:
+            - Python
         framework:
           type: string
           description: For example BeeAI, crewAI, Autogen, AG2
           examples:
             - BeeAI
             - AG2
+        useCases:
+          type: array
+          items:
+            type: string
+            examples:
+              - Comprehensive Research – Generates detailed reports using information from multiple sources.
+              - Bias Reduction – Cross-references data from various platforms to minimize misinformation and bias.
+        # TBD
+        examples:
+          type: array
+          items:
+            $ref: "#/components/schemas/Example"
         tags:
           type: array
           items:
