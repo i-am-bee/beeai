@@ -9,6 +9,5 @@ class Agent(abc.ABC):
     async def run(self, input: Input) -> Output:
         pass
 
-    @abc.abstractmethod
-    def run_stream(self, input: Input) -> AsyncIterator[Output]:
-        pass
+    async def run_stream(self, input: Input) -> AsyncIterator[Output]:
+        yield await self.run(input)

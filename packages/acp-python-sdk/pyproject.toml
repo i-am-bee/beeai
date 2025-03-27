@@ -12,8 +12,8 @@ dependencies = [
 ]
 
 [project.scripts]
-serve = "acp_sdk.test:test_server"
-test = "acp_sdk.test:test_client"
+server = "acp_sdk.test:test_server"
+client = "acp_sdk.test:test_client"
 
 [build-system]
 requires = ["hatchling"]

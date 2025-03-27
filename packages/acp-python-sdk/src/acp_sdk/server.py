@@ -17,7 +17,7 @@ class RunInput(BaseModel):
 
 
 class RunOutput(BaseModel):
-    id: str = uuid.uuid4()
+    id: str = str(uuid.uuid4())
     output: Output | None = None
 
 
@@ -46,7 +46,7 @@ async def serve(agent: Agent):
         else:
             output = RunOutput()
             task = asyncio.create_task(agent.run(run.input))
-            dict[output.id] = task
+            run_tasks[output.id] = task
             return output
 
     @app.get("/runs/{run_id}")
@@ -56,7 +56,7 @@ async def serve(agent: Agent):
             raise HTTPException(status_code=404, detail=f"Run {run_id} not found")
         output = RunOutput(id=run_id)
         if task.done:
-            output.output = task.result
+            output.output = task.result()
         return output
 
     config = uvicorn.Config(app=app, host="0.0.0.0", port=8000, log_level="info")

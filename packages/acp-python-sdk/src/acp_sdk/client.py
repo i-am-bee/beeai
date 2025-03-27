@@ -1,4 +1,6 @@
 from contextlib import asynccontextmanager
+import asyncio
+
 import aiohttp
 import aiohttp_sse_client.client
 
@@ -14,7 +16,15 @@ class AgentClient:
         async with self._session.post(
             "/runs", json=RunInput(config=Config(), input=input).model_dump()
         ) as resp:
-            return RunOutput.model_validate(await resp.json()).output
+            run = RunOutput.model_validate(await resp.json())
+            while not run.output:
+                await asyncio.sleep(1)
+                async with self._session.get(
+                    f"/runs/{run.id}",
+                    json=RunInput(config=Config(), input=input).model_dump(),
+                ) as resp:
+                    run = RunOutput.model_validate(await resp.json())
+            return run.output
 
     async def run_stream(self, input: Input):
         async with aiohttp_sse_client.client.EventSource(
