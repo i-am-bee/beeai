@@ -9,6 +9,7 @@ dependencies = [
     "opentelemetry-exporter-otlp-proto-http>=1.30.0",
     "opentelemetry-sdk>=1.30.0",
     "pydantic>=2.10.6",
+    "pyyaml>=6.0.2",
 ]
 
 [tool.uv.sources]
