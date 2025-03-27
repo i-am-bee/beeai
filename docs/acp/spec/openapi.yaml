@@ -111,7 +111,7 @@ paths:
                 $ref: "#/components/schemas/Run"
             text/event-stream:
               schema:
-                $ref: "#/components/schemas/RunDelta"
+                $ref: "#/components/schemas/RunStep"
         "202":
           description: Run created
           content:
@@ -172,7 +172,7 @@ paths:
                 $ref: "#/components/schemas/Run"
             text/event-stream:
               schema:
-                $ref: "#/components/schemas/RunDelta"
+                $ref: "#/components/schemas/RunStep"
         "202":
           description: Run resumed
           content:
@@ -325,7 +325,7 @@ components:
           $ref: "#/components/schemas/RunOutput"
           description: Output of the run, only available once run has completed
           nullable: true
-    RunDelta:
+    RunStep:
       type: object
       properties:
         run_id:
@@ -334,7 +334,7 @@ components:
           $ref: "#/components/schemas/AgentId"
         status:
           $ref: "#/components/schemas/RunStatus"
-        delta:
+        step:
           oneOf:
           - type: object
             properties:
