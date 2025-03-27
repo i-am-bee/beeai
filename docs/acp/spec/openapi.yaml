@@ -152,25 +152,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-    delete:
-      tags:
-        - run
-      summary: Delete run
-      description: Delete a run, unfinished run will be cancelled
-      operationId: run
-      responses:
-        "201":
-          description: Run deleted
-        "400":
-          description: Invalid input
-        "404":
-          description: Not found
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
     post:
       tags:
         - run
@@ -235,12 +216,9 @@ components:
     AgentId:
       type: string
       description: Identifier if an agent
-    run_id:
+    RunId:
       type: string
       description: Identifier of a run
-    ThreadId:
-      type: string
-      description: Identifier if a thread
     RunStatus:
         type: string
         enum: [created, in-progress, interrupted, cancelled, completed, failed]
@@ -257,8 +235,6 @@ components:
       properties:
         agent_id:
           $ref: "#/components/schemas/AgentId"
-        thread_id:
-          $ref: "#/components/schemas/ThreadId"
         input:
           type: object
         mode:
@@ -267,11 +243,9 @@ components:
       type: object
       properties:
         run_id:
-          $ref: "#/components/schemas/run_id"
+          $ref: "#/components/schemas/RunId"
         agent_id:
           $ref: "#/components/schemas/AgentId"
-        thread_id:
-          $ref: "#/components/schemas/ThreadId"
         status:
           $ref: "#/components/schemas/RunStatus"
         output:

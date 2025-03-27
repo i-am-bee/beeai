@@ -64,8 +64,7 @@
                       "/acp/spec/run-create",
                       "/acp/spec/run-get",
                       "/acp/spec/run-resume",
-                      "/acp/spec/run-cancel",
-                      "/acp/spec/run-delete"
+                      "/acp/spec/run-cancel"
                     ]
                   }
                 ]
