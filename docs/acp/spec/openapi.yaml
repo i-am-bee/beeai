@@ -19,7 +19,47 @@ tags:
   - name: agent
     description: Operations about agent
 paths:
-  /agent:
+  /agents:
+    get:
+      tags:
+        - agent
+      summary: List agents
+      description: Multiple filter values can be provided
+      operationId: listAgents
+      parameters:
+        - name: limit
+          in: query
+          description: Maximum number to return
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+            maximum: 1000
+        - name: offset
+          in: query
+          description: Offset to start from
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Agent"
+        "400":
+          description: Invalid input
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /agents/{agent_id}:
     get:
       tags:
         - agent
@@ -222,8 +262,11 @@ components:
     RunCreateBody:
       type: object
       required:
+        - agent_id
         - input
       properties:
+        agent_id:
+          $ref: "#/components/schemas/AgentId"
         input:
           $ref: "#/components/schemas/RunInput"
         mode:
@@ -251,6 +294,8 @@ components:
     Run:
       type: object
       properties:
+        agent_id:
+          $ref: "#/components/schemas/AgentId"
         run_id:
           $ref: "#/components/schemas/RunId"
         status:
@@ -286,12 +331,17 @@ components:
                 const: output
               output:
                 $ref: "#/components/schemas/RunOutput"
+    AgentId:
+      type: string
     Agent:
       required:
+        - agent_id
         - name
         - description
       type: object
       properties:
+        agent_id:
+          $ref: "#/components/schemas/AgentId"
         name:
           type: string
           description: Name of the agent

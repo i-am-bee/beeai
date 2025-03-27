@@ -51,11 +51,19 @@
             "pages": [
               "/acp/alpha/introduction",
               "/acp/alpha/architecture",
-              "/acp/spec/agent-get",
-              "/acp/spec/run-create",
-              "/acp/spec/run-get",
-              "/acp/spec/run-resume",
-              "/acp/spec/run-cancel"
+              {
+                "group": "Agents",
+                "pages": ["/acp/spec/agents-list", "/acp/spec/agents-get"]
+              },
+              {
+                "group": "Runs",
+                "pages": [
+                  "/acp/spec/run-create",
+                  "/acp/spec/run-get",
+                  "/acp/spec/run-resume",
+                  "/acp/spec/run-cancel"
+                ]
+              }
             ]
           },
           {
