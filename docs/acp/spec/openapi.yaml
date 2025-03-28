@@ -149,7 +149,7 @@ paths:
       tags:
         - run
       summary: Resume run
-      description: Resume interrupted run.
+      description: Resume awaiting run.
       operationId: run
       requestBody:
         content:
@@ -190,8 +190,8 @@ paths:
       description: Cancel run
       operationId: run
       responses:
-        "200":
-          description: Run cancelled
+        "202":
+          description: Run cancelling
           content:
             application/json:
               schema:
@@ -206,12 +206,15 @@ paths:
                 $ref: "#/components/schemas/Error"
 components:
   schemas:
+    SessionId:
+      type: string
+      description: Identifier of a session
     RunId:
       type: string
       description: Identifier of a run
     RunStatus:
       type: string
-      enum: [created, in-progress, interrupted, cancelled, completed, failed]
+      enum: [created, in-progress, awaiting, cancelling, cancelled, completed, failed]
       description: Status of the run
     RunMode:
       type: string
@@ -267,6 +270,8 @@ components:
       properties:
         agent_id:
           $ref: "#/components/schemas/AgentId"
+        session_id:
+          $ref: "#/components/schemas/SessionId"
         input:
           $ref: "#/components/schemas/RunInput"
         mode:
@@ -279,16 +284,8 @@ components:
       properties:
         run_id:
           $ref: "#/components/schemas/RunId"
-        interrupt:
-          oneOf:
-          - type: object
-            description: Interrupt expected to resume the run, only available when status is **interrupted**
-            properties:
-              type: 
-                type: string
-                const: output
-              input:
-                $ref: "#/components/schemas/RunInput"
+        await:
+          type: object
         mode:
           $ref: "#/components/schemas/RunMode"
     Run:
@@ -296,21 +293,16 @@ components:
       properties:
         agent_id:
           $ref: "#/components/schemas/AgentId"
+        session_id:
+          $ref: "#/components/schemas/SessionId"
         run_id:
           $ref: "#/components/schemas/RunId"
         status:
           $ref: "#/components/schemas/RunStatus"
-        interrupt:
-          oneOf:
-          - type: object
-            description: Interrupt expected to resume the run, only available when status is **interrupted**
-            properties:
-              type: 
-                type: string
-                const: output
-              output:
-                $ref: "#/components/schemas/RunOutput"
-            nullable: true
+        await:
+          type: object
+          description: Description of the awaited payload to resume the run, only available when status is **awaiting**
+          nullable: true
         output:
           $ref: "#/components/schemas/RunOutput"
           description: Output of the run, only available once run has completed
@@ -318,6 +310,10 @@ components:
     RunStep:
       type: object
       properties:
+        agent_id:
+          $ref: "#/components/schemas/AgentId"
+        session_id:
+          $ref: "#/components/schemas/SessionId"
         run_id:
           $ref: "#/components/schemas/RunId"
         status:
