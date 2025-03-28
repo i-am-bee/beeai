@@ -1,0 +1,19 @@
+---
+title: "Agent Discovery"
+description: Discover agents and explore their attributes.
+openapi-schema: Agent
+---
+
+import AlphaWarning from "/snippets/alpha-warning.mdx";
+
+<AlphaWarning />
+
+💬 Discussion: [Agent metadata](https://github.com/orgs/i-am-bee/discussions/432)  
+💬 Discussion: [Manifest-Based Agent Offline Discoverability](https://github.com/orgs/i-am-bee/discussions/344)
+
+Agents can be discovered via the [GET /agents](/acp/spec/agents-list) endpoint. Discovery relies on agent details composed of:
+
+- Offline description created by the agent developer (in the form of a manifest).
+- Online description assembled at runtime by some underlying platform.
+
+## Agent Detail Model
