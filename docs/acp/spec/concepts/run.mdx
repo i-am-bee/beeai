@@ -24,8 +24,32 @@ For different types of agents, an Agent Run may mean different things:
 
 From the point of agent implementation, most of the heavy lifting around state management is handled by the SDK. The agent creator / integrator must only decide what typ of statefulness is right for the given agent, and properly wire it to the agent implementation: creating a new instance or retrieving an existing one where appropriate.
 
+### Run states
+
+Each Agent Run starts in the `created` state. After receiving input, it moves to the `in-progress` state. While in-progress, the agent can optionally await some external input, in which case it goes to `awaiting` and returns back to `in-progress` after receiving the input. After a successful execution, `in-progress` turns into a terminal state `completed`. A run that's `in-progress` or `awaiting` can be cancelled, in which case it first goes to `cancelling` and then a terminal state `cancelled`. Finally, an error may occur, in which case the agent state becomes a terminal state `failed`.
+
+Depending on agent implementation, the run could be continued, in which case it may return to the `in-progress` state from one of the terminal states.
+
+```mermaid
+stateDiagram-v2
+    in_progress: in-progress
+    [*] --> created
+    created --> in_progress : Start work
+    in_progress --> completed : Successfully done
+    in_progress --> awaiting : Waiting on input
+    in_progress --> cancelling : Cancel requested
+    awaiting --> failed : Timeout or error
+    in_progress --> failed : Error encountered
+    awaiting --> in_progress : Input received
+    awaiting --> cancelling : Cancel while waiting
+    cancelling --> cancelled : Cancel confirmed
+    cancelled --> [*]
+    completed --> [*]
+    failed --> [*]
+
+```
+
 ---
 
 TODO:
 - how does run work (maybe some diagrams showing possible "reference" patterns)
-- state machine of the run (in mermaid)
