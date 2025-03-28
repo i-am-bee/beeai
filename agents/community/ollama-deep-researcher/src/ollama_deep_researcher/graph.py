@@ -8,13 +8,20 @@ from langchain_openai import ChatOpenAI
 from langgraph.graph import START, END, StateGraph
 
 from ollama_deep_researcher.configuration import Configuration
-from ollama_deep_researcher.utils import deduplicate_and_format_sources, tavily_search, format_sources, perplexity_search, duckduckgo_search
+from ollama_deep_researcher.utils import (
+    deduplicate_and_format_sources,
+    tavily_search,
+    format_sources,
+    perplexity_search,
+    duckduckgo_search,
+)
 from ollama_deep_researcher.state import SummaryState, SummaryStateInput, SummaryStateOutput
 from ollama_deep_researcher.prompts import query_writer_instructions, summarizer_instructions, reflection_instructions
 
+
 # Nodes
 def generate_query(state: SummaryState, config: RunnableConfig):
-    """ Generate a query for web search """
+    """Generate a query for web search"""
 
     # Format the prompt
     query_writer_instructions_formatted = query_writer_instructions.format(research_topic=state.research_topic)
@@ -36,10 +43,11 @@ def generate_query(state: SummaryState, config: RunnableConfig):
     )
     query = json.loads(result.content)
 
-    return {"search_query": query['query']}
+    return {"search_query": query["query"]}
+
 
 def web_research(state: SummaryState, config: RunnableConfig):
-    """ Gather information from the web """
+    """Gather information from the web"""
 
     # Configure
     configurable = Configuration.from_runnable_config(config)
@@ -55,20 +63,33 @@ def web_research(state: SummaryState, config: RunnableConfig):
     # Search the web
     if search_api == "tavily":
         search_results = tavily_search(state.search_query, include_raw_content=True, max_results=1)
-        search_str = deduplicate_and_format_sources(search_results, max_tokens_per_source=1000, include_raw_content=True)
+        search_str = deduplicate_and_format_sources(
+            search_results, max_tokens_per_source=1000, include_raw_content=True
+        )
     elif search_api == "perplexity":
         search_results = perplexity_search(state.search_query, state.research_loop_count)
-        search_str = deduplicate_and_format_sources(search_results, max_tokens_per_source=1000, include_raw_content=False)
+        search_str = deduplicate_and_format_sources(
+            search_results, max_tokens_per_source=1000, include_raw_content=False
+        )
     elif search_api == "duckduckgo":
-        search_results = duckduckgo_search(state.search_query, max_results=3, fetch_full_page=configurable.fetch_full_page)
-        search_str = deduplicate_and_format_sources(search_results, max_tokens_per_source=1000, include_raw_content=True)
+        search_results = duckduckgo_search(
+            state.search_query, max_results=3, fetch_full_page=configurable.fetch_full_page
+        )
+        search_str = deduplicate_and_format_sources(
+            search_results, max_tokens_per_source=1000, include_raw_content=True
+        )
     else:
         raise ValueError(f"Unsupported search API: {configurable.search_api}")
 
-    return {"sources_gathered": [format_sources(search_results)], "research_loop_count": state.research_loop_count + 1, "web_research_results": [search_str]}
+    return {
+        "sources_gathered": [format_sources(search_results)],
+        "research_loop_count": state.research_loop_count + 1,
+        "web_research_results": [search_str],
+    }
+
 
 def summarize_sources(state: SummaryState, config: RunnableConfig):
-    """ Summarize the gathered sources """
+    """Summarize the gathered sources"""
 
     # Existing summary
     existing_summary = state.running_summary
@@ -97,10 +118,7 @@ def summarize_sources(state: SummaryState, config: RunnableConfig):
         openai_api_base=configurable.api_base,
         temperature=0,
     )
-    result = llm.invoke(
-        [SystemMessage(content=summarizer_instructions),
-        HumanMessage(content=human_message_content)]
-    )
+    result = llm.invoke([SystemMessage(content=summarizer_instructions), HumanMessage(content=human_message_content)])
 
     running_summary = result.content
 
@@ -113,8 +131,9 @@ def summarize_sources(state: SummaryState, config: RunnableConfig):
 
     return {"running_summary": running_summary}
 
+
 def reflect_on_summary(state: SummaryState, config: RunnableConfig):
-    """ Reflect on the summary and generate a follow-up query """
+    """Reflect on the summary and generate a follow-up query"""
 
     # Generate a query
     configurable = Configuration.from_runnable_config(config)
@@ -126,36 +145,42 @@ def reflect_on_summary(state: SummaryState, config: RunnableConfig):
         model_kwargs={"response_format": {"type": "json_object"}},
     )
     result = llm_json_mode.invoke(
-        [SystemMessage(content=reflection_instructions.format(research_topic=state.research_topic)),
-        HumanMessage(content=f"Identify a knowledge gap and generate a follow-up web search query based on our existing knowledge: {state.running_summary}")]
+        [
+            SystemMessage(content=reflection_instructions.format(research_topic=state.research_topic)),
+            HumanMessage(
+                content=f"Identify a knowledge gap and generate a follow-up web search query based on our existing knowledge: {state.running_summary}"
+            ),
+        ]
     )
     follow_up_query = json.loads(result.content)
 
     # Get the follow-up query
-    query = follow_up_query.get('follow_up_query')
+    query = follow_up_query.get("follow_up_query")
 
     # JSON mode can fail in some cases
     if not query:
-
         # Fallback to a placeholder query
         return {"search_query": f"Tell me more about {state.research_topic}"}
 
+
 def finalize_summary(state: SummaryState):
-    """ Finalize the summary """
+    """Finalize the summary"""
 
     # Format all accumulated sources into a single bulleted list
     all_sources = "\n".join(source for source in state.sources_gathered)
     state.running_summary = f"## Summary\n\n{state.running_summary}\n\n ### Sources:\n{all_sources}"
     return {"running_summary": state.running_summary}
 
+
 def route_research(state: SummaryState, config: RunnableConfig) -> Literal["finalize_summary", "web_research"]:
-    """ Route the research based on the follow-up query """
+    """Route the research based on the follow-up query"""
 
     configurable = Configuration.from_runnable_config(config)
     if state.research_loop_count <= configurable.max_web_research_loops:
         return "web_research"
     else:
         return "finalize_summary"
+
 
 # Add nodes and edges
 builder = StateGraph(SummaryState, input=SummaryStateInput, output=SummaryStateOutput, config_schema=Configuration)
