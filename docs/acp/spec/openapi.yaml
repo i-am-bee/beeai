@@ -44,7 +44,7 @@ paths:
             minimum: 0
       responses:
         "200":
-          description: successful operation
+          description: Successful operation
           content:
             application/json:
               schema:
@@ -68,7 +68,7 @@ paths:
       operationId: agent
       responses:
         "200":
-          description: successful operation
+          description: Successful operation
           content:
             application/json:
               schema:
@@ -343,6 +343,7 @@ components:
         - agent_id
         - name
         - description
+        - schemas
       type: object
       properties:
         agent_id:
@@ -364,6 +365,7 @@ components:
           $ref: "#/components/schemas/Status"
     Schemas:
       type: object
+      description: Description of agent interfaces
       properties:
         input:
           $ref: "#/components/schemas/GeneralSchema"
@@ -387,17 +389,18 @@ components:
                 $ref: "#/components/schemas/GeneralSchema"
     Status:
       type: object
-      description: Runtime related information
+      description: Runtime related information, provided by underlying platform
       properties:
         avgRunTokens:
           type: number
-          format: float
+          format: integer
         avgRunTimeSeconds:
           type: number
           format: float
         successRate:
           type: number
-          
+          minimum: 0
+          maximum: 100
     Tag:
       anyOf:
         - type: string
@@ -411,6 +414,7 @@ components:
         - Chat
     Metadata:
       type: object
+      description: Optional data to support discovery and cataloguing
       properties:
         documentation:
           type: string
@@ -465,7 +469,18 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Link"
-
+        dependencies:
+          type: array
+          items:
+            $ref: "#/components/schemas/AgentDependency"
+        recommendedModels:
+          type: array
+          items:
+            type: string
+            description: Model name ([ollama](https://github.com/ollama/ollama/blob/main/docs/api.md#model-names), [OpenAI](https://platform.openai.com/docs/models))
+            examples:
+              - llama3.3:70b-instruct-fp16
+              - llama3.3
     GeneralSchema:
       oneOf:
         - $ref: "#/components/schemas/JsonSchema"
@@ -520,3 +535,17 @@ components:
       required:
         - code
         - message
+    AgentDependency:
+      type: object
+      properties:
+        type:
+          enum:
+            - agent
+            - tool
+            - model
+          examples:
+            - tool
+        name:
+          type: string
+          examples:
+            - weather
