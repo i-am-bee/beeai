@@ -58,7 +58,7 @@
               "/acp/spec/concepts/configuration",
               "/acp/spec/concepts/communication-structure",
               "/acp/spec/concepts/message-body-structure",
-              "/acp/spec/concepts/awaits",
+              "/acp/spec/concepts/client-in-the-loop",
               "/acp/spec/concepts/streaming",
               "/acp/spec/concepts/transport",
               "/acp/spec/concepts/usage-patterns"
