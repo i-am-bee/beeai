@@ -51,11 +51,26 @@
             "pages": ["/acp/alpha/architecture", "/acp/spec/message-body"]
           },
           {
+            "group": "Core Concepts",
+            "pages": [
+              "/acp/spec/concepts/overview",
+              "/acp/spec/concepts/discovery",
+              "/acp/spec/concepts/run",
+              "/acp/spec/concepts/async",
+              "/acp/spec/concepts/stateful",
+              "/acp/spec/concepts/configuration",
+              "/acp/spec/concepts/communication-structure",
+              "/acp/spec/concepts/message-body-structure",
+              "/acp/spec/concepts/awaits",
+              "/acp/spec/concepts/streaming",
+              "/acp/spec/concepts/transport"
+            ]
+          },
+          {
             "group": "API Reference",
             "pages": [
               "/acp/spec/agents-list",
               "/acp/spec/agents-get",
-
               "/acp/spec/run-create",
               "/acp/spec/run-get",
               "/acp/spec/run-resume",
