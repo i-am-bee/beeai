@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import { LineClampText } from '#components/LineClampText/LineClampText.tsx';
 import { PlayFilledAlt } from '@carbon/icons-react';
 import { Button } from '@carbon/react';
 import { useForm } from 'react-hook-form';
+
+import { LineClampText } from '#components/LineClampText/LineClampText.tsx';
+
 import { InputBar } from '../components/InputBar';
 import { useHandsOff } from '../contexts/hands-off';
 import classes from './HandsOffInput.module.scss';

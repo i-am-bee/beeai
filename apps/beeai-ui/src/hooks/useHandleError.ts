@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
+import { useCallback } from 'react';
+
 import type { QueryMetadata } from '#contexts/QueryProvider/types.ts';
 import { useToast } from '#contexts/Toast/index.ts';
-import { useCallback } from 'react';
 
 export function useHandleError() {
   const { addToast } = useToast();

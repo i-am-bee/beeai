@@ -15,6 +15,7 @@
  */
 
 import { useQuery } from '@tanstack/react-query';
+
 import { getProviders } from '..';
 import { providerKeys } from '../keys';
 import type { Provider, ProvidersList } from '../types';

@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
+import clsx from 'clsx';
+import type { PropsWithChildren } from 'react';
+import { mergeRefs } from 'react-merge-refs';
+
 import { AppFooter } from '#components/layouts/AppFooter.tsx';
 import { useScrollbarWidth } from '#hooks/useScrollbarWidth.ts';
 import { useToTopButton } from '#hooks/useToTopButton.ts';
 import { createScrollbarStyles } from '#utils/createScrollbarStyles.ts';
-import clsx from 'clsx';
-import type { PropsWithChildren } from 'react';
-import { mergeRefs } from 'react-merge-refs';
+
 import { ToTopButton } from '../ToTopButton/ToTopButton';
 import classes from './MainContentView.module.scss';
 

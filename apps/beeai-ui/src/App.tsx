@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import { ErrorBoundary } from 'react-error-boundary';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router';
+
 import { ErrorFallback } from '#components/fallbacks/ErrorFallback.tsx';
 import { AppLayout } from '#components/layouts/AppLayout.tsx';
 import { MCPClientProvider } from '#contexts/MCPClient/MCPClientProvider.tsx';
@@ -29,8 +32,6 @@ import { NotFound } from '#pages/NotFound.tsx';
 import { AgentRunPage } from '#pages/run/AgentRunPage.tsx';
 import { Settings } from '#pages/Settings.tsx';
 import { routeDefinitions } from '#utils/router.ts';
-import { ErrorBoundary } from 'react-error-boundary';
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router';
 
 export function App() {
   return (

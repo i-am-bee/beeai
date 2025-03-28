@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { useRouteTransition } from '@/contexts/TransitionContext';
 import Link, { LinkProps } from 'next/link';
 import { PropsWithChildren } from 'react';
+
+import { useRouteTransition } from '@/contexts/TransitionContext';
 
 interface Props extends LinkProps {
   className?: string;

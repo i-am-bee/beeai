@@ -15,6 +15,7 @@
  */
 
 import { api } from '#api/index.ts';
+
 import type { CreateEnvBody } from './types';
 
 export async function createEnv({ body }: { body: CreateEnvBody['env'] }) {

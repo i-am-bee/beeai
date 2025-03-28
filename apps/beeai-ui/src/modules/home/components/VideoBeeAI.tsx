@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import { useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
+import { useEffect, useRef, useState } from 'react';
+import { mergeRefs } from 'react-merge-refs';
+import { useIntersectionObserver } from 'usehooks-ts';
+
 import { PlayButton } from './PlayButton';
 import classes from './VideoBeeAI.module.scss';
-import { useIntersectionObserver } from 'usehooks-ts';
-import { mergeRefs } from 'react-merge-refs';
 
 export interface VideoBeeAIProps {
   src: string;

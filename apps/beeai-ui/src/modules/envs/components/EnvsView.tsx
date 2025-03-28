@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-import { TableView } from '#components/TableView/TableView.tsx';
-import { TableViewActions } from '#components/TableView/TableViewActions.tsx';
-import { TableViewToolbar } from '#components/TableView/TableViewToolbar.tsx';
-import { useModal } from '#contexts/Modal/index.tsx';
-import { useTableSearch } from '#hooks/useTableSearch.ts';
 import { TrashCan } from '@carbon/icons-react';
 import {
   Button,
@@ -33,6 +28,13 @@ import {
   TableRow,
 } from '@carbon/react';
 import { useMemo } from 'react';
+
+import { TableView } from '#components/TableView/TableView.tsx';
+import { TableViewActions } from '#components/TableView/TableViewActions.tsx';
+import { TableViewToolbar } from '#components/TableView/TableViewToolbar.tsx';
+import { useModal } from '#contexts/Modal/index.tsx';
+import { useTableSearch } from '#hooks/useTableSearch.ts';
+
 import { useDeleteEnv } from '../api/mutations/useDeleteEnv';
 import { useListEnvs } from '../api/queries/useListEnvs';
 import { AddEnvModal } from './AddEnvModal';

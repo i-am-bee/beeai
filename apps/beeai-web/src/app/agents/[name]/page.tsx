@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import { getAgentsList } from '@/acp/api';
-import { MainContent } from '@/layouts/MainContent';
 import { AgentDetail, Container, TryLocallyButton } from '@i-am-bee/beeai-ui';
 import { notFound } from 'next/navigation';
+
+import { getAgentsList } from '@/acp/api';
+import { MainContent } from '@/layouts/MainContent';
 
 export const revalidate = 600;
 

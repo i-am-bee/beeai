@@ -15,9 +15,10 @@
  */
 
 'use client';
-import { InitAgentRoutesResponse } from '@/app/api/init-agents/route';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+
+import { InitAgentRoutesResponse } from '@/app/api/init-agents/route';
 
 interface Props {
   initialized: boolean;

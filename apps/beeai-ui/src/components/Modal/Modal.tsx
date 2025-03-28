@@ -20,6 +20,7 @@ import clsx from 'clsx';
 import { AnimatePresence, motion } from 'framer-motion';
 import type { HTMLAttributes, KeyboardEventHandler, ReactNode } from 'react';
 import { useEffect, useId, useRef, useState } from 'react';
+
 import classes from './Modal.module.scss';
 
 type Props = {

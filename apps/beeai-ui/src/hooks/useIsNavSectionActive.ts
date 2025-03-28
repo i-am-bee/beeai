@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import type { NavSectionName } from '#utils/router.ts';
 import { useCallback } from 'react';
 import { useLocation } from 'react-router';
+
+import type { NavSectionName } from '#utils/router.ts';
 
 export function useIsNavSectionActive() {
   const { pathname } = useLocation();

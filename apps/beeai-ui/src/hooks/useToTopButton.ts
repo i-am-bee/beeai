@@ -16,8 +16,9 @@
 
 'use client';
 
-import { noop } from '#utils/helpers.ts';
 import { useCallback, useEffect, useRef, useState } from 'react';
+
+import { noop } from '#utils/helpers.ts';
 
 interface Props {
   enabled?: boolean;

@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import { type ReactElement, useState, useRef } from 'react';
-import { IconButton } from '@carbon/react';
 import { Checkmark, Copy } from '@carbon/icons-react';
+import { IconButton } from '@carbon/react';
 import clsx from 'clsx';
+import { type ReactElement, useRef, useState } from 'react';
+
 import classes from './CopySnippet.module.scss';
 
 interface Props {

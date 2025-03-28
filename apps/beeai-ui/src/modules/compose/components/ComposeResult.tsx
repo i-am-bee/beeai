@@ -16,6 +16,7 @@
 
 import { useAutoScroll } from '#hooks/useAutoScroll.ts';
 import { AgentOutputBox } from '#modules/run/components/AgentOutputBox.tsx';
+
 import { useCompose } from '../contexts';
 
 export function ComposeResult() {

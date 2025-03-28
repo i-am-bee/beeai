@@ -16,17 +16,19 @@
 
 'use client';
 
-import { CopySnippet } from '#components/CopySnippet/CopySnippet.tsx';
-import { MarkdownContent } from '#components/MarkdownContent/MarkdownContent.tsx';
-import { TagsList } from '#components/TagsList/TagsList.tsx';
-import commands from '#utils/commands.ts';
-import { fadeProps } from '#utils/fadeProps.ts';
 import { spacing } from '@carbon/layout';
 import { moderate01 } from '@carbon/motion';
 import { ButtonSkeleton, SkeletonText } from '@carbon/react';
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
 import type { ReactNode } from 'react';
+
+import { CopySnippet } from '#components/CopySnippet/CopySnippet.tsx';
+import { MarkdownContent } from '#components/MarkdownContent/MarkdownContent.tsx';
+import { TagsList } from '#components/TagsList/TagsList.tsx';
+import commands from '#utils/commands.ts';
+import { fadeProps } from '#utils/fadeProps.ts';
+
 import type { Agent } from '../api/types';
 import { AgentLaunchButton } from '../detail/AgentLaunchButton';
 import classes from './AgentDetail.module.scss';

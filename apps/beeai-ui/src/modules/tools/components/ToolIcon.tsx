@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import Wikipedia from '#svgs/Wikipedia.svg';
 import { IbmWatsonDiscovery, PartlyCloudy, Tools } from '@carbon/icons-react';
+
+import Wikipedia from '#svgs/Wikipedia.svg';
+
 import type { Tool } from '../api/types';
 import classes from './ToolIcon.module.scss';
 

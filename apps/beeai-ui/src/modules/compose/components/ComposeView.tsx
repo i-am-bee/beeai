@@ -15,6 +15,7 @@
  */
 
 import { SplitPanesView } from '#components/SplitPanesView/SplitPanesView.tsx';
+
 import { useCompose } from '../contexts';
 import { SequentialSetup } from '../sequential/SequentialSetup';
 import { ComposeResult } from './ComposeResult';

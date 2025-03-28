@@ -15,6 +15,7 @@
  */
 
 import { useContext } from 'react';
+
 import { ComposeContext } from './compose-context';
 
 export function useCompose() {

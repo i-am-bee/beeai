@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import { useMCPClient } from '#contexts/MCPClient/index.ts';
 import { useQuery } from '@tanstack/react-query';
+
+import { useMCPClient } from '#contexts/MCPClient/index.ts';
+
 import { toolKeys } from '../keys';
 import type { ListToolsParams } from '../types';
 

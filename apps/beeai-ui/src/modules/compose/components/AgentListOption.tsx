@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-import { TagsList } from '#components/TagsList/TagsList.tsx';
-import type { Agent } from '#modules/agents/api/types.ts';
-import { AgentTags } from '#modules/agents/components/AgentTags.tsx';
 import { SkeletonText } from '@carbon/react';
 import clsx from 'clsx';
 import type { MouseEvent } from 'react';
-import classes from './AgentListOption.module.scss';
+
+import { TagsList } from '#components/TagsList/TagsList.tsx';
+import type { Agent } from '#modules/agents/api/types.ts';
+import { AgentTags } from '#modules/agents/components/AgentTags.tsx';
 import { BeeBadge } from '#modules/agents/components/BeeBadge.tsx';
+
+import classes from './AgentListOption.module.scss';
 
 interface Props {
   agent: Agent;

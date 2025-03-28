@@ -15,6 +15,7 @@
  */
 
 import { useAutoScroll } from '#hooks/useAutoScroll.ts';
+
 import { AgentOutputBox } from '../components/AgentOutputBox';
 import { useHandsOff } from '../contexts/hands-off';
 

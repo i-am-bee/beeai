@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import Logo from '#svgs/LogoBeeAI.svg';
 import clsx from 'clsx';
 import { lazy, useState } from 'react';
+
+import Logo from '#svgs/LogoBeeAI.svg';
+
 import animationData from './LogoBeeAI.json';
 import classes from './LogoBeeAI.module.scss';
 

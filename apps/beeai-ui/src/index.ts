@@ -14,29 +14,24 @@
  * limitations under the License.
  */
 
-export * from './utils/constants';
-
-export * from './contexts/Theme/ThemeProvider';
-
 export * from './components/CommunityNav/CommunityNav';
 export * from './components/GitHubLink/GitHubLink';
 export * from './components/layouts/AppFooter';
 export * from './components/layouts/AppHeader';
 export * from './components/layouts/Container';
+export type * from './components/MainContentView/MainContentView';
 export * from './components/MainContentView/MainContentView';
 export * from './components/MainNav/MainNav';
 export * from './components/ToTopButton/ToTopButton';
 export * from './components/TryLocallyButton/TryLocallyButton';
 export * from './components/ViewStack/ViewStack';
-
-export * from './modules/home/components/GettingStarted';
-
+export * from './contexts/Theme/ThemeProvider';
 export * from './modules/agents/api/types';
 export * from './modules/agents/components/AgentCard';
 export * from './modules/agents/components/AgentDetail';
 export * from './modules/agents/components/AgentsFilters';
 export * from './modules/agents/components/AgentsList';
 export * from './modules/agents/providers/AgentsFiltersProvider';
-
-export type * from './components/MainContentView/MainContentView';
+export * from './modules/home/components/GettingStarted';
 export type * from './modules/home/components/VideoBeeAI';
+export * from './utils/constants';

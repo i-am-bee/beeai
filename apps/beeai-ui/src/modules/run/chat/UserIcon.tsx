@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import classes from './UserIcon.module.scss';
 import { User } from '@carbon/icons-react';
+
+import classes from './UserIcon.module.scss';
 
 export function UserIcon() {
   return (

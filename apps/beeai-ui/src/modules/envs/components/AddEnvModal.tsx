@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-import { Modal } from '#components/Modal/Modal.tsx';
-import type { ModalProps } from '#contexts/Modal/modal-context.ts';
 import { Button, InlineLoading, ModalBody, ModalFooter, ModalHeader, TextInput } from '@carbon/react';
 import { useCallback, useId } from 'react';
 import { useForm } from 'react-hook-form';
+
+import { Modal } from '#components/Modal/Modal.tsx';
+import type { ModalProps } from '#contexts/Modal/modal-context.ts';
+
 import { useCreateEnv } from '../api/mutations/useCreateEnv';
 import classes from './AddEnvModal.module.scss';
 

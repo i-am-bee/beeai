@@ -15,8 +15,8 @@
  */
 
 import clsx from 'clsx';
-
 import { useEffect, useState } from 'react';
+
 import type { RunStats } from '../types';
 import { runDuration } from '../utils';
 import classes from './ElapsedTime.module.scss';
