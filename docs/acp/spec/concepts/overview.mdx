@@ -1,26 +1,37 @@
 ---
 title: "Overview"
+description: "High-level overview and capabilities of ACP."
 ---
 
 import AlphaWarning from "/snippets/alpha-warning.mdx";
 
 <AlphaWarning />
 
-Goal
+ACP (Agent Communication Protocol) is a flexible, design-driven protocol for agent communication, emphasizing ease of use and progressive enhancement.
 
-- TLDR:
-  - mode async / stream / sync
-  - states a prechody
-  - unopionated, no assumption about states
-  - async wrapnuty jako sync
-  - progressive enhamcements, easy first use, progress in complexity as more features are supported by the agent_id
-  - start conservative
-  - endpoints - what are they good for
+Explore the [API reference](/acp/spec/agents-list) or view the complete [OpenAPI specification](https://github.com/i-am-bee/beeai/blob/main/docs/acp/spec/openapi.yaml)
 
-Explore the ACP specification by browsing the OpenAPI view https://agntcy.github.io/acp-spec/docs/openapi.html.
+## Features
 
-Learn how to use the API by looking at API Usage Flows
+ACP currently supports the following capabilities:
 
-Learn about Agent ACP Descriptor and its usage here
+| Capability                                   | Status       |
+| -------------------------------------------- | ------------ |
+| Agent Discovery                              | 🟢 Supported |
+| Agent Statefulness                           | 🟢 Supported |
+| Agent Configuration                          | 🚧 WIP       |
+| Modality support (text, images, artifacts)   | 🟢 Supported |
+| Asynchronous Requests                        | 🟢 Supported |
+| Awaits (aka HIL/function calling/interrupts) | 🟢 Supported |
+| HTTP with REST                               | 🟢 Supported |
+| Streaming (via SSE)                          | 🟢 Supported |
 
-Explore tools for ACP and Agent ACP Descriptors in the Agent Control SDK Repo
+## Design Principles
+
+ACP design is guided by the following core principles:
+
+- **Unopinionated**: No assumptions about frameworks, agent implementations, or agent states.
+- **Progressive Enhancement**: Simple initial use, incrementally supporting advanced scenarios.
+- **Simplicity**: Clear, straightforward, and intuitive by design.
+- **Flexibility**: Easily adaptable across various use cases.
+- **Design-led**: Driven by intuitive design rather than extensive documentation.
