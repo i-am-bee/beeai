@@ -12,3 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from beeai_sdk.providers.agent import Server as Server

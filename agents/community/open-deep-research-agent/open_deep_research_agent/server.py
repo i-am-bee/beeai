@@ -137,9 +137,7 @@ def create_agent():
     """,
         provide_run_summary=True,
     )
-    text_webbrowser_agent.prompt_templates["managed_agent"][
-        "task"
-    ] += """You can navigate to .txt online files.
+    text_webbrowser_agent.prompt_templates["managed_agent"]["task"] += """You can navigate to .txt online files.
     If a non-html page is in another format, especially .pdf or a Youtube video, use tool 'inspect_file_as_text' to inspect it.
     Additionally, if after some searching you find out that you need more information to answer the question, you can use `final_answer` with your request for clarification as argument to request for more information."""
 

@@ -34,9 +34,7 @@ if os.getenv("GOOGLE_API_KEY"):
         search_engine_id = os.getenv("GOOGLE_SEARCH_ENGINE_ID")
 
         if not search_engine_id:
-            raise ValueError(
-                "API key or Search Engine ID not found in environment variables"
-            )
+            raise ValueError("API key or Search Engine ID not found in environment variables")
 
         url = "https://www.googleapis.com/customsearch/v1"
         params = {
@@ -106,9 +104,7 @@ def arxiv_search(query: str, max_results: int = 2) -> list:
     import arxiv
 
     client = arxiv.Client()
-    search = arxiv.Search(
-        query=query, max_results=max_results, sort_by=arxiv.SortCriterion.Relevance
-    )
+    search = arxiv.Search(query=query, max_results=max_results, sort_by=arxiv.SortCriterion.Relevance)
 
     results = []
     for paper in client.results(search):

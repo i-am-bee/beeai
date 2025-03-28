@@ -135,9 +135,7 @@ class VisualQATool(Tool):
                 output = process_images_and_text(new_image_path, question, self.client)
 
         if add_note:
-            output = (
-                f"You did not provide a particular question, so here is a detailed caption for the image: {output}"
-            )
+            output = f"You did not provide a particular question, so here is a detailed caption for the image: {output}"
 
         return output
 

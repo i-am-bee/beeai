@@ -253,9 +253,8 @@ class SimpleTextBrowser:
                 redacted_version = redacted_version.replace("Your browser can't play this video.", "")
                 web_snippets.append(redacted_version)
 
-        content = (
-            f"A Google search for '{query}' found {len(web_snippets)} results:\n\n## Web Results\n"
-            + "\n\n".join(web_snippets)
+        content = f"A Google search for '{query}' found {len(web_snippets)} results:\n\n## Web Results\n" + "\n\n".join(
+            web_snippets
         )
 
         self._set_page_content(content)
@@ -499,9 +498,7 @@ class PageUpTool(Tool):
 
 class PageDownTool(Tool):
     name = "page_down"
-    description = (
-        "Scroll the viewport DOWN one page-length in the current webpage and return the new viewport content."
-    )
+    description = "Scroll the viewport DOWN one page-length in the current webpage and return the new viewport content."
     inputs = {}
     output_type = "string"
 

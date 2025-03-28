@@ -85,14 +85,18 @@ class SilentOTLPSpanExporter(OTLPSpanExporter):
 
 
 class Server:
-    _agent: Agent
-    _manifest: dict[str, Any]
+    _agent: Agent = None
+    _manifest: dict[str, Any] = {}
 
     def __init__(self, name: str | None = None):
         self.server = ACPServer(name or "beeai")
         self.decorated = False
 
     def __call__(self):
+        if not self._agent:
+            logger.warning("Running empty server. To add an agent, anotate function with @server.agent()")
+            return
+
         try:
             asyncio.run(self.run_agent_provider())
         except KeyboardInterrupt:
@@ -105,6 +109,8 @@ class Server:
         if self.decorated:
             raise Error("Agent decorator already used")
         self.decorated = True
+
+        logger.debug("Registering agent function")
 
         def decorator(fn: Callable) -> Callable:
             def generator_wrapper(input: Input, ctx: Context):
@@ -249,7 +255,7 @@ class Server:
         try:
             url = os.getenv("PLATFORM_URL", "http://127.0.0.1:8333")
             response = requests.post(
-                f"{url}/v1/provider/register/unmanaged",
+                f"{url}/api/v1/provider/register/unmanaged",
                 json=request_data,
             )
             response.raise_for_status()
@@ -265,4 +271,4 @@ class Server:
             logger.warning(f"Agent can not be registered to beeai server: {e}")
 
 
-__all__ = ["Context"]
+__all__ = ["Context", "Server"]

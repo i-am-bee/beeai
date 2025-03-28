@@ -72,7 +72,9 @@ async def run():
             license="Apache 2.0",
             languages=["Python"],
             githubUrl="https://github.com/i-am-bee/beeai/tree/main/agents/community/crewai-agents/src/crewai_agents/marketing_strategy",
-            ui=UiDefinition(type=UiType.hands_off, userGreeting="What topic do you want to create a marketing strategy around?"),
+            ui=UiDefinition(
+                type=UiType.hands_off, userGreeting="What topic do you want to create a marketing strategy around?"
+            ),
             examples=examples,
             fullDescription=fullDescription,
         ).model_dump(),
