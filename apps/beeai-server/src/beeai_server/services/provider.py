@@ -149,7 +149,9 @@ class ProviderService:
         ]
 
     async def list_providers(self) -> list[ProviderWithStatus]:
-        return await self._get_providers_with_metadata(await self._repository.list())
+        return await self._get_providers_with_metadata(
+            (await self._repository.list()) + list(self._loaded_provider_container.unmanaged_providers.values())
+        )
 
     async def sync(self):
         await self._repository.sync()

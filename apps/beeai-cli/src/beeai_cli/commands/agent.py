@@ -87,7 +87,7 @@ async def install_agent(
     with contextlib.suppress(McpError):
         provider = (await _get_agent(name_or_location)).provider
     if not provider:
-        provider = await api_request("POST", "provider/managed/register", {"location": name_or_location})
+        provider = await api_request("POST", "provider/register/managed", {"location": name_or_location})
         provider = provider["id"]
 
     async for message in api_stream(

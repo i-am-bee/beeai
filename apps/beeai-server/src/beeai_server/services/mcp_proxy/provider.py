@@ -77,7 +77,6 @@ class LoadedProvider:
     provider: BaseProvider
     id: str
     agent_templates: list[AgentTemplate] = []
-    agents: list[Agent] = []
     tools: list[Tool] = []
     resources: list[Resource] = []
     prompts: list[Prompt] = []
@@ -89,7 +88,7 @@ class LoadedProvider:
         self.provider = provider
         self.env = env
         self.id = provider.id
-        self.agents = self._with_id(
+        self._agents = self._with_id(
             [
                 Agent.model_validate(
                     {
@@ -137,6 +136,13 @@ class LoadedProvider:
             obj.provider = self.id
         return objects
 
+    @property
+    def agents(self):
+        return [
+            Agent.model_validate({**self.provider.manifest.model_dump(), **agent.model_dump(), "provider": self.id})
+            for agent in self._agents
+        ]
+
     async def _load_features(self, features: set[_LoadFeature] | Literal["all"] = "all"):
         """
         TODO: Use low lever requests - pagination not implemented in mcp client?
@@ -153,7 +159,7 @@ class LoadedProvider:
                     self.agent_templates = self._with_id((await self.session.list_agent_templates()).agentTemplates)
                     logger.info(f"Loaded {len(self.agent_templates)} agent templates")
                 if self._initialize_result.capabilities.agents and self._LoadFeature.agents in features:
-                    self.agents = self._with_id((await self.session.list_agents()).agents)
+                    self._agents = (await self.session.list_agents()).agents
                     logger.info(f"Loaded {len(self.agents)} agents")
                 if self._initialize_result.capabilities.tools and self._LoadFeature.tools in features:
                     self.tools = self._with_id((await self.session.list_tools()).tools)
@@ -267,14 +273,19 @@ class LoadedProvider:
         await self._ensure_session_periodic.start()
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
-        if self.status == LoadedProviderStatus.not_installed:
-            return
-        self._stopping.set()
-        await self._writer_exit_stack.aclose()
-        self._ensure_session_periodic.poke()
-        await self._stopped.wait()
-        await self._ensure_session_periodic.stop()
-        logger.info("Removing provider")
+        try:
+            logger.critical(f"Closing provider {self.provider.id}")
+            if self.status == LoadedProviderStatus.not_installed:
+                return
+            self._stopping.set()
+            await self._writer_exit_stack.aclose()
+            self._ensure_session_periodic.poke()
+            await self._stopped.wait()
+            await self._ensure_session_periodic.stop()
+            logger.info("Removing provider")
+        except BaseException as ex:
+            logger.critical(f"Exception occurred during provider cleanup: {ex}")
+            raise
 
 
 @inject
@@ -290,7 +301,7 @@ class ProviderContainer:
     def __init__(self, env_repository: IEnvVariableRepository):
         self._managed_providers: dict[str, ManagedProvider] = {}
         self._env_repository = env_repository
-        self._unmanaged_providers: dict[str, UnmanagedProvider] = {}
+        self.unmanaged_providers: dict[str, UnmanagedProvider] = {}
         self.loaded_providers: dict[str, LoadedProvider] = {}
         self._notification_hub = NotificationHub()
         self._provider_change_task_group: TaskGroup | None = None
@@ -364,15 +375,17 @@ class ProviderContainer:
             if self._env is None:
                 self._env = await self._env_repository.get_all()
 
+            managed_providers = {
+                pid: provider for pid, provider in self.loaded_providers.items() if pid not in self.unmanaged_providers
+            }
             desired_provider_ids = self._managed_providers.keys()
-            added_providers = desired_provider_ids - self.loaded_providers.keys()
+            added_providers = desired_provider_ids - managed_providers.keys()
             added_providers = [
                 LoadedProvider(p, env=p.extract_env(self._env))
                 for p in self._managed_providers.values()
                 if p.id in added_providers
             ]
-            removed_providers = [p for p in self.loaded_providers.values() if p.id not in desired_provider_ids]
-            unaffected_providers = [p for p in self.loaded_providers.values() if p.id in desired_provider_ids]
+            removed_providers = [p for p in managed_providers.values() if p.id not in desired_provider_ids]
 
             removed_providers and logger.info(f"Removing {len(removed_providers)} old providers")
             added_providers and logger.info(f"Discovered {len(added_providers)} new providers")
@@ -383,17 +396,19 @@ class ProviderContainer:
                 for provider in added_providers:
                     tg.start_soon(self._init_provider, provider)
 
-            self.loaded_providers = {p.id: p for p in unaffected_providers + added_providers}
         except Exception as ex:
             logger.critical(f"Failed to reload providers: {extract_messages(ex)}")
 
     async def _init_provider(self, provider: LoadedProvider):
         await provider.init()
+        self.loaded_providers[provider.id] = provider
         if provider.status != LoadedProviderStatus.not_installed:
             await self._notification_hub.register(provider)
 
     async def _close_provider(self, provider: LoadedProvider):
         await provider.close()
+        self.loaded_providers.pop(provider.id, None)
+        self.unmanaged_providers.pop(provider.id, None)
         await self._notification_hub.remove(provider)
 
     def handle_managed_providers_change(self, updated_providers: list[ManagedProvider]) -> None:
@@ -404,29 +419,27 @@ class ProviderContainer:
         await self.load_or_restart_provider(provider)
 
     async def remove(self, provider: ManagedProvider):
-        if loaded_provider := self.loaded_providers.pop(provider.id, None):
+        if loaded_provider := self.loaded_providers.get(provider.id, None):
             await self._close_provider(loaded_provider)
 
     async def add_unmanaged_provider(self, provider: UnmanagedProvider):
-        self._unmanaged_providers[provider.id] = provider
+        self.unmanaged_providers[provider.id] = provider
         await self.load_or_restart_provider(provider, reconnect_interval=timedelta(seconds=1))
 
     async def _remove_broken_unmanaged_providers(self):
-        unmanaged_providers = [p for p in self.loaded_providers.values() if p.id in self._unmanaged_providers]
+        unmanaged_providers = [p for p in self.loaded_providers.values() if p.id in self.unmanaged_providers]
         for provider in unmanaged_providers:
             if provider.retries >= 3:
                 logger.warning(f"Removing disconnected unmanaged provider {provider.id}")
                 await self._close_provider(provider)
-                self._unmanaged_providers.pop(provider.id, None)
-                self.loaded_providers.pop(provider.id, None)
 
     async def load_or_restart_provider(self, provider: BaseProvider, reconnect_interval: timedelta | None = None):
         if loaded_provider := self.loaded_providers.get(provider.id, None):
             await self._close_provider(loaded_provider)
-        self.loaded_providers[provider.id] = LoadedProvider(
+        loaded_provider = LoadedProvider(
             provider, env=provider.extract_env(self._env), reconnect_interval=reconnect_interval
         )
-        await self._init_provider(self.loaded_providers[provider.id])
+        await self._init_provider(loaded_provider)
 
     async def _handle_reload_on_env_update(self):
         self._env = await self._env_repository.get_all()
@@ -444,9 +457,12 @@ class ProviderContainer:
         await self._remove_closed_unmanaged_provider_periodic.start()
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
-        await self._remove_closed_unmanaged_provider_periodic.stop()
-        async with anyio.create_task_group() as tg:
-            for provider in self.loaded_providers.values():
-                tg.start_soon(self._close_provider, provider)
-        self.loaded_providers = {}
-        await self._exit_stack.aclose()
+        try:
+            await self._remove_closed_unmanaged_provider_periodic.stop()
+            async with anyio.create_task_group() as tg:
+                for provider in self.loaded_providers.values():
+                    tg.start_soon(self._close_provider, provider)
+            self.loaded_providers = {}
+            await self._exit_stack.aclose()
+        except Exception as ex:
+            logger.critical(f"Exception occurred during provider container cleanup: {ex}")

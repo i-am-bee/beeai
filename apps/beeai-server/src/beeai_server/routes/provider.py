@@ -30,7 +30,7 @@ from starlette.responses import StreamingResponse
 router = fastapi.APIRouter()
 
 
-@router.post("/managed/register")
+@router.post("/register/managed")
 async def create_managed_provider(
     request: CreateManagedProviderRequest, provider_service: ProviderServiceDependency
 ) -> ProviderWithStatus:
@@ -43,7 +43,7 @@ class ProviderRequest(BaseModel):
     manifest: AgentManifest
 
 
-@router.post("/unmanaged/register")
+@router.post("/register/unmanaged")
 async def add_unmanaged_provider(
     provider: ProviderRequest, provider_service: ProviderServiceDependency
 ) -> ProviderWithStatus:

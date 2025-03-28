@@ -268,7 +268,8 @@ class UnmanagedProvider(BaseProvider, extra="allow"):
     @asynccontextmanager
     @inject
     async def mcp_client(self, *_args, **_kwargs) -> McpClient:
-        async with sse_client(url=f"http://{self.location}/sse", timeout=60) as streams:
+        location = str(self.location).rstrip("/")
+        async with sse_client(url=f"{location}/sse", timeout=60) as streams:
             yield streams
 
 
