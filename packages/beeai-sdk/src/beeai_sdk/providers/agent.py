@@ -19,6 +19,7 @@ import functools
 import hashlib
 import inspect
 import os
+import sys
 import requests
 from functools import partial
 
@@ -120,7 +121,7 @@ class Server:
 
             def create_agent_name_from_path():
                 """Create an agent name from the current path"""
-                cwd = os.getcwd()
+                cwd = sys.modules["__main__"].__file__
                 hash_object = hashlib.md5(cwd.encode())
                 return hash_object.hexdigest()
 
@@ -136,6 +137,9 @@ class Server:
             @functools.wraps(func)
             async def async_fn(*args, **kwargs):
                 return await func(*args, **kwargs) if len(parameters) == 2 else await func(*args)
+
+            if not output:
+                logger.warning("Output schema not specified, return type should be provided.")
 
             self._agent = Agent(
                 name=name,
@@ -167,7 +171,7 @@ class Server:
             os.path.dirname(os.path.abspath(__file__)), AGENT_FILE_NAME
         )
         if not file_content:
-            logger.warning("Warn: agent file not found")
+            logger.warning("Agent file not found")
         else:
             return yaml.safe_load(file_content)
 
@@ -207,7 +211,7 @@ class Server:
             return
 
         request_data = {
-            "location": f"{self.server.settings.host}:{self.server.settings.port}",
+            "location": f"http://{self.server.settings.host}:{self.server.settings.port}",
             "id": self._agent.name,
             "manifest": self._manifest or {"name": self._agent.name},
         }
