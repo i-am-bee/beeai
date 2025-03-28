@@ -32,6 +32,7 @@ from acp import ClientSession, Tool, Resource, InitializeResult, ServerSession, 
 from acp.shared.context import RequestContext
 from acp.shared.session import RequestResponder, ReceiveRequestT, SendResultT, ReceiveNotificationT
 from acp.types import AgentTemplate, Prompt, Agent
+from beeai_sdk.schemas.base import Output, Input
 from beeai_server.adapters.interface import IEnvVariableRepository
 from beeai_server.domain.model import (
     LoadedProviderStatus,
@@ -89,7 +90,15 @@ class LoadedProvider:
         self.env = env
         self.id = provider.id
         self.agents = self._with_id(
-            [Agent.model_validate({"inputSchema": {}, "outputSchema": {}, **provider.manifest.model_dump()})]
+            [
+                Agent.model_validate(
+                    {
+                        "inputSchema": Input.model_json_schema(),
+                        "outputSchema": Output.model_json_schema(),
+                        **provider.manifest.model_dump(),
+                    }
+                )
+            ]
         )
         self.logs_container = LogsContainer()
         self._open = False
