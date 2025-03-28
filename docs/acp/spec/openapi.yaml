@@ -2,7 +2,7 @@ openapi: 3.1.1
 info:
   title: ACP - Agent Communication Protocol
   description: >-
-    TBD
+    The Agent Communication Protocol (ACP) provides a standardized RESTful API to manage and execute AI agents. It supports synchronous, asynchronous, and streamed interactions as well as stateless and stateful agents.
   contact:
     name: BeeAI
     url: https://beeai.dev
@@ -11,19 +11,20 @@ info:
     url: https://www.apache.org/licenses/LICENSE-2.0.html
   version: 0.1.0
 externalDocs:
-  description: Find out more about BeeAI
+  description: Comprehensive documentation for ACP
   url: https://docs.beeai.dev
 servers:
   - url: http://localhost:8333/api/v0
 tags:
   - name: agent
-    description: Operations about agent
+    description: Operations related to managing agent definitions and metadata.
+  - name: run
+    description: Operations for creating, managing, and controlling agent runs and their lifecycles.
 paths:
   /agents:
     get:
       tags:
         - agent
-      summary: List agents
       description: Returns a list of agents.
       operationId: listAgents
       parameters:
@@ -63,9 +64,8 @@ paths:
     get:
       tags:
         - agent
-      summary: Agent descriptor.
-      description: Returns agent descriptor.
-      operationId: agent
+      description: Get Agent
+      operationId: getAgent
       responses:
         "200":
           description: Successful operation
@@ -87,9 +87,8 @@ paths:
     post:
       tags:
         - run
-      summary: Run agent
       description: Run an agent
-      operationId: run
+      operationId: createRun
       requestBody:
         content:
           application/json:
@@ -125,9 +124,8 @@ paths:
     get:
       tags:
         - run
-      summary: Read run
       description: Read state of a run
-      operationId: run
+      operationId: getRun
       responses:
         "200":
           description: Status successfully read
@@ -148,9 +146,8 @@ paths:
     post:
       tags:
         - run
-      summary: Resume run
       description: Resume awaiting run.
-      operationId: run
+      operationId: resumeRun
       requestBody:
         content:
           application/json:
@@ -186,9 +183,8 @@ paths:
     post:
       tags:
         - run
-      summary: Cancel run
       description: Cancel run
-      operationId: run
+      operationId: cancelRun
       responses:
         "202":
           description: Run cancelling
@@ -343,7 +339,7 @@ components:
         - agent_id
         - name
         - description
-        - schemas
+        - interfaces
       type: object
       properties:
         agent_id:
@@ -357,13 +353,13 @@ components:
           type: string
           examples:
             - Conversational agent with memory, supporting real-time search, Wikipedia lookups, and weather updates through integrated tools
-        schemas:
-          $ref: "#/components/schemas/Schemas"
+        interfaces:
+          $ref: "#/components/schemas/Interfaces"
         metadata:
           $ref: "#/components/schemas/Metadata"
         status:
           $ref: "#/components/schemas/Status"
-    Schemas:
+    Interfaces:
       type: object
       description: Description of agent interfaces
       properties:
@@ -389,7 +385,7 @@ components:
                 $ref: "#/components/schemas/GeneralSchema"
     Status:
       type: object
-      description: Runtime related information, provided by underlying platform
+      description: Runtime metrics and statistics provided by the platform.
       properties:
         avgRunTokens:
           type: number
@@ -487,6 +483,10 @@ components:
         - enum:
             - chat
             - text
+          description: |
+            Predefined schema types:
+            - `chat`: Conversational input/output structured in a standard chat message format.
+            - `text`: Simple plain text input/output without additional metadata.
     JsonSchema:
       type: object
     Link:
@@ -507,7 +507,7 @@ components:
       type: string
       format: date-time
       description: >-
-        Timestamp in RFC3339 format: https://www.rfc-editor.org/rfc/rfc3339.html
+        Timestamp in [RFC3339](https://www.rfc-editor.org/rfc/rfc3339.html) format (ISO8601-compatible).
     Person:
       type: object
       required:

@@ -64,7 +64,7 @@
           },
           {
             "group": "API Reference",
-            "icon": "code",
+            "icon": "brackets-curly",
             "pages": [
               "/acp/spec/agents-list",
               "/acp/spec/agents-get",
@@ -74,6 +74,8 @@
               "/acp/spec/run-cancel"
             ]
           },
+          "/acp/spec/sdk",
+
           {
             "group": "Pre-alpha (deprecated)",
             "pages": [

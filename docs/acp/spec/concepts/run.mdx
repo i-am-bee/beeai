@@ -3,6 +3,10 @@ title: Agent Run
 description: "Holding persistent state in the agent conversation"
 ---
 
+import AlphaWarning from "/snippets/alpha-warning.mdx";
+
+<AlphaWarning />
+
 ## Motivation
 
 Agents may, or may not, hold some internal state. It's easy to imagine an I/O agent that accepts some input data, does some LLM crunching, and returns the output. However, there are many types of agents where it's desirable to continue the interaction further, for example ask it for refinements, or even interactively collaborate on some task.
@@ -18,6 +22,7 @@ For this reason, ACP uses a concept of "agent runs", which are representations f
 ACP offers the resource "Agent Run" for managing agent states. Agent Runs can be initiated by `POST /runs`, resumed by `POST /runs/{run_id}`, and cancelled by `/runs/{run_id}/cancel` (note that ACP does not use DELETE here since cancellation is an asynchronous operation).
 
 For different types of agents, an Agent Run may mean different things:
+
 - **Stateless agents** don't support holding a conversation, thus the Agent Run represents only a single call and its result.
 - **Serializable stateful agents** can save their state to a persistent storage, allowing for the Agent Run to continue virtually anytime.
 - **Non-serializable stateful agents** depend on a non-serializable resource, like a running Jupyter kernel, and thus their Agent Run has a short expiration time -- _expired_ Agent Run can't be continued further.
@@ -48,8 +53,3 @@ stateDiagram-v2
     failed --> [*]
 
 ```
-
----
-
-TODO:
-- how does run work (maybe some diagrams showing possible "reference" patterns)

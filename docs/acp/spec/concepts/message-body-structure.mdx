@@ -3,6 +3,10 @@ title: Message Body Structure
 description: "Multi-modal structure for data exchange"
 ---
 
+import AlphaWarning from "/snippets/alpha-warning.mdx";
+
+<AlphaWarning />
+
 This page describes the core "message body" structure used in ACP.
 
 ## Introduction
@@ -11,23 +15,23 @@ A message body consists of a series of parts, which may be "text", "image", or "
 
 ```json
 [
-    {
-        "type": "text",
-        "content": "This is a cute cat:"
-    },
-    {
-        "type": "image",
-        "contentUrl": "https://s3.example.com/12345678901234567890/image.png"
-    },
-    {
-        "type": "text",
-        "content": "Would you like me to send more images of cats?"
-    },
-    {
-        "type": "artifact",
-        "name": "/sources/1",
-        "contentUrl": "https://example.com/cat-facts"
-    },
+  {
+    "type": "text",
+    "content": "This is a cute cat:"
+  },
+  {
+    "type": "image",
+    "contentUrl": "https://s3.example.com/12345678901234567890/image.png"
+  },
+  {
+    "type": "text",
+    "content": "Would you like me to send more images of cats?"
+  },
+  {
+    "type": "artifact",
+    "name": "/sources/1",
+    "contentUrl": "https://example.com/cat-facts"
+  }
 ]
 ```
 
@@ -79,109 +83,113 @@ type MessageBodySchema = ("text" | "image" | "artifact")[];
 ## Examples
 
 ### Chat agent
+
 A simple chat agent that only supports text responses:
 
 ```json
-[ "text" ]
+["text"]
 ```
 
 Example message:
 
 ```json
 [
-    {
-        "type": "text",
-        "content": "Hello, world!"
-    }
+  {
+    "type": "text",
+    "content": "Hello, world!"
+  }
 ]
 ```
 
 ### Multi-modal chat agent
+
 A chat agent that can send text and images:
 
 ```json
-[ "text", "image" ]
+["text", "image"]
 ```
 
 Example message:
 
 ```json
 [
-    {
-        "type": "text",
-        "content": "This is a cute cat:"
-    },
-    {
-        "type": "image",
-        "contentUrl": "https://s3.example.com/12345678901234567890/image.png"
-    },
-    {
-        "type": "text",
-        "content": "Nice, huh?"
-    }
+  {
+    "type": "text",
+    "content": "This is a cute cat:"
+  },
+  {
+    "type": "image",
+    "contentUrl": "https://s3.example.com/12345678901234567890/image.png"
+  },
+  {
+    "type": "text",
+    "content": "Nice, huh?"
+  }
 ]
 ```
 
 ### Software-writing agent
+
 An agent that generates text responses along with downloadable files:
 
 ```json
-[ "text", "artifact" ]
+["text", "artifact"]
 ```
 
 Example message:
 
 ```json
 [
-    {
-        "type": "text",
-        "content": "I have created a hello world project in Python."
-    },
-    {
-        "type": "artifact",
-        "name": "/files/hello_world.py",
-        "contentUrl": "https://s3.example.com/12345678901234567890/hello_world.py"
-    }
+  {
+    "type": "text",
+    "content": "I have created a hello world project in Python."
+  },
+  {
+    "type": "artifact",
+    "name": "/files/hello_world.py",
+    "contentUrl": "https://s3.example.com/12345678901234567890/hello_world.py"
+  }
 ]
 ```
 
 ### Researcher agent
+
 An agent that provides a detailed write-up with images and references:
 
 ```json
-[ "text", "image", "artifact" ]
+["text", "image", "artifact"]
 ```
 
 Example message:
 
 ```json
 [
-    {
-        "type": "text",
-        "content": "Cats are known to be [cute](source:1) and [funny](source:2)."
-    },
-    {
-        "type": "image",
-        "contentUrl": "https://s3.example.com/12345678901234567890/cat.png"
-    },
-    {
-        "type": "artifact",
-        "name": "/sources/1",
-        "contentUrl": "https://example.com/cat-facts"
-    },
-    {
-        "type": "artifact",
-        "name": "/sources/2",
-        "content": "https://example.com/it-came-to-me-in-a-dream",
-        "contentEncoding": "plain"
-    }
+  {
+    "type": "text",
+    "content": "Cats are known to be [cute](source:1) and [funny](source:2)."
+  },
+  {
+    "type": "image",
+    "contentUrl": "https://s3.example.com/12345678901234567890/cat.png"
+  },
+  {
+    "type": "artifact",
+    "name": "/sources/1",
+    "contentUrl": "https://example.com/cat-facts"
+  },
+  {
+    "type": "artifact",
+    "name": "/sources/2",
+    "content": "https://example.com/it-came-to-me-in-a-dream",
+    "contentEncoding": "plain"
+  }
 ]
 ```
 
 ## Why keep it simple?
+
 Many schema formats, such as JSON Schema, introduce unnecessary complexity. This proposal keeps the structure minimal while still covering most use cases efficiently.
 
-
-
 ---
+
 Current discussion regarding this page: https://github.com/orgs/i-am-bee/discussions/473
