@@ -27,20 +27,20 @@ from beeai_server.adapters.interface import (
     TelemetryConfig,
     NOT_SET,
 )
-from beeai_server.domain.model import Provider
+from beeai_server.domain.model import ManagedProvider
 from beeai_server.utils.utils import filter_dict
 
 
 class ProviderConfigFile(BaseModel):
-    providers: list[Provider]
+    providers: list[ManagedProvider]
 
 
 class FilesystemProviderRepository(IProviderRepository):
     def __init__(self, provider_config_path: Path):
         self._config_path = AsyncPath(provider_config_path)
-        self._repository_providers: list[Provider] | None = None
+        self._repository_providers: list[ManagedProvider] | None = None
 
-    async def _write_config(self, providers: list[Provider]) -> None:
+    async def _write_config(self, providers: list[ManagedProvider]) -> None:
         # Ensure that path exists
         await self._config_path.parent.mkdir(parents=True, exist_ok=True)
         config = yaml.dump(ProviderConfigFile(providers=providers).model_dump(mode="json"), indent=2)
@@ -62,17 +62,23 @@ class FilesystemProviderRepository(IProviderRepository):
             await self._config_path.rename(backup)
             self._repository_providers = []
 
-    async def list(self) -> list[Provider]:
+    async def list(self) -> list[ManagedProvider]:
         if self._repository_providers is None:
             await self.sync()
         return self._repository_providers
 
-    async def create(self, *, provider: Provider) -> None:
+    async def create(self, *, provider: ManagedProvider) -> None:
         repository_providers = await self.list()
         if provider.id in {p.id for p in repository_providers}:
             raise ValueError(f"Provider with ID {provider.id} already exists")
         repository_providers.append(provider)
         await self._write_config(repository_providers)
+
+    async def get(self, *, provider_id: str) -> ManagedProvider:
+        repository_providers = {provider.id: provider for provider in await self.list()}
+        if provider_id in repository_providers:
+            return repository_providers[provider_id]
+        raise ValueError(f"Provider with ID {provider_id} not found")
 
     async def delete(self, *, provider_id: str) -> None:
         repository_providers = await self.list()

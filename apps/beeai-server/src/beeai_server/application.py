@@ -109,7 +109,7 @@ def register_telemetry(provider_container: ProviderContainer):
     meter.create_observable_gauge("platform_status", callbacks=[scrape_platform_status])
 
     def scrape_providers_by_status(options: CallbackOptions) -> Iterable[Observation]:
-        providers = provider_container.loaded_providers
+        providers = provider_container.loaded_providers.values()
         for status in LoadedProviderStatus:
             count = 0
             for provider in providers:

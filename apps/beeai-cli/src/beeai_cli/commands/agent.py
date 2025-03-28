@@ -17,6 +17,7 @@ import contextlib
 import inspect
 import json
 import random
+import re
 
 import jsonref
 from rich.box import HORIZONTALS
@@ -47,7 +48,7 @@ from click import BadParameter
 from rich.markdown import Markdown
 from rich.table import Column
 
-from beeai_cli.api import send_request, send_request_with_notifications
+from beeai_cli.api import send_request, send_request_with_notifications, api_request, api_stream
 from beeai_cli.async_typer import AsyncTyper, console, create_table, err_console
 from beeai_cli.utils import check_json, generate_schema_example, omit, prompt_user, filter_dict, remove_nullable
 
@@ -65,6 +66,58 @@ processing_messages = [
     "Bee right back...",
     "Extracting knowledge nectar...",
 ]
+
+
+def _print_log(line, ansi_mode=False):
+    def decode(text: str):
+        return Text.from_ansi(text) if ansi_mode else text
+
+    if line["stream"] == "stderr":
+        err_console.print(decode(line["message"]))
+    elif line["stream"] == "stdout":
+        console.print(decode(line["message"]))
+
+
+@app.command("add | install")
+async def install_agent(
+    name_or_location: str = typer.Argument(..., help="Agent name or location (public docker image or github url)"),
+):
+    """Install discovered agent or add public docker image or github repository [aliases: install]"""
+    provider = None
+    with contextlib.suppress(McpError):
+        provider = (await _get_agent(name_or_location)).provider
+    if not provider:
+        provider = await api_request("POST", "provider/managed/register", {"location": name_or_location})
+        provider = provider["id"]
+
+    async for message in api_stream(
+        "POST",
+        "provider/install",
+        json={"id": provider},
+        params={"stream": True},
+    ):
+        _print_log(message, ansi_mode=True)
+    await list_agents()
+
+
+@app.command("remove | uninstall | rm | delete")
+async def uninstall_agent(name: str = typer.Argument(..., help="Agent name")) -> None:
+    """Remove agent"""
+    providers = (await api_request("get", "provider"))["items"]
+    agent = await _get_agent(name)
+    [provider] = [provider for provider in providers if provider["id"] == agent.provider]
+    with console.status("Uninstalling agent (may take a few minutes)...", spinner="dots"):
+        await api_request("post", "provider/delete", json={"id": provider["id"]})
+    await list_agents()
+
+
+@app.command("logs")
+async def stream_logs(name: str = typer.Argument(..., help="Agent name")):
+    """Stream agent provider logs"""
+    agent = await _get_agent(name)
+    provider = agent.provider
+    async for message in api_stream("get", "provider/logs", params={"id": provider}):
+        _print_log(message)
 
 
 async def _run_agent(name: str, input: dict[str, Any], dump_files_path: Path | None = None) -> RunAgentResult:
@@ -395,7 +448,7 @@ async def run_agent(
     agent = await _get_agent(name, agents_by_name)
     ui = agent.model_extra.get("ui", {}) or {}
     ui_type = ui.get("type", None)
-    is_sequential_workflow = agent.name in {"sequential-workflow"}
+    is_sequential_workflow = agent.name in {"sequential-workflow", "composition"}
 
     user_greeting = ui.get("userGreeting", None) or "How can I help you?"
     config = {}
@@ -474,16 +527,64 @@ async def run_agent(
         await _run_agent(name, input, dump_files_path=dump_files)
 
 
+def render_enum(value: str, colors: dict[str, str]) -> str:
+    if color := colors.get(value, None):
+        return f"[{color}]{value}[/{color}]"
+    return value
+
+
+def _get_short_id(provider_id: str) -> str:
+    return re.sub(r"[a-z]*.io/i-am-bee/beeai/", "", provider_id)
+
+
 @app.command("list")
 async def list_agents():
     """List agents."""
     result = await send_request(types.ListAgentsRequest(method="agents/list"), types.ListAgentsResult)
-    with create_table(Column("Name", style="yellow"), "UI", Column("Description", ratio=1)) as table:
-        for agent in result.agents:
+    providers_by_id = {p["id"]: p for p in (await api_request("GET", "provider"))["items"]}
+    max_provider_len = max(len(_get_short_id(p_id)) for p_id in providers_by_id) if providers_by_id else 0
+
+    def _sort_fn(agent: Agent):
+        if not (provider := providers_by_id.get(agent.provider)):
+            return agent.name
+        status_rank = {"not_installed": "1"}
+        return str(status_rank.get(provider["status"], 0)) + f"_{agent.name}" if "registry" in provider else agent.name
+
+    with create_table(
+        Column("Name", style="yellow"),
+        Column("Status", width=len("not_installed")),
+        Column("Description", max_width=30),
+        Column("UI"),
+        Column("Location", max_width=min(max_provider_len, 70)),
+        Column("Missing Env", max_width=50),
+        Column("Last Error", ratio=1),
+    ) as table:
+        for agent in sorted(result.agents, key=_sort_fn):
+            status = None
+            missing_env = None
+            location = None
+            error = None
+            if provider := providers_by_id.get(agent.provider, None):
+                status = provider["status"]
+                missing_env = ",".join(var["name"] for var in provider["missing_configuration"])
+                location = _get_short_id(provider["id"])
+                error = (
+                    (provider.get("last_error") or {}).get("message", None)
+                    if provider["status"] != "ready"
+                    else "<none>"
+                )
+
             table.add_row(
                 agent.name,
+                render_enum(
+                    status or "<unknown>",
+                    {"running": "green", "initializing": "yellow", "error": "red", "unsupported": "orange1"},
+                ),
+                agent.description or "<none>",
                 agent.model_extra.get("ui", {}).get("type", None) or "<none>",
-                agent.description,
+                location or "<none>",
+                missing_env or "<none>",
+                error or "<none>",
             )
     console.print(table)
 

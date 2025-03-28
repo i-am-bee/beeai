@@ -14,11 +14,11 @@
 
 from typing import TYPE_CHECKING
 
-from starlette.status import HTTP_404_NOT_FOUND
-
+from starlette.status import HTTP_404_NOT_FOUND, HTTP_400_BAD_REQUEST
+from tenacity import retry_if_exception, retry_base
 
 if TYPE_CHECKING:
-    from beeai_server.domain.model import EnvVar
+    from beeai_server.domain.model import EnvVar, ProviderSource
 
 
 class ManifestLoadError(Exception):
@@ -34,9 +34,31 @@ class ManifestLoadError(Exception):
 class LoadFeaturesError(Exception): ...
 
 
+class AgentNotInstalledError(Exception):
+    def __init__(self, source: "ProviderSource", message: str | None = None, status_code: int = HTTP_400_BAD_REQUEST):
+        self.status_code = status_code
+        message = message or f"Agent provider is not installed: {source}"
+
+
 class UnsupportedProviderError(FileNotFoundError): ...
 
 
 class MissingConfigurationError(Exception):
     def __init__(self, missing_env: list["EnvVar"]):
         self.missing_env = missing_env
+
+
+def retry_if_exception_grp_type(*exception_types: type[BaseException]) -> retry_base:
+    """Handle also exception groups"""
+
+    def _fn(exception: BaseException) -> bool:
+        retry = False
+        try:
+            raise exception
+        except* exception_types:
+            retry = True
+        except* BaseException:
+            ...
+        return retry
+
+    return retry_if_exception(_fn)

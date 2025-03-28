@@ -15,7 +15,8 @@
 from typing import TypeVar, Generic, Any
 from pydantic import BaseModel, RootModel
 
-from beeai_server.domain.model import ManifestLocation
+from beeai_server.custom_types import ID
+from beeai_server.domain.model import ProviderLocation
 
 BaseModelT = TypeVar("BaseModelT", bound=BaseModel)
 
@@ -25,8 +26,12 @@ class PaginatedResponse(BaseModel, Generic[BaseModelT]):
     total_count: int
 
 
-class CreateProviderRequest(BaseModel):
-    location: ManifestLocation
+class CreateManagedProviderRequest(BaseModel):
+    location: ProviderLocation
+
+
+class InstallProviderRequest(BaseModel):
+    id: ID
 
 
 class UpdateEnvRequest(BaseModel):
@@ -44,5 +49,5 @@ class UpdateTelemetryConfigRequest(BaseModel):
 RunAgentInput = RootModel[dict[str, Any]]
 
 
-DeleteProviderRequest = CreateProviderRequest
-StreamLogsRequest = CreateProviderRequest
+DeleteProviderRequest = InstallProviderRequest
+StreamLogsRequest = InstallProviderRequest

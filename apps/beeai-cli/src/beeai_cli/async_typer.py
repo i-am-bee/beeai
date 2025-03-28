@@ -15,6 +15,7 @@
 import asyncio
 import functools
 import inspect
+import re
 from contextlib import contextmanager
 from typing import Iterator
 
@@ -24,6 +25,7 @@ from httpx import ConnectError
 from rich.console import Console, RenderResult
 from rich.markdown import Heading, Markdown
 from rich.table import Table
+from typer.core import TyperGroup
 
 from beeai_cli.api import resolve_connection_error
 from beeai_cli.configuration import Configuration
@@ -59,7 +61,27 @@ def create_table(*args, no_wrap: bool = True, **kwargs) -> Iterator[Table]:
         table._render = lambda *args, **kwargs: [rich.text.Text("<No items found>", style="italic")]
 
 
+class AliasGroup(TyperGroup):
+    """Taken from https://github.com/fastapi/typer/issues/132#issuecomment-2417492805"""
+
+    _CMD_SPLIT_P = re.compile(r" ?[,|] ?")
+
+    def get_command(self, ctx, cmd_name):
+        cmd_name = self._group_cmd_name(cmd_name)
+        return super().get_command(ctx, cmd_name)
+
+    def _group_cmd_name(self, default_name):
+        for cmd in self.commands.values():
+            name = cmd.name
+            if name and default_name in self._CMD_SPLIT_P.split(name):
+                return name
+        return default_name
+
+
 class AsyncTyper(typer.Typer):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs, cls=AliasGroup)
+
     def command(self, *args, **kwargs):
         parent_decorator = super().command(*args, **kwargs)
 
