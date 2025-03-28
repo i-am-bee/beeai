@@ -9,7 +9,7 @@ dependencies = [
     "beeai-sdk==0.0.16",
     "acp-sdk", # version determined by beeai-sdk
     "aiohttp>=3.11.11",
-    "anyio>=4.8.0",
+    "anyio>=4.9.0",
     "asgiref>=3.8.1",
     "backports-tarfile>=1.2.0",
     "fastapi[standard]>=0.115.7",
@@ -25,6 +25,8 @@ dependencies = [
     "opentelemetry-sdk>=1.30.0",
     "opentelemetry-api>=1.30.0",
     "opentelemetry-exporter-otlp-proto-http>=1.30.0",
+    "aiodocker>=0.24.0",
+    "tenacity>=9.0.0",
 ]
 
 [tool.ruff]

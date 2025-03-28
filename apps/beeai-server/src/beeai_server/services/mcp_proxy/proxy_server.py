@@ -113,7 +113,7 @@ class MCPProxyServer:
 
     def _get_provider_session(self, object_id: str) -> ClientSession:
         provider = self._provider_container.get_provider(object_id)
-        if provider.status != LoadedProviderStatus.ready:
+        if provider.status != LoadedProviderStatus.running:
             raise RuntimeError(f"Provider is not in ready state: {provider.id}")
         return provider.session
 

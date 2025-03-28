@@ -17,6 +17,7 @@ import os
 import signal
 from contextlib import suppress
 
+import anyio
 import anyio.abc
 import anyio.to_thread
 from anyio import CancelScope
@@ -42,3 +43,11 @@ async def terminate_process(process: anyio.abc.Process, timeout: float | None = 
         if cancel_scope.cancel_called:
             logger.warning(f"Provider process did not terminate in {timeout}s, killing it.")
             await anyio.to_thread.run_sync(_kill_process_group, process)
+
+
+async def find_free_port():
+    """Get a random free port assigned by the OS."""
+    listener = await anyio.create_tcp_listener()
+    port = listener.extra(anyio.abc.SocketAttribute.local_address)[1]
+    await listener.aclose()
+    return port

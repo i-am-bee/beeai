@@ -17,7 +17,6 @@ import os
 import sys
 import tempfile
 import time
-from beeai_cli.commands.provider import list_providers
 import typer
 import httpx
 import subprocess
@@ -35,7 +34,7 @@ app = AsyncTyper()
 
 @app.command("add")
 async def add(
-    env: list[str] = typer.Argument(help="Environment variables to pass to provider"),
+    env: list[str] = typer.Argument(help="Environment variables to pass to agent"),
 ) -> None:
     """Store environment variables"""
     env_vars = [parse_env_var(var) for var in env]
@@ -67,9 +66,7 @@ async def remove_env(
     await list_env()
 
 
-@app.command(
-    "sync", help="Sync external changes to provider registry (if you modified ~/.beeai/providers.yaml manually)"
-)
+@app.command("sync", help="Sync external changes to agent registry (if you modified ~/.beeai/providers.yaml manually)")
 async def sync():
     """Sync external changes to env configuration (if you modified ~/.beeai/.env manually)"""
     await api_request("put", "env/sync")
@@ -292,7 +289,9 @@ async def setup() -> bool:
             json={"env": {"LLM_API_BASE": api_base, "LLM_API_KEY": api_key, "LLM_MODEL": selected_model}},
         )
 
-    with console.status("Reloading agent providers (may take a few minutes)...", spinner="dots"):
+    with console.status("Reloading agents (may take a few minutes)...", spinner="dots"):
+        from beeai_cli.commands.agent import list_agents
+
         time.sleep(5)
         for i in range(180):
             time.sleep(1)
@@ -300,9 +299,10 @@ async def setup() -> bool:
                 break
         else:
             console.print(
-                "[bold red]Some providers did not properly start. Please check their status with:[/bold red] beeai provider info <provider>"
+                "[bold red]Some agents did not properly start. Please check their status with:[/bold red] beeai info <agent>"
             )
-            await list_providers()
+
+            await list_agents()
 
     console.print(
         "\n[bold green]You're all set![/bold green] (You can re-run this setup anytime with [blue]beeai env setup[/blue])"

@@ -12,11 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import asyncio
 import logging
 from asyncio import CancelledError
 from collections import defaultdict
-from contextlib import AsyncExitStack, asynccontextmanager, suppress
-from typing import Callable, Coroutine, TYPE_CHECKING
+from contextlib import AsyncExitStack, asynccontextmanager
+from typing import Callable, Coroutine, TYPE_CHECKING, Any
 
 import anyio
 from anyio.abc import TaskGroup
@@ -52,15 +53,16 @@ class NotificationHub:
         self._notification_stream_writer, self._notification_stream_reader = anyio.create_memory_object_stream[
             ServerNotification
         ]()
-        self._provider_cleanups: dict[str, Callable[[], None]] = defaultdict(lambda: lambda: None)
+        self._provider_cleanups: dict[str, Callable[[], Any]] = defaultdict(lambda: lambda: None)
 
     async def register(self, loaded_provider: "LoadedProvider"):
         self._notification_pipe.start_soon(self._subscribe_for_messages, loaded_provider)
         logger.info(f"Started listening for notifications from: {loaded_provider.id}")
 
     async def remove(self, loaded_provider: "LoadedProvider"):
-        self._provider_cleanups[loaded_provider.id]()
-        logger.info(f"Stopped listening for notifications from: {loaded_provider.id}")
+        if loaded_provider.id in self._provider_cleanups:
+            self._provider_cleanups[loaded_provider.id]()
+            logger.info(f"Stopped listening for notifications from: {loaded_provider.id}")
 
     @asynccontextmanager
     async def forward_notifications(
@@ -120,10 +122,9 @@ class NotificationHub:
             except (anyio.BrokenResourceError, anyio.EndOfStream, CancelledError) as ex:
                 logger.error(f"Exception occured during reading messages: {ex!r}")
 
-        with suppress(CancelledError):
-            async with anyio.create_task_group() as tg:
-                tg.start_soon(subscribe)
-        self._provider_cleanups[loaded_provider.id] = lambda: tg.cancel_scope.cancel()
+        task = asyncio.create_task(subscribe())
+        self._provider_cleanups[loaded_provider.id] = task.cancel
+        await task
 
     async def __aenter__(self):
         self._notification_pipe = await self._exit_stack.enter_async_context(anyio.create_task_group())

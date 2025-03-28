@@ -1,5 +1,5 @@
 manifestVersion: 1
-name: "docs-creator"
+name: "agent-docs-creator"
 
 env:
 - name: LLM_MODEL

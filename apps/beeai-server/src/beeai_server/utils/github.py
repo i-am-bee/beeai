@@ -27,7 +27,7 @@ import anyio.to_thread
 import backports.tarfile as tarfile
 import httpx
 from anyio import Path
-from pydantic import model_validator, AnyUrl, ModelWrapValidatorHandler, RootModel
+from pydantic import model_validator, AnyUrl, ModelWrapValidatorHandler, RootModel, BaseModel
 
 logger = logging.getLogger(__name__)
 
@@ -37,13 +37,43 @@ class GithubVersionType(StrEnum):
     tag = "tag"
 
 
+class ResolvedGithubUrl(BaseModel):
+    org: str
+    repo: str
+    version: str
+    version_type: GithubVersionType
+    commit_hash: str
+    path: str | None = None
+
+    def get_tgz_link(self) -> AnyUrl:
+        version_type = "heads" if self._version_type == GithubVersionType.head else "tags"
+        return AnyUrl.build(
+            scheme="https",
+            host="github.com",
+            path=f"{self.org}/{self.repo}/archive/refs/{version_type}/{self.version}.tar.gz",
+        )
+
+    def get_raw_url(self, path: str | None = None) -> AnyUrl:
+        if not path and "." not in (self.path or ""):
+            raise ValueError("Path is not specified or it is not a file")
+        path = path or self.path
+        return AnyUrl.build(
+            scheme="https",
+            host="raw.githubusercontent.com",
+            path=f"{self.org}/{self.repo}/{self.commit_hash}/{path.strip('/')}",
+        )
+
+    def __str__(self):
+        path = f"#path={self.path}" if self.path else ""
+        return f"git+https://github.com/{self.org}/{self.repo}@{self.version}{path}"
+
+
 class GithubUrl(RootModel):
     root: str
 
     _org: str
     _repo: str
     _version: str | None = None
-    _version_type: GithubVersionType = GithubVersionType.head
     _path: str | None = None
 
     @property
@@ -66,6 +96,12 @@ class GithubUrl(RootModel):
     def path(self, value: str):
         self._path = value
         self.root = str(self)
+
+    @property
+    def commit_hash(self) -> str:
+        if not self._resolved:
+            raise ValueError("Version is not resolved")
+        return self._commit_hash
 
     @model_validator(mode="wrap")
     @classmethod
@@ -97,45 +133,33 @@ class GithubUrl(RootModel):
         url.root = str(url)  # normalize url
         return url
 
-    async def resolve_version(self):
+    async def resolve_version(self) -> ResolvedGithubUrl:
         async with httpx.AsyncClient() as client:
-            if not self.version:
+            if not (version := self._version):
                 manifest_url = f"https://github.com/{self.org}/{self.repo}/blob/-/dummy"
                 resp = await client.head(manifest_url)
                 if not resp.headers.get("location", None):
                     raise ValueError(f"{self.path} not found in github repository.")
-                self._version = re.search("/blob/([^/]*)", resp.headers["location"]).group(1)
-                self.root = str(self)  # normalize url
+                version = re.search("/blob/([^/]*)", resp.headers["location"]).group(1)
 
-            tag_url = f"https://github.com/{self.org}/{self.repo}/releases/tag/{self.version}"
-            resp = await client.head(tag_url)
-            self._version_type = GithubVersionType.head if resp.is_error else GithubVersionType.tag
-
-    def get_tgz_link(self) -> AnyUrl:
-        if not self.version:
-            raise ValueError("Version must be resolved before rendering raw url. Call resolve_version() first.")
-        version_type = "heads" if self._version_type == GithubVersionType.head else "tags"
-        return AnyUrl.build(
-            scheme="https",
-            host="github.com",
-            path=f"{self.org}/{self.repo}/archive/refs/{version_type}/{self.version}.tar.gz",
-        )
-
-    def get_raw_url(self, path: str | None = None) -> AnyUrl:
-        if not self.version:
-            raise ValueError("Version must be resolved before rendering raw url. Call resolve_version() first.")
-        if not path and "." not in (self.path or ""):
-            raise ValueError("Path is not specified or it is not a file")
-        path = path or self.path
-        version_type = "heads" if self._version_type == GithubVersionType.head else "tags"
-        return AnyUrl.build(
-            scheme="https",
-            host="raw.githubusercontent.com",
-            path=f"{self.org}/{self.repo}/refs/{version_type}/{self.version}/{path.strip('/')}",
-        )
+            resp = await client.get(
+                f"https://github.com/{self._org}/{self._repo}.git/info/refs?service=git-upload-pack"
+            )
+            resp = resp.text.split("\n")
+            [version_line] = [line for line in resp if line.endswith(f"/{version}")]
+            [commit_hash, _ref_name] = version_line[4:].split()
+            version_type = GithubVersionType.head if "/refs/heads" in _ref_name else GithubVersionType.tag
+            return ResolvedGithubUrl(
+                org=self._org,
+                repo=self._repo,
+                version=version,
+                commit_hash=commit_hash,
+                path=self._path,
+                version_type=version_type,
+            )
 
     def __str__(self):
-        version = f"@{self.version}" if self.version else ""
+        version = f"@{self._version}" if self._version else ""
         path = f"#path={self.path}" if self.path else ""
         return f"git+https://github.com/{self.org}/{self.repo}{version}{path}"
 
@@ -167,7 +191,7 @@ def extract_targz_safe(tar_path: PathLike | Path, extract_path: PathLike | Path)
 _repo_download_locks: dict[str, anyio.Lock] = defaultdict(anyio.Lock)
 
 
-async def download_repo(directory: Path | pathlib.Path, github_url: GithubUrl) -> Path:
+async def download_repo(directory: Path | pathlib.Path, github_url: ResolvedGithubUrl) -> Path:
     repo_id = f"{github_url.org}_{github_url.repo}_{github_url.version}"
     repo_path = Path(directory) / repo_id
 

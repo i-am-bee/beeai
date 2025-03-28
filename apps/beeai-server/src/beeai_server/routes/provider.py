@@ -13,27 +13,54 @@
 # limitations under the License.
 
 import fastapi
-from fastapi import Query
-from pydantic import RootModel
-from starlette.responses import StreamingResponse
+from pydantic import BaseModel, AnyUrl
 
-from beeai_server.domain.model import ProviderWithStatus, ManifestLocation
+from beeai_server.custom_types import ID
+from beeai_server.domain.model import ProviderWithStatus, UnmanagedProvider, AgentManifest
 from beeai_server.routes.dependencies import ProviderServiceDependency
-from beeai_server.schema import PaginatedResponse, CreateProviderRequest, DeleteProviderRequest
+from beeai_server.schema import (
+    CreateManagedProviderRequest,
+    DeleteProviderRequest,
+    InstallProviderRequest,
+    PaginatedResponse,
+)
+from fastapi import Query
+from starlette.responses import StreamingResponse
 
 router = fastapi.APIRouter()
 
 
-@router.post("")
-async def create_provider(
-    request: CreateProviderRequest, provider_service: ProviderServiceDependency
+@router.post("/managed/register")
+async def create_managed_provider(
+    request: CreateManagedProviderRequest, provider_service: ProviderServiceDependency
 ) -> ProviderWithStatus:
-    return await provider_service.add_provider(location=request.location)
+    return await provider_service.register_managed_provider(location=request.location)
+
+
+class ProviderRequest(BaseModel):
+    location: AnyUrl
+    id: ID
+    manifest: AgentManifest
+
+
+@router.post("/unmanaged/register")
+async def add_unmanaged_provider(
+    provider: ProviderRequest, provider_service: ProviderServiceDependency
+) -> ProviderWithStatus:
+    return await provider_service.register_unmanaged_provider(UnmanagedProvider.model_validate(provider.model_dump()))
+
+
+@router.post("/install")
+async def install_provider(
+    request: InstallProviderRequest, provider_service: ProviderServiceDependency
+) -> StreamingResponse:
+    logs_iterator = await provider_service.install_provider(id=request.id)
+    return StreamingResponse(logs_iterator(), media_type="text/event-stream")
 
 
 @router.post("/preview")
 async def preview_provider(
-    request: CreateProviderRequest, provider_service: ProviderServiceDependency
+    request: CreateManagedProviderRequest, provider_service: ProviderServiceDependency
 ) -> ProviderWithStatus:
     return await provider_service.preview_provider(location=request.location)
 
@@ -46,7 +73,7 @@ async def list_providers(provider_service: ProviderServiceDependency) -> Paginat
 
 @router.post("/delete", status_code=fastapi.status.HTTP_204_NO_CONTENT)
 async def delete_provider(request: DeleteProviderRequest, provider_service: ProviderServiceDependency) -> None:
-    await provider_service.delete_provider(location=request.location)
+    await provider_service.delete_provider(id=request.id)
 
 
 @router.put("/sync")
@@ -57,10 +84,7 @@ async def sync_provider_repository(provider_service: ProviderServiceDependency):
 
 @router.get("/logs", status_code=fastapi.status.HTTP_204_NO_CONTENT)
 async def stream_logs(
-    provider_service: ProviderServiceDependency, location: str = Query(..., description="Provider ID")
+    provider_service: ProviderServiceDependency, id: str = Query(..., description="Provider ID")
 ) -> StreamingResponse:
-    location = RootModel[ManifestLocation].model_validate(location).root
-    return StreamingResponse(
-        provider_service.stream_logs(location=location),
-        media_type="text/event-stream",
-    )
+    logs_iterator = await provider_service.stream_logs(id=id)
+    return StreamingResponse(logs_iterator(), media_type="text/event-stream")

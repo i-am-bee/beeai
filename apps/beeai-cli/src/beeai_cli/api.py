@@ -105,7 +105,7 @@ def resolve_connection_error(retried: bool = False):
 async def api_request(method: str, path: str, json: dict | None = None) -> dict | None:
     """Make an API request to the server."""
     async with httpx.AsyncClient() as client:
-        response = await client.request(method, urllib.parse.urljoin(API_BASE_URL, path), json=json)
+        response = await client.request(method, urllib.parse.urljoin(API_BASE_URL, path), json=json, timeout=60)
         if response.is_error:
             try:
                 error = response.json()

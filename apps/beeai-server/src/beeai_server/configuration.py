@@ -12,7 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import base64
 import logging
+from collections import defaultdict
 from functools import cache
 from pathlib import Path
 
@@ -38,6 +40,22 @@ class LoggingConfiguration(BaseModel):
         return v if isinstance(v, int) else logging.getLevelNamesMapping()[v]
 
 
+class OCIRegistryConfiguration(BaseModel, extra="allow"):
+    username: str | None = None
+    password: str | None = None
+    insecure: bool = False
+
+    @property
+    def protocol(self):
+        return "http" if self.insecure else "https"
+
+    @property
+    def basic_auth_str(self) -> str | None:
+        if self.username and self.password:
+            return base64.b64encode(f"{self.username}:{self.password}".encode()).decode()
+        return None
+
+
 class Configuration(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", env_nested_delimiter="__")
     logging: LoggingConfiguration = LoggingConfiguration()
@@ -47,7 +65,16 @@ class Configuration(BaseSettings):
     cache_dir: Path = Path.home() / ".beeai" / "cache"
     port: int = 8333
     collector_port: int = 8335
-    provider_registry_location: GithubUrl = "https://github.com/i-am-bee/beeai@registry#path=provider-registry.yaml"
+    oci_registry: dict[str, OCIRegistryConfiguration] = Field(default_factory=dict)
+    docker_host: str | None = None
+    provider_registry_location: GithubUrl = "https://github.com/i-am-bee/beeai@main#path=agent-registry.yaml"
+
+    @model_validator(mode="after")
+    def _oci_registry_defaultdict(self):
+        oci_registry = defaultdict(OCIRegistryConfiguration)
+        oci_registry.update(self.oci_registry)
+        self.oci_registry = oci_registry
+        return self
 
 
 @cache

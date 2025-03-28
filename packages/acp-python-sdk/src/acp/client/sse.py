@@ -137,6 +137,9 @@ async def sse_client(
                         yield read_stream, write_stream
                     finally:
                         tg.cancel_scope.cancel()
+        except Exception as ex:
+            logger.error(f"Error in post_writer: {ex}")
+            raise
         finally:
             await read_stream_writer.aclose()
             await write_stream.aclose()
