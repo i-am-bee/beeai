@@ -19,6 +19,7 @@ import functools
 import hashlib
 import inspect
 import os
+from pathlib import Path
 import sys
 import requests
 from functools import partial
@@ -26,7 +27,7 @@ from functools import partial
 import anyio.to_thread
 import yaml
 from typing import Any, Callable, Coroutine, ParamSpec, TypeVar
-from beeai_sdk.schemas.base import Output
+from beeai_sdk.schemas.base import Output, Input
 from acp.server.highlevel import Context
 
 from acp.server.highlevel.agents import Agent
@@ -105,7 +106,34 @@ class Server:
             raise Error("Agent decorator already used")
         self.decorated = True
 
-        def decorator(func: Callable) -> Callable:
+        def decorator(fn: Callable) -> Callable:
+            def generator_wrapper(input: Input, ctx: Context):
+                last_value = None
+                sync_ctx = syncify_object_dynamic(ctx)
+                for value in fn(input):
+                    last_value = value
+                    sync_ctx.report_agent_run_progress(value)
+                return last_value
+
+            async def async_generator_wrapper(input: Input, ctx: Context):
+                last_value = None
+                async for value in fn(input):
+                    last_value = value
+                    await ctx.report_agent_run_progress(value)
+                else:
+                    return last_value
+
+            if inspect.isgeneratorfunction(fn):
+                if len(inspect.signature(fn).parameters.keys()) != 1:
+                    raise TypeError("The agent generator function must have one 'input' argument")
+                func = generator_wrapper
+            elif inspect.isasyncgenfunction(fn):
+                if len(inspect.signature(fn).parameters.keys()) != 1:
+                    raise TypeError("The agent generator function must have one 'input' argument")
+                func = async_generator_wrapper
+            else:
+                func = fn
+
             signature = inspect.signature(func)
             parameters = list(signature.parameters.values())
 
@@ -167,9 +195,12 @@ class Server:
             except Exception as e:
                 raise Error("Agent file read error") from e
 
-        file_content = read_file(os.path.join(os.getcwd(), AGENT_FILE_NAME)) or read_file(
-            os.path.dirname(os.path.abspath(__file__)), AGENT_FILE_NAME
-        )
+        file_content = read_file(
+            os.path.join(
+                Path(os.path.dirname(sys.modules["__main__"].__file__)).parent.parent,
+                AGENT_FILE_NAME,
+            )
+        ) or read_file(os.path.join(os.getcwd(), AGENT_FILE_NAME))
         if not file_content:
             logger.warning("Agent file not found")
         else:
