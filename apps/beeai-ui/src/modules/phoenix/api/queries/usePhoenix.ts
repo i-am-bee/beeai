@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import { PHOENIX_SERVER_TARGET } from '#utils/vite-constants.ts';
 import { useQuery } from '@tanstack/react-query';
+
+import { PHOENIX_SERVER_TARGET } from '#utils/vite-constants.ts';
+
 import { phoenixKeys } from '../keys';
 
 export function usePhoenix() {

@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import type { Components } from 'react-markdown';
 import { isString } from 'lodash';
+import type { Components } from 'react-markdown';
+
 import { CopySnippet } from '#components/CopySnippet/CopySnippet.tsx';
 import { SyntaxHighlighter } from '#components/SyntaxHighlighter/SyntaxHighlighter.tsx';
 

@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import NotFound from '#svgs/NotFound.svg';
-import { routes } from '#utils/router.ts';
 import { ArrowRight } from '@carbon/icons-react';
 import { Button } from '@carbon/react';
+
+import NotFound from '#svgs/NotFound.svg';
+import { routes } from '#utils/router.ts';
+
 import { Container } from '../layouts/Container';
 import { TransitionLink } from '../TransitionLink/TransitionLink';
 import classes from './ErrorPage.module.scss';

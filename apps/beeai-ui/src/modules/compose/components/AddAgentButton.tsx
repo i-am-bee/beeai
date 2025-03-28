@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-import { SkeletonItems } from '#components/SkeletonItems/SkeletonItems.tsx';
-import { useListAgents } from '#modules/agents/api/queries/useListAgents.ts';
-import type { Agent } from '#modules/agents/api/types.ts';
-import { compareStrings } from '#utils/helpers.ts';
 import { Add } from '@carbon/icons-react';
 import { Button } from '@carbon/react';
 import type { RefObject } from 'react';
 import { useId, useMemo, useRef, useState } from 'react';
 import { useOnClickOutside } from 'usehooks-ts';
+
+import { SkeletonItems } from '#components/SkeletonItems/SkeletonItems.tsx';
+import { useListAgents } from '#modules/agents/api/queries/useListAgents.ts';
+import type { Agent } from '#modules/agents/api/types.ts';
+import { compareStrings } from '#utils/helpers.ts';
+
 import { isValidForSequentialWorkflow } from '../sequential/utils';
 import classes from './AddAgentButton.module.scss';
 import { AgentListOption } from './AgentListOption';

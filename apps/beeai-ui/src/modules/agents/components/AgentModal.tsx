@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
+import { ArrowUpRight } from '@carbon/icons-react';
+import { Button, ModalBody, ModalHeader } from '@carbon/react';
+
 import { CopySnippet } from '#components/CopySnippet/CopySnippet.tsx';
 import { Modal } from '#components/Modal/Modal.tsx';
 import type { ModalProps } from '#contexts/Modal/modal-context.ts';
-import { ArrowUpRight } from '@carbon/icons-react';
-import { Button, ModalBody, ModalHeader } from '@carbon/react';
+
 import type { Agent } from '../api/types';
 import { AgentMetadata } from './AgentMetadata';
 import classes from './AgentModal.module.scss';

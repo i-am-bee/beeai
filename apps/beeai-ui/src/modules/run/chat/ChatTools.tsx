@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
+import { useCallback } from 'react';
+import { useFormContext } from 'react-hook-form';
+
 import { ErrorMessage } from '#components/ErrorMessage/ErrorMessage.tsx';
 import { SkeletonItems } from '#components/SkeletonItems/SkeletonItems.tsx';
 import { useListTools } from '#modules/tools/api/queries/useListTools.ts';
-import { useCallback } from 'react';
-import { useFormContext } from 'react-hook-form';
+
 import type { ChatFormValues } from './ChatInput';
 import classes from './ChatTools.module.scss';
-import { ToolToggle } from './ToolToggle';
 import { ChatSupportedTools } from './constants';
+import { ToolToggle } from './ToolToggle';
 
 export function ChatTools() {
   const { setValue, watch } = useFormContext<ChatFormValues>();

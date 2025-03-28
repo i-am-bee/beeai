@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-import type { ComponentProps } from 'react';
 import { Tag } from '@carbon/react';
-import { BEE_AI_FRAMEWORK_TAG } from '#utils/constants.ts';
+import type { ComponentProps } from 'react';
+
 import { Tooltip } from '#components/Tooltip/Tooltip.tsx';
 import Bee from '#svgs/bee.svg';
+import { BEE_AI_FRAMEWORK_TAG } from '#utils/constants.ts';
+
 import type { Agent } from '../api/types';
 import classes from './BeeBadge.module.scss';
 

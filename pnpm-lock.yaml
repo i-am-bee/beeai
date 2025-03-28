@@ -18,6 +18,9 @@ catalogs:
     eslint-plugin-react-refresh:
       specifier: ^0.4.16
       version: 0.4.19
+    eslint-plugin-simple-import-sort:
+      specifier: ^12.1.1
+      version: 12.1.1
     globals:
       specifier: ^16.0.0
       version: 16.0.0
@@ -213,6 +216,9 @@ importers:
       eslint-plugin-react-refresh:
         specifier: 'catalog:'
         version: 0.4.19(eslint@9.23.0)
+      eslint-plugin-simple-import-sort:
+        specifier: 'catalog:'
+        version: 12.1.1(eslint@9.23.0)
       globals:
         specifier: 'catalog:'
         version: 16.0.0
@@ -325,6 +331,9 @@ importers:
       eslint-plugin-react-refresh:
         specifier: 'catalog:'
         version: 0.4.19(eslint@9.23.0)
+      eslint-plugin-simple-import-sort:
+        specifier: 'catalog:'
+        version: 12.1.1(eslint@9.23.0)
       prettier:
         specifier: 'catalog:'
         version: 3.5.3
@@ -3977,6 +3986,11 @@ packages:
     engines: {node: '>=4'}
     peerDependencies:
       eslint: ^3 || ^4 || ^5 || ^6 || ^7 || ^8 || ^9.7
+
+  eslint-plugin-simple-import-sort@12.1.1:
+    resolution: {integrity: sha512-6nuzu4xwQtE3332Uz0to+TxDQYRLTKRESSc2hefVT48Zc8JthmN23Gx9lnYhu0FtkRSL1oxny3kJ2aveVhmOVA==}
+    peerDependencies:
+      eslint: '>=5.0.0'
 
   eslint-scope@8.2.0:
     resolution: {integrity: sha512-PHlWUfG6lvPc3yvP5A4PNyBL1W8fkDUccmI21JUu/+GKZBoH/W5u6usENXUrWFRsyoW5ACUjFGgAFQp5gUlb/A==}
@@ -11361,6 +11375,10 @@ snapshots:
       semver: 6.3.1
       string.prototype.matchall: 4.0.12
       string.prototype.repeat: 1.0.0
+
+  eslint-plugin-simple-import-sort@12.1.1(eslint@9.23.0):
+    dependencies:
+      eslint: 9.23.0
 
   eslint-scope@8.2.0:
     dependencies:

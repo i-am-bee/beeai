@@ -16,11 +16,13 @@
 
 'use client';
 
-import { Tooltip } from '#components/Tooltip/Tooltip.tsx';
 import type { CarbonIconType } from '@carbon/icons-react';
 import { Button } from '@carbon/react';
 import clsx from 'clsx';
 import type { ComponentType, ReactNode } from 'react';
+
+import { Tooltip } from '#components/Tooltip/Tooltip.tsx';
+
 import classes from './MainNav.module.scss';
 
 interface Props {

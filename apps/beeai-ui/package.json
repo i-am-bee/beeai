@@ -76,6 +76,7 @@
     "eslint": "catalog:",
     "eslint-plugin-react-hooks": "catalog:",
     "eslint-plugin-react-refresh": "catalog:",
+    "eslint-plugin-simple-import-sort": "catalog:",
     "globals": "catalog:",
     "keycode-js": "^3.1.0",
     "prettier": "catalog:",

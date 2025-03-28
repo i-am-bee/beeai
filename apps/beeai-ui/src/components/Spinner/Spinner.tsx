@@ -16,6 +16,7 @@
 
 import clsx from 'clsx';
 import { lazy } from 'react';
+
 import SpinnerAnimation from './BouncingDotsAnimation.json';
 import classes from './Spinner.module.scss';
 

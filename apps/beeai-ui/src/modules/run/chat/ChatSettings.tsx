@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { fadeProps } from '#utils/fadeProps.ts';
 import { Settings } from '@carbon/icons-react';
 import { IconButton } from '@carbon/react';
 import {
@@ -32,6 +31,9 @@ import {
 import { AnimatePresence, motion } from 'framer-motion';
 import type { RefObject } from 'react';
 import { useState } from 'react';
+
+import { fadeProps } from '#utils/fadeProps.ts';
+
 import classes from './ChatSettings.module.scss';
 import { ChatTools } from './ChatTools';
 

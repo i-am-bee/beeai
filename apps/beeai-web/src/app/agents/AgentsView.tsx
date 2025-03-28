@@ -15,9 +15,10 @@
  */
 
 'use client';
-import { TransitionLink } from '@/components/TransitionLink/TransitionLink';
-import { type Agent, type AgentsFiltersParams, AgentsFilters, AgentsList, AgentCard } from '@i-am-bee/beeai-ui';
+import { type Agent, AgentCard, AgentsFilters, type AgentsFiltersParams, AgentsList } from '@i-am-bee/beeai-ui';
 import { useFormContext } from 'react-hook-form';
+
+import { TransitionLink } from '@/components/TransitionLink/TransitionLink';
 
 interface Props {
   agents: Agent[] | null;

@@ -16,6 +16,7 @@
 
 import { AppHeader, GitHubLink } from '@i-am-bee/beeai-ui';
 import type { PropsWithChildren } from 'react';
+
 import classes from './AppLayout.module.scss';
 import { Navigation } from './Navigation';
 

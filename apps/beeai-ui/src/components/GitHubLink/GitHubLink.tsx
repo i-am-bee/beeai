@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import { GITHUB_REPO_LINK } from '#utils/constants.ts';
 import { LogoGithub } from '@carbon/icons-react';
+
+import { GITHUB_REPO_LINK } from '#utils/constants.ts';
+
 import classes from './GitHubLink.module.scss';
 
 export function GitHubLink() {

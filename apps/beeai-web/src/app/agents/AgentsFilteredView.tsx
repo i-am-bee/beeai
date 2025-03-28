@@ -17,6 +17,7 @@
 'use client';
 
 import { type Agent, AgentsFiltersProvider } from '@i-am-bee/beeai-ui';
+
 import { AgentsView } from './AgentsView';
 
 interface Props {

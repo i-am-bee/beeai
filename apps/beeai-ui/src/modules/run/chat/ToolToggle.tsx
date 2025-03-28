@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
+import type { ToggleProps } from '@carbon/react';
+import { SkeletonIcon, SkeletonText, Toggle, ToggleSkeleton } from '@carbon/react';
+
 import type { Tool } from '#modules/tools/api/types.ts';
 import { ToolIcon } from '#modules/tools/components/ToolIcon.tsx';
 import { ToolName } from '#modules/tools/components/ToolName.tsx';
-import type { ToggleProps } from '@carbon/react';
-import { SkeletonIcon, SkeletonText, Toggle, ToggleSkeleton } from '@carbon/react';
+
 import classes from './ToolToggle.module.scss';
 
 interface Props extends Pick<ToggleProps, 'toggled' | 'onToggle'> {

@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
+import { useQueryClient } from '@tanstack/react-query';
+import pluralize from 'pluralize';
+import { useCallback, useEffect, useState } from 'react';
+
 import { useToast } from '#contexts/Toast/index.ts';
 import { TaskType, useTasks } from '#hooks/useTasks.ts';
 import { agentKeys } from '#modules/agents/api/keys.ts';
 import { useListProviderAgents } from '#modules/agents/api/queries/useListProviderAgents.ts';
-import { useQueryClient } from '@tanstack/react-query';
-import pluralize from 'pluralize';
-import { useCallback, useEffect, useState } from 'react';
+
 import { useProvider } from '../api/queries/useProvider';
 
 interface Props {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { motion as carbonMotion, moderate02 } from '@carbon/motion';
+import { moderate02, motion as carbonMotion } from '@carbon/motion';
 import type { Variant } from 'framer-motion';
 
 export function parseCarbonMotion(string: string): number[] {

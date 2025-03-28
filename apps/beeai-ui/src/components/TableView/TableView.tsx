@@ -15,6 +15,7 @@
  */
 
 import type { PropsWithChildren } from 'react';
+
 import classes from './TableView.module.scss';
 
 interface Props {

@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
+import { useLocation } from 'react-router';
+
 import type { MainContentViewProps } from '#components/MainContentView/MainContentView.tsx';
 import { MainContentView } from '#components/MainContentView/MainContentView.tsx';
 import { routes } from '#utils/router.ts';
-import { useLocation } from 'react-router';
 
 export function MainContent({ ...props }: MainContentViewProps) {
   const { pathname } = useLocation();

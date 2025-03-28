@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
+import { moderate02 } from '@carbon/motion';
+import { AnimatePresence, motion } from 'framer-motion';
+import type { PropsWithChildren, ReactNode } from 'react';
+
 import { Container } from '#components/layouts/Container.tsx';
 import { MainContent } from '#components/layouts/MainContent.tsx';
 import type { MainContentViewProps } from '#components/MainContentView/MainContentView.tsx';
 import { useScrollbarWidth } from '#hooks/useScrollbarWidth.ts';
 import { createScrollbarStyles } from '#utils/createScrollbarStyles.ts';
-import { moderate02 } from '@carbon/motion';
-import { AnimatePresence, motion } from 'framer-motion';
-import type { PropsWithChildren, ReactNode } from 'react';
+
 import classes from './SplitPanesView.module.scss';
 
 interface Props {

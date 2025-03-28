@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import type { TextInput } from '@i-am-bee/beeai-sdk/schemas/text';
+import type { PropsWithChildren } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
+
 import type { Agent } from '#modules/agents/api/types.ts';
 import { useRunAgent } from '#modules/run/api/mutations/useRunAgent.tsx';
 import type {
@@ -24,9 +28,7 @@ import type {
 } from '#modules/run/api/types.ts';
 import type { RunStats } from '#modules/run/types.ts';
 import { isNotNull } from '#utils/helpers.ts';
-import type { TextInput } from '@i-am-bee/beeai-sdk/schemas/text';
-import type { PropsWithChildren } from 'react';
-import { useCallback, useMemo, useRef, useState } from 'react';
+
 import { HandsOffContext } from './hands-off-context';
 
 interface Props {

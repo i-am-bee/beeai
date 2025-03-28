@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import { GITHUB_REPO_LINK } from '#utils/constants.ts';
-import { Button } from '@carbon/react';
 import { LogoGithub } from '@carbon/icons-react';
+import { Button } from '@carbon/react';
+
+import { GITHUB_REPO_LINK } from '#utils/constants.ts';
+
 import classes from './GitHubButton.module.scss';
 
 export function GitHubButton() {

@@ -15,6 +15,7 @@
  */
 
 import type { FallbackProps } from 'react-error-boundary';
+
 import { ErrorLayout } from '../layouts/ErrorLayout';
 
 export function ErrorFallback({ error }: FallbackProps) {

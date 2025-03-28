@@ -16,6 +16,7 @@
 
 import { PlayFilled } from '@carbon/icons-react';
 import clsx from 'clsx';
+
 import classes from './PlayButton.module.scss';
 
 interface Props {

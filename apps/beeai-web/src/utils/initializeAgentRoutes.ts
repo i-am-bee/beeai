@@ -15,8 +15,10 @@
  */
 
 import { revalidatePath } from 'next/cache';
-import { routeDefinitions } from './router';
+
 import { NEXT_PHASE_BUILD } from '@/constants';
+
+import { routeDefinitions } from './router';
 
 export let agentRoutesInitialized = false;
 

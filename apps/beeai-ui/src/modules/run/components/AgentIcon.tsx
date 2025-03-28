@@ -15,6 +15,7 @@
  */
 
 import Bee from '#svgs/bee.svg';
+
 import classes from './AgentIcon.module.scss';
 
 export function AgentIcon() {

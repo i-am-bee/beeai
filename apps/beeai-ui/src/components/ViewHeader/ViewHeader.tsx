@@ -15,6 +15,7 @@
  */
 
 import type { PropsWithChildren, ReactElement } from 'react';
+
 import classes from './ViewHeader.module.scss';
 
 interface Props {

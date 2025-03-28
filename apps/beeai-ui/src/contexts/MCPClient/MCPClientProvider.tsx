@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import { useCreateMCPClient } from '#api/mcp-client/useCreateMCPClient.ts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { PropsWithChildren } from 'react';
 import { useEffect } from 'react';
+
+import { useCreateMCPClient } from '#api/mcp-client/useCreateMCPClient.ts';
+
 import { MCPClientContext } from './mcp-client-context';
 
 export function MCPClientProvider({ children }: PropsWithChildren) {

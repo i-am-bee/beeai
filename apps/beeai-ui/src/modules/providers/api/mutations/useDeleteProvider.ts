@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+
 import { agentKeys } from '#modules/agents/api/keys.ts';
 import type { Agent } from '#modules/agents/api/types.ts';
 import { providerKeys } from '#modules/providers/api/keys.ts';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+
 import { deleteProvider } from '..';
 
 export function useDeleteProvider() {

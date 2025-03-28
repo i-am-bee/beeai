@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { noop } from '#utils/helpers.ts';
 import type { ReactNode } from 'react';
 import { createContext } from 'react';
+
+import { noop } from '#utils/helpers.ts';
 
 export interface ModalProps {
   /** True if modal is open */

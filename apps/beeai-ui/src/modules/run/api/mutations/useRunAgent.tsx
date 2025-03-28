@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import { useCreateMCPClient } from '#api/mcp-client/useCreateMCPClient.ts';
-import type { QueryMetadata } from '#contexts/QueryProvider/types.ts';
-import type { Agent } from '#modules/agents/api/types.ts';
 import { AgentRunProgressNotificationSchema } from '@i-am-bee/acp-sdk/types';
 import { useMutation } from '@tanstack/react-query';
 import type z from 'zod';
 import type { ZodLiteral, ZodObject } from 'zod';
+
+import { useCreateMCPClient } from '#api/mcp-client/useCreateMCPClient.ts';
+import type { QueryMetadata } from '#contexts/QueryProvider/types.ts';
+import type { Agent } from '#modules/agents/api/types.ts';
 
 interface Props<
   NotificationsSchema extends ZodObject<{

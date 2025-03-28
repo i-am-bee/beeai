@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-import { AnimateHeightChange } from '#components/AnimateHeightChange/AnimateHeightChange.tsx';
 import { ChevronDown } from '@carbon/icons-react';
 import { IconButton } from '@carbon/react';
 import clsx from 'clsx';
 import type { PropsWithChildren } from 'react';
 import { useEffect, useRef, useState } from 'react';
+
+import { AnimateHeightChange } from '#components/AnimateHeightChange/AnimateHeightChange.tsx';
+
 import classes from './AgentRunLogItem.module.scss';
 
 export function AgentRunLogItem({ children }: PropsWithChildren) {

@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+import { CopyButton } from '@carbon/react';
+
 import { DownloadButton } from '#components/DownloadButton/DownloadButton.tsx';
 import { MarkdownContent } from '#components/MarkdownContent/MarkdownContent.tsx';
-import { CopyButton } from '@carbon/react';
+
 import classes from './AgentOutputBox.module.scss';
 
 interface Props {

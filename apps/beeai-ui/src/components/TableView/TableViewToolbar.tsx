@@ -19,6 +19,7 @@ import type { TextInputProps } from '@carbon/react';
 import { TextInput } from '@carbon/react';
 import type { ReactNode } from 'react';
 import { useId } from 'react';
+
 import classes from './TableViewToolbar.module.scss';
 
 interface Props {

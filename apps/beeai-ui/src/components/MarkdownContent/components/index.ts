@@ -15,6 +15,7 @@
  */
 
 import type { Components } from 'react-markdown';
+
 import { code } from './code';
 
 export const components: Components = {

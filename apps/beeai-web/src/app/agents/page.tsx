@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
+import { Container, ViewStack } from '@i-am-bee/beeai-ui';
+
 import { getAgentsList } from '@/acp/api';
 import { NEXT_PHASE_BUILD } from '@/constants';
 import { MainContent } from '@/layouts/MainContent';
 import { initializeAgentRoutes } from '@/utils/initializeAgentRoutes';
-import { Container, ViewStack } from '@i-am-bee/beeai-ui';
+
 import { AgentsFilteredView } from './AgentsFilteredView';
 
 export const revalidate = 600;

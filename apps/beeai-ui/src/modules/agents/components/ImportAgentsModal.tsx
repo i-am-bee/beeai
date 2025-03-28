@@ -14,14 +14,6 @@
  * limitations under the License.
  */
 
-import { ErrorMessage } from '#components/ErrorMessage/ErrorMessage.tsx';
-import { Modal } from '#components/Modal/Modal.tsx';
-import type { ModalProps } from '#contexts/Modal/modal-context.ts';
-import { useCreateProvider } from '#modules/providers/api/mutations/useCreateProvider.ts';
-import type { CreateProviderBody } from '#modules/providers/api/types.ts';
-import { ProviderSourcePrefixes } from '#modules/providers/constants.ts';
-import { useMonitorProvider } from '#modules/providers/hooks/useMonitorProviderStatus.ts';
-import { ProviderSource } from '#modules/providers/types.ts';
 import {
   Button,
   FormLabel,
@@ -38,6 +30,16 @@ import {
 import pluralize from 'pluralize';
 import { useCallback, useEffect, useId, useState } from 'react';
 import { useController, useForm } from 'react-hook-form';
+
+import { ErrorMessage } from '#components/ErrorMessage/ErrorMessage.tsx';
+import { Modal } from '#components/Modal/Modal.tsx';
+import type { ModalProps } from '#contexts/Modal/modal-context.ts';
+import { useCreateProvider } from '#modules/providers/api/mutations/useCreateProvider.ts';
+import type { CreateProviderBody } from '#modules/providers/api/types.ts';
+import { ProviderSourcePrefixes } from '#modules/providers/constants.ts';
+import { useMonitorProvider } from '#modules/providers/hooks/useMonitorProviderStatus.ts';
+import { ProviderSource } from '#modules/providers/types.ts';
+
 import classes from './ImportAgentsModal.module.scss';
 
 export function ImportAgentsModal({ onRequestClose, ...modalProps }: ModalProps) {

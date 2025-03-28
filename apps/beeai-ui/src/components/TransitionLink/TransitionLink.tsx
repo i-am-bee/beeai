@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { useViewTransition } from '#hooks/useViewTransition.ts';
 import { Slot } from '@radix-ui/react-slot';
 import type { HTMLProps } from 'react';
+
+import { useViewTransition } from '#hooks/useViewTransition.ts';
 
 interface Props extends Omit<HTMLProps<HTMLAnchorElement>, 'href'> {
   href?: string;

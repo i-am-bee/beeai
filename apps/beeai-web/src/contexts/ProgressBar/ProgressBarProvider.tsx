@@ -16,8 +16,8 @@
 
 'use client';
 
-import { PropsWithChildren } from 'react';
 import { ProgressProvider } from '@bprogress/next/app';
+import { PropsWithChildren } from 'react';
 
 export function ProgressBarProvider({ children }: PropsWithChildren) {
   return (

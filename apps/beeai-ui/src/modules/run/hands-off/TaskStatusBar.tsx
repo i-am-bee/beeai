@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import { Spinner } from '#components/Spinner/Spinner.tsx';
 import { StopFilled } from '@carbon/icons-react';
 import { Button } from '@carbon/react';
+
+import { Spinner } from '#components/Spinner/Spinner.tsx';
+
 import { ElapsedTime } from '../components/ElapsedTime';
 import { useHandsOff } from '../contexts/hands-off';
 import classes from './TaskStatusBar.module.scss';

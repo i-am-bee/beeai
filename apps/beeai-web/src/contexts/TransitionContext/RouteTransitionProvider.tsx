@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import { PropsWithChildren, useCallback, useEffect, useMemo, useRef } from 'react';
-import { RouteTransitionContext } from './context';
-import { usePathname } from 'next/navigation';
-import { NavigateOptions } from 'next/dist/shared/lib/app-router-context.shared-runtime';
-import { moderate02 } from '@carbon/motion';
 import { useRouter } from '@bprogress/next/app';
+import { moderate02 } from '@carbon/motion';
+import { NavigateOptions } from 'next/dist/shared/lib/app-router-context.shared-runtime';
+import { usePathname } from 'next/navigation';
+import { PropsWithChildren, useCallback, useEffect, useMemo, useRef } from 'react';
+
+import { RouteTransitionContext } from './context';
 
 export function RouteTransitionProvider({ children }: PropsWithChildren) {
   const router = useRouter();

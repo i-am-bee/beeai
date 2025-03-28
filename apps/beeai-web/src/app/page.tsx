@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import { MainContent } from '@/layouts/MainContent';
 import { GettingStarted, type VideoBeeAIProps } from '@i-am-bee/beeai-ui';
+
+import { MainContent } from '@/layouts/MainContent';
+
 import poster from '../images/VideoBeeAIPoster.webp';
 
 export default function Home() {

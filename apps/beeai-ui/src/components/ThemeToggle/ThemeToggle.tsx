@@ -16,11 +16,13 @@
 
 'use client';
 
-import { useTheme } from '#contexts/Theme/index.ts';
-import { Theme } from '#contexts/Theme/types.ts';
 import { Asleep, Awake } from '@carbon/icons-react';
 import { IconButton } from '@carbon/react';
 import { useEffect, useState } from 'react';
+
+import { useTheme } from '#contexts/Theme/index.ts';
+import { Theme } from '#contexts/Theme/types.ts';
+
 import classes from './ThemeToggle.module.scss';
 
 export function ThemeToggle() {

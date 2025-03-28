@@ -16,13 +16,15 @@
 
 'use client';
 
+import { BREW_INSTALL_BEEAI } from '@i-am-bee/beeai-ui';
+
 import { CopySnippet } from '#components/CopySnippet/CopySnippet.tsx';
 import { Container } from '#components/layouts/Container.tsx';
-import { BREW_INSTALL_BEEAI } from '@i-am-bee/beeai-ui';
+
 import classes from './GettingStarted.module.scss';
 import { GitHubButton } from './GitHubButton';
 import { LogoBeeAI } from './LogoBeeAI';
-import { type VideoBeeAIProps, VideoBeeAI } from './VideoBeeAI';
+import { VideoBeeAI, type VideoBeeAIProps } from './VideoBeeAI';
 
 interface GettingStartedProps {
   video: VideoBeeAIProps;

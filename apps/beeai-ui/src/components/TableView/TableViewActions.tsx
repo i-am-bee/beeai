@@ -15,6 +15,7 @@
  */
 
 import type { PropsWithChildren } from 'react';
+
 import classes from './TableViewActions.module.scss';
 
 export function TableViewActions({ children }: PropsWithChildren) {

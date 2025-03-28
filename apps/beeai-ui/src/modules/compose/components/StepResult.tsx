@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
+import { Accordion, AccordionItem } from '@carbon/react';
+import clsx from 'clsx';
+
 import { MarkdownContent } from '#components/MarkdownContent/MarkdownContent.tsx';
 import { useAutoScroll } from '#hooks/useAutoScroll.ts';
 import { AgentRunLogItem } from '#modules/run/components/AgentRunLogItem.tsx';
-import { Accordion, AccordionItem } from '@carbon/react';
-import clsx from 'clsx';
+
 import type { ComposeStep } from '../contexts/compose-context';
 import classes from './StepResult.module.scss';
 

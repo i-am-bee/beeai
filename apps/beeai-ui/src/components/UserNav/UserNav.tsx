@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
+import { ArrowUpRight, Asleep, Awake, LogoDiscord, LogoGithub, LogoYoutube, Settings } from '@carbon/icons-react';
+import { OverflowMenu, OverflowMenuItem } from '@carbon/react';
+import { useMemo } from 'react';
+
 import { useTheme } from '#contexts/Theme/index.ts';
 import { Theme } from '#contexts/Theme/types.ts';
 import { useViewTransition } from '#hooks/useViewTransition.ts';
 import LogoBluesky from '#svgs/LogoBluesky.svg';
 import { BLUESKY_LINK, DISCORD_LINK, DOCUMENTATION_LINK, GITHUB_REPO_LINK, YOUTUBE_LINK } from '#utils/constants.ts';
 import { routes } from '#utils/router.ts';
-import { ArrowUpRight, Asleep, Awake, LogoDiscord, LogoGithub, LogoYoutube, Settings } from '@carbon/icons-react';
-import { OverflowMenu, OverflowMenuItem } from '@carbon/react';
-import { useMemo } from 'react';
+
 import classes from './UserNav.module.scss';
 
 export function UserNav() {

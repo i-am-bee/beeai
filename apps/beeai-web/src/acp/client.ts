@@ -15,11 +15,13 @@
  */
 
 import 'server-only';
+
 import { Client } from '@i-am-bee/acp-sdk/client/index';
-import type { ServerCapabilities } from '@i-am-bee/acp-sdk/types';
 import { SSEClientTransport } from '@i-am-bee/acp-sdk/client/sse';
+import type { ServerCapabilities } from '@i-am-bee/acp-sdk/types';
+import { BodyInit, fetch as undiciFetch } from 'undici';
+
 import { ACP_CLIENT_SERVER_URL } from '@/constants';
-import { fetch as undiciFetch, BodyInit } from 'undici';
 
 export async function getAcpClient() {
   if (!ACP_CLIENT_SERVER_URL) {

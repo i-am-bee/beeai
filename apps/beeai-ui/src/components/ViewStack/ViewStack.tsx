@@ -15,6 +15,7 @@
  */
 
 import type { PropsWithChildren } from 'react';
+
 import classes from './ViewStack.module.scss';
 
 export function ViewStack({ children }: PropsWithChildren) {
