@@ -48,7 +48,11 @@
           "/acp/spec/mission-team",
           {
             "group": "Architecture",
-            "pages": ["/acp/alpha/architecture", "/acp/spec/message-body"]
+            "pages": [
+              "/acp/alpha/architecture",
+              "/acp/spec/message-body",
+              "/acp/spec/agent-run"
+            ]
           },
           {
             "group": "Core Concepts",
