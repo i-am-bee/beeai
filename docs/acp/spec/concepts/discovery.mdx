@@ -1,5 +1,6 @@
 ---
 title: "Agent Discovery"
+description: Discover agents and explore their attributes.
 openapi-schema: Agent
 ---
 
@@ -7,6 +8,9 @@ import AlphaWarning from "/snippets/alpha-warning.mdx";
 
 <AlphaWarning />
 
-- manifest - offline
-- descriptot - online
-- za behu
+Agents can be discovered via the [GET /agents](/acp/spec/agents-list) endpoint. Discovery relies on agent details composed of:
+
+- Offline description created by the agent developer (in the form of a manifest).
+- Online description assembled at runtime by some underlying platform.
+
+## Agent Detail Model

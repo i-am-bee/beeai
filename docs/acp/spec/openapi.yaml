@@ -351,6 +351,7 @@ components:
             - chat
         description:
           type: string
+          description: Short description of the agent.
           examples:
             - Conversational agent with memory, supporting real-time search, Wikipedia lookups, and weather updates through integrated tools
         interfaces:
