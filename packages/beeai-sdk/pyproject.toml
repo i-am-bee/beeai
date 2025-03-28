@@ -1,6 +1,6 @@
 [project]
 name = "beeai-sdk"
-version = "0.0.16"
+version = "0.0.17"
 description = "BeeAI SDK"
 readme = "README.md"
 requires-python = ">=3.11,<4.0"
@@ -9,6 +9,7 @@ dependencies = [
     "opentelemetry-exporter-otlp-proto-http>=1.30.0",
     "opentelemetry-sdk>=1.30.0",
     "pydantic>=2.10.6",
+    "pyyaml>=6.0.2",
 ]
 
 [tool.uv.sources]

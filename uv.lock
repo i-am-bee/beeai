@@ -258,13 +258,14 @@ requires-dist = [
 
 [[package]]
 name = "beeai-sdk"
-version = "0.0.16"
+version = "0.0.17"
 source = { editable = "packages/beeai-sdk" }
 dependencies = [
     { name = "acp-sdk" },
     { name = "opentelemetry-exporter-otlp-proto-http" },
     { name = "opentelemetry-sdk" },
     { name = "pydantic" },
+    { name = "pyyaml" },
 ]
 
 [package.metadata]
@@ -273,6 +274,7 @@ requires-dist = [
     { name = "opentelemetry-exporter-otlp-proto-http", specifier = ">=1.30.0" },
     { name = "opentelemetry-sdk", specifier = ">=1.30.0" },
     { name = "pydantic", specifier = ">=2.10.6" },
+    { name = "pyyaml", specifier = ">=6.0.2" },
 ]
 
 [[package]]

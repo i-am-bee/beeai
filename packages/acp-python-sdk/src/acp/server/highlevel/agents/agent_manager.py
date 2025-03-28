@@ -96,7 +96,7 @@ class AgentManager:
         return
 
     async def run_agent(
-        self, name: str, input: dict[str, Any], context: "Context"
+        self, name: str, input: dict[str, Any], *, context: "Context"
     ) -> Any:
         """Run an agent by name with input."""
         agent = self.get_agent(name)
@@ -104,7 +104,7 @@ class AgentManager:
             raise AgentError(f"Unknown agent: {name}")
 
         try:
-            output = await agent.run_fn(agent.input.model_validate(input), context)
+            output = await agent.run_fn(agent.input.model_validate(input), ctx=context)  # type: ignore
             return output.model_dump()
         except Exception as e:
             raise AgentError(f"Error running agent {name}: {e}") from e
