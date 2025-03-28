@@ -5,6 +5,40 @@ description: "Multi-modal structure for data exchange"
 
 This page describes the core "message body" structure used in ACP.
 
+## Introduction
+
+A message body consists of a series of parts, which may be "text", "image", or "artifact", like int this example:
+
+```json
+[
+    {
+        "type": "text",
+        "content": "This is a cute cat:"
+    },
+    {
+        "type": "image",
+        "contentUrl": "https://s3.example.com/12345678901234567890/image.png"
+    },
+    {
+        "type": "text",
+        "content": "Would you like me to send more images of cats?"
+    },
+    {
+        "type": "artifact",
+        "name": "/sources/1",
+        "contentUrl": "https://example.com/cat-facts"
+    },
+]
+```
+
+- `"text"` parts provide their `content` inline
+- `"image"` parts provide a `contentUrl` where the content can be retrieved
+- `"artifact"` parts either provide a `contentUrl` like images, or they can be inlined by defining `content`, `contentType` (MIME type), and `contentEncoding` (which may be `"plain"` or `"base64"`)
+
+Parts form a full message by interleaving textual content with images and artifacts (which may serve as attachments, sources, recorded tool calls, etc.).
+
+Next we provide a more formal specification of this structure, accompanied by more examples.
+
 ## `MessageBody`
 
 `MessageBody` consists of parts, each representing either text, an image, or an artifact. Text parts contain inline content, while images reference external content via a URL. Artifacts can either reference external content via a URL or contain inline content with an encoding. Only artifacts have names.
