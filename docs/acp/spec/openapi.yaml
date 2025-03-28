@@ -214,7 +214,16 @@ components:
       description: Identifier of a run
     RunStatus:
       type: string
-      enum: [created, in-progress, awaiting, cancelling, cancelled, completed, failed]
+      enum:
+        [
+          created,
+          in-progress,
+          awaiting,
+          cancelling,
+          cancelled,
+          completed,
+          failed,
+        ]
       description: Status of the run
     RunMode:
       type: string
@@ -225,39 +234,39 @@ components:
       type: array
       items:
         oneOf:
-        - type: object
-          required:
-            - type
-            - content
-          properties:
-            type:
-              type: string
-              const: text
-            content: 
-              type: string
-        - type: object
-          required:
-            - type
-            - contentUrl
-          properties:
-            type:
+          - type: object
+            required:
+              - type
+              - content
+            properties:
+              type:
+                type: string
+                const: text
+              content:
+                type: string
+          - type: object
+            required:
+              - type
+              - contentUrl
+            properties:
+              type:
                 type: string
                 const: image
-            contentUrl: 
-              type: string
-        - type: object
-          required:
-            - type
-            - contentUrl
-            - name
-          properties:  
-            type:
-              type: string
-              const: artifact
-            contentUrl: 
-              type: string
-            name:
-              type: string
+              contentUrl:
+                type: string
+          - type: object
+            required:
+              - type
+              - contentUrl
+              - name
+            properties:
+              type:
+                type: string
+                const: artifact
+              contentUrl:
+                type: string
+              name:
+                type: string
     RunInput:
       $ref: "#/components/schemas/Message"
     RunOutput:
@@ -320,13 +329,13 @@ components:
           $ref: "#/components/schemas/RunStatus"
         step:
           oneOf:
-          - type: object
-            properties:
-              type:
-                type: string
-                const: output
-              output:
-                $ref: "#/components/schemas/RunOutput"
+            - type: object
+              properties:
+                type:
+                  type: string
+                  const: output
+                output:
+                  $ref: "#/components/schemas/RunOutput"
     AgentId:
       type: string
     Agent:
@@ -342,54 +351,36 @@ components:
           type: string
           description: Name of the agent
           examples:
-            - gpt-researcher
+            - chat
         description:
           type: string
           examples:
-            - Conducts in-depth local and web research
-        capabilities:
-          $ref: "#/components/schemas/Capabilities"
+            - Conversational agent with memory, supporting real-time search, Wikipedia lookups, and weather updates through integrated tools
         schemas:
           $ref: "#/components/schemas/Schemas"
         metadata:
           $ref: "#/components/schemas/Metadata"
         status:
           $ref: "#/components/schemas/Status"
-    Capabilities:
-      type: object
-      required:
-        - threads
-        - interrupts
-        - streaming
-      properties:
-        threads:
-          type: boolean
-          default: false
-        interrupts:
-          type: boolean
-          default: false
-        streaming:
-          type: boolean
-          default: false
     Schemas:
       type: object
       properties:
         input:
           $ref: "#/components/schemas/GeneralSchema"
           examples:
-          - text
+            - chat
         output:
           $ref: "#/components/schemas/GeneralSchema"
           examples:
-          - text
-        interrupts:
+            - chat
+        awaits:
           type: array
           items:
             type: object
             properties:
               name:
                 type: string
-                description: Unique name of the interrupt
+                description: Unique name of the await
               request:
                 $ref: "#/components/schemas/GeneralSchema"
               response:
@@ -397,6 +388,16 @@ components:
     Status:
       type: object
       description: Runtime related information
+      properties:
+        avgRunTokens:
+          type: number
+          format: float
+        avgRunTimeSeconds:
+          type: number
+          format: float
+        successRate:
+          type: number
+          
     Tag:
       anyOf:
         - type: string
@@ -407,13 +408,15 @@ components:
             - Code
             - Researcher
       examples:
-        - Researcher
+        - Chat
     Metadata:
       type: object
       properties:
         documentation:
           type: string
           description: Full agent documentation in markdown
+          examples:
+            - "The agent is a conversational system designed to process user messages, maintain context, and generate..."
         license:
           type: string
           description: >-
@@ -437,8 +440,8 @@ components:
           items:
             type: string
             examples:
-              - Comprehensive Research – Generates detailed reports using information from multiple sources.
-              - Bias Reduction – Cross-references data from various platforms to minimize misinformation and bias.
+              - Conversational AI – Handles multi-turn conversations with memory.
+              - Tool Integration – Supports real-time search, Wikipedia lookups, and weather updates.
         # TBD
         examples:
           type: array
@@ -483,6 +486,8 @@ components:
         url:
           type: string
           format: uri
+          examples:
+            - https://github.com/i-am-bee/beeai.git
     Timestamp:
       type: string
       format: date-time
@@ -495,12 +500,16 @@ components:
       properties:
         name:
           type: string
+          examples:
+            - John Smith
         email:
           type: string
           format: email
         url:
           type: string
           format: uri
+          examples:
+            - https://example.com
     Error:
       type: object
       properties:
