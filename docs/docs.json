@@ -46,9 +46,9 @@
         "pages": [
           "/acp/alpha/introduction",
           "/acp/spec/mission-team",
-          "/acp/alpha/architecture",
           {
             "group": "Core Concepts",
+            "icon": "codepen",
             "pages": [
               "/acp/spec/concepts/overview",
               "/acp/spec/concepts/discovery",
@@ -56,16 +56,15 @@
               "/acp/spec/concepts/async",
               "/acp/spec/concepts/stateful",
               "/acp/spec/concepts/configuration",
-              "/acp/spec/concepts/communication-structure",
               "/acp/spec/concepts/message-body-structure",
               "/acp/spec/concepts/client-in-the-loop",
               "/acp/spec/concepts/streaming",
-              "/acp/spec/concepts/transport",
-              "/acp/spec/concepts/usage-patterns"
+              "/acp/spec/concepts/transport"
             ]
           },
           {
             "group": "API Reference",
+            "icon": "code",
             "pages": [
               "/acp/spec/agents-list",
               "/acp/spec/agents-get",
@@ -76,8 +75,7 @@
             ]
           },
           {
-            "group": "Pre-alpha",
-            "icon": "tag",
+            "group": "Pre-alpha (deprecated)",
             "pages": [
               "/acp/pre-alpha/introduction",
               "/acp/pre-alpha/architecture",

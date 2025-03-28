@@ -24,7 +24,7 @@ paths:
       tags:
         - agent
       summary: List agents
-      description: Multiple filter values can be provided
+      description: Returns a list of agents.
       operationId: listAgents
       parameters:
         - name: limit
