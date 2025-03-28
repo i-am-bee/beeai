@@ -46,7 +46,10 @@
         "pages": [
           "/acp/alpha/introduction",
           "/acp/spec/mission-team",
-          "/acp/alpha/architecture",
+          {
+            "group": "Architecture",
+            "pages": ["/acp/alpha/architecture", "/acp/spec/message-body"]
+          },
           {
             "group": "API Reference",
             "pages": [
