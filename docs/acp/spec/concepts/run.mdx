@@ -17,7 +17,7 @@ For different types of agents, an Agent Run may mean different things:
 - **Serializable stateful agents** can save their state to a persistent storage, allowing for the Agent Run to continue virtually anytime.
 - **Non-serializable stateful agents** depend on a non-serializable resource, like a running Jupyter kernel, and thus their Agent Run has a short expiration time -- _expired_ Agent Run can't be continued further.
 
-From the point of agent implementation, most of the heavy lifting around state management is handled by the SDK. The agent creator / integrator must only decide what typ of statefulness is right for the given agent, and properly wire it to the agent implementation: creating a new instance or retrieving an existing one where appropriate.
+From the point of agent implementation, most of the heavy lifting around state management is handled by the SDK. The agent creator / integrator must only decide what type of statefulness is right for the given agent, and properly wire it to the agent implementation: creating a new instance or retrieving an existing one where appropriate.
 
 ### Run states
 
