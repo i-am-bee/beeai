@@ -7,16 +7,6 @@ import AlphaWarning from "/snippets/alpha-warning.mdx";
 
 <AlphaWarning />
 
-## Motivation
-
-Agents may, or may not, hold some internal state. It's easy to imagine an I/O agent that accepts some input data, does some LLM crunching, and returns the output. However, there are many types of agents where it's desirable to continue the interaction further, for example ask it for refinements, or even interactively collaborate on some task.
-
-With a classic LLM, the usual way of interaction is to send the full message history with each request. This is a sort of "client-stored state" -- given that the LLM has no other thoughts, tool outputs, running processes etc. to keep track of, the full interaction can be represented by the message history, and thus the LLM itself may pretend to be "stateless" while actually offloading the state management to the API user.
-
-One advantage the classic "client-stored state" is the ability to "go back in history" and re-do an interaction, perhaps try a different message, or simply re-roll the LLM answer in hopes of getting better results. However, this approach stops being viable as soon as we introduce agentic tools. Try any commercial "chat with LLM" application that supports a persistent code interpreter, and you'll discover that rolling back the message history is just an illusion and the code intepreter retained its state, as code can't be easily un-executed.
-
-For this reason, ACP uses a concept of "agent runs", which are representations for state that is held server-side, and is non-rollbackable. What may seem like a limitation over the commonly used paradigm is actually just acceptance of the wide agentic reality -- in most cases, it's difficult to serialize agent state, almost impossible to roll it back, and in many cases undesirable to expose it to the client.
-
 ## How Agent Runs Work In ACP
 
 ACP offers the resource "Agent Run" for managing agent states. Agent Runs can be initiated by `POST /runs`, resumed by `POST /runs/{run_id}`, and cancelled by `/runs/{run_id}/cancel` (note that ACP does not use DELETE here since cancellation is an asynchronous operation).
