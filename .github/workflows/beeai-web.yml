@@ -38,7 +38,6 @@ jobs:
           tags: ghcr.io/${{ github.repository }}/beeai-web:${{ github.sha }},ghcr.io/${{ github.repository }}/beeai-web:latest
 
   deploy-to-k8s:
-    if: false
     needs: build-and-push
     runs-on: [self-hosted]
     steps:
