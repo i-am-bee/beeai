@@ -182,6 +182,7 @@ class Server:
                 output=output if output is not inspect.Signature.empty else Output,
                 run_fn=(async_fn if inspect.iscoroutinefunction(func) else sync_fn),
                 destroy_fn=None,
+                **(self._manifest.get("metadata") or {}),
             )
             self.server.add_agent(agent=self._agent)
             logger.info(f"Agent with name '{name}' created")
@@ -235,7 +236,7 @@ class Server:
         )
         with trace.get_tracer("beeai-sdk").start_as_current_span("agent-provider"):
             try:
-                server_task = asyncio.create_task(self.server.run_sse_async(timeout_graceful_shutdown=5))
+                server_task = asyncio.create_task(self.server.run_sse_async(timeout_graceful_shutdown=0.5))
                 await asyncio.sleep(0.5)
                 callback_task = asyncio.create_task(self.register_agent())
                 await asyncio.gather(server_task, callback_task)
