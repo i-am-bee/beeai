@@ -8,7 +8,7 @@ exporters:
   debug:
     verbosity: detailed
   otlp/phoenix:
-    endpoint: 0.0.0.0:8336
+    endpoint: host.docker.internal:8336
     tls:
       insecure: true
 
@@ -27,9 +27,9 @@ extensions:
   health_check:
 
 service:
-  extensions: [health_check]
+  extensions: [ health_check ]
   pipelines:
     traces/phoenix:
-      receivers: [otlp]
-      processors: [memory_limiter, filter/phoenix, batch]
-      exporters: [otlp/phoenix]
+      receivers: [ otlp ]
+      processors: [ memory_limiter, filter/phoenix, batch ]
+      exporters: [ otlp/phoenix ]

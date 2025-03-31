@@ -25,7 +25,7 @@ from beeai_server.utils.periodic import periodic
 logger = logging.getLogger(__name__)
 
 
-@periodic(period=timedelta(minutes=1))
+@periodic(period=timedelta(seconds=10))
 @inject
 async def reload_providers(
     provider_service: ProviderService, env_service: EnvService, telemetry_service: TelemetryService

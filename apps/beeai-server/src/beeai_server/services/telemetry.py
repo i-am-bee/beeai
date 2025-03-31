@@ -39,4 +39,4 @@ class TelemetryService:
 
     async def sync(self):
         await self._repository.sync()
-        await self._manager.force_update()
+        await self._manager.reload()

@@ -29,7 +29,7 @@ from beeai_server.custom_types import ID, McpClient
 from beeai_server.domain.constants import DEFAULT_MANIFEST_PATH, DOCKER_MANIFEST_LABEL_NAME, LOCAL_IMAGE_REGISTRY
 from beeai_server.exceptions import MissingConfigurationError, retry_if_exception_grp_type
 from beeai_server.telemetry import OTEL_HTTP_ENDPOINT
-from beeai_server.utils.docker import DockerImageID, get_registry_image_config_and_labels
+from beeai_server.utils.docker import DockerImageID, get_registry_image_config_and_labels, replace_localhost_url
 from beeai_server.utils.github import ResolvedGithubUrl, GithubUrl
 from beeai_server.utils.logs_container import LogsContainer
 from beeai_server.utils.process import find_free_port
@@ -221,7 +221,10 @@ class ManagedProvider(BaseProvider, extra="allow"):
 
     @property
     def _global_env(self) -> dict[str, str]:
-        return {"OTEL_EXPORTER_OTLP_ENDPOINT": OTEL_HTTP_ENDPOINT, "PLATFORM_URL": "host.docker.internal:8333"}
+        return {
+            "OTEL_EXPORTER_OTLP_ENDPOINT": replace_localhost_url(OTEL_HTTP_ENDPOINT),
+            "PLATFORM_URL": "host.docker.internal:8333",
+        }
 
     @asynccontextmanager
     @inject

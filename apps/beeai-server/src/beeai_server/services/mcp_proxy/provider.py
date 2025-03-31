@@ -274,7 +274,6 @@ class LoadedProvider:
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         try:
-            logger.critical(f"Closing provider {self.provider.id}")
             if self.status == LoadedProviderStatus.not_installed:
                 return
             self._stopping.set()
@@ -423,8 +422,8 @@ class ProviderContainer:
             await self._close_provider(loaded_provider)
 
     async def add_unmanaged_provider(self, provider: UnmanagedProvider):
-        self.unmanaged_providers[provider.id] = provider
         await self.load_or_restart_provider(provider, reconnect_interval=timedelta(seconds=1))
+        self.unmanaged_providers[provider.id] = provider
 
     async def _remove_broken_unmanaged_providers(self):
         unmanaged_providers = [p for p in self.loaded_providers.values() if p.id in self.unmanaged_providers]

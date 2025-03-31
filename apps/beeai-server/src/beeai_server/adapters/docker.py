@@ -15,21 +15,23 @@
 import asyncio
 import base64
 import logging
-import re
+from asyncio import CancelledError
 from contextlib import asynccontextmanager, suppress, AsyncExitStack
-from typing import Iterable
+from typing import Iterable, AsyncGenerator
 
 import aiohttp
 import anyio
 import anyio.to_thread
 import httpx
 from aiodocker import Docker, DockerError
-from aiodocker.containers import DockerContainer
+from aiohttp.web_exceptions import HTTPError
+from tenacity import AsyncRetrying, retry_if_exception_type
 
 from beeai_server.adapters.interface import IContainerBackend
 from beeai_server.configuration import Configuration, OCIRegistryConfiguration
+from beeai_server.custom_types import ID
 from beeai_server.domain.constants import DOCKER_MANIFEST_LABEL_NAME
-from beeai_server.utils.docker import DockerImageID
+from beeai_server.utils.docker import DockerImageID, replace_localhost_url
 from beeai_server.utils.github import ResolvedGithubUrl
 from beeai_server.utils.logs_container import LogsContainer
 from kink import inject
@@ -119,6 +121,15 @@ class DockerContainerBackend(IContainerBackend):
             session=aiohttp.ClientSession(connector=docker.connector, timeout=aiohttp.ClientTimeout(sock_connect=30)),
         )
 
+    async def stream_logs(self, container_id: ID, logs_container: LogsContainer):
+        async for attempt in AsyncRetrying(retry=retry_if_exception_type(HTTPError), reraise=True):
+            with attempt:
+                async with self._docker as docker:
+                    container = await docker.containers.get(container_id)
+                    async for log_message in container.log(stdout=True, stderr=True, follow=True):
+                        if log_message := log_message.strip():
+                            logs_container.add_stdout(log_message)
+
     @asynccontextmanager
     async def open_container(
         self,
@@ -130,60 +141,52 @@ class DockerContainerBackend(IContainerBackend):
         env: dict[str, str] | None = None,
         port_mappings: dict[str, str] | None = None,
         logs_container: LogsContainer | None = None,
-    ):
-        async def _stream_logs(container):
-            async for log_message in container.log(stdout=True, stderr=True, follow=True):
-                if log_message := log_message.strip():
-                    logs_container.add_stdout(log_message)
-
+        restart: str | None = None,
+    ) -> AsyncGenerator[ID, None]:
         # Dirty networking fix
-        env = {key: re.sub(r"localhost|127\.0\.0\.1", "host.docker.internal", val) for key, val in env.items()}
+        env = env or {}
+        env = {key: replace_localhost_url(val) for key, val in env.items()}
 
-        async with self._docker as docker:
-            name = name or image.repository.replace("/", "-")
-            config = {"Image": str(image), "HostConfig": {}}
-            if volumes:
-                config["HostConfig"]["Binds"] = list(volumes) or []
-            if env:
-                config["Env"] = [f"{var}={value}" for var, value in env.items()]
-            if command:
-                config["Cmd"] = command
-            if port_mappings:
-                config["ExposedPorts"] = {f"{port}/tcp": {} for port in port_mappings.values()}
-                config["HostConfig"]["PortBindings"] = {
-                    f"{container_port}/tcp": [{"HostIp": "0.0.0.0", "HostPort": host_port}]
-                    for host_port, container_port in port_mappings.items()
-                }
-            container = await docker.containers.create_or_replace(name=name, config=config)
-            logs_streaming_task = None
-            try:
+        container_id = None
+        logs_streaming_task = None
+
+        try:
+            async with self._docker as docker:
+                name = name or image.repository.replace("/", "-")
+                config = {"Image": str(image), "HostConfig": {}}
+                if volumes:
+                    config["HostConfig"]["Binds"] = list(volumes) or []
+                if restart:
+                    restart_type, count = (restart if ":" in restart else f"{restart}:0").split(":")
+                    config["HostConfig"]["RestartPolicy"] = {"Name": restart_type, "MaximumRetryCount": int(count)}
+                if env:
+                    config["Env"] = [f"{var}={value}" for var, value in env.items()]
+                if command:
+                    config["Cmd"] = command
+                if port_mappings:
+                    config["ExposedPorts"] = {f"{port}/tcp": {} for port in port_mappings.values()}
+                    config["HostConfig"]["PortBindings"] = {
+                        f"{container_port}/tcp": [{"HostIp": "0.0.0.0", "HostPort": str(host_port)}]
+                        for host_port, container_port in port_mappings.items()
+                    }
+                container = await docker.containers.create_or_replace(name=name, config=config)
                 await container.start()
+                container_id = container.id
                 if logs_container:
-                    logs_streaming_task = asyncio.create_task(_stream_logs(container))
-                yield container
-            finally:
-                with anyio.CancelScope(shield=True):
-                    if logs_streaming_task:
-                        logs_streaming_task.cancel()
-                    await container.delete(force=True)
+                    logs_streaming_task = asyncio.create_task(self.stream_logs(container_id, logs_container))
 
-    async def run_container(
-        self,
-        *,
-        image: DockerImageID,
-        name: str | None = None,
-        command: list[str] | None = None,
-        volumes: Iterable[str] | None = None,
-        env: dict[str, str] | None = None,
-        logs_container: LogsContainer | None = None,
-    ):
-        async with self.open_container(
-            image=image,
-            name=name,
-            command=command,
-            volumes=volumes,
-            env=env,
-            logs_container=logs_container,
-        ) as container:
-            container: DockerContainer
-            await container.wait()
+                yield container_id
+        finally:
+            with anyio.CancelScope(shield=True):
+                if container_id:
+                    await _cancel_task(logs_streaming_task)
+                    async with self._docker as docker:
+                        container = await docker.containers.get(name)
+                        await container.delete(force=True)
+
+
+async def _cancel_task(task: asyncio.Task[None] | None):
+    if task:
+        task.cancel()
+        with suppress(CancelledError):
+            await task
