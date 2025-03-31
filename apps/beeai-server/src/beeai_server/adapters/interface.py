@@ -59,15 +59,7 @@ class IContainerBackend(Protocol):
         env: dict[str, str] | None = None,
         port_mappings: dict[str, str] | None = None,
         logs_container: LogsContainer | None = None,
-    ): ...
-    async def run_container(
-        self,
-        image: DockerImageID,
-        name: str | None = None,
-        command: list[str] | None = None,
-        volumes: Iterable[str] | None = None,
-        env: dict[str, str] | None = None,
-        logs_container: LogsContainer | None = None,
+        restart: str | None = None,
     ): ...
 
 
