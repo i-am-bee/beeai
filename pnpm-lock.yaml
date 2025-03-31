@@ -429,8 +429,8 @@ importers:
   packages/beeai-sdk:
     dependencies:
       '@i-am-bee/acp-sdk':
-        specifier: 0.0.5
-        version: 0.0.5
+        specifier: 0.0.6
+        version: 0.0.6
       '@opentelemetry/api':
         specifier: ^1.9.0
         version: 1.9.0
@@ -1467,8 +1467,8 @@ packages:
     resolution: {integrity: sha512-xeO57FpIu4p1Ri3Jq/EXq4ClRm86dVF2z/+kvFnyqVYRavTZmaFaUBbWCOuuTh0o/g7DSsk6kc2vrS4Vl5oPOQ==}
     engines: {node: '>=18.18'}
 
-  '@i-am-bee/acp-sdk@0.0.5':
-    resolution: {integrity: sha512-GrrwyjWihJFQ3a+MaMQ1GtN74G8U6W15DTeYZaX/Wi/96UsW8b+A+SDNSFglTZEfm3uI+UqX+GB64b3v+ReoZQ==}
+  '@i-am-bee/acp-sdk@0.0.6':
+    resolution: {integrity: sha512-8CdD8Ehm/Tj45ZSuyVCv8e/+LIHH32FTQrS66+UzE5sSNbkPBA81+UyjE5q36PhmxwXYJZULbboPNnaWk4zsZQ==}
     engines: {node: '>=18'}
 
   '@ibm/plex-mono@0.0.3-alpha.0':
@@ -8398,7 +8398,7 @@ snapshots:
 
   '@humanwhocodes/retry@0.4.2': {}
 
-  '@i-am-bee/acp-sdk@0.0.5':
+  '@i-am-bee/acp-sdk@0.0.6':
     dependencies:
       '@opentelemetry/api': 1.9.0
       content-type: 1.0.5
