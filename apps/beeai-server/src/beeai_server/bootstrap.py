@@ -12,9 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import asyncio
+import concurrent.futures
 import logging
 import subprocess
 from contextlib import suppress
+
+import anyio
 
 from acp.server.sse import SseServerTransport
 from beeai_server.adapters.docker import DockerContainerBackend
@@ -38,30 +42,33 @@ from kink import di
 logging.getLogger(__name__)
 
 
-def cmd(command: str):
-    process = subprocess.run(command, shell=True, capture_output=True, text=True, check=True)
-    return process.stdout.strip()
+async def cmd(command: str):
+    process = await anyio.run_process(command, check=True)
+    return process.stdout.decode("utf-8").strip()
 
 
-def resolve_container_runtime_cmd(configuration: Configuration) -> IContainerBackend:
+async def _get_docker_host(configuration: Configuration):
     if configuration.docker_host:
-        return DockerContainerBackend(docker_host=configuration.docker_host)
-
+        return configuration.docker_host
     with suppress(subprocess.CalledProcessError):
-        docker_url = cmd('docker context inspect "$(docker context show)" --format "{{.Endpoints.docker.Host}}"')
-        return DockerContainerBackend(docker_host=docker_url)
-
+        return await cmd('docker context inspect "$(docker context show)" --format "{{.Endpoints.docker.Host}}"')
     with suppress(subprocess.CalledProcessError):
-        podman_url = cmd('podman machine inspect --format "{{.ConnectionInfo.PodmanSocket.Path}}"')
-        return DockerContainerBackend(docker_host=f"unix://{podman_url}")
+        podman_url = await cmd('podman machine inspect --format "{{.ConnectionInfo.PodmanSocket.Path}}"')
+        return f"unix://{podman_url}"
     with suppress(subprocess.CalledProcessError):
-        podman_url = cmd('podman info --format "{{.Host.RemoteSocket.Path}}"')
-        return DockerContainerBackend(docker_host=f"unix://{podman_url}")
-
+        podman_url = await cmd('podman info --format "{{.Host.RemoteSocket.Path}}"')
+        return f"unix://{podman_url}"
     raise ValueError("No supported container runtime found, install docker or podman in docker compatibility mode")
 
 
-def bootstrap_dependencies():
+async def resolve_container_runtime_cmd(configuration: Configuration) -> IContainerBackend:
+    docker_host = await _get_docker_host(configuration)
+    backend = DockerContainerBackend(docker_host=docker_host, configuration=configuration)
+    await backend.configure_host_docker_internal()
+    return backend
+
+
+async def bootstrap_dependencies():
     di.clear_cache()
     di._aliases.clear()  # reset aliases
     di[Configuration] = get_configuration()
@@ -70,12 +77,18 @@ def bootstrap_dependencies():
     di[ITelemetryRepository] = FilesystemTelemetryRepository(
         telemetry_config_path=di[Configuration].telemetry_config_path
     )
-    di[IContainerBackend] = resolve_container_runtime_cmd(di[Configuration])
+    di[IContainerBackend] = await resolve_container_runtime_cmd(di[Configuration])
     di[SseServerTransport] = SseServerTransport("/mcp/messages/")  # global SSE transport
     di[ProviderContainer] = ProviderContainer()
     di[TelemetryCollectorManager] = TelemetryCollectorManager()
 
     # Ensure cache directory
-    di[Configuration].cache_dir.mkdir(parents=True, exist_ok=True)
+    await anyio.Path(di[Configuration].cache_dir).mkdir(parents=True, exist_ok=True)
 
     register_all_crons()
+
+
+def bootstrap_dependencies_sync():
+    with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+        future = executor.submit(lambda: asyncio.run(bootstrap_dependencies()))
+        return future.result()

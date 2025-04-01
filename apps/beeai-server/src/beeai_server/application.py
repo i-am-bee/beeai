@@ -19,6 +19,7 @@ import pathlib
 from contextlib import asynccontextmanager
 from typing import Iterable
 
+
 from beeai_server.domain.model import LoadedProviderStatus
 from beeai_server.utils.fastapi import NoCacheStaticFiles
 from fastapi import FastAPI, APIRouter
@@ -32,7 +33,7 @@ from opentelemetry.metrics import get_meter, Observation, CallbackOptions
 
 from beeai_server.telemetry import INSTRUMENTATION_NAME, shutdown_telemetry
 from beeai_server.domain.telemetry import TelemetryCollectorManager
-from beeai_server.bootstrap import bootstrap_dependencies
+from beeai_server.bootstrap import bootstrap_dependencies_sync
 from beeai_server.configuration import Configuration
 from beeai_server.exceptions import ManifestLoadError
 from beeai_server.routes.mcp_sse import create_mcp_sse_app
@@ -149,7 +150,7 @@ def app() -> FastAPI:
     """Entrypoint for API application, called by Uvicorn"""
 
     logger.info("Bootstrapping dependencies...")
-    bootstrap_dependencies()
+    bootstrap_dependencies_sync()
     configuration = di[Configuration]
 
     app = FastAPI(
