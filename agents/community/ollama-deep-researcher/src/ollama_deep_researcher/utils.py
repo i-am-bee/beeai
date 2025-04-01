@@ -1,6 +1,6 @@
 import os
 import requests
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List
 from langsmith import traceable
 from tavily import TavilyClient
 from duckduckgo_search import DDGS

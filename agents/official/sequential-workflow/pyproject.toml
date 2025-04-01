@@ -4,17 +4,17 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 authors = [{ name = "IBM Corp." }]
-requires-python = ">=3.11,<4.0"
+requires-python = ">=3.11,<3.12"
 dependencies = [
     "acp-sdk", # version determined by beeai-sdk
-    "beeai-sdk==0.0.16",
+    "beeai-sdk==0.0.20",
     "pydantic-settings>=2.7.1",
     "pydantic>=2.10.6",
     "pyyaml>=6.0.2",
 ]
 
 [project.scripts]
-server = "sequential_workflow.server:main"
+server = "sequential_workflow.server:server"
 
 [build-system]
 requires = ["hatchling"]

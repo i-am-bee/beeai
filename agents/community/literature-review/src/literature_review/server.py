@@ -1,4 +1,3 @@
-from typing import Generator
 from literature_review.configuration import load_env
 
 load_env()
@@ -17,7 +16,7 @@ server = Server("autogen-agents")
 
 
 @server.agent()
-async def run_literature_review(input: TextInput):
+async def run_literature_review(input: TextInput) -> TextOutput:
     def encode_value(value):
         if dataclasses.is_dataclass(value):
             return dataclasses.asdict(value)

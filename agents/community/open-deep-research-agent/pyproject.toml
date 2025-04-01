@@ -6,10 +6,9 @@ readme = "README.md"
 authors = [
   { name="Aymeric Roucher", email="aymeric@hf.co" }, { name="Thomas Wolf"},
 ]
-requires-python = ">=3.11,<4.0"
+requires-python = ">=3.11,<3.12"
 dependencies = [
-    "beeai-sdk==0.0.16",
-    "acp-sdk", # version determined by beeai-sdk
+    "beeai-sdk==0.0.20",
     "smolagents[dev] @ git+ssh://git@github.com/huggingface/smolagents.git",
     "anthropic>=0.37.1",
     "audioop-lts<1.0; python_version >= '3.13'",
@@ -56,7 +55,7 @@ dependencies = [
 ]
 
 [project.scripts]
-server = "open_deep_research_agent.server:main"
+server = "open_deep_research_agent.server:server"
 
 [build-system]
 requires = ["hatchling"]

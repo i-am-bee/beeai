@@ -9,7 +9,7 @@ resolution-markers = [
 
 [[package]]
 name = "acp-sdk"
-version = "0.0.5"
+version = "0.0.6"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "anyio" },
@@ -23,9 +23,9 @@ dependencies = [
     { name = "starlette" },
     { name = "uvicorn" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/c1/13/76af0e28cbfdace93a6eb17be49586ebb4937311bf981112a13bab9ad968/acp_sdk-0.0.5.tar.gz", hash = "sha256:d302c2d088373bf5c5b87ee62836045842e39946664346489a9c9dae5da08cc9", size = 121827 }
+sdist = { url = "https://files.pythonhosted.org/packages/95/6e/632b267d53fe1cb42119ad360958cced60c345a9cdefab99a4bfc4cbb442/acp_sdk-0.0.6.tar.gz", hash = "sha256:9958e869af5129fbb0bb55d0eb524936b9c6c740d90ca59a1d822f810f4aaf8d", size = 121844 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/48/25/2e92bbd0666d4b004faa7ec2e059cceaae22cffe1710e5d0380cd057594b/acp_sdk-0.0.5-py3-none-any.whl", hash = "sha256:5f0608e0b595575efa9273f3615e7c60d7a947b30630db540ba36810b94a0683", size = 69783 },
+    { url = "https://files.pythonhosted.org/packages/27/00/153370d3eacddc9e899d8d4bbc1a16b7199ed24a915c5151fb43e3b195e9/acp_sdk-0.0.6-py3-none-any.whl", hash = "sha256:9f76e9f7a0d5f1df6fead7617d379c5c1cd7d16697cb1e03431f87841f783705", size = 69817 },
 ]
 
 [[package]]
@@ -161,17 +161,18 @@ wheels = [
 
 [[package]]
 name = "beeai-sdk"
-version = "0.0.16"
+version = "0.0.20"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "acp-sdk" },
     { name = "opentelemetry-exporter-otlp-proto-http" },
     { name = "opentelemetry-sdk" },
     { name = "pydantic" },
+    { name = "pyyaml" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/8d/aa/8ac48aeac3c21b54c67eda3e4d5fec240b146d9812b3da30e835e43526d7/beeai_sdk-0.0.16.tar.gz", hash = "sha256:0a5582cf85d77118544990fd86e2a1c3175165e28791a2ea0c9b438078a0ebbd", size = 9511 }
+sdist = { url = "https://files.pythonhosted.org/packages/1e/c6/62a8a61cfc1a0cb38fea788f320908b657c986eee1bff4232a8960120fd2/beeai_sdk-0.0.20.tar.gz", hash = "sha256:99ed1840ec018166b1b581f07fe1ede857c5f9bffdcb8e6c0ddd1ff89846e244", size = 11851 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/49/5a/a768d52c62076ca59981d0e89e1bb811386c94b44fa994ad1cfbc4421ac5/beeai_sdk-0.0.16-py3-none-any.whl", hash = "sha256:636eed7568c9c4a3f20fa602bee0733f320ebdcb7919d732d4fe6e199cf9a84d", size = 12206 },
+    { url = "https://files.pythonhosted.org/packages/a6/96/ceb7adf489ca873455272c0e860a63127785002c0ab2a661108544a03c3c/beeai_sdk-0.0.20-py3-none-any.whl", hash = "sha256:7dbb49847b92d3009db4e06ec362897f5e8c3beafccebf6fb8515d52f244e431", size = 14701 },
 ]
 
 [[package]]
@@ -1134,7 +1135,6 @@ name = "ollama-deep-researcher"
 version = "0.0.1"
 source = { editable = "." }
 dependencies = [
-    { name = "acp-sdk" },
     { name = "beautifulsoup4" },
     { name = "beeai-sdk" },
     { name = "duckduckgo-search" },
@@ -1148,9 +1148,8 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "acp-sdk" },
     { name = "beautifulsoup4", specifier = ">=4.13.3" },
-    { name = "beeai-sdk", specifier = "==0.0.16" },
+    { name = "beeai-sdk", specifier = "==0.0.20" },
     { name = "duckduckgo-search", specifier = ">=7.3.0" },
     { name = "langchain-community", specifier = ">=0.3.9" },
     { name = "langchain-ollama", specifier = ">=0.2.1" },

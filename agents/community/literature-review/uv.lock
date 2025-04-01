@@ -4,7 +4,7 @@ requires-python = ">=3.11, <4.0"
 
 [[package]]
 name = "acp-sdk"
-version = "0.0.5"
+version = "0.0.6"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "anyio" },
@@ -18,9 +18,9 @@ dependencies = [
     { name = "starlette" },
     { name = "uvicorn" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/c1/13/76af0e28cbfdace93a6eb17be49586ebb4937311bf981112a13bab9ad968/acp_sdk-0.0.5.tar.gz", hash = "sha256:d302c2d088373bf5c5b87ee62836045842e39946664346489a9c9dae5da08cc9", size = 121827 }
+sdist = { url = "https://files.pythonhosted.org/packages/95/6e/632b267d53fe1cb42119ad360958cced60c345a9cdefab99a4bfc4cbb442/acp_sdk-0.0.6.tar.gz", hash = "sha256:9958e869af5129fbb0bb55d0eb524936b9c6c740d90ca59a1d822f810f4aaf8d", size = 121844 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/48/25/2e92bbd0666d4b004faa7ec2e059cceaae22cffe1710e5d0380cd057594b/acp_sdk-0.0.5-py3-none-any.whl", hash = "sha256:5f0608e0b595575efa9273f3615e7c60d7a947b30630db540ba36810b94a0683", size = 69783 },
+    { url = "https://files.pythonhosted.org/packages/27/00/153370d3eacddc9e899d8d4bbc1a16b7199ed24a915c5151fb43e3b195e9/acp_sdk-0.0.6-py3-none-any.whl", hash = "sha256:9f76e9f7a0d5f1df6fead7617d379c5c1cd7d16697cb1e03431f87841f783705", size = 69817 },
 ]
 
 [[package]]
@@ -131,7 +131,7 @@ wheels = [
 
 [[package]]
 name = "beeai-sdk"
-version = "0.0.17"
+version = "0.0.20"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "acp-sdk" },
@@ -140,9 +140,9 @@ dependencies = [
     { name = "pydantic" },
     { name = "pyyaml" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/a5/9a/22d25ae2c3763987fb993b3fdda4cc27ccef21a96f4fa2b4605ccd2a611a/beeai_sdk-0.0.17.tar.gz", hash = "sha256:d31c0fadf934ad4faefee5019f3e3a239a3c171ba5b1e0e7d01f6466fedef3ff", size = 11714 }
+sdist = { url = "https://files.pythonhosted.org/packages/1e/c6/62a8a61cfc1a0cb38fea788f320908b657c986eee1bff4232a8960120fd2/beeai_sdk-0.0.20.tar.gz", hash = "sha256:99ed1840ec018166b1b581f07fe1ede857c5f9bffdcb8e6c0ddd1ff89846e244", size = 11851 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/c2/e9/56f30437660417c927aaefd5e7d7816dda99b2865c1ff0c6e1695dcbea55/beeai_sdk-0.0.17-py3-none-any.whl", hash = "sha256:24ae4c130fc0189439d3e71d038dc4f3bb4a159c60e756e8b32594540326d9db", size = 14548 },
+    { url = "https://files.pythonhosted.org/packages/a6/96/ceb7adf489ca873455272c0e860a63127785002c0ab2a661108544a03c3c/beeai_sdk-0.0.20-py3-none-any.whl", hash = "sha256:7dbb49847b92d3009db4e06ec362897f5e8c3beafccebf6fb8515d52f244e431", size = 14701 },
 ]
 
 [[package]]
@@ -420,7 +420,7 @@ requires-dist = [
     { name = "arxiv", specifier = ">=2.1.3" },
     { name = "autogen-agentchat", specifier = ">=0.4.7" },
     { name = "autogen-ext", extras = ["openai"], specifier = ">=0.4.7" },
-    { name = "beeai-sdk", specifier = "==0.0.17" },
+    { name = "beeai-sdk", specifier = "==0.0.20" },
     { name = "bs4", specifier = ">=0.0.2" },
 ]
 

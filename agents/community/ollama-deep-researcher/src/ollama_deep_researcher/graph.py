@@ -113,9 +113,9 @@ def summarize_sources(state: SummaryState, config: RunnableConfig):
     # Run the LLM
     configurable = Configuration.from_runnable_config(config)
     llm = ChatOpenAI(
-        model=configurable.model,
-        openai_api_key=configurable.api_key,
-        openai_api_base=configurable.api_base,
+        model=configurable.llm_model,
+        openai_api_key=configurable.llm_api_key,
+        openai_api_base=configurable.llm_api_base,
         temperature=0,
     )
     result = llm.invoke([SystemMessage(content=summarizer_instructions), HumanMessage(content=human_message_content)])
@@ -138,9 +138,9 @@ def reflect_on_summary(state: SummaryState, config: RunnableConfig):
     # Generate a query
     configurable = Configuration.from_runnable_config(config)
     llm_json_mode = ChatOpenAI(
-        model=configurable.model,
-        openai_api_key=configurable.api_key,
-        openai_api_base=configurable.api_base,
+        model=configurable.llm_model,
+        openai_api_key=configurable.llm_api_key,
+        openai_api_base=configurable.llm_api_base,
         temperature=0,
         model_kwargs={"response_format": {"type": "json_object"}},
     )

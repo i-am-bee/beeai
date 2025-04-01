@@ -9,8 +9,7 @@ readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.11"
 dependencies = [
-    "beeai-sdk==0.0.16",
-    "acp-sdk", # version determined by beeai-sdk
+    "beeai-sdk==0.0.20",
     "langgraph>=0.2.55",
     "langchain-community>=0.3.9",
     "tavily-python>=0.5.0",
@@ -22,7 +21,7 @@ dependencies = [
 ]
 
 [project.scripts]
-server = "ollama_deep_researcher.server:main"
+server = "ollama_deep_researcher.server:server"
 
 [build-system]
 requires = ["hatchling"]

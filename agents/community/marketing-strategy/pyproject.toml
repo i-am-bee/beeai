@@ -3,10 +3,9 @@ name = "marketing-strategy"
 version = "0.0.1"
 description = "Collection of CrewAI agents"
 authors = []
-requires-python = ">=3.11,<4.0"
+requires-python = ">=3.11,<3.12"
 dependencies = [
-    "beeai-sdk==0.0.16",
-    "acp-sdk", # version determined by beeai-sdk
+    "beeai-sdk==0.0.20",
     "crewai[tools]>=0.102.0,<1.0.0",
     "databricks-sdk>=0.46.0",
     "openinference-instrumentation-crewai>=0.1.7",
@@ -14,7 +13,7 @@ dependencies = [
 ]
 
 [project.scripts]
-server = "marketing_strategy.server:main"
+server = "marketing_strategy.server:server"
 
 [tool.ruff]
 line-length = 120

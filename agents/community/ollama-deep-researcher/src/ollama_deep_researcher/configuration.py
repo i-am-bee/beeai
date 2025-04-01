@@ -36,6 +36,6 @@ class Configuration:
 
 def load_env():
     config = Configuration()
-    os.environ["MODEL"] = config.llm_model
-    os.environ["API_BASE"] = config.llm_api_base
-    os.environ["OPENAI_API_KEY"] = config.llm_api_key
+    os.environ["LLM_MODEL"] = config.llm_model
+    os.environ["LLM_API_BASE"] = config.llm_api_base
+    os.environ["LLM_API_KEY"] = config.llm_api_key
