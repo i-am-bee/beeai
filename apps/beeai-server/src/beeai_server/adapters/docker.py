@@ -34,21 +34,44 @@ from beeai_server.domain.constants import DOCKER_MANIFEST_LABEL_NAME
 from beeai_server.utils.docker import DockerImageID, replace_localhost_url
 from beeai_server.utils.github import ResolvedGithubUrl
 from beeai_server.utils.logs_container import LogsContainer
-from kink import inject
 
 
 logger = logging.getLogger(__name__)
 
 
-@inject
 class DockerContainerBackend(IContainerBackend):
     def __init__(self, *, docker_host: str, configuration: Configuration) -> None:
         self.configuration = configuration
         self._docker_host = docker_host
+        self._extra_hosts = []
 
     def _get_auth_header(self, destination: DockerImageID) -> dict | None:
         config: OCIRegistryConfiguration = self.configuration.oci_registry[destination.registry]
         return config.basic_auth_str and {"auth": config.basic_auth_str}
+
+    async def configure_host_docker_internal(self):
+        """Set extra_hosts if `host.docker.internal` is not configured for containers."""
+
+        async with self._docker as docker:
+            alpine = "alpine:3.21.3"
+            try:
+                await docker.images.inspect(alpine)
+            except DockerError:
+                await docker.images.pull(alpine)
+            container = await docker.containers.create_or_replace(
+                name="beeai-host-network-test",
+                config={
+                    "Image": "alpine:3.21.3",
+                    "Cmd": ["getent", "hosts", "host.docker.internal"],
+                    "HostConfig": {"AutoRemove": True},
+                },
+            )
+            await container.start()
+            resp = await container.wait()
+            if resp["StatusCode"] == 0:
+                return
+        logger.warning("host.docker.internal not configured for docker, falling back to 'host-gateway' configuration")
+        self._extra_hosts = ["host.docker.internal:host-gateway"]
 
     async def build_from_github(
         self,
@@ -154,11 +177,15 @@ class DockerContainerBackend(IContainerBackend):
             async with self._docker as docker:
                 name = name or image.repository.replace("/", "-")
                 config = {"Image": str(image), "HostConfig": {}}
+                if self._extra_hosts:
+                    config["HostConfig"]["ExtraHosts"] = self._extra_hosts
                 if volumes:
                     config["HostConfig"]["Binds"] = list(volumes) or []
                 if restart:
                     restart_type, count = (restart if ":" in restart else f"{restart}:0").split(":")
                     config["HostConfig"]["RestartPolicy"] = {"Name": restart_type, "MaximumRetryCount": int(count)}
+                else:
+                    config["HostConfig"]["AutoRemove"] = True
                 if env:
                     config["Env"] = [f"{var}={value}" for var, value in env.items()]
                 if command:
@@ -174,15 +201,15 @@ class DockerContainerBackend(IContainerBackend):
                 container_id = container.id
                 if logs_container:
                     logs_streaming_task = asyncio.create_task(self.stream_logs(container_id, logs_container))
-
                 yield container_id
         finally:
             with anyio.CancelScope(shield=True):
                 if container_id:
                     await _cancel_task(logs_streaming_task)
                     async with self._docker as docker:
-                        container = await docker.containers.get(name)
-                        await container.delete(force=True)
+                        with suppress(DockerError):
+                            container = await docker.containers.get(name)
+                            await container.delete(force=True)
 
 
 async def _cancel_task(task: asyncio.Task[None] | None):
