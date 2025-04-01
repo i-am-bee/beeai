@@ -14,7 +14,9 @@
 
 import asyncio
 import concurrent.futures
+import json
 import logging
+import shlex
 import subprocess
 from contextlib import suppress
 
@@ -48,17 +50,60 @@ async def cmd(command: str):
 
 
 async def _get_docker_host(configuration: Configuration):
-    if configuration.docker_host:
-        return configuration.docker_host
+    if not configuration.force_lima:
+        if configuration.docker_host:
+            with suppress(subprocess.CalledProcessError):
+                logging.info("Trying DOCKER_HOST...")
+                await cmd(f"test -e {shlex.quote(configuration.docker_host)}")
+                return configuration.docker_host
+        with suppress(subprocess.CalledProcessError):
+            logging.info("Trying Docker...")
+            docker_url = await cmd(
+                'docker context inspect "$(docker context show)" --format "{{.Endpoints.docker.Host}}"'
+            )
+            await cmd(f"test -e {shlex.quote(docker_url.removeprefix('unix://'))}")
+            return docker_url
+        with suppress(subprocess.CalledProcessError):
+            logging.info("Trying Podman Machine...")
+            podman_url = await cmd('podman machine inspect --format "{{.ConnectionInfo.PodmanSocket.Path}}"')
+            await cmd(f"test -e {shlex.quote(podman_url)}")
+            return f"unix://{podman_url}"
+        with suppress(subprocess.CalledProcessError):
+            logging.info("Trying Podman...")
+            podman_url = await cmd('podman info --format "{{.Host.RemoteSocket.Path}}"')
+            await cmd(f"test -e {shlex.quote(podman_url)}")
+            return f"unix://{podman_url}"
+
     with suppress(subprocess.CalledProcessError):
-        return await cmd('docker context inspect "$(docker context show)" --format "{{.Endpoints.docker.Host}}"')
-    with suppress(subprocess.CalledProcessError):
-        podman_url = await cmd('podman machine inspect --format "{{.ConnectionInfo.PodmanSocket.Path}}"')
-        return f"unix://{podman_url}"
-    with suppress(subprocess.CalledProcessError):
-        podman_url = await cmd('podman info --format "{{.Host.RemoteSocket.Path}}"')
-        return f"unix://{podman_url}"
-    raise ValueError("No supported container runtime found, install docker or podman in docker compatibility mode")
+        logging.info("Trying Lima...")
+        lima_instance = next(
+            (
+                instance
+                for line in (
+                    (await cmd("limactl --tty=false list --format=json")).split("\n")
+                )  # it actually prints JSONL (one JSON object per line)
+                if line
+                if (instance := json.loads(line))
+                if instance["name"] == "beeai"
+            ),
+            None,
+        )
+        if not lima_instance:
+            logging.info("BeeAI VM not found, creating...")
+            await cmd("limactl --tty=false start template://docker-rootful --name beeai")
+        logging.info("Starting BeeAI VM...")
+        await cmd("limactl --tty=false start beeai")
+        await cmd("limactl --tty=false start-at-login beeai")
+        lima_home = json.loads(await cmd("limactl --tty=false info"))["limaHome"]
+        return f"unix://{lima_home}/beeai/sock/docker.sock"
+
+    if configuration.force_lima:
+        raise ValueError(
+            "Could not start the Lima VM. Please ensure that Lima is properly installed (https://lima-vm.io/docs/installation/)."
+        )
+    raise ValueError(
+        "No compatible container runtime found. Please install Lima (https://lima-vm.io/docs/installation/) or a supported container runtime (Docker, Rancher, Podman, ...)."
+    )
 
 
 async def resolve_container_runtime_cmd(configuration: Configuration) -> IContainerBackend:
