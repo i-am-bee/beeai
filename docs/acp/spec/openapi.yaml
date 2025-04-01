@@ -348,7 +348,7 @@ components:
           $ref: "#/components/schemas/AgentName"
         description:
           type: string
-          description: Short description of the agent.
+          description: Short description of the agent. This field might be consumed and interpreted by large language models (LLMs).
           examples:
             - Conversational agent with memory, supporting real-time search, Wikipedia lookups, and weather updates through integrated tools
         interfaces:
@@ -408,11 +408,11 @@ components:
         - Chat
     Metadata:
       type: object
-      description: Optional data to support discovery and cataloguing
+      description: Optional data to support agent discovery and cataloguing.
       properties:
         documentation:
           type: string
-          description: Full agent documentation in markdown
+          description: Full agent documentation in markdown.
           examples:
             - "The agent is a conversational system designed to process user messages, maintain context, and generate..."
         license:
@@ -421,12 +421,21 @@ components:
             SPDX license ID: https://spdx.org/licenses/
           examples:
             - Apache-2.0
-        language:
+        programmingLanguage:
           type: string
           description: >-
             Programming language, supported values: https://docs.github.com/en/get-started/learning-about-github/github-language-support
           examples:
             - Python
+        naturalLanguages:
+          type: array
+          description: >
+            List of human-readable languages supported by the agent for conversational interactions or content generation. Use ISO 639-1 codes.
+          items:
+            type: string
+            examples:
+              - en
+              - fr
         framework:
           type: string
           description: For example BeeAI, crewAI, Autogen, AG2
@@ -435,6 +444,8 @@ components:
             - AG2
         useCases:
           type: array
+          description: >
+            A list of short plain-text strings describing use cases supported by the agent. This field might be consumed and interpreted by large language models (LLMs).
           items:
             type: string
             examples:
@@ -493,7 +504,7 @@ components:
         type:
           enum:
             - source-code
-            - docker-image
+            - container-image
             - homepage
             - documentation
         url:
@@ -535,15 +546,24 @@ components:
         - message
     AgentDependency:
       type: object
+      description: >
+        **Experimental:** Represents a dependency required by the agent, specifying external resources or capabilities it relies upon, such as other agents, tools, or AI models.
       properties:
         type:
           enum:
             - agent
             - tool
             - model
+          description: >
+            Type of dependency:
+            - `agent`: Another agent instance required to fulfill certain functionalities.
+            - `tool`: External tool or utility needed by the agent.
+            - `model`: Specific AI model that the agent depends on.
           examples:
             - tool
         name:
           type: string
+          description: >
+            Identifier or name of the dependency, such as an agent name, tool identifier, or model name.
           examples:
             - weather

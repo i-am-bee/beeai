@@ -9,6 +9,15 @@
 
 <h4 align="center">Discover, run, and compose AI agents from any framework</h4>
 
+<div align="center">
+
+[![Apache 2.0](https://img.shields.io/badge/Apache%202.0-License-EA7826?style=social&logo=apache)](https://github.com/i-am-bee/beeai-framework?tab=Apache-2.0-1-ov-file#readme)
+[![Follow on Bluesky](https://img.shields.io/badge/Follow%20on%20Bluesky-0285FF?style=social&logo=bluesky)](https://bsky.app/profile/beeaiagents.bsky.social)
+[![Join our Discord](https://img.shields.io/badge/Join%20our%20Discord-7289DA?style=social&logo=discord)](https://discord.com/invite/NradeA6ZNF)
+[![LF AI & Data](https://img.shields.io/badge/LF%20AI%20%26%20Data-0094ff?style=social&logo=linuxfoundation)](https://lfaidata.foundation/projects/)
+
+</div>
+
 <p align="center">
     <a href="#key-features">Key features</a> •
     <a href="#quickstart">Quickstart</a> •
@@ -84,6 +93,10 @@ To chat with other community members, you can join the BeeAI [Discord](https://d
 
 Please note that our [Code of Conduct](./CODE_OF_CONDUCT.md) applies to all BeeAI community channels. We strongly encourage you to read and follow it.
 
+## Maintainers
+
+For information about maintainers, see [MAINTAINERS.md](./MAINTAINERS.md).
+
 ## Contributing
 
 Contributions to BeeAI are always welcome and greatly appreciated. Before contributing, please review our [Contribution Guidelines](./CONTRIBUTING.md) to ensure a smooth experience.
@@ -102,3 +115,7 @@ Special thanks to the following outstanding projects for their inspiration and i
 - [Language Server Protocol](https://github.com/microsoft/language-server-protocol)
 - [JSON-RPC](https://www.jsonrpc.org/)
 - [Natural Language Interaction Protocol](https://github.com/nlip-project)
+
+---
+
+Developed by contributors to the BeeAI project, this initiative is part of the [Linux Foundation AI & Data program](https://lfaidata.foundation/projects/). Its development follows open, collaborative, and community-driven practices.
