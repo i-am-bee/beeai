@@ -1,6 +1,6 @@
 {
   "name": "@i-am-bee/beeai-sdk",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "description": "",
   "type": "module",
   "main": "./dist/index.js",
@@ -59,7 +59,7 @@
     "typescript-eslint": "catalog:"
   },
   "dependencies": {
-    "@i-am-bee/acp-sdk": "0.0.5",
+    "@i-am-bee/acp-sdk": "0.0.6",
     "@opentelemetry/api": "^1.9.0",
     "@opentelemetry/sdk-node": "^0.57.1",
     "@opentelemetry/semantic-conventions": "^1.30.0",
