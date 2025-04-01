@@ -93,6 +93,10 @@ To chat with other community members, you can join the BeeAI [Discord](https://d
 
 Please note that our [Code of Conduct](./CODE_OF_CONDUCT.md) applies to all BeeAI community channels. We strongly encourage you to read and follow it.
 
+## Maintainers
+
+For information about maintainers, see [MAINTAINERS.md](./MAINTAINERS.md).
+
 ## Contributing
 
 Contributions to BeeAI are always welcome and greatly appreciated. Before contributing, please review our [Contribution Guidelines](./CONTRIBUTING.md) to ensure a smooth experience.
