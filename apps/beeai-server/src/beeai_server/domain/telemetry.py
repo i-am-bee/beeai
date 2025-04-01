@@ -12,139 +12,105 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import abc
 import asyncio
-from asyncio.subprocess import Process
-from contextlib import AsyncExitStack, asynccontextmanager
-from datetime import timedelta
 import logging
 import pathlib
+from asyncio import CancelledError
+from contextlib import AsyncExitStack, asynccontextmanager
 from typing import AsyncGenerator
 
-import anyio
-from beeai_server.adapters.interface import ITelemetryRepository, TelemetryConfig
+from beeai_server.adapters.interface import IContainerBackend, ITelemetryRepository, TelemetryConfig
 from beeai_server.telemetry import OTEL_HTTP_PORT
-from beeai_server.utils.managed_telemetry_collector import (
-    ManagedTelemetryCollectorParameters,
-    managed_telemetry_collector,
-)
-from beeai_server.utils.periodic import Periodic
+from beeai_server.utils.docker import DockerImageID
+from beeai_server.utils.logs_container import LogsContainer, ProcessLogMessage
 from kink import inject
 from pydantic import BaseModel
-
 
 logger = logging.getLogger(__name__)
 
 
-class BaseCollector(BaseModel, abc.ABC):
-    @abc.abstractmethod
-    async def check_compatibility(self) -> None:
-        pass
-
-    @abc.abstractmethod
-    async def run(self) -> AsyncGenerator[Process, None]:
-        pass
-
-
-class ManagedTelemetryCollector(BaseCollector, abc.ABC):
+class TelemetryCollector(BaseModel, extra="allow"):
     config: TelemetryConfig
 
-
-class SystemBinaryTelemetryCollector(ManagedTelemetryCollector):
-    async def check_compatibility(self) -> None:
-        await super().check_compatibility()
-
     @asynccontextmanager
-    async def run(self) -> AsyncGenerator[Process, None]:
-        await self.check_compatibility()
+    @inject
+    async def run(self, container_backend: IContainerBackend) -> AsyncGenerator[..., None]:
+        logs_container = LogsContainer()
         config_dir = pathlib.Path(__file__).parent.joinpath("collector")
-        async with managed_telemetry_collector(
-            params=ManagedTelemetryCollectorParameters(
-                command="otelcol-contrib",
-                args=["--config", str(config_dir / "base.yaml")]
-                + (["--config", str(config_dir / "beeai.yaml")] if self.config.sharing_enabled else [])
-                + ["--set", f"receivers::otlp::protocols::http::endpoint=0.0.0.0:{OTEL_HTTP_PORT}"],
-            )
-        ) as process:
-            yield process
 
+        def handle_log(message: ProcessLogMessage):
+            logger.info(message.message, extra={"container_name": "beeai-otelcol-contrib"})
 
-class TelemetryCollector(BaseModel, extra="allow"):
-    implementation: SystemBinaryTelemetryCollector
+        try:
+            logs_container.subscribe(handle_log)
 
-    @asynccontextmanager
-    async def run(self):
-        async with self.implementation.run() as process:
-            yield process
+            image = DockerImageID(root="otel/opentelemetry-collector-contrib:0.122.1")
+            await container_backend.pull_image(image=image, logs_container=logs_container)
+            async with container_backend.open_container(
+                image=image,
+                name="beeai-otelcol-contrib",
+                command=[
+                    "--config",
+                    "/base.yaml",
+                    *(["--config", "/beeai.yaml"] if self.config.sharing_enabled else []),
+                    "--set",
+                    f"receivers::otlp::protocols::http::endpoint=0.0.0.0:{OTEL_HTTP_PORT}",
+                ],
+                port_mappings={OTEL_HTTP_PORT: OTEL_HTTP_PORT},
+                volumes=[f"{config_dir / 'base.yaml'}:/base.yaml", f"{config_dir / 'beeai.yaml'}:/beeai.yaml"],
+                restart="on-failure:10",
+                logs_container=logs_container,
+            ) as container_id:
+                yield container_id
+        finally:
+            logs_container.unsubscribe(handle_log)
 
 
 @inject
 class TelemetryCollectorManager:
-    _collector_process: Process | None = None
-
     def __init__(self, repository: ITelemetryRepository):
         self._repository = repository
         self._collector = None
         self._collector_exit_stack = AsyncExitStack()
-        self._stopping = False
-        self._stopped = asyncio.Event()
-        self._ensure_collector_periodic = Periodic(
-            executor=self._ensure_collector,
-            period=timedelta(minutes=1),
-            name="Ensure collector",
-        )
+        self._start_task = None
 
     async def __aenter__(self):
-        self._stopping = False
         logger.info("Starting collector")
-        await self._ensure_collector_periodic.start()
+        await self.reload()
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
-        self._stopping = True
-        self._ensure_collector_periodic.poke()
-        await self._stopped.wait()
-        await self._ensure_collector_periodic.stop()
+        await self._stop_collector()
         logger.info("Collector stopped")
 
-    async def _ensure_collector(self):
-        if self._stopping:
-            await self._stop_collector()
-            self._stopped.set()
-            return
-
-        config = await self._repository.get()
-        if (
-            self._collector_process
-            and self._collector_process.returncode is None
-            and self._collector.implementation.config.model_dump() == config.model_dump()
-        ):
-            return
-
+    async def _restart_collector(self, config: TelemetryConfig):
         try:
-            await self._start_collector()
-        except Exception as ex:
-            logger.warning(f"Exception occurred when stopping collector: {ex!r}")
-            self._collector_process = None
+            await self._stop_collector()
 
-    async def _start_collector(self):
-        await self._stop_collector()
-        config = await self._repository.get()
-        self._collector = TelemetryCollector(
-            implementation=SystemBinaryTelemetryCollector(config=config),
-        )
-        self._collector_process = await self._collector_exit_stack.enter_async_context(
-            self._collector.implementation.run()
-        )
-        tg = await self._collector_exit_stack.enter_async_context(anyio.create_task_group())
-        self._collector_exit_stack.callback(lambda: tg.cancel_scope.cancel())
+            async def start_collector():
+                self._collector = TelemetryCollector(config=config)
+                await self._collector_exit_stack.enter_async_context(self._collector.run())
+
+            self._start_task = asyncio.create_task(start_collector())
+            await self._start_task
+        except CancelledError:
+            pass
+        except BaseException as ex:
+            logger.warning(f"Exception occurred during collector start: {ex!r}")
+        finally:
+            self._start_task = None
 
     async def _stop_collector(self):
         try:
+            if self._start_task:
+                self._start_task.cancel()
             await self._collector_exit_stack.aclose()
-        except Exception as ex:
+        except BaseException as ex:
             logger.warning(f"Exception occurred when stopping collector: {ex!r}")
             self._collector_exit_stack.pop_all()
         self._collector = None
 
-    async def force_update(self):
-        self._ensure_collector_periodic.poke()
+    async def reload(self, force: bool = False):
+        config = await self._repository.get()
+        if self._collector and self._collector.config == config and not force:
+            return
+        await self._restart_collector(config)
