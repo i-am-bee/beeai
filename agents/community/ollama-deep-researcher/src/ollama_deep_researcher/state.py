@@ -1,6 +1,6 @@
 import operator
 from dataclasses import dataclass, field
-from typing_extensions import TypedDict, Annotated
+from typing_extensions import Annotated
 
 
 @dataclass(kw_only=True)

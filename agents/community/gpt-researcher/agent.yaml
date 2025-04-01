@@ -1,5 +1,45 @@
 manifestVersion: 1
 name: "gpt-researcher"
+description: The agent conducts in-depth local and web research using a language model to generate comprehensive reports with citations, aimed at delivering factual, unbiased information.
+
+framework: Custom
+license: Apache 2.0
+languages: 
+  - Python
+githubUrl: https://github.com/i-am-bee/beeai/tree/main/agents/community/gpt-researcher-agent/gpt_researcher_agent
+avgRunTimeSeconds: 2.1
+avgRunTokens: 111
+examples: 
+  command: beeai run gpt-researcher "Impact of climate change on global agriculture"
+  description: Conducting Research on Climate Change
+  processingSteps:
+    - Initializes task-specific agents to interpret the query
+    - Generates a series of questions to form an objective opinion on the topic
+    - Uses a crawler agent to gather and summarize information for each question
+    - Aggregates and filters these summaries into a final comprehensive report
+ui: 
+  type: hands-off
+  userGreeting: What topic do you want to research?
+fullDescription: |
+  The agent is an autonomous system designed to perform detailed research on any specified topic, leveraging both web and local resources. It generates a long, factual report complete with citations, striving to provide unbiased and accurate information. Drawing inspiration from recent advancements in AI-driven research methodologies, the agent addresses common challenges like misinformation and the limits of traditional LLMs, offering robust performance through parallel processing.
+
+  ## How It Works
+  The GPT Researcher agent operates by deploying a 'planner' to generate relevant research questions and 'execution' agents to collect information. The system then aggregates these findings into a well-structured report. This approach minimizes biases by cross-referencing multiple sources and focuses on delivering comprehensive insights. It employs a custom infrastructure to ensure rapid and deterministic outcomes, making it suitable for diverse research applications.
+
+  ## Input Parameters
+  - **text** (string) – The topic or query for which the research report is to be generated.
+
+  ## Key Features
+  - **Comprehensive Research** – Generates detailed reports using information from multiple sources.
+  - **Bias Reduction** – Cross-references data from various platforms to minimize misinformation and bias.
+  - **High Performance** – Utilizes parallelized processes for efficient and swift report generation.
+  - **Customizable** – Offers customization options to tailor research for specific domains or tasks.
+
+  ## Use Cases
+  - **Comprehensive Research** – Generates detailed reports using information from multiple sources.
+  - **Bias Reduction** – Cross-references data from various platforms to minimize misinformation and bias.
+  - **High Performance** – Utilizes parallelized processes for efficient and swift report generation.
+  - **Customizable** – Offers customization options to tailor research for specific domains or tasks.
 
 env:
   - name: LLM_MODEL

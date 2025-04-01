@@ -1,14 +1,9 @@
 import argparse
-import asyncio
 import os
 import threading
 
-from typing import Any
 
-from acp.server.highlevel import Server
-from beeai_sdk.providers.agent import run_agent_provider
-from beeai_sdk.schemas.base import Log
-from beeai_sdk.schemas.metadata import Metadata, UiDefinition, UiType
+from beeai_sdk.providers.agent import Server
 from beeai_sdk.schemas.text import TextInput, TextOutput
 
 from openinference.instrumentation.smolagents import SmolagentsInstrumentor
@@ -154,61 +149,15 @@ def create_agent():
     return manager_agent
 
 
-agentName = "open-deep-research"
-
-exampleInputText = "How many Bob Dylan albums were released before 1967?"
-
-fullDescription = f"""
-This agent is an open implementation of OpenAI's Deep Research.
-
-## Example Usage
-
-#### CLI:
-```bash
-beeai run {agentName} "{exampleInputText}"
-```
-"""
-
-
 class Output(TextOutput):
     text: str = Field(default_factory=str)
 
+server = Server("open-deep-research-agent")
 
-async def register_agent() -> int:
-    server = Server("open-deep-research-agent")
+@server.agent()
+async def run_agent(input: TextInput) -> TextOutput:
+    agent = create_agent()
+    async for message in agent.run(input.text):
+        yield Output(text=message.content)
 
-    @server.agent(
-        agentName,
-        "Some text",
-        input=TextInput,
-        output=TextOutput,
-        **Metadata(
-            framework="Custom",
-            license="Apache 2.0",
-            languages=["Python"],
-            githubUrl="https://github.com/i-am-bee/beeai/tree/main/agents/community/open-deep-research-agent",
-            ui=UiDefinition(
-                type=UiType.hands_off,
-                userGreeting="What topic do you want to research?",
-            ),
-            exampleInput=exampleInputText,
-            fullDescription=fullDescription,
-        ).model_dump(),
-    )
-    async def run_agent(input: TextInput, ctx) -> TextOutput:
-        agent = create_agent()
-        async for message in agent.run(input.text):
-            await ctx.report_agent_run_progress(Output(text=message.content))
-
-        return Output(text=agent.final_result)
-
-    await run_agent_provider(server)
-    return 0
-
-
-def main():
-    asyncio.run(register_agent())
-
-
-if __name__ == "__main__":
-    main()
+    yield Output(text=agent.final_result)

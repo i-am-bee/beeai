@@ -182,7 +182,7 @@ class Server:
                 output=output if output is not inspect.Signature.empty else Output,
                 run_fn=(async_fn if inspect.iscoroutinefunction(func) else sync_fn),
                 destroy_fn=None,
-                **(self._manifest.get("metadata") or {}),
+                **(self._manifest or {}),
             )
             self.server.add_agent(agent=self._agent)
             logger.info(f"Agent with name '{name}' created")
