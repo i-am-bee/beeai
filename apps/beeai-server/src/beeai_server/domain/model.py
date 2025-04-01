@@ -45,7 +45,7 @@ class EnvVar(BaseModel):
     required: bool = False
 
 
-class AgentManifest(BaseModel):
+class AgentManifest(BaseModel, extra="allow"):
     manifestVersion: Literal[1] = 1
     name: str
     ui: dict[str, Any] | None = None
