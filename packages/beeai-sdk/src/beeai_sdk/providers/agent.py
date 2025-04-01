@@ -113,6 +113,7 @@ class Server:
         logger.debug("Registering agent function")
 
         def decorator(fn: Callable) -> Callable:
+            @functools.wraps(fn)
             def generator_wrapper(input: Input, ctx: Context):
                 last_value = None
                 sync_ctx = syncify_object_dynamic(ctx)
@@ -121,6 +122,7 @@ class Server:
                     sync_ctx.report_agent_run_progress(value)
                 return last_value
 
+            @functools.wraps(fn)
             async def async_generator_wrapper(input: Input, ctx: Context):
                 last_value = None
                 async for value in fn(input):
@@ -182,7 +184,7 @@ class Server:
                 output=output if output is not inspect.Signature.empty else Output,
                 run_fn=(async_fn if inspect.iscoroutinefunction(func) else sync_fn),
                 destroy_fn=None,
-                **(self._manifest.get("metadata") or {}),
+                **{key: self._manifest[key] for key in self._manifest if key not in ["name", "description"]},
             )
             self.server.add_agent(agent=self._agent)
             logger.info(f"Agent with name '{name}' created")
