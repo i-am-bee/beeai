@@ -101,6 +101,7 @@ def _get_docker_host(configuration: Configuration):
         logger.info("Starting BeeAI VM...")
         cmd("limactl --tty=false start beeai")
         cmd("limactl --tty=false start-at-login beeai")
+        cmd("limactl --tty=false protect beeai")
         lima_home = json.loads(cmd("limactl --tty=false info"))["limaHome"]
         socket_path = Path(f"{lima_home}/beeai/sock/docker.sock")
 
@@ -127,8 +128,8 @@ async def resolve_container_runtime_cmd(configuration: Configuration) -> IContai
     docker_host = _get_docker_host(configuration)
     logger.info(f"Using DOCKER_HOST={docker_host}")
     backend = DockerContainerBackend(docker_host=docker_host, configuration=configuration)
-    if not docker_host.endswith("lima/beeai/sock/docker.sock"):
-        await backend.configure_host_docker_internal()
+    # if not docker_host.endswith("lima/beeai/sock/docker.sock"):
+    await backend.configure_host_docker_internal()
     return backend
 
 
