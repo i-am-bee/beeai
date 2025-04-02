@@ -22,7 +22,6 @@ from typing import Literal, Optional, Self, Any
 import httpx
 import yaml
 from acp.client.sse import sse_client
-from acp.client.stdio import get_default_environment
 from beeai_server.adapters.interface import IContainerBackend
 from beeai_server.configuration import Configuration
 from beeai_server.custom_types import ID, McpClient
@@ -251,7 +250,7 @@ class ManagedProvider(BaseProvider, extra="allow"):
         async with container_backend.open_container(
             image=self.image_id,
             port_mappings={port: "8000"},
-            env={"PORT": "8000", "HOST": "0.0.0.0", **env, **get_default_environment()},
+            env={"PORT": "8000", "HOST": "0.0.0.0", **env},
             logs_container=logs_container,
         ):
             async for attempt in AsyncRetrying(
