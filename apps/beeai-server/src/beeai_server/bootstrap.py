@@ -18,6 +18,7 @@ import json
 import logging
 import subprocess
 from contextlib import suppress
+from pathlib import Path
 
 import anyio
 
@@ -40,8 +41,6 @@ from beeai_server.services.mcp_proxy.provider import ProviderContainer
 from beeai_server.utils.periodic import register_all_crons
 from kink import di
 
-import os
-import stat
 import time
 
 logger = logging.getLogger(__name__)
@@ -64,24 +63,24 @@ def cmd(command: str) -> str:
 def _get_docker_host(configuration: Configuration):
     if not configuration.force_lima:
         if configuration.docker_host:
-            if os.path.exists(configuration.docker_host) and stat.S_ISSOCK(os.stat(configuration.docker_host).st_mode):
+            if Path(configuration.docker_host).is_socket():
                 return configuration.docker_host
             logger.warning(f"Invalid DOCKER_HOST={configuration.docker_host}, trying other options...")
         with suppress(subprocess.CalledProcessError):
             logger.info("Trying Docker...")
             docker_url = cmd('docker context inspect "$(docker context show)" --format "{{.Endpoints.docker.Host}}"')
             docker_path = docker_url.removeprefix("unix://")
-            if os.path.exists(docker_path) and stat.S_ISSOCK(os.stat(docker_path).st_mode):
+            if Path(docker_path).is_socket():
                 return docker_url
         with suppress(subprocess.CalledProcessError):
             logger.info("Trying Podman Machine...")
             podman_url = cmd('podman machine inspect --format "{{.ConnectionInfo.PodmanSocket.Path}}"')
-            if os.path.exists(podman_url) and stat.S_ISSOCK(os.stat(podman_url).st_mode):
+            if Path(podman_url).is_socket():
                 return f"unix://{podman_url}"
         with suppress(subprocess.CalledProcessError):
             logger.info("Trying Podman...")
             podman_url = cmd('podman info --format "{{.Host.RemoteSocket.Path}}"')
-            if os.path.exists(podman_url) and stat.S_ISSOCK(os.stat(podman_url).st_mode):
+            if Path(podman_url).is_socket():
                 return f"unix://{podman_url}"
 
     with suppress(subprocess.CalledProcessError):
@@ -103,15 +102,15 @@ def _get_docker_host(configuration: Configuration):
         cmd("limactl --tty=false start beeai")
         cmd("limactl --tty=false start-at-login beeai")
         lima_home = json.loads(cmd("limactl --tty=false info"))["limaHome"]
-        socket_path = f"{lima_home}/beeai/sock/docker.sock"
+        socket_path = Path(f"{lima_home}/beeai/sock/docker.sock")
 
         logger.info(f"Waiting up to 60 seconds for Lima socket {socket_path}...")
         timeout = time.time() + 60
         while time.time() < timeout:
-            if os.path.exists(socket_path) and stat.S_ISSOCK(os.stat(socket_path).st_mode):
+            if socket_path.is_socket():
                 break
             time.sleep(0.5)
-        if not (os.path.exists(socket_path) and stat.S_ISSOCK(os.stat(socket_path).st_mode)):
+        if not socket_path.is_socket():
             raise ValueError(f"Lima socket {socket_path} did not appear within 60 seconds.")
         return f"unix://{socket_path}"
 
