@@ -10,12 +10,13 @@ githubUrl: https://github.com/i-am-bee/beeai/tree/main/agents/community/aider-ag
 avgRunTimeSeconds: 5.0
 avgRunTokens: 5000
 examples: 
-  command: beeai run aider "Make a program that asks for a number and prints its factorial"
-  processingSteps:
-    - The agent is triggered with the natural language input
-    - It executes the `aider` command in a temporary directory with specified options
-    - Captures the standard output and error streams, updating the user with progress
-    - Reads and returns the content of any generated or modified files
+  cli:
+    - command: beeai run aider "Make a program that asks for a number and prints its factorial"
+      processingSteps:
+        - The agent is triggered with the natural language input
+        - It executes the `aider` command in a temporary directory with specified options
+        - Captures the standard output and error streams, updating the user with progress
+        - Reads and returns the content of any generated or modified files
 ui: 
   type: hands-off
   userGreeting: Define your programming task

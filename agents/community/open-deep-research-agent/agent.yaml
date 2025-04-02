@@ -10,13 +10,14 @@ githubUrl: https://github.com/i-am-bee/beeai/tree/main/agents/community/open-dee
 avgRunTimeSeconds: 2.1
 avgRunTokens: 111
 examples: 
-  command: beeai run gpt-researcher "Impact of climate change on global agriculture"
-  description: Conducting Research on Climate Change
-  processingSteps:
-    - Initializes task-specific agents to interpret the query
-    - Generates a series of questions to form an objective opinion on the topic
-    - Uses a crawler agent to gather and summarize information for each question
-    - Aggregates and filters these summaries into a final comprehensive report
+  cli:
+    - command: beeai run gpt-researcher "Impact of climate change on global agriculture"
+      description: Conducting Research on Climate Change
+      processingSteps:
+        - Initializes task-specific agents to interpret the query
+        - Generates a series of questions to form an objective opinion on the topic
+        - Uses a crawler agent to gather and summarize information for each question
+        - Aggregates and filters these summaries into a final comprehensive report
 ui: 
   type: hands-off
   userGreeting: What topic do you want to research?

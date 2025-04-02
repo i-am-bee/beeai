@@ -8,15 +8,16 @@ languages:
   - Python
 githubUrl: https://github.com/i-am-bee/beeai/tree/main/agents/community/langgraph-agents/src/langgraph_agents/ollama_deep_researcher
 examples: 
-  command: beeai run ollama-deep-researcher "Advancements in quantum computing"
-  description: Running a Research Query
-  processingSteps:
-    - 'Generates a query: "Recent breakthroughs in quantum computing hardware"'
-    - Searches the web using Tavily
-    - Summarizes retrieved data
-    - 'Reflects on missing insights, generating a follow-up query: "How do quantum error correction techniques improve stability?"'
-    - Repeats the search-summarization cycle until the iteration limit is reached
-    - Outputs a structured summary with cited sources
+  cli:
+    - command: beeai run ollama-deep-researcher "Advancements in quantum computing"
+      description: Running a Research Query
+      processingSteps:
+        - 'Generates a query: "Recent breakthroughs in quantum computing hardware"'
+        - Searches the web using Tavily
+        - Summarizes retrieved data
+        - 'Reflects on missing insights, generating a follow-up query: "How do quantum error correction techniques improve stability?"'
+        - Repeats the search-summarization cycle until the iteration limit is reached
+        - Outputs a structured summary with cited sources
 ui: 
   type: hands-off
   userGreeting: What topic do you want to research?

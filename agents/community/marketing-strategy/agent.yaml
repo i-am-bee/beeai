@@ -7,13 +7,14 @@ license: Apache 2.0
 languages: 
   - Python
 githubUrl: https://github.com/i-am-bee/beeai/tree/main/agents/community/crewai-agents/src/crewai_agents/marketing_strategy
-examples: 
-  command: beeai run marketing-strategy "Launch of a new eco-friendly product line targeting young adults interested in sustainable living."
-  description: Generating a Marketing Strategy for a New Product
-  processingSteps:
-    - The Lead Market Analyst conducts research on the product and its competitors
-    - The Chief Marketing Strategist synthesizes insights to formulate a marketing strategy
-    - The Creative Content Creator develops campaign ideas and creates marketing copies
+examples:
+  cli:
+    - command: beeai run marketing-strategy "Launch of a new eco-friendly product line targeting young adults interested in sustainable living."
+      description: Generating a Marketing Strategy for a New Product
+      processingSteps:
+        - The Lead Market Analyst conducts research on the product and its competitors
+        - The Chief Marketing Strategist synthesizes insights to formulate a marketing strategy
+        - The Creative Content Creator develops campaign ideas and creates marketing copies
 ui: 
   type: hands-off
   userGreeting: What topic do you want to create a marketing strategy around?
