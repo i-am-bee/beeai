@@ -43,10 +43,18 @@ from kink import di
 logger = logging.getLogger(__name__)
 
 
-async def cmd(command: str):
-    logger.info(f"Running command: {command}")
-    process = await anyio.run_process(command, check=True)
-    return process.stdout.decode("utf-8").strip()
+async def cmd(command: str) -> str:
+    logger.info(f"Running command: `{command}`")
+    process = await anyio.run_process(command)
+    stdout = process.stdout.decode("utf-8")
+    stderr = process.stderr.decode("utf-8")
+    logger.info(
+        f"Command `{command}` completed with exit_code={process.returncode}"
+        + (f" stdout={repr(stdout)}" if stdout else "")
+        + (f" stderr={repr(stderr)}" if stderr else "")
+    )
+    process.check_returncode()
+    return stdout
 
 
 async def _get_docker_host(configuration: Configuration):
