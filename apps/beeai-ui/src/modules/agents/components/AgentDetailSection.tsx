@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import type { ReactNode } from 'react';
 import { SkeletonText, type SkeletonTextProps } from '@carbon/react';
 import clsx from 'clsx';
+import type { ReactNode } from 'react';
+
 import classes from './AgentDetailSection.module.scss';
 
 interface Props {

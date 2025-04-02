@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import type { PropsWithChildren } from 'react';
 import { matchQuery, MutationCache, QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import type { PropsWithChildren } from 'react';
+
 import { useHandleError } from '#hooks/useHandleError.ts';
+
 import type { HandleError } from './types';
 
 const createQueryClient = ({ handleError }: { handleError: HandleError }) => {

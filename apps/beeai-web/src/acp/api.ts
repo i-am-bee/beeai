@@ -15,6 +15,7 @@
  */
 
 import { cache } from 'react';
+
 import { getAcpClient } from './client';
 
 export const getAgentsList = cache(async () => {

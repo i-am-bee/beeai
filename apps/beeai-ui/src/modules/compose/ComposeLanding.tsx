@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-import { TransitionLink } from '#components/TransitionLink/TransitionLink.tsx';
-import { VersionTag } from '#components/VersionTag/VersionTag.tsx';
-import { Container } from '#components/layouts/Container.tsx';
-import { MainContent } from '#components/layouts/MainContent.tsx';
-import { routes } from '#utils/router.ts';
 import { ArrowRight } from '@carbon/icons-react';
 import { Button } from '@carbon/react';
 import { useState } from 'react';
-import classes from './ComposeLanding.module.scss';
+
+import { Container } from '#components/layouts/Container.tsx';
+import { MainContent } from '#components/layouts/MainContent.tsx';
+import { TransitionLink } from '#components/TransitionLink/TransitionLink.tsx';
+import { VersionTag } from '#components/VersionTag/VersionTag.tsx';
+import { routes } from '#utils/router.ts';
+
 import SequentialIllustration from './assets/sequential.svg';
 import SupervisorIllustration from './assets/supervisor.svg';
+import classes from './ComposeLanding.module.scss';
 
 export function ComposeLanding() {
   const [selected, setSelected] = useState<Workflow>(WORKFLOWS.at(0)!);

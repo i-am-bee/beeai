@@ -19,12 +19,14 @@
 import { SkeletonText } from '@carbon/react';
 import pluralize from 'pluralize';
 import type { ReactNode } from 'react';
+
+import { SkeletonItems } from '#components/SkeletonItems/SkeletonItems.tsx';
+
+import type { Agent } from '../api/types';
 import { useFilteredAgents } from '../hooks/useFilteredAgents';
 import type { AgentsFiltersParams } from '../providers/AgentsFiltersProvider';
-import classes from './AgentsList.module.scss';
-import type { Agent } from '../api/types';
-import { SkeletonItems } from '#components/SkeletonItems/SkeletonItems.tsx';
 import { AgentCard } from './AgentCard';
+import classes from './AgentsList.module.scss';
 
 interface Props {
   agents: Agent[] | undefined;

@@ -16,9 +16,10 @@
 
 'use client';
 
-import { useState } from 'react';
-import { Popover, PopoverContent, Button, Link, CheckboxGroup, Checkbox } from '@carbon/react';
 import { Filter } from '@carbon/icons-react';
+import { Button, Checkbox, CheckboxGroup, Link, Popover, PopoverContent } from '@carbon/react';
+import { useState } from 'react';
+
 import classes from './FiltersPopover.module.scss';
 
 interface Option {

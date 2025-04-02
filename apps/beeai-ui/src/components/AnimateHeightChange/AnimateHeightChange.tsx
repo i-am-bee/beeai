@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-import { parseCarbonMotion } from '#utils/fadeProps.ts';
-import { motion as carbonMotion, moderate02 } from '@carbon/motion';
+import { moderate02, motion as carbonMotion } from '@carbon/motion';
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
 import type { PropsWithChildren } from 'react';
 import { useEffect, useRef, useState } from 'react';
+
+import { parseCarbonMotion } from '#utils/fadeProps.ts';
+
 import classes from './AnimateHeightChange.module.scss';
 
 interface Props {

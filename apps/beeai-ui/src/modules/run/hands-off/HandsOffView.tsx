@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import { SplitPanesView } from '#components/SplitPanesView/SplitPanesView.tsx';
 import type { PropsWithChildren } from 'react';
+
+import { SplitPanesView } from '#components/SplitPanesView/SplitPanesView.tsx';
+
 import { useHandsOff } from '../contexts/hands-off';
 import { HandsOffText } from './HandsOffText';
 

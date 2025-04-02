@@ -19,9 +19,10 @@ import clsx from 'clsx';
 import type { PropsWithChildren } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 import { v4 as uuid } from 'uuid';
-import classes from './ToastProvider.module.scss';
+
 import type { Toast, ToastWithKey } from './toast-context';
 import { ToastContext } from './toast-context';
+import classes from './ToastProvider.module.scss';
 
 export function ToastProvider({ children }: PropsWithChildren) {
   const [toasts, setToasts] = useState<ToastWithKey[]>([]);

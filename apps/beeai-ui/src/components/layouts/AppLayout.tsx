@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import { UserNav } from '#components/UserNav/UserNav.tsx';
 import { Outlet } from 'react-router';
+
+import { UserNav } from '#components/UserNav/UserNav.tsx';
+
 import { AppHeader } from './AppHeader';
 import classes from './AppLayout.module.scss';
 import { Navigation } from './Navigation';

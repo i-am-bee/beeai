@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import type { Agent } from '#modules/agents/api/types.ts';
 import { IconButton } from '@carbon/react';
 import clsx from 'clsx';
+
+import type { Agent } from '#modules/agents/api/types.ts';
+
 import { AgentIcon } from '../components/AgentIcon';
 import classes from './AgentHeader.module.scss';
 import NewSession from './NewSession.svg';

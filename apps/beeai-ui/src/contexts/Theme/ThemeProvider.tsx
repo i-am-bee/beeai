@@ -19,6 +19,7 @@
 import type { PropsWithChildren } from 'react';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useLocalStorage, useMediaQuery } from 'usehooks-ts';
+
 import { ThemeContext } from './theme-context';
 import { Theme } from './types';
 import { getThemeClassName } from './utils';

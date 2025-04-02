@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
+import type { TextInput } from '@i-am-bee/beeai-sdk/schemas/text';
+import { createContext } from 'react';
+
 import type { Agent } from '#modules/agents/api/types.ts';
 import type { TextNotificationLogs } from '#modules/run/api/types.ts';
 import type { RunStats } from '#modules/run/types.ts';
-import type { TextInput } from '@i-am-bee/beeai-sdk/schemas/text';
-import { createContext } from 'react';
 
 export const HandsOffContext = createContext<HandsOffContextValue | undefined>(undefined);
 

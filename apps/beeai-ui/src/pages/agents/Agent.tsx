@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
+import { useNavigate, useParams } from 'react-router';
+
 import { Container } from '#components/layouts/Container.tsx';
 import { MainContent } from '#components/layouts/MainContent.tsx';
 import { AgentDetailView } from '#modules/agents/detail/AgentDetailView.tsx';
 import { routes } from '#utils/router.ts';
-import { useNavigate, useParams } from 'react-router';
 
 type Params = {
   agentName: string;

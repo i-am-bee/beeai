@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import { Container } from '#components/layouts/Container.tsx';
 import { ArrowDown } from '@carbon/icons-react';
 import { IconButton } from '@carbon/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
+
+import { Container } from '#components/layouts/Container.tsx';
+
 import { AgentHeader } from '../components/AgentHeader';
 import { useChat, useChatMessages } from '../contexts/chat';
 import classes from './Chat.module.scss';

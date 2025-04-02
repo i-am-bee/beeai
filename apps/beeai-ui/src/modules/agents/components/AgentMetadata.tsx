@@ -17,6 +17,7 @@
 import { LogoGithub, Time } from '@carbon/icons-react';
 import { SkeletonText } from '@carbon/react';
 import clsx from 'clsx';
+
 import type { Agent } from '../api/types';
 import classes from './AgentMetadata.module.scss';
 

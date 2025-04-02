@@ -18,6 +18,7 @@ import { Send, StopOutlineFilled } from '@carbon/icons-react';
 import { Button } from '@carbon/react';
 import { memo, useCallback, useRef } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
+
 import type { InputBarFormHandle } from '../components/InputBar';
 import { InputBar } from '../components/InputBar';
 import { useChat } from '../contexts/chat';

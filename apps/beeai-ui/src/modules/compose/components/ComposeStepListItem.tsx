@@ -16,13 +16,15 @@
 
 import { OverflowMenu, OverflowMenuItem } from '@carbon/react';
 import clsx from 'clsx';
+import type { KeyboardEvent } from 'react';
+import { useFormContext } from 'react-hook-form';
+
+import { Spinner } from '#components/Spinner/Spinner.tsx';
+import { TextAreaAutoHeight } from '#components/TextAreaAutoHeight/TextAreaAutoHeight.tsx';
+
+import { useCompose } from '../contexts';
 import type { SequentialFormValues } from '../contexts/compose-context';
 import classes from './ComposeStepListItem.module.scss';
-import { useFormContext } from 'react-hook-form';
-import { TextAreaAutoHeight } from '#components/TextAreaAutoHeight/TextAreaAutoHeight.tsx';
-import { useCompose } from '../contexts';
-import type { KeyboardEvent } from 'react';
-import { Spinner } from '#components/Spinner/Spinner.tsx';
 import { StepResult } from './StepResult';
 
 interface Props {

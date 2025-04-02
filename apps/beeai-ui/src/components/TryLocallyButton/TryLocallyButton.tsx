@@ -16,9 +16,11 @@
 
 'use client';
 
-import { TRY_LOCALLY_LINK } from '#utils/constants.ts';
 import { ArrowUpRight } from '@carbon/icons-react';
 import { Button } from '@carbon/react';
+
+import { TRY_LOCALLY_LINK } from '#utils/constants.ts';
+
 import classes from './TryLocallyButton.module.scss';
 
 export function TryLocallyButton() {

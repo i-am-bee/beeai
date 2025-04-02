@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import { compareStrings } from '#utils/helpers.ts';
 import intersection from 'lodash/intersection';
 import { useMemo } from 'react';
+
+import { compareStrings } from '#utils/helpers.ts';
+
 import type { Agent } from '../api/types';
 import type { AgentsFiltersParams } from '../providers/AgentsFiltersProvider';
 

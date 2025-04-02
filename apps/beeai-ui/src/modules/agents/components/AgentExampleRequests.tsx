@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { Tabs, TabList, Tab, TabPanels, TabPanel } from '@carbon/react';
+import { Tab, TabList, TabPanel, TabPanels, Tabs } from '@carbon/react';
+
 import { MarkdownContent } from '#components/MarkdownContent/MarkdownContent.tsx';
 import { createCodeBlock } from '#utils/markdown.ts';
 

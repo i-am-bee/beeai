@@ -15,12 +15,12 @@
  */
 
 import bash from 'react-syntax-highlighter/dist/esm/languages/hljs/bash';
-import shell from 'react-syntax-highlighter/dist/esm/languages/hljs/shell';
-import json from 'react-syntax-highlighter/dist/esm/languages/hljs/json';
-import yaml from 'react-syntax-highlighter/dist/esm/languages/hljs/yaml';
 import javascript from 'react-syntax-highlighter/dist/esm/languages/hljs/javascript';
-import typescript from 'react-syntax-highlighter/dist/esm/languages/hljs/typescript';
+import json from 'react-syntax-highlighter/dist/esm/languages/hljs/json';
 import python from 'react-syntax-highlighter/dist/esm/languages/hljs/python';
+import shell from 'react-syntax-highlighter/dist/esm/languages/hljs/shell';
+import typescript from 'react-syntax-highlighter/dist/esm/languages/hljs/typescript';
+import yaml from 'react-syntax-highlighter/dist/esm/languages/hljs/yaml';
 
 export function registerLanguages<Highlighter extends { registerLanguage(name: string, func: unknown): void }>(
   highlighter: Highlighter,

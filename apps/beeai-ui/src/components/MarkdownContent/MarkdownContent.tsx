@@ -16,6 +16,7 @@
 
 import clsx from 'clsx';
 import Markdown from 'react-markdown';
+
 import { components } from './components';
 import classes from './MarkdownContent.module.scss';
 

@@ -15,6 +15,7 @@
  */
 
 import type { PropsWithChildren } from 'react';
+
 import { Container } from './Container';
 import classes from './ErrorLayout.module.scss';
 

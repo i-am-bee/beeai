@@ -15,6 +15,7 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+
 import { useScrollableContainer } from './useScrollableContainer';
 
 export function useAutoScroll(dependencies: unknown[]) {

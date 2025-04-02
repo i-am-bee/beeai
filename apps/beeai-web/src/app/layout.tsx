@@ -15,11 +15,14 @@
  */
 
 import '../styles/style.scss';
+
 import type { Metadata } from 'next';
-import AppLayout from '@/layouts/AppLayout';
-import Providers from './providers';
-import { agentRoutesInitialized } from '@/utils/initializeAgentRoutes';
+
 import { AgentRoutesInitializer } from '@/components/AgentRoutesInitializer/AgentRoutesInitializer';
+import AppLayout from '@/layouts/AppLayout';
+import { agentRoutesInitialized } from '@/utils/initializeAgentRoutes';
+
+import Providers from './providers';
 
 const darkModeScript = `
 (() => {

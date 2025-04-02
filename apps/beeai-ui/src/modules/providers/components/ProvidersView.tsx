@@ -14,14 +14,6 @@
  * limitations under the License.
  */
 
-import { TableView } from '#components/TableView/TableView.tsx';
-import { TableViewActions } from '#components/TableView/TableViewActions.tsx';
-import { TableViewToolbar } from '#components/TableView/TableViewToolbar.tsx';
-import { useModal } from '#contexts/Modal/index.tsx';
-import { useTableSearch } from '#hooks/useTableSearch.ts';
-import { useListAgents } from '#modules/agents/api/queries/useListAgents.ts';
-import { ImportAgentsModal } from '#modules/agents/components/ImportAgentsModal.tsx';
-import { getAgentsLanguages } from '#modules/agents/utils.ts';
 import { TrashCan } from '@carbon/icons-react';
 import {
   Button,
@@ -36,6 +28,16 @@ import {
   TableRow,
 } from '@carbon/react';
 import { useMemo } from 'react';
+
+import { TableView } from '#components/TableView/TableView.tsx';
+import { TableViewActions } from '#components/TableView/TableViewActions.tsx';
+import { TableViewToolbar } from '#components/TableView/TableViewToolbar.tsx';
+import { useModal } from '#contexts/Modal/index.tsx';
+import { useTableSearch } from '#hooks/useTableSearch.ts';
+import { useListAgents } from '#modules/agents/api/queries/useListAgents.ts';
+import { ImportAgentsModal } from '#modules/agents/components/ImportAgentsModal.tsx';
+import { getAgentsLanguages } from '#modules/agents/utils.ts';
+
 import { useDeleteProvider } from '../api/mutations/useDeleteProvider';
 import { useListProviders } from '../api/queries/useListProviders';
 import { getProviderSource, groupAgentsByProvider, stripProviderSourcePrefix } from '../utils';

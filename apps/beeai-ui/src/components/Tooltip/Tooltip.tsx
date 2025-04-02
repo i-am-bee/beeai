@@ -35,6 +35,7 @@ import { Slot } from '@radix-ui/react-slot';
 import clsx from 'clsx';
 import type { PropsWithChildren, ReactNode } from 'react';
 import { useRef, useState } from 'react';
+
 import classes from './Tooltip.module.scss';
 
 interface Props {
