@@ -15,7 +15,9 @@ class Output(TextOutput):
     files: dict[str, str] = Field(default_factory=dict)
     text: str = Field(default_factory=str)
 
+
 server = Server("aider-agent")
+
 
 @server.agent()
 async def run_agent(input: TextInput, ctx: Context) -> Output:

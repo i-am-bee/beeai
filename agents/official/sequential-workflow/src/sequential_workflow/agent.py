@@ -18,6 +18,7 @@ from beeai_sdk.utils.api import send_request_with_notifications, mcp_client
 from sequential_workflow.configuration import Configuration
 from sequential_workflow.utils import extract_messages
 
+
 class WorkflowStep(BaseModel):
     agent: str
     instruction: str
@@ -74,16 +75,15 @@ def add_sequential_workflow_agent(server: Server):
                     current_step = step
 
                     yield OutputWithMetadata(
-                            agent_name=step.agent,
-                            agent_idx=idx,
-                            logs=[
-                                Log(
-                                    level=LogLevel.info,
-                                    message=f"✅ Agent {step.agent}[{idx}] started processing",
-                                ),
-                            ],
-                        )
-                    
+                        agent_name=step.agent,
+                        agent_idx=idx,
+                        logs=[
+                            Log(
+                                level=LogLevel.info,
+                                message=f"✅ Agent {step.agent}[{idx}] started processing",
+                            ),
+                        ],
+                    )
 
                     async for message in send_request_with_notifications(
                         session,
@@ -123,16 +123,15 @@ def add_sequential_workflow_agent(server: Server):
                                     else str(previous_output)
                                 )
                                 yield OutputWithMetadata(
-                                        agent_name=step.agent,
-                                        agent_idx=idx,
-                                        logs=[
-                                            Log(
-                                                level=LogLevel.success,
-                                                message=f"✅ Agent {step.agent}[{idx}] finished successfully: {message}",
-                                            ),
-                                        ],
-                                    )
-                                
+                                    agent_name=step.agent,
+                                    agent_idx=idx,
+                                    logs=[
+                                        Log(
+                                            level=LogLevel.success,
+                                            message=f"✅ Agent {step.agent}[{idx}] finished successfully: {message}",
+                                        ),
+                                    ],
+                                )
 
         except Exception as e:
             step_msg = f"{current_step.agent}[{idx}] - " if current_step else ""
