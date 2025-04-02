@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from typing import Coroutine
+
 from kink import inject
 
 from beeai_server.adapters.interface import IEnvVariableRepository
@@ -24,9 +26,9 @@ class EnvService:
         self._repository = env_repository
         self._loaded_provider_container = loaded_provider_container
 
-    async def update_env(self, *, env: dict[str, str | None]) -> None:
+    async def update_env(self, *, env: dict[str, str | None]) -> Coroutine[None, None, None]:
         await self._repository.update(env)
-        self._loaded_provider_container.handle_reload_on_env_update()
+        return self._loaded_provider_container.handle_reload_on_env_update()
 
     async def list_env(self) -> dict[str, str]:
         return await self._repository.get_all()

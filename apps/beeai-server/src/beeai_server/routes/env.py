@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import fastapi
+from fastapi.background import BackgroundTasks
 
 from beeai_server.routes.dependencies import EnvServiceDependency
 from beeai_server.schema import UpdateEnvRequest, ListEnvSchema
@@ -21,8 +22,11 @@ router = fastapi.APIRouter()
 
 
 @router.put("", status_code=fastapi.status.HTTP_201_CREATED)
-async def update_env(request: UpdateEnvRequest, env_service: EnvServiceDependency) -> None:
-    await env_service.update_env(env=request.env)
+async def update_env(
+    request: UpdateEnvRequest, env_service: EnvServiceDependency, background_tasks: BackgroundTasks
+) -> None:
+    coroutine = await env_service.update_env(env=request.env)
+    background_tasks.add_task(coroutine)
 
 
 @router.get("")

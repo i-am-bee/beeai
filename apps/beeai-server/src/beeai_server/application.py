@@ -19,7 +19,8 @@ import pathlib
 from contextlib import asynccontextmanager
 from typing import Iterable
 
-
+from beeai_server.adapters.interface import IProviderRepository
+from beeai_server.crons.sync_registry_providers import preinstall_background_tasks
 from beeai_server.domain.model import LoadedProviderStatus
 from beeai_server.utils.fastapi import NoCacheStaticFiles
 from fastapi import FastAPI, APIRouter
@@ -129,12 +130,31 @@ def register_telemetry(provider_container: ProviderContainer):
 @asynccontextmanager
 @inject
 async def lifespan(
-    _app: FastAPI, provider_container: ProviderContainer, telemetry_collector_manager: TelemetryCollectorManager
+    _app: FastAPI,
+    provider_container: ProviderContainer,
+    telemetry_collector_manager: TelemetryCollectorManager,
+    provider_repository: IProviderRepository,
 ):
     register_telemetry()
     async with provider_container, telemetry_collector_manager, run_all_crons():
-        yield
-    shutdown_telemetry()
+
+        async def _initialize_providers():
+            await asyncio.gather(*(provider_container.add(provider) for provider in await provider_repository.list()))
+
+        try:
+            initialize_task = asyncio.create_task(_initialize_providers())
+            yield
+        finally:
+            try:
+                await initialize_task
+            except Exception as ex:
+                logger.error(f"Initialization failed: {ex}")
+
+            # Cancel unfinished installation tasks
+            for task in preinstall_background_tasks.values():
+                task.cancel()
+
+            shutdown_telemetry()
 
 
 @contextlib.asynccontextmanager

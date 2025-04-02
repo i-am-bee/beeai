@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import json
 import logging
-from typing import AsyncIterator, Callable
+from typing import AsyncIterator, Callable, Coroutine, overload
 
 import anyio
 from fastapi import HTTPException
@@ -27,11 +27,11 @@ from beeai_server.adapters.interface import IProviderRepository, IEnvVariableRep
 from beeai_server.custom_types import ID
 from beeai_server.domain.model import (
     ProviderWithStatus,
-    LoadedProviderStatus,
     ManagedProvider,
     UnmanagedProvider,
     BaseProvider,
     ProviderLocation,
+    LoadedProviderStatus,
 )
 from beeai_server.exceptions import ManifestLoadError
 from beeai_server.services.mcp_proxy.provider import ProviderContainer
@@ -58,7 +58,7 @@ class ProviderService:
         *,
         location: ProviderLocation,
         registry: ResolvedGithubUrl | None = None,
-    ):
+    ) -> ProviderWithStatus:
         try:
             provider_source = await location.resolve()
             provider = await ManagedProvider.load_from_source(provider_source, registry=registry)
@@ -67,14 +67,11 @@ class ProviderService:
             raise ManifestLoadError(location=location, message=str(ex), status_code=HTTP_400_BAD_REQUEST) from ex
         except Exception as ex:
             raise ManifestLoadError(location=location, message=str(ex)) from ex
-        # provider is not loaded yet - returns initial values
-        [provider_with_metadata] = await self._get_providers_with_metadata([provider])
-        # load provider asynchronously now
-        await self.sync()
-        return provider_with_metadata
+        await self._loaded_provider_container.add(provider)
+        return (await self._get_providers_with_metadata([provider]))[0]
 
     async def register_unmanaged_provider(self, provider: UnmanagedProvider) -> ProviderWithStatus:
-        await self._loaded_provider_container.add_unmanaged_provider(provider)
+        await self._loaded_provider_container.add(provider)
         return (await self._get_providers_with_metadata([provider]))[0]
 
     async def preview_provider(self, location: ProviderLocation):
@@ -88,38 +85,50 @@ class ProviderService:
         except Exception as ex:
             raise ManifestLoadError(location=location, message=str(ex)) from ex
 
-    async def install_provider(self, *, id: ID):
+    @overload
+    async def install_provider(self, *, id: ID, stream: True) -> Callable[..., AsyncIterator[str]]: ...
+
+    @overload
+    async def install_provider(self, *, id: ID, stream: False = False) -> Callable[..., Coroutine[..., None, None]]: ...
+
+    async def install_provider(
+        self, *, id: ID, stream: bool = False
+    ) -> Callable[..., AsyncIterator[str] | Coroutine[..., None, None]]:
         logs_container = LogsContainer()
         provider = await self._repository.get(provider_id=id)
+        if provider.id not in self._loaded_provider_container.loaded_providers:
+            raise ValueError("Provider is not loaded")
 
         async def _install():
-            await provider.source.install(logs_container=logs_container)
-            await self._loaded_provider_container.load_or_restart(provider)
+            await self._loaded_provider_container.loaded_providers[id].install(logs_container=logs_container)
 
-        async def logs_iterator() -> AsyncIterator[str]:
-            async with anyio.create_task_group() as task_group:
+        if stream:
 
-                async def cancel_on_finish(coro):
-                    await coro
-                    task_group.cancel_scope.cancel()
+            async def logs_iterator() -> AsyncIterator[str]:
+                async with anyio.create_task_group() as task_group:
 
-                task_group.start_soon(cancel_on_finish, _install())
+                    async def cancel_on_finish(coro):
+                        await coro
+                        task_group.cancel_scope.cancel()
 
-                async with logs_container.stream() as stream:
-                    async for message in stream:
-                        yield json.dumps(message.model_dump(mode="json"))
+                    task_group.start_soon(cancel_on_finish, _install())
 
-        return logs_iterator
+                    async with logs_container.stream() as stream:
+                        async for message in stream:
+                            yield json.dumps(message.model_dump(mode="json"))
 
-    async def delete_provider(self, *, id: ID):
+            return logs_iterator
+
+        return _install
+
+    async def delete_provider(self, *, id: ID, force: bool = False):
         provider = await self._repository.get(provider_id=id)
 
-        if provider.registry:
-            await provider.source.uninstall()
-            await self._loaded_provider_container.load_or_restart(provider)
+        if provider.registry and not force:
+            await self._loaded_provider_container.loaded_providers[provider.id].uninstall()
         else:
+            await self._loaded_provider_container.loaded_providers[provider.id].uninstall()
             await self._repository.delete(provider_id=id)
-            await provider.source.uninstall()
             await self._loaded_provider_container.remove(provider)
 
     async def _get_providers_with_metadata(self, providers: list[BaseProvider]) -> list[ProviderWithStatus]:
@@ -138,7 +147,7 @@ class ProviderService:
                 **loaded_providers.get(
                     provider.id,
                     {
-                        "status": LoadedProviderStatus.initializing,
+                        "status": LoadedProviderStatus.not_installed,
                         "missing_configuration": [
                             var for var in provider.check_env(env, raise_error=False) if var.required
                         ],
@@ -149,13 +158,7 @@ class ProviderService:
         ]
 
     async def list_providers(self) -> list[ProviderWithStatus]:
-        return await self._get_providers_with_metadata(
-            (await self._repository.list()) + list(self._loaded_provider_container.unmanaged_providers.values())
-        )
-
-    async def sync(self):
-        await self._repository.sync()
-        self._loaded_provider_container.handle_managed_providers_change(await self._repository.list())
+        return await self._get_providers_with_metadata((await self._repository.list()))
 
     async def stream_logs(self, id: ID) -> Callable[..., AsyncIterator[str]]:
         if not (provider := self._loaded_provider_container.loaded_providers.get(id, None)):

@@ -12,8 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import asyncio
 import functools
 import shutil
+from asyncio import CancelledError
+from contextlib import suppress
 from typing import TypeVar, Iterable
 
 import anyio.to_thread
@@ -50,3 +53,10 @@ def _which_sync(command: str):
 
 async def which(command: str):
     return await anyio.to_thread.run_sync(_which_sync, command)
+
+
+async def cancel_task(task: asyncio.Task[None] | None):
+    if task:
+        task.cancel()
+        with suppress(CancelledError):
+            await task

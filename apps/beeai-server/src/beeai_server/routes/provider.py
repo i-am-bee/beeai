@@ -24,7 +24,7 @@ from beeai_server.schema import (
     InstallProviderRequest,
     PaginatedResponse,
 )
-from fastapi import Query
+from fastapi import Query, BackgroundTasks
 from starlette.responses import StreamingResponse
 
 router = fastapi.APIRouter()
@@ -45,17 +45,25 @@ class ProviderRequest(BaseModel):
 
 @router.post("/register/unmanaged")
 async def add_unmanaged_provider(
-    provider: ProviderRequest, provider_service: ProviderServiceDependency
-) -> ProviderWithStatus:
-    return await provider_service.register_unmanaged_provider(UnmanagedProvider.model_validate(provider.model_dump()))
+    provider: ProviderRequest, provider_service: ProviderServiceDependency, background_tasks: BackgroundTasks
+) -> None:
+    provider = UnmanagedProvider.model_validate(provider.model_dump())
+    # TODO: workaround for blocking registration in provider, later use normal await
+    background_tasks.add_task(provider_service.register_unmanaged_provider, provider)
 
 
 @router.post("/install")
 async def install_provider(
-    request: InstallProviderRequest, provider_service: ProviderServiceDependency
+    request: InstallProviderRequest,
+    provider_service: ProviderServiceDependency,
+    background_tasks: BackgroundTasks,
+    stream: bool = Query(False),
 ) -> StreamingResponse:
-    logs_iterator = await provider_service.install_provider(id=request.id)
-    return StreamingResponse(logs_iterator(), media_type="text/event-stream")
+    iterator_or_awaitable = await provider_service.install_provider(id=request.id, stream=stream)
+    if stream:
+        return StreamingResponse(iterator_or_awaitable(), media_type="text/event-stream")
+    else:
+        background_tasks.add_task(iterator_or_awaitable)
 
 
 @router.post("/preview")
@@ -74,12 +82,6 @@ async def list_providers(provider_service: ProviderServiceDependency) -> Paginat
 @router.post("/delete", status_code=fastapi.status.HTTP_204_NO_CONTENT)
 async def delete_provider(request: DeleteProviderRequest, provider_service: ProviderServiceDependency) -> None:
     await provider_service.delete_provider(id=request.id)
-
-
-@router.put("/sync")
-async def sync_provider_repository(provider_service: ProviderServiceDependency):
-    """Sync external changes to a provider repository."""
-    await provider_service.sync()
 
 
 @router.get("/logs", status_code=fastapi.status.HTTP_204_NO_CONTENT)

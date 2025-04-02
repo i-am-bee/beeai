@@ -12,8 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import asyncio
 import logging
+from asyncio import Task
 from datetime import timedelta
+from functools import partial
 
 import httpx
 import yaml
@@ -27,11 +30,13 @@ from kink import inject
 
 logger = logging.getLogger(__name__)
 
+preinstall_background_tasks: dict[str, Task] = {}
+
 
 @periodic(period=timedelta(minutes=10))
 @inject
 async def check_official_registry(configuration: Configuration, provider_service: ProviderService):
-    registry = await configuration.provider_registry_location.resolve_version()
+    registry = await configuration.agent_registry.location.resolve_version()
     managed_providers = {provider.id for provider in await provider_service.list_providers() if provider.registry}
     errors = []
     desired_providers = set()
@@ -61,10 +66,21 @@ async def check_official_registry(configuration: Configuration, provider_service
 
     for provider_id in old_providers:
         try:
-            await provider_service.delete_provider(id=provider_id)
+            await provider_service.delete_provider(id=provider_id, force=True)
             logger.info(f"Removed provider {provider}")
         except Exception as ex:
             errors.append(ex)
 
+    if configuration.agent_registry.preinstall:
+        for provider_id in managed_providers:
+            try:
+                if provider_id in preinstall_background_tasks:
+                    continue
+                install = await provider_service.install_provider(id=provider_id)
+                task = asyncio.create_task(install())
+                preinstall_background_tasks[provider_id] = task
+                task.add_done_callback(partial(preinstall_background_tasks.pop, provider_id))
+            except Exception as ex:
+                errors.append(ex)
     if errors:
         raise ExceptionGroup("Exceptions occurred when reloading providers", errors)
