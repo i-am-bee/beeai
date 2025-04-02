@@ -128,8 +128,8 @@ async def resolve_container_runtime_cmd(configuration: Configuration) -> IContai
     docker_host = _get_docker_host(configuration)
     logger.info(f"Using DOCKER_HOST={docker_host}")
     backend = DockerContainerBackend(docker_host=docker_host, configuration=configuration)
-    # if not docker_host.endswith("lima/beeai/sock/docker.sock"):
-    await backend.configure_host_docker_internal()
+    if not docker_host.endswith("lima/beeai/sock/docker.sock"):
+        await backend.configure_host_docker_internal()
     return backend
 
 
