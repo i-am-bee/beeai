@@ -40,14 +40,18 @@ from beeai_server.services.mcp_proxy.provider import ProviderContainer
 from beeai_server.utils.periodic import register_all_crons
 from kink import di
 
+import os
+import stat
+import time
+
 logger = logging.getLogger(__name__)
 
 
-async def cmd(command: str) -> str:
+def cmd(command: str) -> str:
     logger.info(f"Running command: `{command}`")
-    process = await anyio.run_process(command)
-    stdout = process.stdout.decode("utf-8")
-    stderr = process.stderr.decode("utf-8")
+    process = subprocess.run(command, shell=True, capture_output=True, text=True, check=False)
+    stdout = process.stdout
+    stderr = process.stderr
     logger.info(
         f"Command `{command}` completed with exit_code={process.returncode}"
         + (f" stdout={repr(stdout)}" if stdout else "")
@@ -57,28 +61,27 @@ async def cmd(command: str) -> str:
     return stdout
 
 
-async def _get_docker_host(configuration: Configuration):
+def _get_docker_host(configuration: Configuration):
     if not configuration.force_lima:
         if configuration.docker_host:
-            if await anyio.Path(configuration.docker_host).is_socket():
+            if os.path.exists(configuration.docker_host) and stat.S_ISSOCK(os.stat(configuration.docker_host).st_mode):
                 return configuration.docker_host
             logger.warning(f"Invalid DOCKER_HOST={configuration.docker_host}, trying other options...")
         with suppress(subprocess.CalledProcessError):
             logger.info("Trying Docker...")
-            docker_url = await cmd(
-                'docker context inspect "$(docker context show)" --format "{{.Endpoints.docker.Host}}"'
-            )
-            if await anyio.Path(docker_url.removeprefix("unix://")).is_socket():
+            docker_url = cmd('docker context inspect "$(docker context show)" --format "{{.Endpoints.docker.Host}}"')
+            docker_path = docker_url.removeprefix("unix://")
+            if os.path.exists(docker_path) and stat.S_ISSOCK(os.stat(docker_path).st_mode):
                 return docker_url
         with suppress(subprocess.CalledProcessError):
             logger.info("Trying Podman Machine...")
-            podman_url = await cmd('podman machine inspect --format "{{.ConnectionInfo.PodmanSocket.Path}}"')
-            if await anyio.Path(podman_url).is_socket():
+            podman_url = cmd('podman machine inspect --format "{{.ConnectionInfo.PodmanSocket.Path}}"')
+            if os.path.exists(podman_url) and stat.S_ISSOCK(os.stat(podman_url).st_mode):
                 return f"unix://{podman_url}"
         with suppress(subprocess.CalledProcessError):
             logger.info("Trying Podman...")
-            podman_url = await cmd('podman info --format "{{.Host.RemoteSocket.Path}}"')
-            if await anyio.Path(podman_url).is_socket():
+            podman_url = cmd('podman info --format "{{.Host.RemoteSocket.Path}}"')
+            if os.path.exists(podman_url) and stat.S_ISSOCK(os.stat(podman_url).st_mode):
                 return f"unix://{podman_url}"
 
     with suppress(subprocess.CalledProcessError):
@@ -86,9 +89,7 @@ async def _get_docker_host(configuration: Configuration):
         lima_instance = next(
             (
                 instance
-                for line in (
-                    (await cmd("limactl --tty=false list --format=json")).split("\n")
-                )  # it actually prints JSONL (one JSON object per line)
+                for line in cmd("limactl --tty=false list --format=json").split("\n")
                 if line
                 if (instance := json.loads(line))
                 if instance["name"] == "beeai"
@@ -97,18 +98,20 @@ async def _get_docker_host(configuration: Configuration):
         )
         if not lima_instance:
             logger.info("BeeAI VM not found, creating...")
-            await cmd("limactl --tty=false start template://docker-rootful --name beeai")
+            cmd("limactl --tty=false start template://docker-rootful --name beeai")
         logger.info("Starting BeeAI VM...")
-        await cmd("limactl --tty=false start beeai")
-        await cmd("limactl --tty=false start-at-login beeai")
-        lima_home = json.loads(await cmd("limactl --tty=false info"))["limaHome"]
-        socket_path = anyio.Path(f"{lima_home}/beeai/sock/docker.sock")
+        cmd("limactl --tty=false start beeai")
+        cmd("limactl --tty=false start-at-login beeai")
+        lima_home = json.loads(cmd("limactl --tty=false info"))["limaHome"]
+        socket_path = f"{lima_home}/beeai/sock/docker.sock"
 
         logger.info(f"Waiting up to 60 seconds for Lima socket {socket_path}...")
-        with anyio.move_on_after(60):
-            while not await socket_path.is_socket():
-                await anyio.sleep(0.5)
-        if not await socket_path.is_socket():
+        timeout = time.time() + 60
+        while time.time() < timeout:
+            if os.path.exists(socket_path) and stat.S_ISSOCK(os.stat(socket_path).st_mode):
+                break
+            time.sleep(0.5)
+        if not (os.path.exists(socket_path) and stat.S_ISSOCK(os.stat(socket_path).st_mode)):
             raise ValueError(f"Lima socket {socket_path} did not appear within 60 seconds.")
         return f"unix://{socket_path}"
 
@@ -122,7 +125,7 @@ async def _get_docker_host(configuration: Configuration):
 
 
 async def resolve_container_runtime_cmd(configuration: Configuration) -> IContainerBackend:
-    docker_host = await _get_docker_host(configuration)
+    docker_host = _get_docker_host(configuration)
     logger.info(f"Using DOCKER_HOST={docker_host}")
     backend = DockerContainerBackend(docker_host=docker_host, configuration=configuration)
     if not docker_host.endswith("lima/beeai/sock/docker.sock"):
