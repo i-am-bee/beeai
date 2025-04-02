@@ -68,6 +68,7 @@ class Configuration(BaseSettings):
     oci_registry: dict[str, OCIRegistryConfiguration] = Field(default_factory=dict)
     docker_host: str | None = None
     provider_registry_location: GithubUrl = "https://github.com/i-am-bee/beeai@main#path=agent-registry.yaml"
+    force_lima: bool = False
 
     @model_validator(mode="after")
     def _oci_registry_defaultdict(self):

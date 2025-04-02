@@ -14,9 +14,11 @@
 
 import asyncio
 import concurrent.futures
+import json
 import logging
 import subprocess
 from contextlib import suppress
+from pathlib import Path
 
 import anyio
 
@@ -39,32 +41,95 @@ from beeai_server.services.mcp_proxy.provider import ProviderContainer
 from beeai_server.utils.periodic import register_all_crons
 from kink import di
 
-logging.getLogger(__name__)
+import time
+
+logger = logging.getLogger(__name__)
 
 
-async def cmd(command: str):
-    process = await anyio.run_process(command, check=True)
-    return process.stdout.decode("utf-8").strip()
+def cmd(command: str) -> str:
+    logger.info(f"Running command: `{command}`")
+    process = subprocess.run(command, shell=True, capture_output=True, text=True, check=False)
+    stdout = process.stdout
+    stderr = process.stderr
+    logger.info(
+        f"Command `{command}` completed with exit_code={process.returncode}"
+        + (f" stdout={repr(stdout)}" if stdout else "")
+        + (f" stderr={repr(stderr)}" if stderr else "")
+    )
+    process.check_returncode()
+    return stdout
 
 
-async def _get_docker_host(configuration: Configuration):
-    if configuration.docker_host:
-        return configuration.docker_host
+def _get_docker_host(configuration: Configuration):
+    if not configuration.force_lima:
+        if configuration.docker_host:
+            if Path(configuration.docker_host).is_socket():
+                return configuration.docker_host
+            logger.warning(f"Invalid DOCKER_HOST={configuration.docker_host}, trying other options...")
+        with suppress(subprocess.CalledProcessError):
+            logger.info("Trying Docker...")
+            docker_url = cmd('docker context inspect "$(docker context show)" --format "{{.Endpoints.docker.Host}}"')
+            docker_path = docker_url.removeprefix("unix://")
+            if Path(docker_path).is_socket():
+                return docker_url
+        with suppress(subprocess.CalledProcessError):
+            logger.info("Trying Podman Machine...")
+            podman_url = cmd('podman machine inspect --format "{{.ConnectionInfo.PodmanSocket.Path}}"')
+            if Path(podman_url).is_socket():
+                return f"unix://{podman_url}"
+        with suppress(subprocess.CalledProcessError):
+            logger.info("Trying Podman...")
+            podman_url = cmd('podman info --format "{{.Host.RemoteSocket.Path}}"')
+            if Path(podman_url).is_socket():
+                return f"unix://{podman_url}"
+
     with suppress(subprocess.CalledProcessError):
-        return await cmd('docker context inspect "$(docker context show)" --format "{{.Endpoints.docker.Host}}"')
-    with suppress(subprocess.CalledProcessError):
-        podman_url = await cmd('podman machine inspect --format "{{.ConnectionInfo.PodmanSocket.Path}}"')
-        return f"unix://{podman_url}"
-    with suppress(subprocess.CalledProcessError):
-        podman_url = await cmd('podman info --format "{{.Host.RemoteSocket.Path}}"')
-        return f"unix://{podman_url}"
-    raise ValueError("No supported container runtime found, install docker or podman in docker compatibility mode")
+        logger.info("Trying Lima...")
+        lima_instance = next(
+            (
+                instance
+                for line in cmd("limactl --tty=false list --format=json").split("\n")
+                if line
+                if (instance := json.loads(line))
+                if instance["name"] == "beeai"
+            ),
+            None,
+        )
+        if not lima_instance:
+            logger.info("BeeAI VM not found, creating...")
+            cmd("limactl --tty=false start template://docker-rootful --name beeai")
+        logger.info("Starting BeeAI VM...")
+        cmd("limactl --tty=false start beeai")
+        cmd("limactl --tty=false start-at-login beeai")
+        cmd("limactl --tty=false protect beeai")
+        lima_home = json.loads(cmd("limactl --tty=false info"))["limaHome"]
+        socket_path = Path(f"{lima_home}/beeai/sock/docker.sock")
+
+        logger.info(f"Waiting up to 60 seconds for Lima socket {socket_path}...")
+        timeout = time.time() + 60
+        while time.time() < timeout:
+            if socket_path.is_socket():
+                break
+            time.sleep(0.5)
+        if not socket_path.is_socket():
+            raise ValueError(f"Lima socket {socket_path} did not appear within 60 seconds.")
+        return f"unix://{socket_path}"
+
+    if configuration.force_lima:
+        raise ValueError(
+            "Could not start the Lima VM. Please ensure that Lima is properly installed (https://lima-vm.io/docs/installation/)."
+        )
+    raise ValueError(
+        "No compatible container runtime found. Please install Lima (https://lima-vm.io/docs/installation/) or a supported container runtime (Docker, Rancher, Podman, ...)."
+    )
 
 
 async def resolve_container_runtime_cmd(configuration: Configuration) -> IContainerBackend:
-    docker_host = await _get_docker_host(configuration)
+    docker_host = _get_docker_host(configuration)
+    logger.info(f"Using DOCKER_HOST={docker_host}")
     backend = DockerContainerBackend(docker_host=docker_host, configuration=configuration)
-    await backend.configure_host_docker_internal()
+    if not docker_host.endswith("lima/beeai/sock/docker.sock"):
+        await backend.configure_host_docker_internal()
     return backend
 
 

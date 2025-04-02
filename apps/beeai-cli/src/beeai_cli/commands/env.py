@@ -295,7 +295,9 @@ async def setup() -> bool:
         time.sleep(5)
         for i in range(180):
             time.sleep(1)
-            if all(item["status"] == "ready" for item in (await api_request("get", "provider"))["items"]):
+            if all(
+                item["status"] in ["ready", "not_installed"] for item in (await api_request("get", "provider"))["items"]
+            ):
                 break
         else:
             console.print(
