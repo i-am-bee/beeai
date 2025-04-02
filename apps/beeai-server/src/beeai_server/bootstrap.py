@@ -16,7 +16,6 @@ import asyncio
 import concurrent.futures
 import json
 import logging
-import shlex
 import subprocess
 from contextlib import suppress
 
@@ -45,6 +44,7 @@ logger = logging.getLogger(__name__)
 
 
 async def cmd(command: str):
+    logger.info(f"Running command: {command}")
     process = await anyio.run_process(command, check=True)
     return process.stdout.decode("utf-8").strip()
 
@@ -52,27 +52,26 @@ async def cmd(command: str):
 async def _get_docker_host(configuration: Configuration):
     if not configuration.force_lima:
         if configuration.docker_host:
-            with suppress(subprocess.CalledProcessError):
-                logger.info("Trying DOCKER_HOST...")
-                await cmd(f"test -e {shlex.quote(configuration.docker_host)}")
+            if await anyio.Path(configuration.docker_host).is_socket():
                 return configuration.docker_host
+            logger.warning(f"Invalid DOCKER_HOST={configuration.docker_host}, trying other options...")
         with suppress(subprocess.CalledProcessError):
             logger.info("Trying Docker...")
             docker_url = await cmd(
                 'docker context inspect "$(docker context show)" --format "{{.Endpoints.docker.Host}}"'
             )
-            await cmd(f"test -e {shlex.quote(docker_url.removeprefix('unix://'))}")
-            return docker_url
+            if await anyio.Path(docker_url.removeprefix("unix://")).is_socket():
+                return docker_url
         with suppress(subprocess.CalledProcessError):
             logger.info("Trying Podman Machine...")
             podman_url = await cmd('podman machine inspect --format "{{.ConnectionInfo.PodmanSocket.Path}}"')
-            await cmd(f"test -e {shlex.quote(podman_url)}")
-            return f"unix://{podman_url}"
+            if await anyio.Path(podman_url).is_socket():
+                return f"unix://{podman_url}"
         with suppress(subprocess.CalledProcessError):
             logger.info("Trying Podman...")
             podman_url = await cmd('podman info --format "{{.Host.RemoteSocket.Path}}"')
-            await cmd(f"test -e {shlex.quote(podman_url)}")
-            return f"unix://{podman_url}"
+            if await anyio.Path(podman_url).is_socket():
+                return f"unix://{podman_url}"
 
     with suppress(subprocess.CalledProcessError):
         logger.info("Trying Lima...")
@@ -95,7 +94,15 @@ async def _get_docker_host(configuration: Configuration):
         await cmd("limactl --tty=false start beeai")
         await cmd("limactl --tty=false start-at-login beeai")
         lima_home = json.loads(await cmd("limactl --tty=false info"))["limaHome"]
-        return f"unix://{lima_home}/beeai/sock/docker.sock"
+        socket_path = anyio.Path(f"{lima_home}/beeai/sock/docker.sock")
+
+        logger.info(f"Waiting up to 60 seconds for Lima socket {socket_path}...")
+        with anyio.move_on_after(60):
+            while not await socket_path.is_socket():
+                await anyio.sleep(0.5)
+        if not await socket_path.is_socket():
+            raise ValueError(f"Lima socket {socket_path} did not appear within 60 seconds.")
+        return f"unix://{socket_path}"
 
     if configuration.force_lima:
         raise ValueError(
@@ -108,6 +115,7 @@ async def _get_docker_host(configuration: Configuration):
 
 async def resolve_container_runtime_cmd(configuration: Configuration) -> IContainerBackend:
     docker_host = await _get_docker_host(configuration)
+    logger.info(f"Using DOCKER_HOST={docker_host}")
     backend = DockerContainerBackend(docker_host=docker_host, configuration=configuration)
     if not docker_host.endswith("lima/beeai/sock/docker.sock"):
         await backend.configure_host_docker_internal()
