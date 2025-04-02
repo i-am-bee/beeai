@@ -12,6 +12,7 @@ load_env()
 
 server = Server("langgraph-agents")
 
+
 @server.agent()
 async def run_deep_researcher_graph(input: TextInput) -> TextOutput:
     inputs = SummaryStateInput(research_topic=input.text)
