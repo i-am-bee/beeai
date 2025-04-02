@@ -22,6 +22,7 @@ import os
 from pathlib import Path
 import sys
 import requests
+from requests.adapters import HTTPAdapter, Retry
 from functools import partial
 
 import anyio.to_thread
@@ -93,10 +94,12 @@ class Server:
         self.decorated = False
 
     def __call__(self):
+        """
+        Runs and registers agent with the BeeAI platform when not in production mode.
+        """
         if not self._agent:
             logger.warning("Running empty server. To add an agent, anotate function with @server.agent()")
             return
-
         try:
             asyncio.run(self.run_agent_provider())
         except KeyboardInterrupt:
@@ -115,6 +118,7 @@ class Server:
         def decorator(fn: Callable) -> Callable:
             @functools.wraps(fn)
             def generator_wrapper(input: Input, ctx: Context):
+                """Converts agents sync decorator function to function with callbacks"""
                 last_value = None
                 sync_ctx = syncify_object_dynamic(ctx)
                 for value in fn(input):
@@ -124,6 +128,7 @@ class Server:
 
             @functools.wraps(fn)
             async def async_generator_wrapper(input: Input, ctx: Context):
+                """Converts agents async decorator function to function with callbacks"""
                 last_value = None
                 async for value in fn(input):
                     last_value = value
@@ -142,9 +147,9 @@ class Server:
             else:
                 func = fn
 
+            # check agent's function signature
             signature = inspect.signature(func)
             parameters = list(signature.parameters.values())
-
             if len(parameters) == 0:
                 raise TypeError("The agent function must have at least 'input' argument")
             if len(parameters) > 2:
@@ -167,11 +172,13 @@ class Server:
 
             @functools.wraps(func)
             async def sync_fn(*args, **kwargs):
+                """Converts agents sync function to async function with two parameters"""
                 ctx = syncify_object_dynamic(kwargs["ctx"])
                 return await anyio.to_thread.run_sync(partial(func, ctx=ctx) if len(parameters) == 2 else func, *args)
 
             @functools.wraps(func)
             async def async_fn(*args, **kwargs):
+                """Converts agents async function to function with two parameters"""
                 return await func(*args, **kwargs) if len(parameters) == 2 else await func(*args)
 
             if not output:
@@ -179,7 +186,7 @@ class Server:
 
             self._agent = Agent(
                 name=name,
-                description=self._manifest.get("description"),
+                description=self._manifest.get("description") or func.__doc__.strip() if func.__doc__ else None,
                 input=input,
                 output=output if output is not inspect.Signature.empty else Output,
                 run_fn=(async_fn if inspect.iscoroutinefunction(func) else sync_fn),
@@ -246,6 +253,7 @@ class Server:
                 pass
 
     async def register_agent(self):
+        """If not in PRODUCTION mode, register agent to the beeai platform and provide missing env variables"""
         if os.getenv("PRODUCTION_MODE", False):
             logger.debug("Agent is not automatically registered in the production mode.")
             return
@@ -257,20 +265,38 @@ class Server:
         }
         try:
             url = os.getenv("PLATFORM_URL", "http://127.0.0.1:8333")
-            response = requests.post(
+
+            # register agent to beeai platform with retries
+            session = requests.Session()
+            retry_strategy = Retry(total=5, backoff_factor=1, status_forcelist=[429, 500, 502, 503, 504, 509])
+            session.mount("http://", HTTPAdapter(max_retries=retry_strategy))
+            session.mount("https://", HTTPAdapter(max_retries=retry_strategy))
+
+            response = session.post(
                 f"{url}/api/v1/provider/register/unmanaged",
                 json=request_data,
             )
             response.raise_for_status()
-            result = response.json()
-            print(result)
             logger.info("Agent registered to the beeai server.")
-        except requests.exceptions.HTTPError as e:
-            if e.response.status_code == 404:
-                logger.warning(f"Server not found. Agent can not be registered. Check if server is running on {url}")
-            else:
-                logger.warning(f"Agent can not be registered to beeai server: {e}")
-        except Exception as e:
+
+            # check missing env keyes
+            envs_request = session.get(f"{url}/api/v1/env")
+            envs = envs_request.json().get("env")
+
+            # register all available envs
+            missing_keyes = []
+            for env in self._manifest.get("env"):
+                server_env = envs.get(env.get("name"))
+                if server_env:
+                    logger.debug(f"Env variable {env['name']} = '{server_env}' added dynamically")
+                    os.environ[env["name"]] = server_env
+                elif env.get("required"):
+                    missing_keyes.append(env)
+            if len(missing_keyes):
+                logger.error(f"Can not run agent, missing required env variables: {missing_keyes}")
+        except requests.exceptions.ConnectionError as e:
+            logger.warning(f"Can not reach server, check if running on {url} : {e}")
+        except requests.exceptions.HTTPError or Exception as e:
             logger.warning(f"Agent can not be registered to beeai server: {e}")
 
 
