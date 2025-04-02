@@ -41,7 +41,7 @@ from beeai_server.services.mcp_proxy.provider import ProviderContainer
 from beeai_server.utils.periodic import register_all_crons
 from kink import di
 
-logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 async def cmd(command: str):
@@ -53,29 +53,29 @@ async def _get_docker_host(configuration: Configuration):
     if not configuration.force_lima:
         if configuration.docker_host:
             with suppress(subprocess.CalledProcessError):
-                logging.info("Trying DOCKER_HOST...")
+                logger.info("Trying DOCKER_HOST...")
                 await cmd(f"test -e {shlex.quote(configuration.docker_host)}")
                 return configuration.docker_host
         with suppress(subprocess.CalledProcessError):
-            logging.info("Trying Docker...")
+            logger.info("Trying Docker...")
             docker_url = await cmd(
                 'docker context inspect "$(docker context show)" --format "{{.Endpoints.docker.Host}}"'
             )
             await cmd(f"test -e {shlex.quote(docker_url.removeprefix('unix://'))}")
             return docker_url
         with suppress(subprocess.CalledProcessError):
-            logging.info("Trying Podman Machine...")
+            logger.info("Trying Podman Machine...")
             podman_url = await cmd('podman machine inspect --format "{{.ConnectionInfo.PodmanSocket.Path}}"')
             await cmd(f"test -e {shlex.quote(podman_url)}")
             return f"unix://{podman_url}"
         with suppress(subprocess.CalledProcessError):
-            logging.info("Trying Podman...")
+            logger.info("Trying Podman...")
             podman_url = await cmd('podman info --format "{{.Host.RemoteSocket.Path}}"')
             await cmd(f"test -e {shlex.quote(podman_url)}")
             return f"unix://{podman_url}"
 
     with suppress(subprocess.CalledProcessError):
-        logging.info("Trying Lima...")
+        logger.info("Trying Lima...")
         lima_instance = next(
             (
                 instance
@@ -89,9 +89,9 @@ async def _get_docker_host(configuration: Configuration):
             None,
         )
         if not lima_instance:
-            logging.info("BeeAI VM not found, creating...")
+            logger.info("BeeAI VM not found, creating...")
             await cmd("limactl --tty=false start template://docker-rootful --name beeai")
-        logging.info("Starting BeeAI VM...")
+        logger.info("Starting BeeAI VM...")
         await cmd("limactl --tty=false start beeai")
         await cmd("limactl --tty=false start-at-login beeai")
         lima_home = json.loads(await cmd("limactl --tty=false info"))["limaHome"]
@@ -109,7 +109,8 @@ async def _get_docker_host(configuration: Configuration):
 async def resolve_container_runtime_cmd(configuration: Configuration) -> IContainerBackend:
     docker_host = await _get_docker_host(configuration)
     backend = DockerContainerBackend(docker_host=docker_host, configuration=configuration)
-    await backend.configure_host_docker_internal()
+    if not docker_host.endswith("lima/beeai/sock/docker.sock"):
+        await backend.configure_host_docker_internal()
     return backend
 
 
