@@ -65,7 +65,7 @@ export function ProvidersView() {
               actions: (
                 <TableViewActions>
                   <IconButton
-                    label="Remove from catalog"
+                    label="Uninstall agent"
                     kind="ghost"
                     size="sm"
                     onClick={() =>
@@ -75,8 +75,8 @@ export function ProvidersView() {
                             Delete <span className={classes.deleteModalProviderId}>{id}</span>?
                           </>
                         ),
-                        body: 'Are you sure you want to delete this provider? It can’t be undone.',
-                        primaryButtonText: 'Delete',
+                        body: 'Are you sure you want to uninstall this agent? It can’t be undone.',
+                        primaryButtonText: 'Uninstall',
                         danger: true,
                         onSubmit: () => deleteProvider({ id }),
                       })
