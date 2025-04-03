@@ -222,7 +222,7 @@ class LoadedProvider:
             self.status = LoadedProviderStatus.ready
         except Exception as ex:
             self.last_error = LoadProviderErrorMessage(message=str(extract_messages(ex)))
-            self.provider.status = LoadedProviderStatus.install_error
+            self.status = LoadedProviderStatus.install_error
 
     async def uninstall(self):
         await self.stop()

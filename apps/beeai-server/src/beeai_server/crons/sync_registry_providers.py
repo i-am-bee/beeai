@@ -72,6 +72,7 @@ async def check_official_registry(configuration: Configuration, provider_service
             errors.append(ex)
 
     if configuration.agent_registry.preinstall:
+        managed_providers = {provider.id for provider in await provider_service.list_providers() if provider.registry}
         for provider_id in managed_providers:
             try:
                 if provider_id in preinstall_background_tasks:
