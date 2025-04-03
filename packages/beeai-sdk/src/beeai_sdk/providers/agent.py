@@ -316,7 +316,7 @@ class Server:
 
             # register all available envs
             missing_keyes = []
-            for env in self._manifest.get("env"):
+            for env in self._manifest.get("env") or []:
                 server_env = envs.get(env.get("name"))
                 if server_env:
                     logger.debug(f"Env variable {env['name']} = '{server_env}' added dynamically")
