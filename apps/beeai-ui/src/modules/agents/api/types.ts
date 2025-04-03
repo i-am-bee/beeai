@@ -17,6 +17,12 @@
 import type { Agent as SdkAgent, ListAgentsRequest } from '@i-am-bee/acp-sdk/types';
 import type { Metadata } from '@i-am-bee/beeai-sdk/schemas/metadata';
 
-export type Agent = SdkAgent & Metadata;
+export type Agent = SdkAgent &
+  Metadata & {
+    // TODO: Temporary due to different structure in Python agents
+    examples?: {
+      command?: string;
+    };
+  };
 
 export type ListAgentsParams = ListAgentsRequest['params'];

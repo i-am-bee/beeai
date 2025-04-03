@@ -35,9 +35,7 @@ export function BeeBadge({ agent, size }: Props) {
     <>
       {framework === BEE_AI_FRAMEWORK_TAG && (
         <Tooltip content="Built by the BeeAI team" placement="top" asChild>
-          <div className={classes.container}>
-            <Tag type="green" renderIcon={Bee} size={size} className={classes.tag} />
-          </div>
+          <Tag type="green" renderIcon={Bee} size={size} className={classes.tag} />
         </Tooltip>
       )}
     </>

@@ -45,15 +45,15 @@ interface Props {
 
 export function AgentDetail({ agent, buttons }: Props) {
   const { name, description, fullDescription, examples } = agent;
-  const firstCliExample = examples?.cli?.at(0);
-
+  // TODO: This will probably need to be modified through a different metadata structure
+  const exampleCommand = examples?.cli?.at(0)?.command ?? examples?.command;
   return (
     <div className={classes.root}>
-      <motion.h1 {...fadeInPropsWithMarginShift({ start: { from: spacing[4] } })} className={classes.name}>
-        {agent.name}
+      <motion.header {...fadeInPropsWithMarginShift({ start: { from: spacing[4] } })} className={classes.header}>
+        <h1 className={classes.name}>{agent.name}</h1>
 
         <BeeBadge agent={agent} size="lg" />
-      </motion.h1>
+      </motion.header>
 
       <motion.div {...fadeInPropsWithMarginShift({ start: { from: spacing[3] } })}>
         <AgentMetadata agent={agent} showGithub className={classes.metadata} />
@@ -72,7 +72,7 @@ export function AgentDetail({ agent, buttons }: Props) {
         {buttons}
       </motion.div>
 
-      {(firstCliExample || fullDescription) && (
+      {(exampleCommand || fullDescription) && (
         <motion.hr
           {...fadeInPropsWithMarginShift({
             start: { from: spacing[7], to: spacing[6] },
@@ -82,14 +82,14 @@ export function AgentDetail({ agent, buttons }: Props) {
         />
       )}
 
-      {firstCliExample && (
+      {exampleCommand && (
         <motion.div
           {...fadeInPropsWithMarginShift({
             end: { from: spacing[10], to: spacing[9] },
           })}
         >
           <AgentDetailSection title="Example requests">
-            <AgentExampleRequests cli={firstCliExample.command} />
+            <AgentExampleRequests cli={exampleCommand} />
           </AgentDetailSection>
         </motion.div>
       )}

@@ -29,3 +29,7 @@ export const BEE_AI_FRAMEWORK_TAG = 'BeeAI';
 export const BREW_INSTALL_BEEAI = 'brew install i-am-bee/beeai/beeai';
 
 export const TRY_LOCALLY_LINK = `${DOCUMENTATION_LINK}/introduction/quickstart`;
+
+export const TRACEABILITY_LINK = `${DOCUMENTATION_LINK}/observability/agents-traceability`;
+
+export const LF_PROJECTS_LINK = 'https://lfprojects.org/';

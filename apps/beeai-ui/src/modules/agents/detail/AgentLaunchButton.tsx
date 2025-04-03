@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import { ArrowRight } from '@carbon/icons-react';
-import { Button, ButtonSkeleton } from '@carbon/react';
+import { ArrowRight, Download } from '@carbon/icons-react';
+import type { ButtonBaseProps } from '@carbon/react';
+import { Button, ButtonSkeleton, InlineLoading } from '@carbon/react';
 import clsx from 'clsx';
 import isEmpty from 'lodash/isEmpty';
+import { useCallback } from 'react';
 
 import { TransitionLink } from '#components/TransitionLink/TransitionLink.tsx';
 import { useModal } from '#contexts/Modal/index.tsx';
@@ -29,6 +31,7 @@ import { routes } from '#utils/router.ts';
 import type { Agent } from '../api/types';
 import { useMissingEnvs } from '../hooks/useMissingEnvs';
 import classes from './AgentLaunchButton.module.scss';
+import { InternetOffline } from './InternetOffline';
 
 interface Props {
   agent: Agent;
@@ -38,28 +41,59 @@ export function AgentLaunchButton({ agent }: Props) {
   const { openModal } = useModal();
   const { missingEnvs, isPending: isMissingEnvsPending } = useMissingEnvs({ agent });
   const uiType = agent?.ui?.type;
+  const sharedProps: ButtonBaseProps = {
+    kind: 'primary',
+    size: 'md',
+    className: classes.button,
+  };
 
-  return uiType && SupportedUis.includes(uiType as UiType) ? (
-    <Button
-      kind="primary"
-      renderIcon={ArrowRight}
-      size="md"
-      className={classes.root}
-      disabled={isMissingEnvsPending}
-      {...(isEmpty(missingEnvs)
-        ? {
-            as: TransitionLink,
-            href: routes.agentRun({ name: agent.name }),
-          }
-        : {
-            onClick: () => {
-              openModal((props) => <AddRequiredEnvsModal {...props} missingEnvs={missingEnvs} />);
-            },
-          })}
-    >
-      Launch this agent
-    </Button>
-  ) : null;
+  const isInstalled = false;
+  const isInstallPending = false;
+
+  const handleInstall = useCallback(() => {
+    console.log('handleInstall');
+  }, []);
+
+  if (!isInstalled) {
+    return (
+      <div className={classes.root}>
+        <Button
+          {...sharedProps}
+          renderIcon={!isInstallPending ? Download : InlineLoading}
+          disabled={isInstallPending}
+          onClick={handleInstall}
+        >
+          {isInstallPending ? <>Installing&hellip;</> : 'Install to launch'}
+        </Button>
+
+        <InternetOffline />
+      </div>
+    );
+  }
+
+  if (uiType && SupportedUis.includes(uiType as UiType)) {
+    return (
+      <Button
+        {...sharedProps}
+        renderIcon={ArrowRight}
+        disabled={isMissingEnvsPending}
+        {...(isEmpty(missingEnvs)
+          ? {
+              as: TransitionLink,
+              href: routes.agentRun({ name: agent.name }),
+            }
+          : {
+              onClick: () => {
+                openModal((props) => <AddRequiredEnvsModal {...props} missingEnvs={missingEnvs} />);
+              },
+            })}
+      >
+        Launch this agent
+      </Button>
+    );
+  }
+
+  return null;
 }
 
 AgentLaunchButton.Skeleton = function AgentLaunchButtonSkeleton() {

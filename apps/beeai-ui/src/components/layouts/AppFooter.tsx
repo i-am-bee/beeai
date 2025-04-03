@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { LF_PROJECTS_LINK } from '#utils/constants.ts';
+
 import { CommunityNav } from '../CommunityNav/CommunityNav';
 import classes from './AppFooter.module.scss';
 import { Container } from './Container';
@@ -31,8 +33,8 @@ export function AppFooter({ className }: Props) {
             Copyright © BeeAI a Series of LF Projects, LLC
             <br />
             For web site terms of use, trademark policy and other project policies please see{' '}
-            <a href="https://lfprojects.org/" target="_blank" rel="noreferrer">
-              https://lfprojects.org/
+            <a href={LF_PROJECTS_LINK} target="_blank" rel="noreferrer">
+              {LF_PROJECTS_LINK}
             </a>
             .
           </p>

@@ -23,6 +23,12 @@
   row-gap: $spacing-03;
 }
 
+.header {
+  display: flex;
+  align-items: center;
+  column-gap: $spacing-03;
+}
+
 .name {
   font-size: rem(24px);
   line-height: 1.3;

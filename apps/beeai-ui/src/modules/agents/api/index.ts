@@ -14,21 +14,14 @@
  * limitations under the License.
  */
 
-.tag {
-  flex-shrink: 0;
+import { api } from '#api/index.ts';
 
-  &:global(.#{$prefix}--tag--lg) {
-    padding-inline-start: rem(7px) !important;
-    padding-inline-end: rem(7px) !important;
+export async function listAgents() {
+  const response = await api.GET('/api/v1/agent');
 
-    :global(.#{$prefix}--tag__custom-icon) {
-      block-size: rem(18px);
-      inline-size: rem(18px);
-
-      > svg {
-        block-size: rem(18px) !important;
-        inline-size: rem(18px) !important;
-      }
-    }
+  if (response.error != null) {
+    throw new Error('Failed to list agents.');
   }
+
+  return response.data;
 }

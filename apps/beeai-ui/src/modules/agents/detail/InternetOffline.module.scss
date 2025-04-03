@@ -14,21 +14,12 @@
  * limitations under the License.
  */
 
-.tag {
-  flex-shrink: 0;
-
-  &:global(.#{$prefix}--tag--lg) {
-    padding-inline-start: rem(7px) !important;
-    padding-inline-end: rem(7px) !important;
-
-    :global(.#{$prefix}--tag__custom-icon) {
-      block-size: rem(18px);
-      inline-size: rem(18px);
-
-      > svg {
-        block-size: rem(18px) !important;
-        inline-size: rem(18px) !important;
-      }
-    }
-  }
+.root {
+  display: inline-flex;
+  align-items: center;
+  column-gap: $spacing-02;
+  color: $support-error-inverse;
+  font-size: rem(14px);
+  line-height: math.div(16, 14);
+  letter-spacing: $letter-spacing;
 }

@@ -14,21 +14,24 @@
  * limitations under the License.
  */
 
-.tag {
-  flex-shrink: 0;
+import { ErrorFilled } from '@carbon/icons-react';
 
-  &:global(.#{$prefix}--tag--lg) {
-    padding-inline-start: rem(7px) !important;
-    padding-inline-end: rem(7px) !important;
+import { useIsOnline } from '#hooks/useIsOnline.ts';
 
-    :global(.#{$prefix}--tag__custom-icon) {
-      block-size: rem(18px);
-      inline-size: rem(18px);
+import classes from './InternetOffline.module.scss';
 
-      > svg {
-        block-size: rem(18px) !important;
-        inline-size: rem(18px) !important;
-      }
-    }
+export function InternetOffline() {
+  const isOnline = useIsOnline();
+
+  if (isOnline) {
+    return null;
   }
+
+  return (
+    <span className={classes.root}>
+      <ErrorFilled />
+
+      <span>Internet offline</span>
+    </span>
+  );
 }
