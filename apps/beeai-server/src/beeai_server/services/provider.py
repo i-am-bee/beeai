@@ -28,13 +28,12 @@ from beeai_server.custom_types import ID
 from beeai_server.domain.model import (
     ManagedProvider,
     UnmanagedProvider,
-    BaseProvider,
     ProviderLocation,
     LoadedProviderStatus,
 )
 from beeai_server.schema import ProviderWithStatus
 from beeai_server.exceptions import ManifestLoadError
-from beeai_server.services.mcp_proxy.provider import ProviderContainer
+from beeai_server.services.mcp_proxy.provider import ProviderContainer, LoadedProvider
 from beeai_server.utils.github import ResolvedGithubUrl
 from beeai_server.utils.logs_container import LogsContainer
 
@@ -68,18 +67,30 @@ class ProviderService:
         except Exception as ex:
             raise ManifestLoadError(location=location, message=str(ex)) from ex
         await self._loaded_provider_container.add(provider)
-        return (await self._get_providers_with_metadata([provider]))[0]
+        return self._get_provider_with_status(self._loaded_provider_container.loaded_providers[provider.id])
+
+    def _get_provider_with_status(self, loaded_provider: LoadedProvider) -> ProviderWithStatus:
+        return ProviderWithStatus(
+            **loaded_provider.provider.model_dump(),
+            status=loaded_provider.status,
+            last_error=loaded_provider.last_error,
+            missing_configuration=[var for var in loaded_provider.missing_configuration if var.required],
+        )
 
     async def register_unmanaged_provider(self, provider: UnmanagedProvider) -> ProviderWithStatus:
         await self._loaded_provider_container.add(provider)
-        return (await self._get_providers_with_metadata([provider]))[0]
+        return self._get_provider_with_status(self._loaded_provider_container.loaded_providers[provider.id])
 
     async def preview_provider(self, location: ProviderLocation):
         try:
             provider_source = await location.resolve()
+            env = await self._env_repository.get_all()
             provider = await ManagedProvider.load_from_source(source=provider_source)
-            [provider] = await self._get_providers_with_metadata([provider])
-            return provider
+            return ProviderWithStatus(
+                **provider.model_dump(),
+                status=LoadedProviderStatus.not_installed,
+                missing_configuration=[var for var in provider.check_env(env, raise_error=False) if var.required],
+            )
         except ValueError as ex:
             raise ManifestLoadError(location=location, message=str(ex), status_code=HTTP_400_BAD_REQUEST) from ex
         except Exception as ex:
@@ -131,34 +142,11 @@ class ProviderService:
             await self._repository.delete(provider_id=id)
             await self._loaded_provider_container.remove(provider)
 
-    async def _get_providers_with_metadata(self, providers: list[BaseProvider]) -> list[ProviderWithStatus]:
-        loaded_providers = {
-            provider.id: {
-                "status": provider.status,
-                "last_error": provider.last_error,
-                "missing_configuration": [var for var in provider.missing_configuration if var.required],
-            }
-            for provider in self._loaded_provider_container.loaded_providers.values()
-        }
-        env = await self._env_repository.get_all()
-        return [
-            ProviderWithStatus(
-                **provider.model_dump(),
-                **loaded_providers.get(
-                    provider.id,
-                    {
-                        "status": LoadedProviderStatus.not_installed,
-                        "missing_configuration": [
-                            var for var in provider.check_env(env, raise_error=False) if var.required
-                        ],
-                    },
-                ),
-            )
-            for provider in providers
-        ]
-
     async def list_providers(self) -> list[ProviderWithStatus]:
-        return await self._get_providers_with_metadata((await self._repository.list()))
+        return [
+            self._get_provider_with_status(provider)
+            for provider in self._loaded_provider_container.loaded_providers.values()
+        ]
 
     async def stream_logs(self, id: ID) -> Callable[..., AsyncIterator[str]]:
         if not (provider := self._loaded_provider_container.loaded_providers.get(id, None)):
