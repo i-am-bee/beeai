@@ -184,7 +184,14 @@ class Server:
                     return last_value
 
             @functools.wraps(fn)
-            async def two_arguments_wrapper(input: Input, ctx: Context):
+            async def two_arguments_acync_wrapper(input: Input, ctx: Context):
+                print("two_arguments_acync_wrapper")
+                """Converts agents function with one input to function with two inputs"""
+                return await fn(input)
+
+            @functools.wraps(fn)
+            def two_arguments_sync_wrapper(input: Input, ctx: Context):
+                print("two_arguments_sync_wrapper")
                 """Converts agents function with one input to function with two inputs"""
                 return fn(input)
 
@@ -193,7 +200,13 @@ class Server:
             elif inspect.isasyncgenfunction(fn):
                 func = async_generator_wrapper
             else:
-                func = fn if len(parameters) == 2 else two_arguments_wrapper
+                func = (
+                    fn
+                    if len(parameters) == 2
+                    else (
+                        two_arguments_acync_wrapper if inspect.iscoroutinefunction(fn) else two_arguments_sync_wrapper
+                    )
+                )
 
             def create_agent_name_from_path():
                 """Create an agent name from the current path"""
@@ -243,7 +256,7 @@ class Server:
                 with open(path, "r", encoding="utf-8") as file:
                     return file.read()
             except FileNotFoundError:
-                return False
+                return {}
             except Exception as e:
                 raise Error("Agent file read error") from e
 
