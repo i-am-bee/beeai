@@ -152,7 +152,7 @@ async def wait_for_agents(initial_delay_seconds=5, wait_seconds=180):
         return False
 
 
-async def wait_for_api(initial_delay_seconds=5, wait_seconds=180):
+async def wait_for_api(initial_delay_seconds=5, wait_seconds=300):
     time.sleep(initial_delay_seconds)
     for i in range(wait_seconds):
         time.sleep(1)
