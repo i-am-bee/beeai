@@ -20,6 +20,7 @@ dependencies = [
     "cachetools>=5.5.2",
     "jsonref>=1.1.0",
     "inquirerpy>=0.3.4",
+    "psutils>=3.3.9",
 ]
 
 [tool.uv.sources]

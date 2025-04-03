@@ -145,7 +145,8 @@ async def wait_for_agents(initial_delay_seconds=5, wait_seconds=180):
     for i in range(wait_seconds):
         time.sleep(1)
         if all(
-            item["status"] in ["ready", "not_installed", "running"] for item in (await api_request("get", "provider"))["items"]
+            item["status"] in ["ready", "not_installed", "running"]
+            for item in (await api_request("get", "provider"))["items"]
         ):
             return True
     else:
