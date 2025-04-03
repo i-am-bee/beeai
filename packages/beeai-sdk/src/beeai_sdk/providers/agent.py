@@ -236,7 +236,7 @@ class Server:
 
             self._agent = Agent(
                 name=name,
-                description=self._manifest.get("description", func.__doc__.strip()),
+                description=self._manifest.get("description", (func.__doc__ or "").strip()),
                 input=input,
                 output=output if output is not inspect.Signature.empty else Output,
                 run_fn=(async_fn if inspect.iscoroutinefunction(func) else sync_fn),
