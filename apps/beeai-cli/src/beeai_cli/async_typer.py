@@ -22,19 +22,17 @@ from typing import Iterator
 import rich.text
 import typer
 from httpx import ConnectError
-from rich.console import Console, RenderResult
+from rich.console import RenderResult
 from rich.markdown import Heading, Markdown
 from rich.table import Table
 from typer.core import TyperGroup
 
+from beeai_cli.console import console, err_console
 from beeai_cli.api import resolve_connection_error
 from beeai_cli.configuration import Configuration
 from beeai_cli.utils import extract_messages
 
 DEBUG = Configuration().debug
-
-err_console = Console(stderr=True)
-console = Console()
 
 
 class _LeftAlignedHeading(Heading):
@@ -96,7 +94,10 @@ class AsyncTyper(typer.Typer):
                             else:
                                 return f(*args, **kwargs)
                         except* (ConnectionError, ConnectError):
-                            resolve_connection_error(retried=retries > 0)
+                            if retries == 0:
+                                asyncio.run(resolve_connection_error())
+                            else:
+                                raise
                 except* Exception as ex:
                     for exc_type, message in extract_messages(ex):
                         err_console.print(f":boom: [bold red]{exc_type}[/bold red]: {message}")

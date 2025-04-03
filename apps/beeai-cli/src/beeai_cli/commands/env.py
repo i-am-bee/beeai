@@ -16,7 +16,6 @@
 import os
 import sys
 import tempfile
-import time
 import typer
 import httpx
 import subprocess
@@ -25,7 +24,7 @@ from InquirerPy import inquirer
 from InquirerPy.base.control import Choice
 from InquirerPy.validator import EmptyInputValidator
 
-from beeai_cli.api import api_request
+from beeai_cli.api import api_request, wait_for_agents
 from beeai_cli.async_typer import AsyncTyper, console, err_console, create_table
 from beeai_cli.utils import parse_env_var
 
@@ -290,20 +289,11 @@ async def setup() -> bool:
         )
 
     with console.status("Reloading agents (may take a few minutes)...", spinner="dots"):
-        from beeai_cli.commands.agent import list_agents
-
-        time.sleep(5)
-        for i in range(180):
-            time.sleep(1)
-            if all(
-                item["status"] in ["ready", "not_installed", "running"]
-                for item in (await api_request("get", "provider"))["items"]
-            ):
-                break
-        else:
+        if not await wait_for_agents():
             console.print(
                 "[bold red]Some agents did not properly start. Please check their status with:[/bold red] beeai info <agent>"
             )
+            from beeai_cli.commands.agent import list_agents  # avoid circular dependency
 
             await list_agents()
 

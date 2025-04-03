@@ -16,21 +16,22 @@ import contextlib
 import enum
 import functools
 import json
-import os
 import subprocess
 import time
 import urllib
 import urllib.parse
-from datetime import timedelta
+from datetime import timedelta, datetime
 from typing import AsyncIterator, Any
 
 import httpx
-import typer
+import psutil
 from httpx import HTTPStatusError
 
 from beeai_cli.configuration import Configuration
 from beeai_sdk.utils.api import send_request as _send_request
 from beeai_sdk.utils.api import send_request_with_notifications as _send_request_with_notifications
+from beeai_cli.console import console, err_console
+
 
 config = Configuration()
 BASE_URL = str(config.host).rstrip("/")
@@ -57,49 +58,110 @@ def brew_service_status() -> BrewServiceStatus:
         return BrewServiceStatus.stopped
 
 
-def resolve_connection_error(retried: bool = False):
+class ProcessStatus(enum.StrEnum):
+    not_running = "not_running"
+    running_new = "running_new"
+    running_old = "running_old"
+
+
+def server_process_status(
+    target_process="-m uvicorn beeai_server.application:app", recent_threshold=timedelta(minutes=10)
+) -> ProcessStatus:
+    try:
+        for proc in psutil.process_iter(["cmdline", "create_time"]):
+            cmdline = proc.info.get("cmdline", [])
+            if not cmdline or target_process not in " ".join(cmdline):
+                continue
+
+            process_age = datetime.now() - datetime.fromtimestamp(proc.info["create_time"])
+            return ProcessStatus.running_new if process_age < recent_threshold else ProcessStatus.running_old
+    except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+        pass
+
+    return ProcessStatus.not_running
+
+
+async def resolve_connection_error():
     if BASE_URL != "http://localhost:8333":
-        typer.echo(f"💥 {typer.style('ConnectError', fg='red')}: Could not connect to the local BeeAI service.")
-        typer.echo(
-            f'💡 {typer.style("HINT", fg="yellow")}: You have set the BeeAI host to "{typer.style(BASE_URL, bold=True)}" -- is this correct?'
+        err_console.print("💥 [bold red]ConnectError:[/bold red] Could not connect to the BeeAI service.")
+        err_console.print(
+            f'💡 [yellow]HINT[/yellow]: You have set the BeeAI host to "[bold]{BASE_URL}[/bold]" -- is this correct?'
         )
         exit(1)
 
-    if retried:
-        typer.echo(f"💥 {typer.style('ConnectError', fg='red')}: We failed to automatically start the BeeAI service.")
-        typer.echo(
-            f"💡 {typer.style('HINT', fg='yellow')}: Try starting the service manually with: {typer.style('brew services start beeai', fg='green')}"
+    process_status = server_process_status()
+    service_status = brew_service_status()
+
+    if process_status == ProcessStatus.running_new:
+        with console.status(
+            "BeeAI service is still starting up. Waiting it to be ready, this may take a few minutes, please stand by... (you can cancel waiting with CTRL+C and re-try later)",
+            spinner="dots",
+        ):
+            await wait_for_api()
+            await wait_for_agents()
+        return  # re-try now
+
+    if service_status == BrewServiceStatus.started or process_status == ProcessStatus.running_old:
+        err_console.print(
+            "💥 [bold red]ConnectError:[/bold red] The BeeAI service is running, but it did not accept the connection."
+        )
+        if service_status == BrewServiceStatus.started:
+            err_console.print(
+                "💡 [yellow]HINT[/yellow]: Try restarting the service with [green]brew services restart beeai[/green], then retry."
+            )
+        else:
+            err_console.print("💡 [yellow]HINT[/yellow]: Try restarting the service, then retry.")
+        exit(1)
+
+    if service_status == BrewServiceStatus.not_installed:
+        err_console.print("💥 [bold red]ConnectError:[/bold red] BeeAI service is not running.")
+        err_console.print(
+            "💡 [yellow]HINT[/yellow]: In a separate terminal, run [green]beeai serve[/green], keep it running and retry this command."
+        )
+        err_console.print(
+            "💡 [yellow]HINT[/yellow]: ...or alternatively, install BeeAI with [green]brew install i-am-bee/beeai/beeai[/green] and then start the service with [green]brew services start beeai[/green]."
         )
         exit(1)
 
-    status = brew_service_status()
-    if status == BrewServiceStatus.started:
-        typer.echo(
-            f"💥 {typer.style('ConnectError', fg='red')}: The BeeAI service is running, but it did not accept the connection."
-        )
-        typer.echo(
-            f"💡 {typer.style('HINT', fg='yellow')}: Try reinstalling the service with {typer.style('brew reinstall beeai', fg='green')}, then retry."
-        )
-        exit(1)
+    with console.status(
+        "Starting the BeeAI service, this might take a few minutes, please stand by...", spinner="dots"
+    ):
+        try:
+            subprocess.check_output(["brew", "services", "start", "beeai"])
+            await wait_for_api()
+            await wait_for_agents()
+        except Exception:
+            err_console.print(
+                "💥 [bold red]ConnectError:[/bold red] We failed to automatically start the BeeAI service."
+            )
+            err_console.print(
+                "💡 [yellow]HINT[/yellow]: Try starting the service manually with: [green]brew services start beeai[/green]"
+            )
+            exit(1)
 
-    if status == BrewServiceStatus.not_installed:
-        typer.echo(f"💥 {typer.style('ConnectError', fg='red')}: BeeAI service is not running.")
-        typer.echo(
-            f"💡 {typer.style('HINT', fg='yellow')}: In a separate terminal, run {typer.style('beeai serve', fg='green')}, keep it running and retry this command."
-        )
-        typer.echo(
-            f"💡 {typer.style('HINT', fg='yellow')}: ...or alternatively, install BeeAI through {typer.style('brew', fg='green')} which includes a background service."
-        )
-        exit(1)
 
-    typer.echo(f"⏳ {typer.style('Auto-resolving', fg='magenta')}: Starting the BeeAI service, stand by...")
-    with contextlib.suppress(Exception):
-        os.system("brew services start beeai")
-        typer.echo(f"⏳  {typer.style('Auto-resolving', fg='magenta')}: Waiting for the service to boot up...")
-        time.sleep(10.0)
-        typer.echo(
-            f"ℹ️  {typer.style('NOTE', fg='blue')}: It will take a few minutes before all of the agents are available, please be patient!"
-        )
+async def wait_for_agents(initial_delay_seconds=5, wait_seconds=180):
+    time.sleep(initial_delay_seconds)
+    for i in range(wait_seconds):
+        time.sleep(1)
+        if all(
+            item["status"] in ["ready", "not_installed", "running"]
+            for item in (await api_request("get", "provider"))["items"]
+        ):
+            return True
+    else:
+        return False
+
+
+async def wait_for_api(initial_delay_seconds=5, wait_seconds=300):
+    time.sleep(initial_delay_seconds)
+    for i in range(wait_seconds):
+        time.sleep(1)
+        with contextlib.suppress(httpx.ConnectError, ConnectionError):
+            await api_request("get", "provider")
+            return True
+    else:
+        return False
 
 
 async def api_request(method: str, path: str, json: dict | None = None) -> dict | None:
