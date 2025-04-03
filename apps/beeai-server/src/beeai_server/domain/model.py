@@ -169,7 +169,7 @@ ProviderLocation = GithubProviderLocation | DockerImageProviderLocation
 class BaseProvider(BaseModel, abc.ABC):
     id: ID
     manifest: AgentManifest
-    auto_stop_timeout: timedelta | None = Field(exclude=True)
+    auto_stop_timeout: timedelta | None = Field(None, exclude=True)
 
     def check_env(self, env: dict[str, str] | None = None, raise_error: bool = True) -> list[EnvVar]:
         required_env = {var.name for var in self.manifest.env if var.required}
