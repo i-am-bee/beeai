@@ -18,10 +18,9 @@ from collections import defaultdict
 from functools import cache
 from pathlib import Path
 
-from pydantic import BaseModel, field_validator, ValidationError, Field, model_validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
-
 from beeai_server.utils.github import GithubUrl
+from pydantic import BaseModel, Field, ValidationError, field_validator, model_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class LoggingConfiguration(BaseModel):
@@ -56,19 +55,27 @@ class OCIRegistryConfiguration(BaseModel, extra="allow"):
         return None
 
 
+class AgentRegistryConfiguration(BaseModel):
+    location: GithubUrl = GithubUrl(root="https://github.com/i-am-bee/beeai@main#path=agent-registry.yaml")
+    preinstall: bool = True
+
+
 class Configuration(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", env_nested_delimiter="__")
+
     logging: LoggingConfiguration = LoggingConfiguration()
+    agent_registry: AgentRegistryConfiguration = AgentRegistryConfiguration()
+    oci_registry: dict[str, OCIRegistryConfiguration] = Field(default_factory=dict)
+
     provider_config_path: Path = Path.home() / ".beeai" / "providers.yaml"
     telemetry_config_path: Path = Path.home() / ".beeai" / "telemetry.yaml"
     env_path: Path = Path.home() / ".beeai" / ".env"
     cache_dir: Path = Path.home() / ".beeai" / "cache"
     port: int = 8333
     collector_port: int = 8335
-    oci_registry: dict[str, OCIRegistryConfiguration] = Field(default_factory=dict)
     docker_host: str | None = None
-    provider_registry_location: GithubUrl = "https://github.com/i-am-bee/beeai@main#path=agent-registry.yaml"
     force_lima: bool = False
+    autostart_providers: bool = False
 
     @model_validator(mode="after")
     def _oci_registry_defaultdict(self):

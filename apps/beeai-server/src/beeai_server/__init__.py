@@ -56,8 +56,8 @@ def serve():
             "beeai_server.application:app",
             f"--host={host}",
             f"--port={config.port}",
-            "--timeout-keep-alive=4",  # TODO: MCP server is not destroyed correctly
-            "--timeout-graceful-shutdown=5",  # TODO: MCP server is not destroyed correctly
+            "--timeout-keep-alive=2",
+            "--timeout-graceful-shutdown=2",
         ],
     )
 

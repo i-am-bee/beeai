@@ -146,7 +146,10 @@ async def bootstrap_dependencies():
     )
     di[IContainerBackend] = await resolve_container_runtime_cmd(di[Configuration])
     di[SseServerTransport] = SseServerTransport("/mcp/messages/")  # global SSE transport
-    di[ProviderContainer] = ProviderContainer()
+
+    di[ProviderContainer] = ProviderContainer(
+        env_repository=di[IEnvVariableRepository], autostart_providers=di[Configuration].autostart_providers
+    )
     di[TelemetryCollectorManager] = TelemetryCollectorManager()
 
     # Ensure cache directory

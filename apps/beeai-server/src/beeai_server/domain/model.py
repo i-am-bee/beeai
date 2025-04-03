@@ -15,12 +15,15 @@
 import abc
 import base64
 import logging
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, suppress
+from datetime import timedelta
 from enum import StrEnum
 from typing import Literal, Optional, Self, Any
 
 import httpx
 import yaml
+from aiodocker import DockerError
+
 from acp.client.sse import sse_client
 from beeai_server.adapters.interface import IContainerBackend
 from beeai_server.configuration import Configuration
@@ -56,7 +59,10 @@ logger = logging.getLogger(__name__)
 
 class LoadedProviderStatus(StrEnum):
     not_installed = "not_installed"
-    initializing = "initializing"
+    install_error = "install_error"
+    installing = "installing"
+    starting = "starting"
+    ready = "ready"
     running = "running"
     error = "error"
 
@@ -163,6 +169,7 @@ ProviderLocation = GithubProviderLocation | DockerImageProviderLocation
 class BaseProvider(BaseModel, abc.ABC):
     id: ID
     manifest: AgentManifest
+    auto_stop_timeout: timedelta | None = Field(exclude=True)
 
     def check_env(self, env: dict[str, str] | None = None, raise_error: bool = True) -> list[EnvVar]:
         required_env = {var.name for var in self.manifest.env if var.required}
@@ -180,6 +187,12 @@ class BaseProvider(BaseModel, abc.ABC):
 
     async def is_installed(self) -> bool:
         return True
+
+    async def install(self, logs_container: LogsContainer | None = None):
+        pass
+
+    async def uninstall(self):
+        pass
 
     @abc.abstractmethod
     async def mcp_client(
@@ -199,6 +212,7 @@ class BaseProvider(BaseModel, abc.ABC):
 class ManagedProvider(BaseProvider, extra="allow"):
     source: ProviderSource
     registry: ResolvedGithubUrl | None = None
+    auto_stop_timeout: timedelta | None = Field(timedelta(minutes=5), exclude=True)
 
     @classmethod
     async def load_from_source(cls, source: ProviderSource, registry: ResolvedGithubUrl | None = None) -> Self:
@@ -217,6 +231,10 @@ class ManagedProvider(BaseProvider, extra="allow"):
         if await self.source.is_installed():
             return
         await self.source.install(logs_container=logs_container)
+
+    async def uninstall(self):
+        with suppress(DockerError):
+            await self.source.uninstall()
 
     @property
     def _global_env(self) -> dict[str, str]:

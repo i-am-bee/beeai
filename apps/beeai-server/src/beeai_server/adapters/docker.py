@@ -15,7 +15,6 @@
 import asyncio
 import base64
 import logging
-from asyncio import CancelledError
 from contextlib import asynccontextmanager, suppress, AsyncExitStack
 from typing import Iterable, AsyncGenerator
 
@@ -25,7 +24,7 @@ import anyio.to_thread
 import httpx
 from aiodocker import Docker, DockerError
 from aiohttp.web_exceptions import HTTPError
-from tenacity import AsyncRetrying, retry_if_exception_type
+from tenacity import AsyncRetrying, retry_if_exception_type, stop_after_attempt, wait_fixed
 
 from beeai_server.adapters.interface import IContainerBackend
 from beeai_server.configuration import Configuration, OCIRegistryConfiguration
@@ -34,7 +33,7 @@ from beeai_server.domain.constants import DOCKER_MANIFEST_LABEL_NAME
 from beeai_server.utils.docker import DockerImageID, replace_localhost_url
 from beeai_server.utils.github import ResolvedGithubUrl
 from beeai_server.utils.logs_container import LogsContainer
-
+from beeai_server.utils.utils import cancel_task
 
 logger = logging.getLogger(__name__)
 
@@ -60,11 +59,7 @@ class DockerContainerBackend(IContainerBackend):
                 await docker.images.pull(alpine)
             container = await docker.containers.create_or_replace(
                 name="beeai-host-network-test",
-                config={
-                    "Image": "alpine:3.21.3",
-                    "Cmd": ["getent", "hosts", "host.docker.internal"],
-                    "HostConfig": {"AutoRemove": True},
-                },
+                config={"Image": "alpine:3.21.3", "Cmd": ["getent", "hosts", "host.docker.internal"]},
             )
             await container.start()
             resp = await container.wait()
@@ -119,8 +114,13 @@ class DockerContainerBackend(IContainerBackend):
         async with self._docker as docker:
             await docker.images.delete(str(image), force=True)
 
-    async def pull_image(self, *, image: DockerImageID, logs_container: LogsContainer | None = None):
+    async def pull_image(
+        self, *, image: DockerImageID, logs_container: LogsContainer | None = None, force: bool = False
+    ):
         async with self._docker as docker:
+            with suppress(DockerError):
+                await docker.images.inspect(str(image))
+                return  # image already exists
             if logs_container:
                 progress = {}
                 async for message in docker.pull(str(image), auth=self._get_auth_header(image), stream=True):
@@ -196,24 +196,24 @@ class DockerContainerBackend(IContainerBackend):
                         f"{container_port}/tcp": [{"HostIp": "0.0.0.0", "HostPort": str(host_port)}]
                         for host_port, container_port in port_mappings.items()
                     }
-                container = await docker.containers.create_or_replace(name=name, config=config)
-                await container.start()
-                container_id = container.id
+                async for attempt in AsyncRetrying(
+                    stop=stop_after_attempt(5),
+                    wait=wait_fixed(1),
+                    retry=retry_if_exception_type(DockerError),
+                    reraise=True,
+                ):
+                    with attempt:
+                        container = await docker.containers.create_or_replace(name=name, config=config)
+                        await container.start()
+                        container_id = container.id
                 if logs_container:
                     logs_streaming_task = asyncio.create_task(self.stream_logs(container_id, logs_container))
                 yield container_id
         finally:
             with anyio.CancelScope(shield=True):
                 if container_id:
-                    await _cancel_task(logs_streaming_task)
+                    await cancel_task(logs_streaming_task)
                     async with self._docker as docker:
                         with suppress(DockerError):
-                            container = await docker.containers.get(name)
+                            container = await docker.containers.get(container_id)
                             await container.delete(force=True)
-
-
-async def _cancel_task(task: asyncio.Task[None] | None):
-    if task:
-        task.cancel()
-        with suppress(CancelledError):
-            await task

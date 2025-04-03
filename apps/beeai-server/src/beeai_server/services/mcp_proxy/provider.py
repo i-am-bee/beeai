@@ -13,45 +13,53 @@
 # limitations under the License.
 
 import asyncio
+import functools
 import logging
-from asyncio import CancelledError
-from contextlib import AsyncExitStack
+from asyncio import TimerHandle
+from contextlib import AsyncExitStack, asynccontextmanager
 from datetime import timedelta
-from enum import StrEnum
-from typing import Self, Literal, Final, TypeVar
+from typing import Callable, Final, TypeVar, AsyncIterator
 
 import anyio
-from anyio import create_task_group, CancelScope
+from anyio import create_task_group
+
+from acp import ClientSession, InitializeResult, Resource, ServerSession, Tool
+from acp.shared.context import RequestContext
+from acp.shared.session import ReceiveNotificationT, ReceiveRequestT, RequestResponder, SendResultT
+from acp.types import Agent, AgentTemplate, Prompt
 from anyio.abc import TaskGroup
 from anyio.streams.memory import MemoryObjectReceiveStream
-from kink import inject
-from pydantic import BaseModel
-from structlog.contextvars import bind_contextvars, unbind_contextvars
-
-from acp import ClientSession, Tool, Resource, InitializeResult, ServerSession, types
-from acp.shared.context import RequestContext
-from acp.shared.session import RequestResponder, ReceiveRequestT, SendResultT, ReceiveNotificationT
-from acp.types import AgentTemplate, Prompt, Agent
-from beeai_sdk.schemas.base import Output, Input
+from beeai_sdk.schemas.base import Input, Output
 from beeai_server.adapters.interface import IEnvVariableRepository
 from beeai_server.domain.model import (
+    BaseProvider,
+    EnvVar,
     LoadedProviderStatus,
     LoadProviderErrorMessage,
-    EnvVar,
-    BaseProvider,
-    UnmanagedProvider,
     ManagedProvider,
 )
-from beeai_server.exceptions import LoadFeaturesError
 from beeai_server.services.mcp_proxy.constants import NotificationStreamType
 from beeai_server.services.mcp_proxy.notification_hub import NotificationHub
 from beeai_server.utils.logs_container import LogsContainer
-from beeai_server.utils.periodic import Periodic
-from beeai_server.utils.utils import extract_messages
+from beeai_server.utils.utils import extract_messages, cancel_task
+from pydantic import BaseModel
+from structlog.contextvars import bind_contextvars, unbind_contextvars
 
 logger = logging.getLogger(__name__)
 
 BaseModelT = TypeVar("BaseModelT", bound=BaseModel)
+
+
+def bind_logging_context(method: Callable) -> Callable:
+    @functools.wraps(method)
+    def _fn(self: "LoadedProvider", *args, **kwargs):
+        bind_contextvars(provider=self.id)
+        try:
+            return method(self, *args, **kwargs)
+        finally:
+            unbind_contextvars("provider")
+
+    return _fn
 
 
 class LoadedProvider:
@@ -64,15 +72,11 @@ class LoadedProvider:
             use `provider.incoming_messages` instead of `provider.session.incoming messages` as the session may break
     """
 
-    RECONNECT_INTERVAL = timedelta(seconds=10)
-    PING_TIMEOUT = timedelta(seconds=5)
     INITIALIZE_TIMEOUT = timedelta(seconds=30)
-    session: ClientSession | None = None
     incoming_messages: MemoryObjectReceiveStream[
         RequestResponder[ReceiveRequestT, SendResultT] | ReceiveNotificationT | Exception
     ]
     status: LoadedProviderStatus = LoadedProviderStatus.not_installed
-    retries: int = 0
     last_error: LoadProviderErrorMessage | None = None
     provider: BaseProvider
     id: str
@@ -83,9 +87,10 @@ class LoadedProvider:
     missing_configuration: list[EnvVar] = []
 
     def __init__(
-        self, provider: BaseProvider, env: dict[str, str], reconnect_interval: timedelta | None = None
+        self, provider: BaseProvider, env: dict[str, str], notification_hub: NotificationHub, autostart=True
     ) -> None:
         self.provider = provider
+        self.notification_hub = notification_hub
         self.env = env
         self.id = provider.id
         self._agents = self._with_id(
@@ -100,36 +105,56 @@ class LoadedProvider:
             ]
         )
         self.logs_container = LogsContainer()
-        self._open = False
-        self._ensure_session_periodic = Periodic(
-            executor=self._ensure_session,
-            period=reconnect_interval or self.RECONNECT_INTERVAL,
-            name=f"Ensure session for provider: {provider.id}",
-        )
+        self._session: ClientSession | None = None
+        self._start_task = None
         self._session_exit_stack = AsyncExitStack()
         self._writer_exit_stack = AsyncExitStack()
         self._write_messages, self.incoming_messages = anyio.create_memory_object_stream()
-        self._stopping = asyncio.Event()
-        self._stopped = asyncio.Event()
-        self._supports_agents = True
-        self._initialize_result: InitializeResult | None = None
+        self._autostart = autostart
+        self._auto_stop_timeout: TimerHandle | None = None
 
-    async def init(self):
-        return await self.__aenter__()
+    async def handle_reload_env(self, env: dict[str, str]) -> None:
+        self.env = env
+        if self.status in {LoadedProviderStatus.running, LoadedProviderStatus.starting, LoadedProviderStatus.error}:
+            await self.stop()
+        if self._autostart:
+            await self.start()
 
-    async def close(self):
-        return await self.__aexit__(None, None, None)
+    @asynccontextmanager
+    @bind_logging_context
+    async def session(self) -> AsyncIterator[ClientSession]:
+        if self.status not in {
+            LoadedProviderStatus.not_installed,
+            LoadedProviderStatus.install_error,
+            LoadedProviderStatus.running,
+        }:
+            await self.start()
+        try:
+            with anyio.fail_after(timedelta(seconds=5).total_seconds()):
+                await self._session.send_ping()
+        except BaseException as ex:
+            message = f"Restoring broken session for provider {self.id}: {extract_messages(ex)}"
+            logger.warning(message)
+            self.status = LoadedProviderStatus.error
+            self.last_error = LoadProviderErrorMessage(message=message)
+            await self.start()
+        try:
+            yield self._session
+        finally:
+            if not self._autostart:
+                if self._auto_stop_timeout:
+                    self._auto_stop_timeout.cancel()
 
-    class _LoadFeature(StrEnum):
-        agent_templates = "agent_templates"
-        agents = "agents"
-        tools = "tools"
-        resources = "resources"
-        prompts = "prompts"
+                # stop after timeout
+                if self.provider.auto_stop_timeout and not self._autostart:
 
-        @classmethod
-        def all(cls) -> list[Self]:
-            return [member.value for member in cls]
+                    async def stop_callback():
+                        await asyncio.sleep(self.provider.auto_stop_timeout.total_seconds())
+                        logger.info("Stopping provider after timeout")
+                        await self.stop()
+
+                    self._auto_stop_timeout = asyncio.create_task(stop_callback())
+                    self._auto_stop_timeout.add_done_callback(lambda task: task.cancel())
 
     def _with_id(self, objects: list[BaseModelT]) -> list[BaseModelT]:
         for obj in objects:
@@ -143,151 +168,121 @@ class LoadedProvider:
             for agent in self._agents
         ]
 
-    async def _load_features(self, features: set[_LoadFeature] | Literal["all"] = "all"):
-        """
-        TODO: Use low lever requests - pagination not implemented in mcp client?
-        """
-        features = self._LoadFeature.all() if features == "all" else features
-        logger.info(f"Loading features for provider {self.provider.id}: {list(features)}.")
-        try:
-            with anyio.fail_after(self.INITIALIZE_TIMEOUT.total_seconds()):
-                if (
-                    self._initialize_result.capabilities.agents
-                    and self._initialize_result.capabilities.agents.templates
-                    and self._LoadFeature.agent_templates in features
-                ):
-                    self.agent_templates = self._with_id((await self.session.list_agent_templates()).agentTemplates)
-                    logger.info(f"Loaded {len(self.agent_templates)} agent templates")
-                if self._initialize_result.capabilities.agents and self._LoadFeature.agents in features:
-                    self._agents = (await self.session.list_agents()).agents
-                    logger.info(f"Loaded {len(self.agents)} agents")
-                if self._initialize_result.capabilities.tools and self._LoadFeature.tools in features:
-                    self.tools = self._with_id((await self.session.list_tools()).tools)
-                    logger.info(f"Loaded {len(self.tools)} tools")
-                if self._initialize_result.capabilities.resources and self._LoadFeature.resources in features:
-                    self.resources = self._with_id((await self.session.list_resources()).resources)
-                    logger.info(f"Loaded {len(self.resources)} resources")
-                if self._initialize_result.capabilities.prompts and self._LoadFeature.prompts in features:
-                    self.prompts = self._with_id((await self.session.list_prompts()).prompts)
-                    logger.info(f"Loaded {len(self.prompts)} prompts")
-        except Exception as ex:
-            logger.warning(f"Unable to load features from provider: {ex!r}")
-            raise LoadFeaturesError(extract_messages(ex)) from ex
+    async def _load_features(self, session: ClientSession, initialize_result: InitializeResult):
+        logger.info(f"Loading features for provider {self.provider.id}.")
+        if initialize_result.capabilities.agents and initialize_result.capabilities.agents.templates:
+            self.agent_templates = self._with_id((await session.list_agent_templates()).agentTemplates)
+        if initialize_result.capabilities.agents:
+            self._agents = (await session.list_agents()).agents
+        if initialize_result.capabilities.tools:
+            self.tools = self._with_id((await session.list_tools()).tools)
+        if initialize_result.capabilities.resources:
+            self.resources = self._with_id((await session.list_resources()).resources)
+        if initialize_result.capabilities.prompts:
+            self.prompts = self._with_id((await session.list_prompts()).prompts)
+        logger.info(
+            f"Loaded features - "
+            f"Agents: {len(self.agents)}, "
+            f"Agent Templates: {len(self.agent_templates)}, "
+            f"Tools: {len(self.tools)}, "
+            f"Resources: {len(self.resources)}, "
+            f"Prompts: {len(self.prompts)}"
+        )
 
-    async def _stream_notifications(self, task_group: TaskGroup):
-        async for message in self.session.incoming_messages:
-            match message:
-                case types.ServerNotification(root=types.ResourceListChangedNotification()):
-                    task_group.start_soon(self._load_features, {self._LoadFeature.resources})
-                case types.ServerNotification(root=types.ToolListChangedNotification()):
-                    task_group.start_soon(self._load_features, {self._LoadFeature.tools})
-                case types.ServerNotification(root=types.PromptListChangedNotification()):
-                    task_group.start_soon(self._load_features, {self._LoadFeature.prompts})
-                case types.ServerNotification(root=types.AgentListChangedNotification()):
-                    task_group.start_soon(self._load_features, {self._LoadFeature.agents})
-            await self._write_messages.send(message)
-
+    @asynccontextmanager
     async def _initialize_session(self):
-        logger.info("Initializing session")
-        await self._close_session()
-        # Just do not propagate the cancellation to the periodic task please???
-        self._session_exit_stack.enter_context(CancelScope())
-        cancel_group = await self._session_exit_stack.enter_async_context(create_task_group())
+        # Just do not propagate the cancellation to the parent task please???
+        async with create_task_group():
+            async with self.provider.mcp_client(env=self.env, logs_container=self.logs_container) as streams:
+                async with ClientSession(*streams) as session:
+                    with anyio.fail_after(self.INITIALIZE_TIMEOUT.total_seconds()):
+                        initialize_result = await session.initialize()
+                        await self._load_features(session, initialize_result)
 
-        async def _listen_for_exit():
-            await self._stopping.wait()
-            cancel_group.cancel_scope.cancel()
+                        async def _stream_notifications():
+                            async for message in session.incoming_messages:
+                                await self._write_messages.send(message)
 
-        exit_task = asyncio.create_task(_listen_for_exit())
+                        try:
+                            stream_task = asyncio.create_task(_stream_notifications())
+                            yield session
+                        finally:
+                            await cancel_task(stream_task)
+
+    @bind_logging_context
+    async def install(self, logs_container: LogsContainer | None = None) -> None:
+        if self.status not in {LoadedProviderStatus.not_installed, LoadedProviderStatus.install_error}:
+            return
         try:
-            mcp_client = self.provider.mcp_client(env=self.env, logs_container=self.logs_container)
-            read_stream, write_stream = await self._session_exit_stack.enter_async_context(mcp_client)
-            session = await self._session_exit_stack.enter_async_context(ClientSession(read_stream, write_stream))
-            with anyio.fail_after(self.INITIALIZE_TIMEOUT.total_seconds()):
-                self._initialize_result = await session.initialize()
-            tg = await self._session_exit_stack.enter_async_context(anyio.create_task_group())
-            self._session_exit_stack.callback(lambda: tg.cancel_scope.cancel())
+            self.status = LoadedProviderStatus.installing
+            logger.info(f"Installing provider {self.id}")
+            self.logs_container.clear()
+            await self.provider.install(logs_container=logs_container or self.logs_container)
+            self.logs_container.clear()
+            self.status = LoadedProviderStatus.ready
+        except Exception as ex:
+            self.last_error = LoadProviderErrorMessage(message=str(extract_messages(ex)))
+            self.provider.status = LoadedProviderStatus.install_error
 
-            self.session = session
-            tg.start_soon(self._stream_notifications, tg)
-            await self._load_features()
-        finally:
-            exit_task.cancel()
+    async def uninstall(self):
+        await self.stop()
+        await self.provider.uninstall()
+        self.status = LoadedProviderStatus.not_installed
 
-    async def _close_session(self):
+    @bind_logging_context
+    async def start(self):
+        if self.status not in {LoadedProviderStatus.ready, LoadedProviderStatus.error}:
+            logger.warning(f"Attempting to start provider that is not in a ready state: {self.status}")
+            return
+        if not await self.provider.is_installed():
+            logger.warning("Provider was uninstalled externally. Resetting state to 'not_installed'")
+            self.status = LoadedProviderStatus.not_installed
+            return
+        await self.stop()
+        self.status = LoadedProviderStatus.starting
         try:
+            self.missing_configuration = self.provider.check_env(env=self.env)
+            initialize_coroutine = self._session_exit_stack.enter_async_context(self._initialize_session())
+            self._start_task = asyncio.create_task(initialize_coroutine)
+            self._session = await self._start_task
+            await self.notification_hub.register(self)
+            self.status = LoadedProviderStatus.running
+        except BaseException as ex:
+            self.last_error = LoadProviderErrorMessage(message=f"Error connecting to provider: {extract_messages(ex)}")
+            self.status = LoadedProviderStatus.error
+
+    @bind_logging_context
+    async def stop(self):
+        try:
+            await self.notification_hub.remove(self)
+            if self.status == LoadedProviderStatus.starting:
+                await cancel_task(self._start_task)
             await self._session_exit_stack.aclose()
         except Exception as ex:
             logger.warning(f"Exception occurred when stopping session: {ex!r}")
             self._session_exit_stack.pop_all()
 
-    async def _ensure_session(self):
-        bind_contextvars(provider=self.id)
-        if self._stopping.is_set():
-            await self._close_session()
-            self._stopped.set()
-            unbind_contextvars("provider")
-            return
-        try:
-            if self.session:
-                with anyio.fail_after(self.PING_TIMEOUT.total_seconds()):
-                    await self.session.send_ping()
-                return
-            self.missing_configuration = self.provider.check_env(env=self.env)
-            self.status = LoadedProviderStatus.initializing
-            await self._initialize_session()
-            self.status = LoadedProviderStatus.running
-            self.retries = 0
-        except LoadFeaturesError as ex:
-            self.last_error = LoadProviderErrorMessage(message=str(extract_messages(ex)))
-            self.status = LoadedProviderStatus.error
-        except TimeoutError:
-            logger.warning("The server did not respond in time, we assume it is processing a request.")
-        except CancelledError:
-            self.last_error = LoadProviderErrorMessage(message="Cancelled")
-            self.status = LoadedProviderStatus.error
-            # This is a mess, cancelling task_scope from anyio spuriously cancels everything left and right
-            # Including this periodic task
-            # This whole thing needs to be rewritten, possibly using pure asyncio
-            # Uncancel also doesn't work sometimes...
-            asyncio.current_task().uncancel()
-        except BaseException as ex:  # TODO narrow exception scope
-            self.last_error = LoadProviderErrorMessage(message=f"Error connecting to provider: {extract_messages(ex)}")
-            self.status = LoadedProviderStatus.error
-        finally:
-            if self.status == LoadedProviderStatus.error:
-                logger.warning(f"Error connecting to provider: {self.last_error}")
-                self.retries += 1
-                self.session = None  # Mark session as broken - reinitialize connection in next period
-            unbind_contextvars("provider")
+        if self.status == self.status.running:
+            self.status = LoadedProviderStatus.ready
+
+    async def initialize(self):
+        await self._writer_exit_stack.enter_async_context(self._write_messages)
+        if self.status == LoadedProviderStatus.not_installed and await self.provider.is_installed():
+            self.status = LoadedProviderStatus.ready
+            if self._autostart:
+                await self.start()
+
+    async def close(self):
+        await self._writer_exit_stack.aclose()
+        await self.stop()
 
     async def __aenter__(self):
-        if not await self.provider.is_installed():
-            self.status = LoadedProviderStatus.not_installed
-            return
-        self.status = LoadedProviderStatus.initializing
-        self._stopping.clear()
-        self._stopped.clear()
-        logger.info("Loading provider")
-        await self._writer_exit_stack.enter_async_context(self._write_messages)
-        await self._ensure_session_periodic.start()
+        await self.initialize()
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
-        try:
-            if self.status == LoadedProviderStatus.not_installed:
-                return
-            self._stopping.set()
-            await self._writer_exit_stack.aclose()
-            self._ensure_session_periodic.poke()
-            await self._stopped.wait()
-            await self._ensure_session_periodic.stop()
-            logger.info("Removing provider")
-        except BaseException as ex:
-            logger.critical(f"Exception occurred during provider cleanup: {ex}")
-            raise
+        await self.close()
 
 
-@inject
 class ProviderContainer:
     """
     Manage group of LoadedProvider instances:
@@ -297,22 +292,19 @@ class ProviderContainer:
 
     RELOAD_PERIOD: Final = timedelta(minutes=1)
 
-    def __init__(self, env_repository: IEnvVariableRepository):
+    def __init__(
+        self,
+        env_repository: IEnvVariableRepository,
+        autostart_providers: bool = True,
+    ):
         self._managed_providers: dict[str, ManagedProvider] = {}
         self._env_repository = env_repository
-        self.unmanaged_providers: dict[str, UnmanagedProvider] = {}
         self.loaded_providers: dict[str, LoadedProvider] = {}
         self._notification_hub = NotificationHub()
         self._provider_change_task_group: TaskGroup | None = None
         self._env: dict[str, str] | None = None
-        self._remove_closed_unmanaged_provider_periodic = Periodic(
-            executor=self._remove_broken_unmanaged_providers,
-            period=timedelta(seconds=10),
-            name="Remove closed unmanaged providers",
-        )
-
-        # Cleanup
         self._exit_stack = AsyncExitStack()
+        self._autostart = autostart_providers
 
     @property
     def tools(self) -> list[Tool]:
@@ -362,105 +354,35 @@ class ProviderContainer:
             session=session, streams=streams, request_context=request_context
         )
 
-    async def _handle_managed_providers_change(self) -> None:
-        """
-        Handle updates to providers repository.
-
-        This function enters various anyio CancelScopes internally. Hence all operations must be called from
-        the same asyncio task group to prevent stack corruption:
-        https://anyio.readthedocs.io/en/stable/cancellation.html#avoiding-cancel-scope-stack-corruption
-        """
-        try:
-            if self._env is None:
-                self._env = await self._env_repository.get_all()
-
-            managed_providers = {
-                pid: provider for pid, provider in self.loaded_providers.items() if pid not in self.unmanaged_providers
-            }
-            desired_provider_ids = self._managed_providers.keys()
-            added_providers = desired_provider_ids - managed_providers.keys()
-            added_providers = [
-                LoadedProvider(p, env=p.extract_env(self._env))
-                for p in self._managed_providers.values()
-                if p.id in added_providers
-            ]
-            removed_providers = [p for p in managed_providers.values() if p.id not in desired_provider_ids]
-
-            removed_providers and logger.info(f"Removing {len(removed_providers)} old providers")
-            added_providers and logger.info(f"Discovered {len(added_providers)} new providers")
-
-            async with anyio.create_task_group() as tg:
-                for provider in removed_providers:
-                    tg.start_soon(self._close_provider, provider)
-                for provider in added_providers:
-                    tg.start_soon(self._init_provider, provider)
-
-        except Exception as ex:
-            logger.critical(f"Failed to reload providers: {extract_messages(ex)}")
-
-    async def _init_provider(self, provider: LoadedProvider):
-        await provider.init()
-        self.loaded_providers[provider.id] = provider
-        if provider.status != LoadedProviderStatus.not_installed:
-            await self._notification_hub.register(provider)
-
-    async def _close_provider(self, provider: LoadedProvider):
-        await provider.close()
-        self.loaded_providers.pop(provider.id, None)
-        self.unmanaged_providers.pop(provider.id, None)
-        await self._notification_hub.remove(provider)
-
-    def handle_managed_providers_change(self, updated_providers: list[ManagedProvider]) -> None:
-        self._managed_providers = {p.id: p for p in updated_providers}
-        self._provider_change_task_group.start_soon(self._handle_managed_providers_change)
-
-    async def load_or_restart(self, provider: ManagedProvider):
-        await self.load_or_restart_provider(provider)
-
-    async def remove(self, provider: ManagedProvider):
-        if loaded_provider := self.loaded_providers.get(provider.id, None):
-            await self._close_provider(loaded_provider)
-
-    async def add_unmanaged_provider(self, provider: UnmanagedProvider):
-        await self.load_or_restart_provider(provider, reconnect_interval=timedelta(seconds=1))
-        self.unmanaged_providers[provider.id] = provider
-
-    async def _remove_broken_unmanaged_providers(self):
-        unmanaged_providers = [p for p in self.loaded_providers.values() if p.id in self.unmanaged_providers]
-        for provider in unmanaged_providers:
-            if provider.retries >= 3:
-                logger.warning(f"Removing disconnected unmanaged provider {provider.id}")
-                await self._close_provider(provider)
-
-    async def load_or_restart_provider(self, provider: BaseProvider, reconnect_interval: timedelta | None = None):
-        if loaded_provider := self.loaded_providers.get(provider.id, None):
-            await self._close_provider(loaded_provider)
-        loaded_provider = LoadedProvider(
-            provider, env=provider.extract_env(self._env), reconnect_interval=reconnect_interval
+    async def add(self, provider: BaseProvider):
+        env = await self._env_repository.get_all()
+        self.loaded_providers[provider.id] = LoadedProvider(
+            provider,
+            env=provider.extract_env(env),
+            notification_hub=self._notification_hub,
+            autostart=self._autostart,
         )
-        await self._init_provider(loaded_provider)
+        await self.loaded_providers[provider.id].initialize()
 
-    async def _handle_reload_on_env_update(self):
+    async def remove(self, provider: BaseProvider):
+        provider = self.loaded_providers.pop(provider.id)
+        await provider.close()
+
+    async def handle_reload_on_env_update(self):
         self._env = await self._env_repository.get_all()
-        async with create_task_group() as tg:
-            for provider in self._managed_providers.values():
-                tg.start_soon(self.load_or_restart_provider, provider)
-
-    def handle_reload_on_env_update(self):
-        self._provider_change_task_group.start_soon(self._handle_reload_on_env_update)
+        await asyncio.gather(
+            *(
+                loaded_provider.handle_reload_env(env=loaded_provider.provider.extract_env(self._env))
+                for loaded_provider in self.loaded_providers.values()
+            )
+        )
 
     async def __aenter__(self):
         await self._exit_stack.enter_async_context(self._notification_hub)
-        self._provider_change_task_group = await self._exit_stack.enter_async_context(create_task_group())
-        self._provider_change_task_group.start_soon(self._handle_managed_providers_change)
-        await self._remove_closed_unmanaged_provider_periodic.start()
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         try:
-            await self._remove_closed_unmanaged_provider_periodic.stop()
-            async with anyio.create_task_group() as tg:
-                for provider in self.loaded_providers.values():
-                    tg.start_soon(self._close_provider, provider)
+            await asyncio.gather(*(provider.stop() for provider in self.loaded_providers.values()))
             self.loaded_providers = {}
             await self._exit_stack.aclose()
         except Exception as ex:

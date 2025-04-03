@@ -26,6 +26,8 @@ from beeai_server.utils.logs_container import LogsContainer, ProcessLogMessage
 from kink import inject
 from pydantic import BaseModel
 
+from beeai_server.utils.utils import cancel_task
+
 logger = logging.getLogger(__name__)
 
 
@@ -102,7 +104,7 @@ class TelemetryCollectorManager:
     async def _stop_collector(self):
         try:
             if self._start_task:
-                self._start_task.cancel()
+                await cancel_task(self._start_task)
             await self._collector_exit_stack.aclose()
         except BaseException as ex:
             logger.warning(f"Exception occurred when stopping collector: {ex!r}")
