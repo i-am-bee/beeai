@@ -21,8 +21,8 @@ import inspect
 import os
 from pathlib import Path
 import sys
+import httpx
 import requests
-from requests.adapters import HTTPAdapter, Retry
 from functools import partial
 
 import anyio.to_thread
@@ -76,6 +76,36 @@ def syncify_object_dynamic(ctx: Context):
     return ctx
 
 
+async def async_request_with_retry(
+    request_func: Callable[[httpx.AsyncClient], Coroutine[Any, Any, httpx.Response]],
+    max_retries: int = 5,
+    backoff_factor: float = 1,
+):
+    async with httpx.AsyncClient() as client:
+        retries = 0
+        while retries < max_retries:
+            try:
+                response = await request_func(client)
+                response.raise_for_status()
+                return response.json()
+            except httpx.HTTPStatusError as e:
+                if e.response.status_code in [429, 500, 502, 503, 504, 509]:
+                    retries += 1
+                    backoff = backoff_factor * (2 ** (retries - 1))
+                    logger.warning(f"Request retry (try {retries}/{max_retries}), waiting {backoff} seconds...")
+                    await asyncio.sleep(backoff)
+                else:
+                    logger.debug("A non-retryable error was encountered.")
+                    raise
+            except httpx.RequestError:
+                retries += 1
+                backoff = backoff_factor * (2 ** (retries - 1))
+                logger.warning(f"Request retry (try {retries}/{max_retries}), waiting {backoff} seconds...")
+                await asyncio.sleep(backoff)
+
+        raise requests.exceptions.ConnectionError(f"Request failed after {max_retries} retries.")
+
+
 class SilentOTLPSpanExporter(OTLPSpanExporter):
     def export(self, spans):
         try:
@@ -116,6 +146,26 @@ class Server:
         logger.debug("Registering agent function")
 
         def decorator(fn: Callable) -> Callable:
+            # check agent's function signature
+            is_generator = inspect.isasyncgenfunction(fn) or inspect.isgeneratorfunction(fn)
+            signature = inspect.signature(fn)
+            parameters = list(signature.parameters.values())
+
+            # validate agent's function
+            if is_generator:
+                if len(parameters) != 1:
+                    raise TypeError("The agent generator function must have one 'input' argument")
+            else:
+                if len(parameters) == 0:
+                    raise TypeError("The agent function must have at least 'input' argument")
+                if len(parameters) > 2:
+                    raise TypeError("The agent function must have only 'input' and 'ctx' arguments")
+                if len(parameters) == 2 and parameters[1].name != "ctx":
+                    raise TypeError("The second argument of the agent function must be 'ctx'")
+
+            input = parameters[0].annotation
+            output = signature.return_annotation
+
             @functools.wraps(fn)
             def generator_wrapper(input: Input, ctx: Context):
                 """Converts agents sync decorator function to function with callbacks"""
@@ -136,29 +186,17 @@ class Server:
                 else:
                     return last_value
 
+            @functools.wraps(fn)
+            async def two_arguments_wrapper(input: Input, ctx: Context):
+                """Converts agents function with one input to function with two inputs"""
+                return fn(input)
+
             if inspect.isgeneratorfunction(fn):
-                if len(inspect.signature(fn).parameters.keys()) != 1:
-                    raise TypeError("The agent generator function must have one 'input' argument")
                 func = generator_wrapper
             elif inspect.isasyncgenfunction(fn):
-                if len(inspect.signature(fn).parameters.keys()) != 1:
-                    raise TypeError("The agent generator function must have one 'input' argument")
                 func = async_generator_wrapper
             else:
-                func = fn
-
-            # check agent's function signature
-            signature = inspect.signature(func)
-            parameters = list(signature.parameters.values())
-            if len(parameters) == 0:
-                raise TypeError("The agent function must have at least 'input' argument")
-            if len(parameters) > 2:
-                raise TypeError("The agent function must have only 'input' and 'ctx' arguments")
-            if len(parameters) == 2 and parameters[1].name != "ctx":
-                raise TypeError("The second argument of the agent function must be 'ctx'")
-
-            input = parameters[0].annotation
-            output = signature.return_annotation
+                func = fn if len(parameters) == 2 else two_arguments_wrapper
 
             def create_agent_name_from_path():
                 """Create an agent name from the current path"""
@@ -171,15 +209,15 @@ class Server:
             name = self._manifest.get("name") or create_agent_name_from_path()
 
             @functools.wraps(func)
-            async def sync_fn(*args, **kwargs):
+            async def sync_fn(input: Input, ctx: Context):
                 """Converts agents sync function to async function with two parameters"""
-                ctx = syncify_object_dynamic(kwargs["ctx"])
-                return await anyio.to_thread.run_sync(partial(func, ctx=ctx) if len(parameters) == 2 else func, *args)
+                ctx = syncify_object_dynamic(ctx)
+                return await anyio.to_thread.run_sync(partial(func, ctx=ctx), input)
 
             @functools.wraps(func)
-            async def async_fn(*args, **kwargs):
+            async def async_fn(input: Input, ctx: Context):
                 """Converts agents async function to function with two parameters"""
-                return await func(*args, **kwargs) if len(parameters) == 2 else await func(*args)
+                return await func(input, ctx=ctx)
 
             if not output:
                 logger.warning("Output schema not specified, return type should be provided.")
@@ -195,6 +233,7 @@ class Server:
             )
             self.server.add_agent(agent=self._agent)
             logger.info(f"Agent with name '{name}' created")
+            functools.update_wrapper(func, fn)
             return func
 
         return decorator
@@ -266,22 +305,14 @@ class Server:
         try:
             url = os.getenv("PLATFORM_URL", "http://127.0.0.1:8333")
 
-            # register agent to beeai platform with retries
-            session = requests.Session()
-            retry_strategy = Retry(total=5, backoff_factor=1, status_forcelist=[429, 500, 502, 503, 504, 509])
-            session.mount("http://", HTTPAdapter(max_retries=retry_strategy))
-            session.mount("https://", HTTPAdapter(max_retries=retry_strategy))
-
-            response = session.post(
-                f"{url}/api/v1/provider/register/unmanaged",
-                json=request_data,
+            await async_request_with_retry(
+                lambda client: client.post(f"{url}/api/v1/provider/register/unmanaged", json=request_data)
             )
-            response.raise_for_status()
             logger.info("Agent registered to the beeai server.")
 
             # check missing env keyes
-            envs_request = session.get(f"{url}/api/v1/env")
-            envs = envs_request.json().get("env")
+            envs_request = await async_request_with_retry(lambda client: client.get(f"{url}/api/v1/env"))
+            envs = envs_request.get("env")
 
             # register all available envs
             missing_keyes = []
@@ -294,6 +325,8 @@ class Server:
                     missing_keyes.append(env)
             if len(missing_keyes):
                 logger.error(f"Can not run agent, missing required env variables: {missing_keyes}")
+                raise Exception("Missing env variables")
+
         except requests.exceptions.ConnectionError as e:
             logger.warning(f"Can not reach server, check if running on {url} : {e}")
         except requests.exceptions.HTTPError or Exception as e:
