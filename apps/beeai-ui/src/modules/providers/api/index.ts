@@ -19,6 +19,9 @@ import { api } from '#api/index.ts';
 import type { CreateProviderBody } from './types';
 
 export async function createProvider({ body }: { body: CreateProviderBody }) {
+  // TODO: Agent import feature is temporarily removed as it is broken due to API changes
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
   const response = await api.POST('/api/v1/provider', { body });
 
   if (response.error != null) {
@@ -30,7 +33,7 @@ export async function createProvider({ body }: { body: CreateProviderBody }) {
 
 export async function deleteProvider({ id }: { id: string }) {
   const response = await api.POST('/api/v1/provider/delete', {
-    body: { location: id },
+    body: { id },
   });
 
   if (response.error != null) {

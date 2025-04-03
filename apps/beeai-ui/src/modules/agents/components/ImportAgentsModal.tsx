@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+// TODO: Agent import feature is temporarily removed as it is broken due to API changes
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
+
 import {
   Button,
   FormLabel,
