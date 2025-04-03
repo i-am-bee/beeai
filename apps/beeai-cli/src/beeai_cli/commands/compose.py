@@ -29,4 +29,4 @@ async def sequential(
 ) -> None:
     """Compose agents into a sequential workflow."""
     # await run_agent(name="sequential-workflow", input=None, dump_files=dump_files)
-    await run_agent(name="composition", input=None, dump_files=dump_files)
+    await run_agent(name="sequential-workflow", input=None, dump_files=dump_files)
