@@ -16,13 +16,14 @@ import fastapi
 from pydantic import BaseModel, AnyUrl
 
 from beeai_server.custom_types import ID
-from beeai_server.domain.model import ProviderWithStatus, UnmanagedProvider, AgentManifest
+from beeai_server.domain.model import UnmanagedProvider, AgentManifest
 from beeai_server.routes.dependencies import ProviderServiceDependency
 from beeai_server.schema import (
     CreateManagedProviderRequest,
     DeleteProviderRequest,
     InstallProviderRequest,
     PaginatedResponse,
+    ProviderWithStatus,
 )
 from fastapi import Query, BackgroundTasks
 from starlette.responses import StreamingResponse

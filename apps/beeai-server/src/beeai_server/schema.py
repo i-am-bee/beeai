@@ -13,10 +13,16 @@
 # limitations under the License.
 
 from typing import TypeVar, Generic, Any
-from pydantic import BaseModel, RootModel
+from pydantic import BaseModel, RootModel, Field
 
 from beeai_server.custom_types import ID
-from beeai_server.domain.model import ProviderLocation
+from beeai_server.domain.model import (
+    ProviderLocation,
+    LoadedProviderStatus,
+    LoadProviderErrorMessage,
+    EnvVar,
+    AgentManifest,
+)
 
 BaseModelT = TypeVar("BaseModelT", bound=BaseModel)
 
@@ -51,3 +57,11 @@ RunAgentInput = RootModel[dict[str, Any]]
 
 DeleteProviderRequest = InstallProviderRequest
 StreamLogsRequest = InstallProviderRequest
+
+
+class ProviderWithStatus(BaseModel, extra="allow"):
+    id: ID
+    manifest: AgentManifest
+    status: LoadedProviderStatus
+    last_error: LoadProviderErrorMessage | None = None
+    missing_configuration: list[EnvVar] = Field(default_factory=list)

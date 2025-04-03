@@ -291,9 +291,3 @@ class UnmanagedProvider(BaseProvider, extra="allow"):
         location = str(self.location).rstrip("/")
         async with sse_client(url=f"{location}/sse", timeout=60) as streams:
             yield streams
-
-
-class ProviderWithStatus(BaseModel, extra="allow"):
-    status: LoadedProviderStatus
-    last_error: LoadProviderErrorMessage | None = None
-    missing_configuration: list[EnvVar] = Field(default_factory=list)

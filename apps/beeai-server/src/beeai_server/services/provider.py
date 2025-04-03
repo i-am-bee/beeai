@@ -26,13 +26,13 @@ from starlette.status import HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND
 from beeai_server.adapters.interface import IProviderRepository, IEnvVariableRepository
 from beeai_server.custom_types import ID
 from beeai_server.domain.model import (
-    ProviderWithStatus,
     ManagedProvider,
     UnmanagedProvider,
     BaseProvider,
     ProviderLocation,
     LoadedProviderStatus,
 )
+from beeai_server.schema import ProviderWithStatus
 from beeai_server.exceptions import ManifestLoadError
 from beeai_server.services.mcp_proxy.provider import ProviderContainer
 from beeai_server.utils.github import ResolvedGithubUrl
