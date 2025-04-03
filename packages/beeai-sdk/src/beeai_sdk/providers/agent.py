@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import concurrent.futures
 import logging
 import asyncio
 from csv import Error
@@ -29,6 +28,8 @@ from functools import partial
 import anyio.to_thread
 import yaml
 from typing import Any, Callable, Coroutine, ParamSpec, TypeVar
+
+
 from beeai_sdk.schemas.base import Output, Input
 from acp.server.highlevel import Context
 
@@ -40,6 +41,7 @@ from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor, SpanExportResult
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
 from acp.server.highlevel import Server as ACPServer
+import anyio.from_thread
 
 AGENT_FILE_NAME = "agent.yaml"
 logger = logging.getLogger(__name__)
@@ -55,9 +57,7 @@ def syncify(async_func: Callable[P, Coroutine[Any, Any, T]]) -> Callable[P, T]:
 
     @functools.wraps(async_func)
     def sync_wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
-        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
-            future = executor.submit(lambda: asyncio.run(async_func(*args, **kwargs)))
-            return future.result()
+        return anyio.from_thread.run(async_func, *args, *kwargs.values())
 
     return sync_wrapper
 
@@ -128,7 +128,9 @@ class Server:
             logger.warning("Running empty server. To add an agent, anotate function with @server.agent()")
             return
         try:
-            asyncio.run(self.run_agent_provider())
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            loop.run_until_complete(self.run_agent_provider())
         except KeyboardInterrupt:
             return
         except Exception as e:
@@ -216,7 +218,7 @@ class Server:
 
             self._manifest = self.read_agent_manifest()
 
-            name = self._manifest.get("name") or create_agent_name_from_path()
+            name = self._manifest.get("name", create_agent_name_from_path())
 
             @functools.wraps(func)
             async def sync_fn(input: Input, ctx: Context):
@@ -234,7 +236,7 @@ class Server:
 
             self._agent = Agent(
                 name=name,
-                description=self._manifest.get("description") or func.__doc__.strip() if func.__doc__ else None,
+                description=self._manifest.get("description", func.__doc__.strip()),
                 input=input,
                 output=output if output is not inspect.Signature.empty else Output,
                 run_fn=(async_fn if inspect.iscoroutinefunction(func) else sync_fn),
@@ -327,7 +329,7 @@ class Server:
 
             # register all available envs
             missing_keyes = []
-            for env in self._manifest.get("env") or []:
+            for env in self._manifest.get("env", []):
                 server_env = envs.get(env.get("name"))
                 if server_env:
                     logger.debug(f"Env variable {env['name']} = '{server_env}' added dynamically")
