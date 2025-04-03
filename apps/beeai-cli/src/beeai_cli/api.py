@@ -94,7 +94,7 @@ async def resolve_connection_error():
 
     if process_status == ProcessStatus.running_new:
         with console.status(
-            "BeeAI service is still starting up. Waiting it to be ready, this may take a few minutes, please stand by... (you can cancel waiting with CTRL+C and re-try later)",
+            "BeeAI service is still starting up. This may take a few minutes, please stand by... (You can cancel waiting with CTRL+C and re-try later.)",
             spinner="dots",
         ):
             await wait_for_api()
