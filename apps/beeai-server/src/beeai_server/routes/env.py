@@ -25,8 +25,8 @@ router = fastapi.APIRouter()
 async def update_env(
     request: UpdateEnvRequest, env_service: EnvServiceDependency, background_tasks: BackgroundTasks
 ) -> None:
-    coroutine = await env_service.update_env(env=request.env)
-    background_tasks.add_task(coroutine)
+    background_task = await env_service.update_env(env=request.env)
+    background_tasks.add_task(background_task)
 
 
 @router.get("")
