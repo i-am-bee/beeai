@@ -152,7 +152,9 @@ def create_agent():
 class Output(TextOutput):
     text: str = Field(default_factory=str)
 
+
 server = Server("open-deep-research-agent")
+
 
 @server.agent()
 async def run_agent(input: TextInput) -> TextOutput:

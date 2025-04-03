@@ -8,8 +8,9 @@ languages:
   - Python
 githubUrl: https://github.com/i-am-bee/beeai/tree/main/agents/official/composition/src/composition/sequential_workflow.py
 examples: 
-  command: > 
-    beeai run sequential-workflow '{"input": "Long article text here...", "steps": [{"agent": "text-summarizer", "instruction": "Summarize the following text:"}, {"agent": "text-analyzer", "instruction": "Analyze the sentiment and key themes of this summary:"}]}'
+  cli:
+    - command: > 
+        beeai run sequential-workflow '{"input": "Long article text here...", "steps": [{"agent": "text-summarizer", "instruction": "Summarize the following text:"}, {"agent": "text-analyzer", "instruction": "Analyze the sentiment and key themes of this summary:"}]}'
 fullDescription: |
   The sequential workflow agent is designed to manage and execute a series of text-processing tasks using multiple AI agents. It takes a series of steps, each specifying an agent and its corresponding instruction, and processes text data through these agents in a sequential manner. The agent ensures that each subsequent agent receives the output of the previous agent, formatted as YAML, along with its specific instruction, thus creating a seamless workflow for complex text-processing tasks.
 

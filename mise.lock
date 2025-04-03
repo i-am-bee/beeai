@@ -4,12 +4,14 @@ backend = "core:node"
 
 [tools.node.checksums]
 "node-v22.14.0-darwin-arm64.tar.gz" = "sha256:e9404633bc02a5162c5c573b1e2490f5fb44648345d64a958b17e325729a5e42"
+"node-v22.14.0-linux-x64.tar.gz" = "sha256:9d942932535988091034dc94cc5f42b6dc8784d6366df3a36c4c9ccb3996f0c2"
 
 [tools.pnpm]
 version = "10.4.1"
 backend = "aqua:pnpm/pnpm"
 
 [tools.pnpm.checksums]
+pnpm-linux-x64 = "sha256:24fdba5caab4190d9f1b0f4e7e2a7557f534519047ac7277430e048986775381"
 pnpm-macos-arm64 = "sha256:0b396d48e9697588bfd4f3d40ed0d10d043432ecf1fe30dcdcad0f87b6d4140a"
 
 [tools.python]
@@ -21,6 +23,7 @@ version = "0.5.2"
 backend = "ubi:B1NARY-GR0UP/nwa"
 
 [tools."ubi:B1NARY-GR0UP/nwa".checksums]
+nwa-linux-x86_64 = "sha256:3ee63f5198b0fe61adb68f8f504fb73b718926c992dad759bade751187657369"
 nwa-macos-aarch64 = "sha256:128c6bbae86b8725381355d04132d4d8e71d54a01313cea0d0c20a294d058c9f"
 nwa-macos-x86_64 = "sha256:40dd0654c34b0adf8827a89c101ac543d7af1aeafdd7b1c0812be0bd730ea82c"
 
@@ -31,3 +34,4 @@ backend = "aqua:astral-sh/uv"
 [tools.uv.checksums]
 "uv-aarch64-apple-darwin.tar.gz" = "sha256:4af802a1216053650dd82eee85ea4241994f432937d41c8b0bc90f2639e6ae14"
 "uv-x86_64-apple-darwin.tar.gz" = "sha256:2b9e78b2562aea93f13e42df1177cb07c59a4d4f1c8ff8907d0c31f3a5e5e8db"
+"uv-x86_64-unknown-linux-musl.tar.gz" = "sha256:fcd01693df76379be5bc325efa43c644cf0704a2e720ccd6695f41ded09934d7"

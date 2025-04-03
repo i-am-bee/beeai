@@ -8,15 +8,16 @@ languages:
   - Python
 githubUrl: https://github.com/i-am-bee/beeai/tree/main/agents/community/autogen-agents/src/autogen_agents/literature_review
 examples: 
-  command: |
-    beeai run literature-review
-    "AI applications in healthcare, focusing on diagnostic tools and patient data management."
-  description: Conducting a Literature Review on AI in Healthcare
-  processingSteps:
-    - Initiates a round-robin task involving Google and Arxiv search agents to gather data
-    - Collects and processes search results from both sources
-    - The report agent synthesizes the data into a formatted literature review with appropriate references
-    - Outputs the literature review, ending the task with the specified termination condition
+  cli:
+    - command: |
+        beeai run literature-review
+        "AI applications in healthcare, focusing on diagnostic tools and patient data management."
+      description: Conducting a Literature Review on AI in Healthcare
+      processingSteps:
+        - Initiates a round-robin task involving Google and Arxiv search agents to gather data
+        - Collects and processes search results from both sources
+        - The report agent synthesizes the data into a formatted literature review with appropriate references
+        - Outputs the literature review, ending the task with the specified termination condition
 ui: 
   type: hands-off
   userGreeting: What topic do you want to research?

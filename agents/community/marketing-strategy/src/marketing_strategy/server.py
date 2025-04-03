@@ -17,6 +17,7 @@ load_env()
 
 server = Server("crewai-agents")
 
+
 @server.agent()
 def run_marketing_crew(input: TextInput, ctx: Context) -> TextOutput:
     def step_callback(data, *args, **kwargs):
