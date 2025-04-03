@@ -578,7 +578,14 @@ async def list_agents():
                 agent.name,
                 render_enum(
                     status or "<unknown>",
-                    {"running": "green", "initializing": "yellow", "error": "red", "unsupported": "orange1"},
+                    {
+                        "running": "green",
+                        "ready": "blue",
+                        "starting": "blue",
+                        "installing": "yellow",
+                        "error": "red",
+                        "install_error": "red",
+                    },
                 ),
                 agent.description or "<none>",
                 agent.model_extra.get("ui", {}).get("type", None) or "<none>",
