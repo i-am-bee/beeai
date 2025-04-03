@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import concurrent.futures
 import logging
 import asyncio
 from csv import Error
@@ -54,13 +55,9 @@ def syncify(async_func: Callable[P, Coroutine[Any, Any, T]]) -> Callable[P, T]:
 
     @functools.wraps(async_func)
     def sync_wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
-        try:
-            loop = asyncio.get_running_loop()
-        except RuntimeError:
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-
-        return loop.run_until_complete(async_func(*args, **kwargs))
+        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+            future = executor.submit(lambda: asyncio.run(async_func(*args, **kwargs)))
+            return future.result()
 
     return sync_wrapper
 
