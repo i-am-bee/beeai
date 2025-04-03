@@ -20,6 +20,7 @@ import random
 import re
 
 import jsonref
+from InquirerPy import inquirer
 from rich.box import HORIZONTALS
 from rich.console import ConsoleRenderable, Group, NewLine
 from rich.panel import Panel
@@ -90,12 +91,7 @@ async def install_agent(
         provider = await api_request("POST", "provider/register/managed", {"location": name_or_location})
         provider = provider["id"]
 
-    async for message in api_stream(
-        "POST",
-        "provider/install",
-        json={"id": provider},
-        params={"stream": True},
-    ):
+    async for message in api_stream("POST", "provider/install", json={"id": provider}, params={"stream": True}):
         _print_log(message, ansi_mode=True)
     await list_agents()
 
@@ -432,6 +428,11 @@ def _get_config_schema(schema: dict[str, Any] | None) -> dict[str, Any] | None:
     return schema
 
 
+async def get_provider(provider_id: str):
+    providers = (await api_request("GET", "provider"))["items"]
+    return [provider for provider in providers if provider["id"] == provider_id][0]
+
+
 @app.command("run")
 async def run_agent(
     name: str = typer.Argument(help="Name of the agent to call"),
@@ -446,6 +447,24 @@ async def run_agent(
 
     agents_by_name = await _get_agents()
     agent = await _get_agent(name, agents_by_name)
+    provider = await get_provider(agent.provider)
+    if provider["status"] == "not_installed":
+        if not await inquirer.confirm(
+            message=f"The agent {name} is not installed. Do you want to install it now?",
+            default=True,
+        ).execute_async():
+            return
+        async for message in api_stream(
+            "POST", "provider/install", json={"id": provider["id"]}, params={"stream": True}
+        ):
+            _print_log(message, ansi_mode=True)
+        provider = await get_provider(agent.provider)
+        if provider["status"] == "install_error":
+            raise RuntimeError(f"Error during installation: {provider['last_error']}")
+        console.print("\n")
+    if provider["status"] not in {"ready", "running"}:
+        raise RuntimeError(f"Agent is not in a ready state: {provider['status']}, error: {provider['last_error']}")
+
     ui = agent.model_extra.get("ui", {}) or {}
     ui_type = ui.get("type", None)
     is_sequential_workflow = agent.name in {"sequential-workflow", "composition"}
