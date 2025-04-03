@@ -68,18 +68,20 @@ def _get_docker_host(configuration: Configuration):
             logger.warning(f"Invalid DOCKER_HOST={configuration.docker_host}, trying other options...")
         with suppress(subprocess.CalledProcessError):
             logger.info("Trying Docker...")
-            docker_url = cmd('docker context inspect "$(docker context show)" --format "{{.Endpoints.docker.Host}}"')
+            docker_url = cmd(
+                'docker context inspect "$(docker context show)" --format "{{.Endpoints.docker.Host}}"'
+            ).strip()
             docker_path = docker_url.removeprefix("unix://")
             if Path(docker_path).is_socket():
                 return docker_url
         with suppress(subprocess.CalledProcessError):
             logger.info("Trying Podman Machine...")
-            podman_url = cmd('podman machine inspect --format "{{.ConnectionInfo.PodmanSocket.Path}}"')
+            podman_url = cmd('podman machine inspect --format "{{.ConnectionInfo.PodmanSocket.Path}}"').strip()
             if Path(podman_url).is_socket():
                 return f"unix://{podman_url}"
         with suppress(subprocess.CalledProcessError):
             logger.info("Trying Podman...")
-            podman_url = cmd('podman info --format "{{.Host.RemoteSocket.Path}}"')
+            podman_url = cmd('podman info --format "{{.Host.RemoteSocket.Path}}"').strip()
             if Path(podman_url).is_socket():
                 return f"unix://{podman_url}"
 
