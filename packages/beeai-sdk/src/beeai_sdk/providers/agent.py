@@ -256,7 +256,7 @@ class Server:
                 with open(path, "r", encoding="utf-8") as file:
                     return file.read()
             except FileNotFoundError:
-                return {}
+                return None
             except Exception as e:
                 raise Error("Agent file read error") from e
 
@@ -268,6 +268,7 @@ class Server:
         ) or read_file(os.path.join(os.getcwd(), AGENT_FILE_NAME))
         if not file_content:
             logger.warning("Agent file not found")
+            return {}
         else:
             return yaml.safe_load(file_content)
 
