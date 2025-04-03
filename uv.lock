@@ -245,7 +245,7 @@ dependencies = [
     { name = "jsonref" },
     { name = "jsonschema" },
     { name = "prompt-toolkit" },
-    { name = "psutils" },
+    { name = "psutil" },
     { name = "pydantic" },
     { name = "pydantic-settings" },
     { name = "requests" },
@@ -264,7 +264,7 @@ requires-dist = [
     { name = "jsonref", specifier = ">=1.1.0" },
     { name = "jsonschema", specifier = ">=4.23.0" },
     { name = "prompt-toolkit", specifier = ">=3.0.50" },
-    { name = "psutils", specifier = ">=3.3.9" },
+    { name = "psutil", specifier = ">=7.0.0" },
     { name = "pydantic", specifier = ">=2.10.6" },
     { name = "pydantic-settings", specifier = ">=2.7.1" },
     { name = "requests", specifier = ">=2.32.3" },
@@ -1240,28 +1240,6 @@ wheels = [
 ]
 
 [[package]]
-name = "psutils"
-version = "3.3.9"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "puremagic" },
-    { name = "pypdf" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/6f/c9/ed4c246612b0e42afe8fad52a2dddde28f1389997c043e8cf8d414d5a0ee/psutils-3.3.9.tar.gz", hash = "sha256:12bfde60145846e6aaae9eead8c5f0c4a959528cd171727b6ff7044da5d7e57c", size = 1244653 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/d8/91/c1956607c107f0acc0ad910f4287a7ba600a02ebabff530c27a4e53a568b/psutils-3.3.9-py3-none-any.whl", hash = "sha256:e7f162dc91574a86caa67fb78655a01bf155906671daca5f08715a037045372a", size = 55506 },
-]
-
-[[package]]
-name = "puremagic"
-version = "1.28"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/09/2d/40599f25667733e41bbc3d7e4c7c36d5e7860874aa5fe9c584e90b34954d/puremagic-1.28.tar.gz", hash = "sha256:195893fc129657f611b86b959aab337207d6df7f25372209269ed9e303c1a8c0", size = 314945 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/c5/53/200a97332d10ed3edd7afcbc5f5543920ac59badfe5762598327999f012e/puremagic-1.28-py3-none-any.whl", hash = "sha256:e16cb9708ee2007142c37931c58f07f7eca956b3472489106a7245e5c3aa1241", size = 43241 },
-]
-
-[[package]]
 name = "pycparser"
 version = "2.22"
 source = { registry = "https://pypi.org/simple" }
@@ -1357,15 +1335,6 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/7c/2d/c3338d48ea6cc0feb8446d8e6937e1408088a72a39937982cc6111d17f84/pygments-2.19.1.tar.gz", hash = "sha256:61c16d2a8576dc0649d9f39e089b5f02bcd27fba10d8fb4dcc28173f7a45151f", size = 4968581 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/8a/0b/9fcc47d19c48b59121088dd6da2488a49d5f72dacf8262e2790a1d2c7d15/pygments-2.19.1-py3-none-any.whl", hash = "sha256:9ea1544ad55cecf4b8242fab6dd35a93bbce657034b0611ee383099054ab6d8c", size = 1225293 },
-]
-
-[[package]]
-name = "pypdf"
-version = "5.4.0"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/f9/43/4026f6ee056306d0e0eb04fcb9f2122a0f1a5c57ad9dc5e0d67399e47194/pypdf-5.4.0.tar.gz", hash = "sha256:9af476a9dc30fcb137659b0dec747ea94aa954933c52cf02ee33e39a16fe9175", size = 5012492 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/0b/27/d83f8f2a03ca5408dc2cc84b49c0bf3fbf059398a6a2ea7c10acfe28859f/pypdf-5.4.0-py3-none-any.whl", hash = "sha256:db994ab47cadc81057ea1591b90e5b543e2b7ef2d0e31ef41a9bfe763c119dab", size = 302306 },
 ]
 
 [[package]]
