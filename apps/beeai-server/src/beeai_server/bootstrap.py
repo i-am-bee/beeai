@@ -16,12 +16,14 @@ import asyncio
 import concurrent.futures
 import json
 import logging
+import shutil
 import subprocess
+import time
 from contextlib import suppress
 from pathlib import Path
 
 import anyio
-
+import anyio.to_thread
 from acp.server.sse import SseServerTransport
 from beeai_server.adapters.docker import DockerContainerBackend
 from beeai_server.adapters.filesystem import (
@@ -36,12 +38,11 @@ from beeai_server.adapters.interface import (
     ITelemetryRepository,
 )
 from beeai_server.configuration import Configuration, get_configuration
+from beeai_server.domain.collector.constants import TELEMETRY_BASE_CONFIG_PATH, TELEMETRY_BEEAI_CONFIG_PATH
 from beeai_server.domain.telemetry import TelemetryCollectorManager
 from beeai_server.services.mcp_proxy.provider import ProviderContainer
 from beeai_server.utils.periodic import register_all_crons
 from kink import di
-
-import time
 
 logger = logging.getLogger(__name__)
 
@@ -135,14 +136,32 @@ async def resolve_container_runtime_cmd(configuration: Configuration) -> IContai
     return backend
 
 
+def copy_telemetry_config(config: Configuration) -> IContainerBackend:
+    config.telemetry_config_dir.mkdir(parents=True, exist_ok=True)
+    if not (config.telemetry_config_dir / "base.yaml").is_file():
+        shutil.copy(TELEMETRY_BASE_CONFIG_PATH, config.telemetry_config_dir / "base.yaml")
+    if not (config.telemetry_config_dir / "beeai.yaml").is_file():
+        shutil.copy(TELEMETRY_BEEAI_CONFIG_PATH, config.telemetry_config_dir / "beeai.yaml")
+
+
 async def bootstrap_dependencies():
+    """
+    Disclaimer:
+        contains blocking calls, but it's fine because this function should run only during startup
+        it is async only because it needs to call other async code
+    """
+
     di.clear_cache()
     di._aliases.clear()  # reset aliases
+
     di[Configuration] = get_configuration()
+
+    copy_telemetry_config(di[Configuration])
+
     di[IProviderRepository] = FilesystemProviderRepository(provider_config_path=di[Configuration].provider_config_path)
     di[IEnvVariableRepository] = FilesystemEnvVariableRepository(env_variable_path=di[Configuration].env_path)
     di[ITelemetryRepository] = FilesystemTelemetryRepository(
-        telemetry_config_path=di[Configuration].telemetry_config_path
+        telemetry_config_path=di[Configuration].telemetry_config_dir / "telemetry.yaml"
     )
     di[IContainerBackend] = await resolve_container_runtime_cmd(di[Configuration])
     di[SseServerTransport] = SseServerTransport("/mcp/messages/")  # global SSE transport
@@ -154,7 +173,6 @@ async def bootstrap_dependencies():
 
     # Ensure cache directory
     await anyio.Path(di[Configuration].cache_dir).mkdir(parents=True, exist_ok=True)
-
     register_all_crons()
 
 

@@ -68,7 +68,7 @@ class Configuration(BaseSettings):
     oci_registry: dict[str, OCIRegistryConfiguration] = Field(default_factory=dict)
 
     provider_config_path: Path = Path.home() / ".beeai" / "providers.yaml"
-    telemetry_config_path: Path = Path.home() / ".beeai" / "telemetry.yaml"
+    telemetry_config_dir: Path = Path.home() / ".beeai" / "telemetry"
     env_path: Path = Path.home() / ".beeai" / ".env"
     cache_dir: Path = Path.home() / ".beeai" / "cache"
     port: int = 8333
