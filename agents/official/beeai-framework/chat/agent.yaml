@@ -6,7 +6,7 @@ framework: BeeAI
 license: Apache 2.0
 languages: 
   - TypeScript
-githubUrl: https://github.com/i-am-bee/beeai/blob/main/agents/official/beeai-framework/src/chat
+githubUrl: https://github.com/i-am-bee/beeai/blob/main/agents/official/beeai-framework/chat
 avgRunTimeSeconds: 3
 avgRunTokens: 89
 examples: 
