@@ -14,11 +14,11 @@
 
 import asyncio
 import logging
-import pathlib
 from asyncio import CancelledError
 from contextlib import AsyncExitStack, asynccontextmanager
 from typing import AsyncGenerator
 
+from beeai_server.configuration import Configuration
 from beeai_server.adapters.interface import IContainerBackend, ITelemetryRepository, TelemetryConfig
 from beeai_server.telemetry import OTEL_HTTP_PORT
 from beeai_server.utils.docker import DockerImageID
@@ -36,9 +36,11 @@ class TelemetryCollector(BaseModel, extra="allow"):
 
     @asynccontextmanager
     @inject
-    async def run(self, container_backend: IContainerBackend) -> AsyncGenerator[..., None]:
+    async def run(
+        self, container_backend: IContainerBackend, configuration: Configuration
+    ) -> AsyncGenerator[..., None]:
         logs_container = LogsContainer()
-        config_dir = pathlib.Path(__file__).parent.joinpath("collector")
+        config_dir = configuration.telemetry_config_dir
 
         def handle_log(message: ProcessLogMessage):
             logger.info(message.message, extra={"container_name": "beeai-otelcol-contrib"})
