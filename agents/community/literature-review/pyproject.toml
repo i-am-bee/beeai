@@ -9,7 +9,7 @@ dependencies = [
     "arxiv>=2.1.3",
     "autogen-agentchat>=0.4.7",
     "autogen-ext[openai]>=0.4.7",
-    "beeai-sdk==0.0.20",
+    "beeai-sdk==0.0.21",
     "bs4>=0.0.2",
 ]
 

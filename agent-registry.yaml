@@ -1,15 +1,15 @@
 # EXPERIMENTAL registry for development purposes
 providers:
   # Official
-  - location: ghcr.io/i-am-bee/beeai/official/sequential-workflow:agents-v0.0.69
-  - location: ghcr.io/i-am-bee/beeai/official/beeai-supervisor:agents-v0.0.69
-  - location: ghcr.io/i-am-bee/beeai/official/agent-docs-creator:agents-v0.0.69
-  - location: ghcr.io/i-am-bee/beeai/official/beeai-framework/chat:agents-v0.0.69
-  - location: ghcr.io/i-am-bee/beeai/official/beeai-framework/content-judge:agents-v0.0.69
-  - location: ghcr.io/i-am-bee/beeai/official/beeai-framework/podcast-creator:agents-v0.0.69
+  - location: ghcr.io/i-am-bee/beeai/official/sequential-workflow:agents-v0.0.70
+  - location: ghcr.io/i-am-bee/beeai/official/beeai-supervisor:agents-v0.0.70
+  - location: ghcr.io/i-am-bee/beeai/official/agent-docs-creator:agents-v0.0.70
+  - location: ghcr.io/i-am-bee/beeai/official/beeai-framework/chat:agents-v0.0.70
+  - location: ghcr.io/i-am-bee/beeai/official/beeai-framework/content-judge:agents-v0.0.70
+  - location: ghcr.io/i-am-bee/beeai/official/beeai-framework/podcast-creator:agents-v0.0.70
   # Community
-  - location: ghcr.io/i-am-bee/beeai/community/aider:agents-v0.0.69
-  - location: ghcr.io/i-am-bee/beeai/community/gpt-researcher:agents-v0.0.69
-  - location: ghcr.io/i-am-bee/beeai/community/literature-review:agents-v0.0.69
-  - location: ghcr.io/i-am-bee/beeai/community/marketing-strategy:agents-v0.0.69
-  - location: ghcr.io/i-am-bee/beeai/community/ollama-deep-researcher:agents-v0.0.69
+  - location: ghcr.io/i-am-bee/beeai/community/aider:agents-v0.0.70
+  - location: ghcr.io/i-am-bee/beeai/community/gpt-researcher:agents-v0.0.70
+  - location: ghcr.io/i-am-bee/beeai/community/literature-review:agents-v0.0.70
+  - location: ghcr.io/i-am-bee/beeai/community/marketing-strategy:agents-v0.0.70
+  - location: ghcr.io/i-am-bee/beeai/community/ollama-deep-researcher:agents-v0.0.70
