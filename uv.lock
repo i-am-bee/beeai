@@ -272,7 +272,7 @@ requires-dist = [
 
 [[package]]
 name = "beeai-sdk"
-version = "0.0.20"
+version = "0.0.21"
 source = { editable = "packages/beeai-sdk" }
 dependencies = [
     { name = "acp-sdk" },

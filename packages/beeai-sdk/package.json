@@ -1,6 +1,6 @@
 {
   "name": "@i-am-bee/beeai-sdk",
-  "version": "0.0.20",
+  "version": "0.0.21",
   "description": "",
   "type": "module",
   "main": "./dist/index.js",
