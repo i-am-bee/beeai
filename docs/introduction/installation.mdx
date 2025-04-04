@@ -57,13 +57,12 @@ pipx install beeai-cli
 ```
 
    </Step>
-   <Step title="Install agent runtimes">
+   <Step title="Install a container runtime">
 
-These are optional, but you won't be able to use agents, including built-in ones, if the corresponding runtime is not available.
+Manually installed BeeAI needs you to provide a container runtime. If you already use one (Docker, Rancher, Podman, Colima, etc.), it will be detected and used for running agents.
 
-    - **Python runtime**: Install [uv](https://docs.astral.sh/uv/).
-    - **JavaScript/TypeScript runtime**: Install [Node.js](https://nodejs.org).
-    - **Docker runtime**: This is optional since currently no built-in agents require Docker. If desired, we recommend [Rancher Desktop](https://rancherdesktop.io/).
+If you don't have one or are not sure, the simplest way is to install [Rancher Desktop](https://rancherdesktop.io/) for your platform.
+```
 
     </Step>
     <Step title="Run BeeAI server:">
@@ -164,9 +163,9 @@ beeai env add LLM_API_KEY=sk-or-v1-[...] # <- your API key here
 To verify the installation, run:
 
 ```sh
-beeai provider list
+beeai list
 ```
 
-Ensure all providers display the `ready` status. Note that initial setup might take a few minutes.
+Ensure all agents display the `ready` status. Note that initial setup might take a few minutes.
 
 At this point, you may also wish to enable [Agent Traceability](/observability/agents-traceability).
