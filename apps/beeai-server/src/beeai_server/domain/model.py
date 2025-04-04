@@ -240,7 +240,7 @@ class ManagedProvider(BaseProvider, extra="allow"):
     def _global_env(self) -> dict[str, str]:
         return {
             "OTEL_EXPORTER_OTLP_ENDPOINT": replace_localhost_url(OTEL_HTTP_ENDPOINT),
-            "PLATFORM_URL": "host.docker.internal:8333",
+            "PLATFORM_URL": "http://host.docker.internal:8333",
         }
 
     @asynccontextmanager

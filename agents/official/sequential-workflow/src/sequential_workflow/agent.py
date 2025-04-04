@@ -30,19 +30,23 @@ class SequentialWorkflowInput(Input):
 
 
 def validate_agents(input: SequentialWorkflowInput, server_agents: dict[str, Agent]):
-    if missing_agents := (set(step.get("agent") for step in input.steps) - server_agents.keys()):
+    if missing_agents := (set(step.agent for step in input.steps) - server_agents.keys()):
         raise ValueError(f"The following agents are missing: {missing_agents}")
 
-    for agent_name in (step.get("agent") for step in input.steps):
-        agent = server_agents[agent_name]
-        input_schema = agent.inputSchema
-        required_input_properties = set(input_schema.get("required", []))
-
-        if required_input_properties != {"text"}:
-            raise ValueError(
-                f"Agent '{agent_name}' has incompatible input schema. Expected {{'text': str}}, "
-                f"got required properties: {required_input_properties}"
-            )
+    # TODO
+    #   schema is not statically available before running the agents at the moment
+    #   fail at runtime
+    #
+    # for agent_name in (step.agent for step in input.steps):
+    #     agent = server_agents[agent_name]
+    #     input_schema = agent.inputSchema
+    #     required_input_properties = set(input_schema.get("required", []))
+    #
+    #     if required_input_properties != {"text"}:
+    #         raise ValueError(
+    #             f"Agent '{agent_name}' has incompatible input schema. Expected {{'text': str}}, "
+    #             f"got required properties: {required_input_properties}"
+    #         )
 
 
 def format_agent_input(instruction: str, previous_output: dict[str, Any] | str) -> str:
