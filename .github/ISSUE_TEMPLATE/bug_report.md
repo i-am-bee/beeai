@@ -24,13 +24,13 @@ Steps to reproduce the behavior:
 A clear and concise description of what you expected to happen.
 
 **Logs / Screenshots / Code snippets**
-If agent or a provider is not working, please send output of the following commands:
+If agent is not working, please send output of the following commands:
 
 ```sh
-beeai provider list
-# If some of the providers are in error state
-beeai provider logs <provider-id>
-beeai provider info <provider-id>
+beeai list
+# If some of the agents are in error state
+beeai logs <agent-id>
+beeai info <agent-id>
 ```
 
 If applicable, add screenshots or code snippets to help explain your problem.
