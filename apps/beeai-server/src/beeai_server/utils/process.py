@@ -13,36 +13,12 @@
 # limitations under the License.
 
 import logging
-import os
-import signal
-from contextlib import suppress
 
 import anyio
 import anyio.abc
 import anyio.to_thread
-from anyio import CancelScope
 
 logger = logging.getLogger(__name__)
-
-
-def _kill_process_group(process: anyio.abc.Process):
-    with suppress(ProcessLookupError):
-        pgid = os.getpgid(process.pid)
-        os.killpg(pgid, signal.SIGKILL)
-
-
-async def terminate_process(process: anyio.abc.Process, timeout: float | None = 1):
-    with CancelScope(shield=True):
-        with anyio.move_on_after(timeout) as cancel_scope:
-            try:
-                process.terminate()
-                await process.wait()
-            except ProcessLookupError:
-                logger.info("Provider process already terminated")
-
-        if cancel_scope.cancel_called:
-            logger.warning(f"Provider process did not terminate in {timeout}s, killing it.")
-            await anyio.to_thread.run_sync(_kill_process_group, process)
 
 
 async def find_free_port():

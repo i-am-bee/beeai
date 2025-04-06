@@ -113,7 +113,7 @@ class MCPProxyServer:
     @asynccontextmanager
     def _get_provider_session(self, object_id: str) -> ClientSession:
         provider = self._provider_container.get_provider(object_id)
-        return provider._session
+        return provider._create_session
 
     @cached_property
     def app(self):
