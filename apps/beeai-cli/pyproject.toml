@@ -1,12 +1,12 @@
 [project]
 name = "beeai-cli"
-version = "0.0.10"
+version = "0.0.11"
 description = "BeeAI CLI"
 readme = "README.md"
 authors = [{ name = "IBM Corp." }]
 requires-python = ">=3.11,<4.0"
 dependencies = [
-    "beeai-server==0.0.10",
+    "beeai-server==0.0.11",
     "acp-sdk", # version determined by beeai-server
     "beeai-sdk", # version determined by beeai-server
     "anyio>=4.8.0",
