@@ -16,10 +16,11 @@ import asyncio
 import logging
 from asyncio import CancelledError
 from collections import defaultdict
-from contextlib import AsyncExitStack, asynccontextmanager
+from contextlib import AsyncExitStack, asynccontextmanager, suppress
 from typing import Callable, TYPE_CHECKING, Any
 
 import anyio
+from anyio import CancelScope
 from anyio.abc import TaskGroup
 from anyio.streams.memory import MemoryObjectReceiveStream, MemoryObjectSendStream
 from acp.types import AgentRunProgressNotification
@@ -62,7 +63,7 @@ class NotificationHub:
     async def remove(self, loaded_provider: "LoadedProvider"):
         if loaded_provider.id in self._provider_cleanups:
             self._provider_cleanups[loaded_provider.id]()
-            logger.info(f"Stopped listening for notifications from: {loaded_provider.id}")
+            logger.info("Stopped listening for notifications")
 
     @asynccontextmanager
     async def forward_notifications(
@@ -119,18 +120,22 @@ class NotificationHub:
 
     async def _subscribe_for_messages(self, loaded_provider: "LoadedProvider"):
         async def subscribe():
-            try:
-                async for message in loaded_provider.incoming_messages:
-                    match message:
-                        case ServerNotification(root=notify):
-                            logger.debug(f"Dispatching notification {notify.method}")
-                            await self._notification_stream_writer.send(notify)
-            except (anyio.BrokenResourceError, anyio.EndOfStream, CancelledError) as ex:
-                logger.error(f"Exception occured during reading messages: {ex!r}")
+            with CancelScope():
+                try:
+                    async for message in loaded_provider.incoming_messages:
+                        match message:
+                            case ServerNotification(root=notify):
+                                logger.debug(f"Dispatching notification {notify.method}")
+                                await self._notification_stream_writer.send(notify)
+                except CancelledError:
+                    logger.info("Reading messages cancelled.")
+                except (anyio.BrokenResourceError, anyio.EndOfStream) as ex:
+                    logger.error(f"Exception occured during reading messages: {ex!r}")
 
         task = asyncio.create_task(subscribe())
         self._provider_cleanups[loaded_provider.id] = task.cancel
-        await task
+        with suppress(CancelledError):
+            await task
 
     async def __aenter__(self):
         self._notification_pipe = await self._exit_stack.enter_async_context(anyio.create_task_group())
