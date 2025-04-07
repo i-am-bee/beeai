@@ -6,7 +6,7 @@ framework: BeeAI
 license: Apache 2.0
 languages: 
   - TypeScript
-githubUrl: https://github.com/i-am-bee/beeai/blob/main/agents/official/beeai-framework/src/content-judge
+githubUrl: https://github.com/i-am-bee/beeai/blob/main/agents/official/beeai-framework/content-judge
 avgRunTimeSeconds: 22
 avgRunTokens: 1229
 examples: 

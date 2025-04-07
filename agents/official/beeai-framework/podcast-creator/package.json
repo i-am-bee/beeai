@@ -15,8 +15,8 @@
   "dependencies": {
     "@ai-sdk/openai": "^1.1.14",
     "@arizeai/openinference-instrumentation-beeai": "1.1.2",
-    "@i-am-bee/acp-sdk": "0.0.5",
-    "@i-am-bee/beeai-sdk": "0.0.16",
+    "@i-am-bee/acp-sdk": "0.0.6",
+    "@i-am-bee/beeai-sdk": "0.0.21",
     "beeai-framework": "0.1.10",
     "ollama-ai-provider": "^1.2.0",
     "tsx": "^4.19.3",
@@ -26,6 +26,6 @@
     "typescript": "^5.7.3"
   },
   "overrides": {
-    "@i-am-bee/acp-sdk": "0.0.5"
+    "@i-am-bee/acp-sdk": "0.0.6"
   }
 }

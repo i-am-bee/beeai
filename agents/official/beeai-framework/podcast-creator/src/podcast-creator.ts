@@ -9,7 +9,12 @@ import { AcpServer } from "@i-am-bee/acp-sdk/server/acp";
 import { MODEL, API_BASE, API_KEY } from "./config.js";
 import { OpenAIChatModel } from "beeai-framework/adapters/openai/backend/chat";
 
-const inputSchema = textInputSchema;
+const agentConfigSchema = z
+  .object({ use_structure: z.boolean().default(false) })
+  .passthrough()
+  .optional();
+
+const inputSchema = textInputSchema.extend({ config: agentConfigSchema });
 type Input = z.output<typeof inputSchema>;
 // TODO: type appropriately
 const outputSchema = textOutputSchema;
@@ -23,14 +28,14 @@ const run =
     }: {
       params: { input: Input; _meta?: { progressToken?: string | number } };
     },
-    { signal }: { signal?: AbortSignal },
+    { signal }: { signal?: AbortSignal }
   ): Promise<Output> => {
     const { text } = params.input;
 
     const model = new OpenAIChatModel(
       MODEL,
       {},
-      { baseURL: API_BASE, apiKey: API_KEY, compatibility: "compatible" },
+      { baseURL: API_BASE, apiKey: API_KEY, compatibility: "compatible" }
     );
 
     const podcastResponse = await model
@@ -81,19 +86,8 @@ IT SHOULD STRICTLY BE THE DIALOGUES`),
       });
     const podcastDialogue = podcastResponse.getTextContent();
 
-    const structuredGenerationSchema = z.array(
-      z.object({
-        speaker: z.number().min(1).max(2),
-        text: z.string(),
-      }),
-    );
-
-    // Dramatise podcast
-    const finalReponse = await model.createStructure({
-      schema: structuredGenerationSchema,
-      // REVIEW: this essentially adds second system message because of the internal implementation of `createStructure`
-      messages: [
-        new SystemMessage(`You are an internationally acclaimed, Oscar-winning screenwriter with extensive experience collaborating with award-winning podcasters.
+    const systemMessage =
+      new SystemMessage(`You are an internationally acclaimed, Oscar-winning screenwriter with extensive experience collaborating with award-winning podcasters.
 
 Your task is to rewrite the provided podcast transcript for a high-quality AI Text-To-Speech (TTS) pipeline. The original script was poorly composed by a basic AI, and now it's your job to transform it into engaging, conversational content suitable for audio presentation.
 
@@ -115,26 +109,53 @@ Your task is to rewrite the provided podcast transcript for a high-quality AI Te
 
 - Always begin with Speaker 1.
 - Make your rewritten dialogue as vibrant, characteristic, and nuanced as possible to create an authentic podcast experience.
-`),
-        new UserMessage(podcastDialogue),
-      ],
-      maxTokens: 8126,
-      temperature: 0.9,
-      abortSignal: signal,
-      maxRetries: 3,
-    });
+`);
 
-    const conversation = finalReponse.object
-      // TODO: this is a temporary fix of a bug in framework
-      .flat()
-      .map((obj) => `**Speaker ${obj.speaker}**  \n${obj.text}`)
-      .join("\n\n");
+    if (params.input.config?.use_structure) {
+      const structuredGenerationSchema = z.array(
+        z.object({
+          speaker: z.number().min(1).max(2),
+          text: z.string(),
+        })
+      );
 
-    // TODO: temporary solution to render this nicely in UI
-    return outputSchema.parse({
-      // text: `<pre>${JSON.stringify(finalReponse.object, null, 2)}</pre>`,
-      text: conversation,
-    });
+      // Dramatise podcast
+      const finalReponse = await model.createStructure({
+        schema: structuredGenerationSchema,
+        // REVIEW: this essentially adds second system message because of the internal implementation of `createStructure`
+        messages: [systemMessage, new UserMessage(podcastDialogue)],
+        maxTokens: 8126,
+        temperature: 0.9,
+        abortSignal: signal,
+        maxRetries: 3,
+      });
+
+      const conversation = finalReponse.object
+        // TODO: this is a temporary fix of a bug in framework
+        .flat()
+        .map((obj) => `**Speaker ${obj.speaker}**  \n${obj.text}`)
+        .join("\n\n");
+
+      // TODO: temporary solution to render this nicely in UI
+      return outputSchema.parse({
+        // text: `<pre>${JSON.stringify(finalReponse.object, null, 2)}</pre>`,
+        text: conversation,
+      });
+    } else {
+      // Dramatise podcast
+      const finalReponse = await model.create({
+        messages: [systemMessage, new UserMessage(podcastDialogue)],
+        maxTokens: 8126,
+        temperature: 0.9,
+        abortSignal: signal,
+      });
+
+      const conversation = finalReponse.getTextContent();
+
+      return outputSchema.parse({
+        text: conversation,
+      });
+    }
   };
 
 const agentName = "podcast-creator";
