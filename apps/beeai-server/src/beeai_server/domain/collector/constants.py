@@ -12,18 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import logging
+from pathlib import Path
+from typing import Final
 
-import anyio
-import anyio.abc
-import anyio.to_thread
-
-logger = logging.getLogger(__name__)
-
-
-async def find_free_port():
-    """Get a random free port assigned by the OS."""
-    listener = await anyio.create_tcp_listener()
-    port = listener.extra(anyio.abc.SocketAttribute.local_address)[1]
-    await listener.aclose()
-    return port
+TELEMETRY_BASE_CONFIG_PATH: Final = Path(__file__).parent.resolve() / "base.yaml"
+TELEMETRY_BEEAI_CONFIG_PATH: Final = Path(__file__).parent.resolve() / "beeai.yaml"

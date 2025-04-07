@@ -15,18 +15,17 @@
 import asyncio
 import functools
 import logging
-from asyncio import TimerHandle
+from asyncio import Event, TimerHandle
 from contextlib import AsyncExitStack, asynccontextmanager
 from datetime import timedelta
-from typing import Callable, Final, TypeVar, AsyncIterator
+from typing import AsyncIterator, Callable, Final, TypeVar
 
 import anyio
-from anyio import create_task_group
-
 from acp import ClientSession, InitializeResult, Resource, ServerSession, Tool
 from acp.shared.context import RequestContext
 from acp.shared.session import ReceiveNotificationT, ReceiveRequestT, RequestResponder, SendResultT
 from acp.types import Agent, AgentTemplate, Prompt
+from anyio import CancelScope
 from anyio.abc import TaskGroup
 from anyio.streams.memory import MemoryObjectReceiveStream
 from beeai_sdk.schemas.base import Input, Output
@@ -41,7 +40,7 @@ from beeai_server.domain.model import (
 from beeai_server.services.mcp_proxy.constants import NotificationStreamType
 from beeai_server.services.mcp_proxy.notification_hub import NotificationHub
 from beeai_server.utils.logs_container import LogsContainer
-from beeai_server.utils.utils import extract_messages, cancel_task
+from beeai_server.utils.utils import cancel_task, extract_messages
 from pydantic import BaseModel
 from structlog.contextvars import bind_contextvars, unbind_contextvars
 
@@ -52,10 +51,10 @@ BaseModelT = TypeVar("BaseModelT", bound=BaseModel)
 
 def bind_logging_context(method: Callable) -> Callable:
     @functools.wraps(method)
-    def _fn(self: "LoadedProvider", *args, **kwargs):
+    async def _fn(self: "LoadedProvider", *args, **kwargs):
         bind_contextvars(provider=self.id)
         try:
-            return method(self, *args, **kwargs)
+            return await method(self, *args, **kwargs)
         finally:
             unbind_contextvars("provider")
 
@@ -106,13 +105,15 @@ class LoadedProvider:
         )
         self.logs_container = LogsContainer()
         self._session: ClientSession | None = None
-        self._start_task = None
-        self._session_exit_stack = AsyncExitStack()
+        self._session_task = None
         self._writer_exit_stack = AsyncExitStack()
         self._write_messages, self.incoming_messages = anyio.create_memory_object_stream()
         self._autostart = autostart
         self._auto_stop_timeout: TimerHandle | None = None
+        self._session_initialized = Event()
+        self._session_stopping = Event()
 
+    @bind_logging_context
     async def handle_reload_env(self, env: dict[str, str]) -> None:
         self.env = env
         if self.status in {LoadedProviderStatus.running, LoadedProviderStatus.starting, LoadedProviderStatus.error}:
@@ -121,8 +122,8 @@ class LoadedProvider:
             await self.start()
 
     @asynccontextmanager
-    @bind_logging_context
     async def session(self) -> AsyncIterator[ClientSession]:
+        bind_contextvars(provider=self.id)
         if self.status not in {
             LoadedProviderStatus.not_installed,
             LoadedProviderStatus.install_error,
@@ -155,6 +156,7 @@ class LoadedProvider:
 
                     self._auto_stop_timeout = asyncio.create_task(stop_callback())
                     self._auto_stop_timeout.add_done_callback(lambda task: task.cancel())
+            unbind_contextvars("provider")
 
     def _with_id(self, objects: list[BaseModelT]) -> list[BaseModelT]:
         for obj in objects:
@@ -189,25 +191,30 @@ class LoadedProvider:
             f"Prompts: {len(self.prompts)}"
         )
 
-    @asynccontextmanager
+    @bind_logging_context
     async def _initialize_session(self):
-        # Just do not propagate the cancellation to the parent task please???
-        async with create_task_group():
-            async with self.provider.mcp_client(env=self.env, logs_container=self.logs_container) as streams:
-                async with ClientSession(*streams) as session:
-                    with anyio.fail_after(self.INITIALIZE_TIMEOUT.total_seconds()):
-                        initialize_result = await session.initialize()
-                        await self._load_features(session, initialize_result)
+        try:
+            # Just do not propagate the cancellation to the parent task please???
+            with CancelScope():
+                async with self.provider.mcp_client(env=self.env, logs_container=self.logs_container) as streams:
+                    async with ClientSession(*streams) as session:
+                        with anyio.fail_after(self.INITIALIZE_TIMEOUT.total_seconds()):
+                            initialize_result = await session.initialize()
+                            await self._load_features(session, initialize_result)
 
-                        async def _stream_notifications():
-                            async for message in session.incoming_messages:
-                                await self._write_messages.send(message)
+                            async def _stream_notifications():
+                                async for message in session.incoming_messages:
+                                    await self._write_messages.send(message)
 
                         try:
                             stream_task = asyncio.create_task(_stream_notifications())
-                            yield session
+                            self._session = session
+                            self._session_initialized.set()
+                            await self._session_stopping.wait()
                         finally:
                             await cancel_task(stream_task)
+        finally:
+            self._session_initialized.set()
 
     @bind_logging_context
     async def install(self, logs_container: LogsContainer | None = None) -> None:
@@ -224,6 +231,7 @@ class LoadedProvider:
             self.last_error = LoadProviderErrorMessage(message=str(extract_messages(ex)))
             self.status = LoadedProviderStatus.install_error
 
+    @bind_logging_context
     async def uninstall(self):
         await self.stop()
         await self.provider.uninstall()
@@ -242,9 +250,9 @@ class LoadedProvider:
         self.status = LoadedProviderStatus.starting
         try:
             self.missing_configuration = self.provider.check_env(env=self.env)
-            initialize_coroutine = self._session_exit_stack.enter_async_context(self._initialize_session())
-            self._start_task = asyncio.create_task(initialize_coroutine)
-            self._session = await self._start_task
+            self._session_initialized.clear()
+            self._session_task = asyncio.create_task(self._initialize_session())
+            await self._session_initialized.wait()
             await self.notification_hub.register(self)
             self.status = LoadedProviderStatus.running
         except BaseException as ex:
@@ -255,16 +263,26 @@ class LoadedProvider:
     async def stop(self):
         try:
             await self.notification_hub.remove(self)
-            if self.status == LoadedProviderStatus.starting:
-                await cancel_task(self._start_task)
-            await self._session_exit_stack.aclose()
-        except Exception as ex:
+        except BaseException as ex:
             logger.warning(f"Exception occurred when stopping session: {ex!r}")
-            self._session_exit_stack.pop_all()
+        try:
+            self._session_stopping.set()
+            if self._session_task:
+                if self.status == LoadedProviderStatus.starting:
+                    await cancel_task(self._session_task)
+                else:
+                    await self._session_task
+        except BaseException as ex:
+            logger.warning(f"Exception occurred when stopping session: {ex!r}")
 
         if self.status == self.status.running:
             self.status = LoadedProviderStatus.ready
 
+        self._session_task = None
+        self._session_stopping.clear()
+        self._session_initialized.clear()
+
+    @bind_logging_context
     async def initialize(self):
         await self._writer_exit_stack.enter_async_context(self._write_messages)
         if self.status == LoadedProviderStatus.not_installed and await self.provider.is_installed():
@@ -272,13 +290,16 @@ class LoadedProvider:
             if self._autostart:
                 await self.start()
 
+    @bind_logging_context
     async def close(self):
         await self._writer_exit_stack.aclose()
         await self.stop()
 
+    @bind_logging_context
     async def __aenter__(self):
         await self.initialize()
 
+    @bind_logging_context
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         await self.close()
 

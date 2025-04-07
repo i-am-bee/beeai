@@ -18,13 +18,12 @@ import logging
 from contextlib import asynccontextmanager, suppress
 from datetime import timedelta
 from enum import StrEnum
-from typing import Literal, Optional, Self, Any
+from typing import Any, Literal, Optional, Self
 
 import httpx
 import yaml
-from aiodocker import DockerError
-
 from acp.client.sse import sse_client
+from aiodocker import DockerError
 from beeai_server.adapters.interface import IContainerBackend
 from beeai_server.configuration import Configuration
 from beeai_server.custom_types import ID, McpClient
@@ -32,12 +31,12 @@ from beeai_server.domain.constants import DEFAULT_MANIFEST_PATH, DOCKER_MANIFEST
 from beeai_server.exceptions import MissingConfigurationError, retry_if_exception_grp_type
 from beeai_server.telemetry import OTEL_HTTP_ENDPOINT
 from beeai_server.utils.docker import DockerImageID, get_registry_image_config_and_labels, replace_localhost_url
-from beeai_server.utils.github import ResolvedGithubUrl, GithubUrl
+from beeai_server.utils.github import GithubUrl, ResolvedGithubUrl
 from beeai_server.utils.logs_container import LogsContainer
 from beeai_server.utils.process import find_free_port
 from httpx import HTTPError
 from kink import inject
-from pydantic import BaseModel, Field, PrivateAttr, computed_field, RootModel, AnyUrl
+from pydantic import AnyUrl, BaseModel, Field, PrivateAttr, RootModel, computed_field
 from tenacity import AsyncRetrying, stop_after_attempt, wait_exponential
 
 
@@ -104,7 +103,12 @@ class GithubProviderSource(BaseModel):
         async with httpx.AsyncClient(
             headers={"Cache-Control": "no-cache, no-store, must-revalidate", "Pragma": "no-cache", "Expires": "0"}
         ) as client:
-            resp = await client.get(str(self.location.get_raw_url(self.location.path or DEFAULT_MANIFEST_PATH)))
+            path = (
+                f"{self.location.path.rstrip('/')}/{DEFAULT_MANIFEST_PATH}"
+                if self.location.path
+                else DEFAULT_MANIFEST_PATH
+            )
+            resp = await client.get(str(self.location.get_raw_url(path)))
             resp.raise_for_status()
         return AgentManifest.model_validate(yaml.safe_load(resp.text))
 

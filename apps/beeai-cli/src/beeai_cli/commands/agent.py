@@ -672,6 +672,7 @@ async def agent_detail(
 ):
     """Show agent details."""
     agent = await _get_agent(name)
+
     if schema:
         console.print(Markdown(f"# Agent {agent.name}\n## Input Schema\n"))
         console.print(_render_schema(agent.inputSchema))
@@ -690,6 +691,13 @@ async def agent_detail(
         for key, value in omit(
             agent.model_extra, {"fullDescription", "inputSchema", "outputSchema", "examples"}
         ).items():
+            table.add_row(key, str(value))
+    console.print()
+    console.print(table)
+
+    provider = await get_provider(agent.provider)
+    with create_table(Column("Key", ratio=1), Column("Value", ratio=5), title="Provider") as table:
+        for key, value in omit(provider, {"image_id", "manifest", "source", "registry"}).items():
             table.add_row(key, str(value))
     console.print()
     console.print(table)
