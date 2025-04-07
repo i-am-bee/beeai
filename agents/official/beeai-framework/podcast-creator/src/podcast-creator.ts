@@ -15,7 +15,7 @@ const agentConfigSchema = z
   .optional();
 
 const inputSchema = textInputSchema.extend({ config: agentConfigSchema });
-type Input = z.output<typeof inputSchema>;
+type Input = z.input<typeof inputSchema>;
 // TODO: type appropriately
 const outputSchema = textOutputSchema;
 type Output = z.output<typeof outputSchema>;
