@@ -6,10 +6,15 @@ import {
 } from "@i-am-bee/beeai-sdk/schemas/text";
 import { SystemMessage, UserMessage } from "beeai-framework/backend/message";
 import { AcpServer } from "@i-am-bee/acp-sdk/server/acp";
-import { MODEL, API_BASE, API_KEY, USE_STRUCTURE } from "./config.js";
+import { MODEL, API_BASE, API_KEY } from "./config.js";
 import { OpenAIChatModel } from "beeai-framework/adapters/openai/backend/chat";
 
-const inputSchema = textInputSchema;
+const agentConfigSchema = z
+  .object({ use_structure: z.boolean().default(false) })
+  .passthrough()
+  .optional();
+
+const inputSchema = textInputSchema.extend({ config: agentConfigSchema });
 type Input = z.output<typeof inputSchema>;
 // TODO: type appropriately
 const outputSchema = textOutputSchema;
@@ -106,7 +111,7 @@ Your task is to rewrite the provided podcast transcript for a high-quality AI Te
 - Make your rewritten dialogue as vibrant, characteristic, and nuanced as possible to create an authentic podcast experience.
 `);
 
-    if (USE_STRUCTURE) {
+    if (params.input.config?.use_structure) {
       const structuredGenerationSchema = z.array(
         z.object({
           speaker: z.number().min(1).max(2),
