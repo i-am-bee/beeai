@@ -6,7 +6,7 @@ framework: Custom
 license: Apache 2.0
 languages: 
   - Python
-githubUrl: https://github.com/i-am-bee/beeai/tree/main/agents/official/composition/src/composition/sequential_workflow.py
+githubUrl: https://github.com/i-am-bee/beeai/tree/main/agents/official/sequential-workflow
 examples: 
   cli:
     - command: > 
