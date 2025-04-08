@@ -3,12 +3,10 @@ from beeai_sdk.providers.agent import Server
 from beeai_sdk.schemas.text import TextOutput, TextInput
 from beeai_sdk.schemas.base import Log
 
-from ollama_deep_researcher.configuration import load_env
 from ollama_deep_researcher.graph import graph
 from ollama_deep_researcher.state import SummaryStateInput
 
 LangChainInstrumentor().instrument()
-load_env()
 
 server = Server("langgraph-agents")
 
