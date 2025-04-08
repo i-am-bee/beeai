@@ -1,3 +1,4 @@
+from typing import AsyncGenerator
 from openinference.instrumentation.langchain import LangChainInstrumentor
 from beeai_sdk.providers.agent import Server
 from beeai_sdk.schemas.text import TextOutput, TextInput
@@ -12,7 +13,7 @@ server = Server("langgraph-agents")
 
 
 @server.agent()
-async def run_deep_researcher_graph(input: TextInput) -> TextOutput:
+async def run_deep_researcher_graph(input: TextInput) -> AsyncGenerator[TextOutput, None]:
     inputs = SummaryStateInput(research_topic=input.text)
     try:
         output = None

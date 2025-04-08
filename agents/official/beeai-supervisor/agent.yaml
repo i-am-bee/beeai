@@ -6,7 +6,7 @@ framework: BeeAI
 license: Apache 2.0
 languages: 
   - TypeScript
-githubUrl: https://github.com/i-am-bee/beeai/blob/main/agents/official/beeai-framework/src/supervisor
+githubUrl: https://github.com/i-am-bee/beeai/tree/main/agents/official/beeai-supervisor
 examples: 
   cli:
     - command: beeai agent run beeai-supervisor '{"text":"Prepare a marketing strategy to sell most selling mobile phones in 2024 in Europe on my eshop. Ensure the strategy is based on top of thorough research of the market.", "availableAgents":["gpt-researcher","marketing-strategy"]}'

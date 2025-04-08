@@ -6,7 +6,7 @@ framework: Custom
 license: Apache 2.0
 languages: 
   - Python
-githubUrl: https://github.com/i-am-bee/beeai/tree/main/agents/community/aider-agent
+githubUrl: https://github.com/i-am-bee/beeai/tree/main/agents/community/aider
 avgRunTimeSeconds: 5.0
 avgRunTokens: 5000
 examples: 
