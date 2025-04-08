@@ -133,4 +133,4 @@ From the user's point of view, the server is part of the BeeAI CLI through `beea
 
 Bump version in `apps/beeai-cli/pyproject.toml`. Commit the changes, push to main, and create and push a tag `beeai-cli-v<version>`, for example `beeai-cli-v0.0.1`. Check the GitHub Actions to see if everything went smoothly.
 
-After releasing to PyPI, the next step is releasing to Homebrew. First ensure that you have the tap added with `brew tap i-am-bee/beeai`. Then run `brew bump-formula-pr i-am-bee/beeai/beeai --version ...` substituting the correct version. This should create a PR for the Homebrew tap. The GitHub Action will then build and test the new version. This might take up to one hour. **⚠️ IMPORTANT:** Do not merge the PR -- instead, tag the PR with `pr-pull`, and the Action will automatically merge it, ensuring that the correct bottles are referenced.
+After releasing to PyPI, the next step is releasing to Homebrew: follow the [instructions in the Homebrew tap](https://github.com/i-am-bee/homebrew-beeai/blob/main/CONTRIBUTING.md).
