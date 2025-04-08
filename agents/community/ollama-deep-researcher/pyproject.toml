@@ -18,6 +18,7 @@ dependencies = [
     "beautifulsoup4>=4.13.3",
     "langchain-openai>=0.3.7",
     "openinference-instrumentation-langchain>=0.1.36",
+    "pydantic-settings>=2.8.1",
 ]
 
 [project.scripts]

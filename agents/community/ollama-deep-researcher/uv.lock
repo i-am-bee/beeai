@@ -982,6 +982,7 @@ dependencies = [
     { name = "langchain-openai" },
     { name = "langgraph" },
     { name = "openinference-instrumentation-langchain" },
+    { name = "pydantic-settings" },
     { name = "tavily-python" },
 ]
 
@@ -995,6 +996,7 @@ requires-dist = [
     { name = "langchain-openai", specifier = ">=0.3.7" },
     { name = "langgraph", specifier = ">=0.2.55" },
     { name = "openinference-instrumentation-langchain", specifier = ">=0.1.36" },
+    { name = "pydantic-settings", specifier = ">=2.8.1" },
     { name = "tavily-python", specifier = ">=0.5.0" },
 ]
 
