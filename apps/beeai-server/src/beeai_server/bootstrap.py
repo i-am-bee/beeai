@@ -86,6 +86,10 @@ def _get_docker_host(configuration: Configuration):
             if Path(podman_url).is_socket():
                 return f"unix://{podman_url}"
 
+        logger.info("Trying default socket location...")
+        if Path("/var/run/docker.sock").is_socket():
+            return "unix:///var/run/docker.sock"
+
     with suppress(subprocess.CalledProcessError):
         logger.info("Trying Lima...")
         lima_instance = next(
