@@ -5,7 +5,7 @@ description = "Collection of CrewAI agents"
 authors = []
 requires-python = ">=3.11,<3.12"
 dependencies = [
-    "beeai-sdk==0.0.21",
+    "beeai-sdk==0.0.22",
     "crewai[tools]>=0.102.0,<1.0.0",
     "databricks-sdk>=0.46.0",
     "openinference-instrumentation-crewai>=0.1.7",

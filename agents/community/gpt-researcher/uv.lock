@@ -192,7 +192,7 @@ wheels = [
 
 [[package]]
 name = "beeai-sdk"
-version = "0.0.21"
+version = "0.0.22"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "acp-sdk" },
@@ -201,9 +201,9 @@ dependencies = [
     { name = "pydantic" },
     { name = "pyyaml" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/4b/a6/28458f2ce4c744cb3a50c8bfb0d56577c6a1955874b9b4fd1b33801a7b71/beeai_sdk-0.0.21.tar.gz", hash = "sha256:d16749508e7bbb8f87a1a83c4a6e136921a5863609cd5329f67c09535c0a60b9", size = 12717 }
+sdist = { url = "https://files.pythonhosted.org/packages/2c/64/8af9f65485df9e7d4f5d7204d68002a5c0eeeaf7306684494c1813c3795c/beeai_sdk-0.0.22.tar.gz", hash = "sha256:8a9372dfebe96902b26168b481a67f7d9c0e1a880b925a0b737e45383e8f89fc", size = 12708 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/38/26/de13ef25321d0655f9cfd9b17ac9cfedf50daab1fef0ff09a637eebbbd24/beeai_sdk-0.0.21-py3-none-any.whl", hash = "sha256:629073f80a0afbf67fa389a5224f930453c8f685e34e9051e745467366017aa8", size = 15504 },
+    { url = "https://files.pythonhosted.org/packages/70/01/4b411507dad40625067dfa7d493dbaa7f1e7990a78bebf5dc06046ea9217/beeai_sdk-0.0.22-py3-none-any.whl", hash = "sha256:5cd4c41f21338ef5c09c6f0ed7b3cef8728a0e2caf21f17526cd62ee7f9d483d", size = 15502 },
 ]
 
 [[package]]
@@ -704,7 +704,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "beeai-sdk", specifier = "==0.0.21" },
+    { name = "beeai-sdk", specifier = "==0.0.22" },
     { name = "duckduckgo-search", specifier = "~=7.5.5" },
     { name = "gpt-researcher", specifier = ">=0.10.11,<0.11.0" },
     { name = "openinference-instrumentation-openai", specifier = ">=0.1.22" },
