@@ -27,7 +27,7 @@ from functools import partial
 
 import anyio.to_thread
 import yaml
-from typing import Any, Callable, Coroutine, ParamSpec, TypeVar
+from typing import Any, Callable, Coroutine, ParamSpec, TypeVar, get_args
 
 
 from beeai_sdk.schemas.base import Output, Input
@@ -164,6 +164,11 @@ class Server:
 
             input = parameters[0].annotation
             output = signature.return_annotation
+            if output is not inspect.Signature.empty:
+                if inspect.isgeneratorfunction(fn) or inspect.isasyncgenfunction(fn):
+                    output = get_args(output)[0]
+            else:
+                output = Output
 
             @functools.wraps(fn)
             def generator_wrapper(input: Input, ctx: Context):
@@ -222,14 +227,9 @@ class Server:
 
             @functools.wraps(func)
             async def sync_fn(input: Input, ctx: Context):
-                """Converts agents sync function to async function with two parameters"""
+                """Converts agents sync function to async function"""
                 ctx = syncify_object_dynamic(ctx)
                 return await anyio.to_thread.run_sync(partial(func, ctx=ctx), input)
-
-            @functools.wraps(func)
-            async def async_fn(input: Input, ctx: Context):
-                """Converts agents async function to function with two parameters"""
-                return await func(input, ctx=ctx)
 
             if not output:
                 logger.warning("Output schema not specified, return type should be provided.")
@@ -238,8 +238,8 @@ class Server:
                 name=name,
                 description=self._manifest.get("description", (func.__doc__ or "").strip()),
                 input=input,
-                output=output if output is not inspect.Signature.empty else Output,
-                run_fn=(async_fn if inspect.iscoroutinefunction(func) else sync_fn),
+                output=output,
+                run_fn=(func if inspect.iscoroutinefunction(func) else sync_fn),
                 destroy_fn=None,
                 **{key: self._manifest[key] for key in self._manifest if key not in ["name", "description"]},
             )
