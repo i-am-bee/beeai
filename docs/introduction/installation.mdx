@@ -4,11 +4,67 @@ description: "Instructions for installing BeeAI"
 icon: "wrench"
 ---
 
-The BeeAI platform supports installation on **macOS**, **Linux**, and **Windows** (via WSL) using multiple methods.
-
-## Homebrew (recommended)
+The BeeAI platform supports installation on **macOS**, **Linux**, and **Windows** (via WSL2) using multiple methods.
 
 The preferred installation method is via [Homebrew](https://brew.sh/). Homebrew simplifies dependency management and automatically handles background services.
+
+It's also possible to install BeeAI directly from PyPI, with some required manual steps.
+
+<Accordion title="Windows (WSL2) setup instructions">
+
+Windows is supported through the [Windows Subsystem for Linux version 2 (WSL2)](https://learn.microsoft.com/en-us/windows/wsl/install). The following steps need to be taken in order to prepare your system to install BeeAI.
+
+<Steps>
+<Step title="Set up WSL2">
+
+Right-click the Start menu and open an Administrator terminal. Run:
+
+```sh
+wsl --install
+```
+
+...and follow the on-screen instructions until fully installed (which may require a reboot).
+
+</Step>
+<Step title="Set up a container runtime">
+
+- [Rancher Desktop](https://rancherdesktop.io/) (recommended): After installation, go to `Preferences > WSL`, enable integration for your default WSL distro (usually `Ubuntu`) and 
+- [Docker Desktop](https://docs.docker.com/desktop/setup/install/windows-install/): During installation, select `WSL2` as the backend. Be aware of the Docker Desktop licence limitations for personal use.
+- [Podman Desktop](https://podman-desktop.io/) (untested): After installation and first-time setup, follow the [documentation for socket forwarding to WSL2](https://podman-desktop.io/docs/podman/accessing-podman-from-another-wsl-instance).
+
+</Step>
+<Step title="Optional: Set up Ollama">
+
+If you want to use [Ollama](https://ollama.com/), we recommend you [install the Windows version](https://ollama.com/download/windows). The Linux version may not work properly.
+
+Open the file `C:/Users/<your name>/.wslconfig` (create it if it's not there) and add the following contents:
+
+```ini
+[wsl2]
+networkingMode=mirrored
+```
+
+Finally, **restart your computer**.
+
+This will allow you to access the Windows version of Ollama inside WSL2.
+
+</Step>
+<Step title="Open WSL2">
+
+Right-click the Start menu and open a terminal. Run `wsl` to switch to the WSL2 command shell. Follow the installation instructions below, but use the `wsl` shell to run all of the commands.
+
+</Step>
+</Steps>
+</Accordion>
+
+<Tabs>
+<Tab title="Homebrew (recommended)">
+
+## Homebrew
+
+This method uses [Homebrew](https://brew.sh/).
+
+If you are not already a user, first install Homebrew by running this command and following the displayed instructions: `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`.
 
 ### Install
 
@@ -33,39 +89,38 @@ brew services stop beeai
 brew uninstall beeai
 ```
 
+</Tab>
+<Tab title="PyPI">
+
 ## PyPI
+
+<Warning>This installation method is unsupported. We strongly recommend installing from Homebrew.</Warning>
 
 This method installs BeeAI using Python’s package manager but is **not recommended** due to additional manual setup requirements. It does not automatically manage dependencies or background services.
 
 ### Install
 
-<Warning>
-  This installation method is unsupported. We strongly recommend using the
-  [Homebrew method](#homebrew-recommended).
-</Warning>
-
 <Steps>
-   <Step title="Install pipx">
+<Step title="Install pipx">
 
-Follow the official instructions to install [pipx](https://github.com/pypa/pipx).
+Follow the [official instructions to install pipx](https://pipx.pypa.io/stable/installation/#installing-pipx).
 
-   </Step>
-   <Step title="Install BeeAI">
+</Step>
+<Step title="Install BeeAI">
 
 ```sh
 pipx install beeai-cli
 ```
 
-   </Step>
-   <Step title="Install a container runtime">
+</Step>
+<Step title="Install a container runtime">
 
 Manually installed BeeAI needs you to provide a container runtime. If you already use one (Docker, Rancher, Podman, Colima, etc.), it will be detected and used for running agents.
 
 If you don't have one or are not sure, the simplest way is to install [Rancher Desktop](https://rancherdesktop.io/) for your platform.
-```
 
-    </Step>
-    <Step title="Run BeeAI server:">
+</Step>
+<Step title="Run BeeAI server:">
 
 The BeeAI server must remain running for the platform to function.
 
@@ -73,8 +128,10 @@ The BeeAI server must remain running for the platform to function.
 beeai serve
 ```
 
-   </Step>
+</Step>
 </Steps>
+</Tab>
+</Tabs>
 
 ### Update
 
@@ -95,28 +152,28 @@ pipx uninstall beeai
 After installation, configure your preferred LLM provider.
 
 <Tabs>
-   <Tab title="Interactive setup">
+<Tab title="Interactive setup">
 
 ```sh
 beeai env setup
 ```
 
-   </Tab>
-   <Tab title="Manual setup">
+</Tab>
+<Tab title="Manual setup">
 
 To configure manually, follow these examples:
 
 <AccordionGroup>
-   <Accordion title="OpenAI">
+<Accordion title="OpenAI">
 
 ```bash
 beeai env add LLM_MODEL=gpt-4o
 beeai env add LLM_API_BASE=https://api.openai.com/v1
-beeai env add LLM_API_KEY=sk_\[...] \# <- your API key here
+beeai env add LLM_API_KEY=sk_[...] # <- your API key here
 ```
 
-   </Accordion>
-   <Accordion title="Anthropic">
+</Accordion>
+<Accordion title="Anthropic">
 
 ```bash
 beeai env add LLM_MODEL=claude-3-7-sonnet-20250219
@@ -124,8 +181,8 @@ beeai env add LLM_API_BASE=https://api.anthropic.com/v1/
 beeai env add LLM_API_KEY=[...] # <- your API key here
 ```
 
-   </Accordion>
-   <Accordion title="Groq">
+</Accordion>
+<Accordion title="Groq">
 
 ```bash
 beeai env add LLM_MODEL=deepseek-r1-distill-llama-70b
@@ -133,8 +190,8 @@ beeai env add LLM_API_BASE=https://api.groq.com/openai/v1
 beeai env add LLM_API_KEY=gsk_[...] # <- your API key here
 ```
 
-   </Accordion>
-   <Accordion title="Ollama">
+</Accordion>
+<Accordion title="Ollama">
 
 ```bash
 beeai env add LLM_MODEL=llama3.3
@@ -142,8 +199,8 @@ beeai env add LLM_API_BASE=http://localhost:11434/v1
 beeai env add LLM_API_KEY=ollama
 ```
 
-   </Accordion>
-   <Accordion title="OpenRouter">
+</Accordion>
+<Accordion title="OpenRouter">
 
 ```bash
 beeai env add LLM_MODEL=google/gemini-2.0-pro-exp-02-05:free
@@ -151,11 +208,11 @@ beeai env add LLM_API_BASE=https://openrouter.ai/api/v1
 beeai env add LLM_API_KEY=sk-or-v1-[...] # <- your API key here
 ```
 
-   </Accordion>
+</Accordion>
 </AccordionGroup>
 
 
-   </Tab>
+</Tab>
 </Tabs>
 
 ### Verify installation
