@@ -22,6 +22,10 @@ import subprocess
 import time
 from contextlib import suppress
 from pathlib import Path
+import socket
+import http.client
+import urllib.parse
+import ssl
 
 import anyio
 import anyio.to_thread
@@ -62,36 +66,60 @@ def cmd(command: str) -> str:
     return stdout
 
 
-def _get_docker_host(configuration: Configuration):
+def is_valid_docker_host(docker_host: str) -> bool:
+    try:
+        parsed = urllib.parse.urlparse(docker_host)
+        if parsed.scheme == "unix":
+            with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as sock:
+                sock.settimeout(2)
+                sock.connect(parsed.path)
+                conn = http.client.HTTPConnection("localhost")
+                conn.sock = sock
+                conn.request("GET", "/version")
+                return conn.getresponse().status == 200
+        host = parsed.hostname
+        port = parsed.port or (2376 if parsed.scheme == "https" else 2375)
+        conn_class = http.client.HTTPSConnection if parsed.scheme == "https" else http.client.HTTPConnection
+        context = ssl._create_unverified_context() if parsed.scheme == "https" else None
+        conn = conn_class(host, port, timeout=2, context=context)
+        conn.request("GET", "/version")
+        return conn.getresponse().status == 200
+    except Exception:
+        return False
+
+
+def get_docker_host(configuration: Configuration):
     is_wsl = "wsl2" in platform.uname().release.lower()
 
     if not configuration.force_lima or is_wsl:  # Lima does not support WSL (yet), so we ignore FORCE_LIMA
         if configuration.docker_host:
-            if Path(configuration.docker_host).is_socket():
+            if is_valid_docker_host(configuration.docker_host):
                 return configuration.docker_host
             logger.warning(f"Invalid DOCKER_HOST={configuration.docker_host}, trying other options...")
         with suppress(subprocess.CalledProcessError):
             logger.info("Trying Docker...")
-            docker_url = cmd(
+            socket_url = cmd(
                 'docker context inspect "$(docker context show)" --format "{{.Endpoints.docker.Host}}"'
             ).strip()
-            docker_path = docker_url.removeprefix("unix://")
-            if Path(docker_path).is_socket():
-                return docker_url
+            if is_valid_docker_host(socket_url):
+                return socket_url
         with suppress(subprocess.CalledProcessError):
             logger.info("Trying Podman Machine...")
-            podman_url = cmd('podman machine inspect --format "{{.ConnectionInfo.PodmanSocket.Path}}"').strip()
-            if Path(podman_url).is_socket():
-                return f"unix://{podman_url}"
+            socket_url = (
+                "unix://" + cmd('podman machine inspect --format "{{.ConnectionInfo.PodmanSocket.Path}}"').strip()
+            )
+            if is_valid_docker_host(socket_url):
+                return socket_url
         with suppress(subprocess.CalledProcessError):
             logger.info("Trying Podman...")
-            podman_url = cmd('podman info --format "{{.Host.RemoteSocket.Path}}"').strip()
-            if Path(podman_url).is_socket():
-                return f"unix://{podman_url}"
+            socket_url = "unix://" + cmd('podman info --format "{{.Host.RemoteSocket.Path}}"').strip()
+            if is_valid_docker_host(socket_url):
+                return socket_url
 
         logger.info("Trying default socket location...")
-        if Path("/var/run/docker.sock").is_socket():
-            return "unix:///var/run/docker.sock"
+        socket_url = "unix:///var/run/docker.sock"
+        if is_valid_docker_host(socket_url):
+            return socket_url
 
     if is_wsl:
         raise ValueError(
@@ -140,7 +168,7 @@ def _get_docker_host(configuration: Configuration):
 
 
 async def resolve_container_runtime_cmd(configuration: Configuration) -> IContainerBackend:
-    docker_host = _get_docker_host(configuration)
+    docker_host = get_docker_host(configuration)
     logger.info(f"Using DOCKER_HOST={docker_host}")
     backend = DockerContainerBackend(docker_host=docker_host, configuration=configuration)
     if not docker_host.endswith("lima/beeai/sock/docker.sock"):
