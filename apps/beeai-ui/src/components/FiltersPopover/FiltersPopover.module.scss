@@ -26,6 +26,11 @@
   display: flex;
   flex-direction: column;
   row-gap: 1rem;
+  min-inline-size: rem(224px);
+
+  :global(.cds--checkbox-group) {
+    padding-inline: $spacing-04;
+  }
 }
 
 .toggleButtonContainer {

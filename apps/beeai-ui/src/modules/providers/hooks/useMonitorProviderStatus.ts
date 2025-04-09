@@ -15,7 +15,6 @@
  */
 
 import { useQueryClient } from '@tanstack/react-query';
-import pluralize from 'pluralize';
 import { useCallback, useEffect, useState } from 'react';
 
 import { useToast } from '#contexts/Toast/index.ts';
@@ -24,12 +23,14 @@ import { agentKeys } from '#modules/agents/api/keys.ts';
 import { useListProviderAgents } from '#modules/agents/api/queries/useListProviderAgents.ts';
 
 import { useProvider } from '../api/queries/useProvider';
+import { ProviderStatus } from '../api/types';
 
 interface Props {
   id?: string;
+  shouldInstall?: boolean;
 }
 
-export function useMonitorProvider({ id }: Props) {
+export function useMonitorProvider({ id, shouldInstall = true }: Props) {
   const [isDone, setIsDone] = useState(false);
   const queryClient = useQueryClient();
   const { addToast } = useToast();
@@ -37,41 +38,57 @@ export function useMonitorProvider({ id }: Props) {
 
   const { data: provider, refetch: refetchProvider } = useProvider({
     id,
-    refetchInterval: (data) => (data?.status === 'ready' ? false : CHECK_PROVIDER_STATUS_INTERVAL),
+    refetchInterval: (data) => {
+      const status = data?.status;
+      const isNotInstalled = status === ProviderStatus.NotInstalled;
+      const isReady = status === ProviderStatus.Ready;
+
+      return (shouldInstall && isReady) || (!shouldInstall && isNotInstalled) ? false : CHECK_PROVIDER_STATUS_INTERVAL;
+    },
   });
   const status = provider?.status;
-  const { data: agents, refetch: refetchAgents } = useListProviderAgents({ provider: id, enabled: status === 'ready' });
+  const isNotInstalled = status === ProviderStatus.NotInstalled;
+  const isReady = status === ProviderStatus.Ready;
+  const { data: agents, refetch: refetchAgents } = useListProviderAgents({
+    provider: id,
+    enabled: shouldInstall ? isReady : isNotInstalled,
+  });
 
   const checkProvider = useCallback(async () => {
     const { data: provider } = await refetchProvider();
     const status = provider?.status;
 
-    if (status === 'ready') {
+    const isNotInstalled = status === ProviderStatus.NotInstalled;
+    const isReady = status === ProviderStatus.Ready;
+    const isInstallError = status === ProviderStatus.InstallError;
+
+    if (isReady) {
       const { data: agents } = await refetchAgents();
-      const agentsCount = agents?.length ?? 0;
 
       queryClient.invalidateQueries({ queryKey: agentKeys.lists() });
 
-      addToast({
-        title: `${agentsCount} ${pluralize('agent', agentsCount)} imported: ${agents?.map(({ name }) => name).join(', ')}`,
-        kind: 'info',
-        timeout: 5_000,
+      agents?.forEach(({ name }) => {
+        addToast({
+          title: `${name} has installed successfully.`,
+          kind: 'info',
+          timeout: 5_000,
+        });
       });
-    } else if (status === 'error') {
+    } else if (isInstallError) {
       addToast({
-        title: 'Error during agents import. Check the files in the URL provided.',
+        title: 'Agents failed to install.',
         timeout: 5_000,
       });
     }
 
-    if (status === 'ready' || status === 'error') {
+    if (isReady || isInstallError || (!shouldInstall && isNotInstalled)) {
       if (id) {
         removeTask({ id, type: TaskType.ProviderStatusCheck });
       }
 
       setIsDone(true);
     }
-  }, [id, queryClient, refetchProvider, refetchAgents, addToast, removeTask]);
+  }, [id, shouldInstall, queryClient, refetchProvider, refetchAgents, addToast, removeTask]);
 
   useEffect(() => {
     if (id && !isDone) {
@@ -87,7 +104,6 @@ export function useMonitorProvider({ id }: Props) {
   return {
     status,
     agents,
-    checkProvider,
   };
 }
 

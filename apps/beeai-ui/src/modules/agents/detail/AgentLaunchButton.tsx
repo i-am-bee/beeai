@@ -14,21 +14,25 @@
  * limitations under the License.
  */
 
-import { ArrowRight, Download } from '@carbon/icons-react';
+import { ArrowRight, Download, Redo } from '@carbon/icons-react';
 import type { ButtonBaseProps } from '@carbon/react';
 import { Button, ButtonSkeleton, InlineLoading } from '@carbon/react';
 import clsx from 'clsx';
 import isEmpty from 'lodash/isEmpty';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 
 import { TransitionLink } from '#components/TransitionLink/TransitionLink.tsx';
 import { useModal } from '#contexts/Modal/index.tsx';
 import { AddRequiredEnvsModal } from '#modules/envs/components/AddRequiredEnvsModal.tsx';
+import { useInstallProvider } from '#modules/providers/api/mutations/useInstallProvider.ts';
+import { ProviderStatus } from '#modules/providers/api/types.ts';
+import { useMonitorProvider } from '#modules/providers/hooks/useMonitorProviderStatus.ts';
 import { SupportedUis } from '#modules/run/constants.ts';
 import type { UiType } from '#modules/run/types.ts';
 import { routes } from '#utils/router.ts';
 
 import type { Agent } from '../api/types';
+import { useAgentStatus } from '../hooks/useAgentStatus';
 import { useMissingEnvs } from '../hooks/useMissingEnvs';
 import classes from './AgentLaunchButton.module.scss';
 import { InternetOffline } from './InternetOffline';
@@ -38,35 +42,55 @@ interface Props {
 }
 
 export function AgentLaunchButton({ agent }: Props) {
+  const [shouldMonitor, setShouldMonitor] = useState(false);
   const { openModal } = useModal();
   const { missingEnvs, isPending: isMissingEnvsPending } = useMissingEnvs({ agent });
-  const uiType = agent?.ui?.type;
+  const { status } = useAgentStatus({ agent });
+  const { mutate: installProvider } = useInstallProvider();
+
+  const { provider, ui } = agent;
+  const uiType = ui?.type;
   const sharedProps: ButtonBaseProps = {
     kind: 'primary',
     size: 'md',
     className: classes.button,
   };
 
-  const isInstalled = false;
-  const isInstallPending = false;
+  useMonitorProvider({ id: shouldMonitor ? agent.provider : undefined });
+
+  const isNotInstalled = status === ProviderStatus.NotInstalled;
+  const isInstalling = status === ProviderStatus.Installing;
+  const isInstallError = status === ProviderStatus.InstallError;
 
   const handleInstall = useCallback(() => {
-    console.log('handleInstall');
-  }, []);
+    if (provider) {
+      setShouldMonitor(true);
+      installProvider({ body: { id: provider } });
+    }
+  }, [installProvider, provider]);
 
-  if (!isInstalled) {
+  if (isNotInstalled || isInstalling || isInstallError) {
     return (
       <div className={classes.root}>
         <Button
           {...sharedProps}
-          renderIcon={!isInstallPending ? Download : InlineLoading}
-          disabled={isInstallPending}
+          renderIcon={isInstalling ? InlineLoading : isInstallError ? undefined : Download}
+          disabled={isInstalling}
           onClick={handleInstall}
         >
-          {isInstallPending ? <>Installing&hellip;</> : 'Install to launch'}
+          {isInstalling ? (
+            <>Installing&hellip;</>
+          ) : isInstallError ? (
+            <>
+              <Redo />
+              <span>Retry install</span>
+            </>
+          ) : (
+            'Install to launch'
+          )}
         </Button>
 
-        <InternetOffline />
+        {isInstallError && <InternetOffline />}
       </div>
     );
   }

@@ -17,25 +17,33 @@
 @use 'styles/common' as *;
 
 .cds--checkbox-group {
-  box-sizing: content-box;
-  padding-inline: rem(12px);
-  min-inline-size: rem(200px);
-}
-
-.cds--label + .cds--form-item.cds--checkbox-wrapper {
-  margin-block-start: 0;
-}
-
-.cds--checkbox-label-text {
-  padding-inline-start: rem(8px);
+  display: flex;
+  flex-direction: column;
+  row-gap: $spacing-03;
 }
 
 .cds--form-item.cds--checkbox-wrapper {
-  margin-block-end: rem(8px);
-
-  // .cds--checkbox-group__validation-msg is the last child
-  // second-to-last child is the last .cds--form-item.cds--checkbox-wrapper
-  &:nth-last-child(2) {
-    margin-block-end: 0;
+  margin-block-end: 0;
+  &:last-of-type {
+    margin-block-end: rem(1px);
   }
+  .cds--label + & {
+    margin-block-start: 0;
+  }
+}
+
+.cds--checkbox-label {
+  padding-block: rem(1px);
+  &::before {
+    margin: 0 rem(2px);
+  }
+  &::after {
+    margin-block-start: rem(-4px);
+    margin-inline-start: rem(-1px);
+  }
+}
+
+.cds--checkbox-label-text {
+  @include type-style(body-compact-01);
+  padding-inline-start: $spacing-03;
 }

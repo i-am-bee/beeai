@@ -17,9 +17,14 @@
 import { CloudDownload } from '@carbon/icons-react';
 import { IconButton, InlineLoading } from '@carbon/react';
 import clsx from 'clsx';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
+
+import { useInstallProvider } from '#modules/providers/api/mutations/useInstallProvider.ts';
+import { ProviderStatus } from '#modules/providers/api/types.ts';
+import { useMonitorProvider } from '#modules/providers/hooks/useMonitorProviderStatus.ts';
 
 import type { Agent } from '../api/types';
+import { useAgentStatus } from '../hooks/useAgentStatus';
 import classes from './AgentStatusIndicator.module.scss';
 
 interface Props {
@@ -27,15 +32,25 @@ interface Props {
 }
 
 export function AgentStatusIndicator({ agent }: Props) {
-  const isPending = false;
+  const [shouldMonitor, setShouldMonitor] = useState(false);
+  const { provider } = agent;
+  const { status } = useAgentStatus({ agent });
+  const { mutate: installProvider } = useInstallProvider();
+
+  useMonitorProvider({ id: shouldMonitor ? agent.provider : undefined });
+
+  const isInstalling = status === ProviderStatus.Installing;
+  const isNotInstalled = status === ProviderStatus.NotInstalled;
+  const isInstallError = status === ProviderStatus.InstallError;
 
   const handleInstall = useCallback(() => {
-    console.log('handleInstall');
-  }, []);
+    if (provider) {
+      setShouldMonitor(true);
+      installProvider({ body: { id: provider } });
+    }
+  }, [installProvider, provider]);
 
-  console.log(agent);
-
-  if (isPending) {
+  if (isInstalling) {
     return (
       <div className={classes.root}>
         <InlineLoading />
@@ -43,15 +58,19 @@ export function AgentStatusIndicator({ agent }: Props) {
     );
   }
 
-  return (
-    <IconButton
-      kind="ghost"
-      size="sm"
-      wrapperClasses={clsx(classes.root, classes.button)}
-      label="Install agent"
-      onClick={handleInstall}
-    >
-      <CloudDownload />
-    </IconButton>
-  );
+  if (isNotInstalled || isInstallError) {
+    return (
+      <IconButton
+        kind="ghost"
+        size="sm"
+        wrapperClasses={clsx(classes.root, classes.button)}
+        label="Install agent"
+        onClick={handleInstall}
+      >
+        <CloudDownload />
+      </IconButton>
+    );
+  }
+
+  return null;
 }

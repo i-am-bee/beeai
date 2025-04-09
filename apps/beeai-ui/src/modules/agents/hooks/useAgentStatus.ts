@@ -14,21 +14,17 @@
  * limitations under the License.
  */
 
-import { useQuery } from '@tanstack/react-query';
+import { useProvider } from '#modules/providers/api/queries/useProvider.ts';
 
-import { PHOENIX_SERVER_TARGET } from '#utils/vite-constants.ts';
+import type { Agent } from '../api/types';
 
-import { phoenixKeys } from '../keys';
+interface Props {
+  agent?: Agent;
+}
 
-export function usePhoenix() {
-  const query = useQuery({
-    queryKey: phoenixKeys.all(),
-    enabled: Boolean(PHOENIX_SERVER_TARGET),
-    queryFn: () =>
-      fetch(PHOENIX_SERVER_TARGET, { mode: 'no-cors' })
-        .then(() => true)
-        .catch(() => false),
-  });
+export function useAgentStatus({ agent }: Props) {
+  const { data } = useProvider({ id: agent?.provider });
+  const status = data?.status;
 
-  return query;
+  return { status };
 }

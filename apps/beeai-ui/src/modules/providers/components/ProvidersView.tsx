@@ -55,7 +55,6 @@ export function ProvidersView() {
         ? providers.items.map(({ id }) => {
             const agents = agentsByProvider[id];
             const source = getProviderSource(id);
-
             return {
               id,
               url: stripProviderSourcePrefix(id),
@@ -65,7 +64,7 @@ export function ProvidersView() {
               actions: (
                 <TableViewActions>
                   <IconButton
-                    label="Uninstall agent"
+                    label="Delete provider"
                     kind="ghost"
                     size="sm"
                     onClick={() =>
@@ -75,10 +74,10 @@ export function ProvidersView() {
                             Delete <span className={classes.deleteModalProviderId}>{id}</span>?
                           </>
                         ),
-                        body: 'Are you sure you want to uninstall this agent? It can’t be undone.',
-                        primaryButtonText: 'Uninstall',
+                        body: 'Are you sure you want to delete this provider? It can’t be undone.',
+                        primaryButtonText: 'Delete',
                         danger: true,
-                        onSubmit: () => deleteProvider({ id }),
+                        onSubmit: () => deleteProvider({ body: { id } }),
                       })
                     }
                     align="left"

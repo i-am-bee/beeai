@@ -18,22 +18,16 @@ import { useMutation } from '@tanstack/react-query';
 
 import { agentKeys } from '#modules/agents/api/keys.ts';
 
-import { createProvider } from '..';
+import { installProvider } from '..';
 import { providerKeys } from '../keys';
-import type { CreateProviderResponse } from '../types';
 
-interface Props {
-  onSuccess?: (data: CreateProviderResponse) => void;
-}
-
-export function useCreateProvider({ onSuccess }: Props = {}) {
+export function useInstallProvider() {
   const mutation = useMutation({
-    mutationFn: createProvider,
-    onSuccess,
+    mutationFn: installProvider,
     meta: {
       invalidates: [providerKeys.lists(), agentKeys.lists()],
       errorToast: {
-        title: 'Error during agents import. Check the files in the URL provided.',
+        title: 'Failed to install provider.',
       },
     },
   });

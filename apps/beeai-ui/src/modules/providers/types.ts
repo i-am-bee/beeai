@@ -15,6 +15,6 @@
  */
 
 export enum ProviderSource {
-  Local = 'Local',
   GitHub = 'GitHub',
+  Docker = 'Docker',
 }
