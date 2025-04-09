@@ -60,18 +60,32 @@ Right-click the Start menu and open a terminal. Run `wsl` to switch to the WSL2 
 <Tabs>
 <Tab title="Homebrew (recommended)">
 
-## Homebrew
+## Install BeeAI with Homebrew
 
-This method uses [Homebrew](https://brew.sh/).
-
-If you are not already a user, first install Homebrew by running this command and following the displayed instructions: `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`.
+This method uses [Homebrew](https://brew.sh/). Homebrew can be used on all supported platforms: **macOS**, **Linux** and **Windows (WSL2)**.
 
 ### Install
+
+<Steps>
+<Step title="Set-up Homebrew">
+
+If you are not already a user, first install Homebrew by running this command:
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+<Warning>After the installation is complete, the output will contain instructions to update your shell environment. Do not forget to follow these instructions.</Warning>
+</Step>
+<Step title="Install BeeAI">
 
 ```sh
 brew install i-am-bee/beeai/beeai
 brew services start beeai
 ```
+
+</Step>
+</Steps>
 
 ### Update
 
@@ -92,7 +106,7 @@ brew uninstall beeai
 </Tab>
 <Tab title="PyPI">
 
-## PyPI
+## Install BeeAI with PyPI
 
 <Warning>This installation method is unsupported. We strongly recommend installing from Homebrew.</Warning>
 
@@ -101,9 +115,22 @@ This method installs BeeAI using Python’s package manager but is **not recomme
 ### Install
 
 <Steps>
+<Step title="Install a container runtime">
+
+Manually installed BeeAI needs you to provide a container runtime. If you already use one (Docker, Rancher, Podman, Colima, etc.), it will be detected and used for running agents.
+
+If you don't have one or are not sure, the simplest way is to install [Rancher Desktop](https://rancherdesktop.io/) for your platform.
+
+</Step>
 <Step title="Install pipx">
 
-Follow the [official instructions to install pipx](https://pipx.pypa.io/stable/installation/#installing-pipx).
+If you are not already a user, [install pipx according to the official instructions](https://pipx.pypa.io/stable/installation/#installing-pipx).
+
+<Tip>
+
+If you use [uv](https://docs.astral.sh/uv/), you may use `uv tool` as an alternative to `pipx`, e.g. `uv tool install beeai-cli`.
+
+</Tip>
 
 </Step>
 <Step title="Install BeeAI">
@@ -113,16 +140,9 @@ pipx install beeai-cli
 ```
 
 </Step>
-<Step title="Install a container runtime">
+<Step title="Run the BeeAI server">
 
-Manually installed BeeAI needs you to provide a container runtime. If you already use one (Docker, Rancher, Podman, Colima, etc.), it will be detected and used for running agents.
-
-If you don't have one or are not sure, the simplest way is to install [Rancher Desktop](https://rancherdesktop.io/) for your platform.
-
-</Step>
-<Step title="Run BeeAI server:">
-
-The BeeAI server must remain running for the platform to function.
+The BeeAI server must remain running for the platform to function. Keep this command running in a separate terminal window:
 
 ```sh
 beeai serve
@@ -130,8 +150,6 @@ beeai serve
 
 </Step>
 </Steps>
-</Tab>
-</Tabs>
 
 ### Update
 
@@ -144,6 +162,9 @@ pipx upgrade beeai
 ```sh
 pipx uninstall beeai
 ```
+
+</Tab>
+</Tabs>
 
 ## Post-installation setup
 
