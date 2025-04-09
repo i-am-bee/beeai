@@ -72,7 +72,6 @@ export function ImportAgentsModal({ onRequestClose, ...modalProps }: ModalProps)
     mode: 'onChange',
     defaultValues: {
       source: ProviderSource.GitHub,
-      shouldInstall: true,
     },
   });
 
@@ -168,10 +167,7 @@ export function ImportAgentsModal({ onRequestClose, ...modalProps }: ModalProps)
   );
 }
 
-type FormValues = RegisterManagedProviderBody & {
-  source: ProviderSource;
-  shouldInstall: boolean;
-};
+type FormValues = RegisterManagedProviderBody & { source: ProviderSource };
 
 const INPUTS_PROPS = {
   [ProviderSource.Docker]: {
