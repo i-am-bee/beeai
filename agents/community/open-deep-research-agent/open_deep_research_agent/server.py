@@ -1,6 +1,7 @@
 import argparse
 import os
 import threading
+from typing import AsyncGenerator
 
 
 from beeai_sdk.providers.agent import Server
@@ -157,7 +158,7 @@ server = Server("open-deep-research-agent")
 
 
 @server.agent()
-async def run_agent(input: TextInput) -> TextOutput:
+async def run_agent(input: TextInput) -> AsyncGenerator[TextOutput, None]:
     agent = create_agent()
     async for message in agent.run(input.text):
         yield Output(text=message.content)

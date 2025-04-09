@@ -12,20 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import fastapi
+from pathlib import Path
+from typing import Final
 
-from beeai_server.schema import UpdateTelemetryConfigRequest
-from beeai_server.routes.dependencies import TelemetryServiceDependency
-
-router = fastapi.APIRouter()
-
-
-@router.get("")
-async def read_config(telemetry_service: TelemetryServiceDependency):
-    return await telemetry_service.read_config()
-
-
-@router.put("")
-async def update_config(request: UpdateTelemetryConfigRequest, telemetry_service: TelemetryServiceDependency):
-    await telemetry_service.update_config(sharing_enabled=request.sharing_enabled)
-    return await telemetry_service.read_config()
+TELEMETRY_BASE_CONFIG_PATH: Final = Path(__file__).parent.resolve() / "base.yaml"
+TELEMETRY_BEEAI_CONFIG_PATH: Final = Path(__file__).parent.resolve() / "beeai.yaml"

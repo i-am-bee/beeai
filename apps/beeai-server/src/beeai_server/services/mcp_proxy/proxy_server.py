@@ -1,4 +1,4 @@
-# Copyright 2025 IBM Corp.
+# Copyright 2025 © BeeAI a Series of LF Projects, LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -113,7 +113,7 @@ class MCPProxyServer:
     @asynccontextmanager
     def _get_provider_session(self, object_id: str) -> ClientSession:
         provider = self._provider_container.get_provider(object_id)
-        return provider._session
+        return provider._create_session
 
     @cached_property
     def app(self):

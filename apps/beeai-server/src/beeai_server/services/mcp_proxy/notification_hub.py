@@ -1,4 +1,4 @@
-# Copyright 2025 IBM Corp.
+# Copyright 2025 © BeeAI a Series of LF Projects, LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,10 +16,11 @@ import asyncio
 import logging
 from asyncio import CancelledError
 from collections import defaultdict
-from contextlib import AsyncExitStack, asynccontextmanager
-from typing import Callable, Coroutine, TYPE_CHECKING, Any
+from contextlib import AsyncExitStack, asynccontextmanager, suppress
+from typing import Callable, TYPE_CHECKING, Any
 
 import anyio
+from anyio import CancelScope
 from anyio.abc import TaskGroup
 from anyio.streams.memory import MemoryObjectReceiveStream, MemoryObjectSendStream
 from acp.types import AgentRunProgressNotification
@@ -49,7 +50,7 @@ class NotificationHub:
 
     def __init__(self):
         self._exit_stack = AsyncExitStack()
-        self._notification_subscribers: set[Callable[[ServerNotification], Coroutine]] = set()
+        self._notification_subscribers: set[Callable[[ServerNotification], None]] = set()
         self._notification_stream_writer, self._notification_stream_reader = anyio.create_memory_object_stream[
             ServerNotification
         ]()
@@ -62,7 +63,7 @@ class NotificationHub:
     async def remove(self, loaded_provider: "LoadedProvider"):
         if loaded_provider.id in self._provider_cleanups:
             self._provider_cleanups[loaded_provider.id]()
-            logger.info(f"Stopped listening for notifications from: {loaded_provider.id}")
+            logger.info("Stopped listening for notifications")
 
     @asynccontextmanager
     async def forward_notifications(
@@ -74,7 +75,10 @@ class NotificationHub:
         if streams == NotificationStreamType.PROGRESS and not request_context:
             raise ValueError(f"Missing request context for {NotificationStreamType.PROGRESS} notifications")
 
-        async def forward_notification(notification: ServerNotification):
+        tasks = []
+
+        def forward_notification(notification: ServerNotification):
+            event_loop = asyncio.get_event_loop()
             try:
                 match streams:
                     case NotificationStreamType.PROGRESS:
@@ -86,13 +90,12 @@ class NotificationHub:
                         if notification.params.progressToken != request_context.meta.progressToken:
                             return
                         notification.model_extra.pop("jsonrpc", None)
-                        await session.send_notification(notification)
-
+                        tasks.append(event_loop.create_task(session.send_notification(notification)))
                     case NotificationStreamType.BROADCAST:
                         if isinstance(notification, (ProgressNotification, AgentRunProgressNotification)):
                             return
                         notification.model_extra.pop("jsonrpc", None)
-                        await session.send_notification(notification)
+                        tasks.append(event_loop.create_task(session.send_notification(notification)))
             except anyio.BrokenResourceError:
                 # TODO why the resource broken - need proper cleanup?
                 self._notification_subscribers.remove(forward_notification)
@@ -101,30 +104,38 @@ class NotificationHub:
             self._notification_subscribers.add(forward_notification)
             yield
         finally:
+            try:
+                await asyncio.gather(*tasks)
+            except Exception as ex:
+                logger.warning(f"Exception occured when sending notifications: {ex}")
             self._notification_subscribers.remove(forward_notification)
 
     async def _forward_notifications_loop(self):
         async for message in self._notification_stream_reader:
             for forward_message_handler in self._notification_subscribers.copy():
                 try:
-                    await forward_message_handler(message)
+                    forward_message_handler(message)
                 except Exception as e:
                     logger.warning(f"Failed to forward notification: {e}", exc_info=e)
 
     async def _subscribe_for_messages(self, loaded_provider: "LoadedProvider"):
         async def subscribe():
-            try:
-                async for message in loaded_provider.incoming_messages:
-                    match message:
-                        case ServerNotification(root=notify):
-                            logger.debug(f"Dispatching notification {notify.method}")
-                            await self._notification_stream_writer.send(notify)
-            except (anyio.BrokenResourceError, anyio.EndOfStream, CancelledError) as ex:
-                logger.error(f"Exception occured during reading messages: {ex!r}")
+            with CancelScope():
+                try:
+                    async for message in loaded_provider.incoming_messages:
+                        match message:
+                            case ServerNotification(root=notify):
+                                logger.debug(f"Dispatching notification {notify.method}")
+                                await self._notification_stream_writer.send(notify)
+                except CancelledError:
+                    logger.info("Reading messages cancelled.")
+                except (anyio.BrokenResourceError, anyio.EndOfStream) as ex:
+                    logger.error(f"Exception occured during reading messages: {ex!r}")
 
         task = asyncio.create_task(subscribe())
         self._provider_cleanups[loaded_provider.id] = task.cancel
-        await task
+        with suppress(CancelledError):
+            await task
 
     async def __aenter__(self):
         self._notification_pipe = await self._exit_stack.enter_async_context(anyio.create_task_group())

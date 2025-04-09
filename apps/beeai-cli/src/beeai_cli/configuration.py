@@ -1,4 +1,4 @@
-# Copyright 2025 IBM Corp.
+# Copyright 2025 © BeeAI a Series of LF Projects, LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,9 +21,7 @@ import pydantic_settings
 @functools.cache
 class Configuration(pydantic_settings.BaseSettings):
     model_config = pydantic_settings.SettingsConfigDict(
-        env_prefix="BEEAI__",
-        env_file_encoding="utf-8",
-        env_nested_delimiter="__",
+        env_file=None, env_prefix="BEEAI__", env_nested_delimiter="__", extra="allow"
     )
     host: pydantic.AnyUrl = "http://localhost:8333"
     mcp_sse_path: str = "/mcp/sse"

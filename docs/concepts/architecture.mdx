@@ -25,14 +25,14 @@ The platform is made up of several core concepts as shown in the following diagr
   src="/images/architecture-dark.svg"
 />
 
-## Agent providers
+## Agents
 
-An agent provider exposes one or more agents via the [Agent Communication Protocol](/acp). Providers typically define a manifest that instructs BeeAI on how to run them and may include additional features like tools.
+An agent is a container that communicates using the [Agent Communication Protocol](/acp). Agents typically define a manifest that instructs BeeAI on how to run them and may include additional features like tools.
 
-For details on registering providers, see [providers](/concepts/providers).
+For details on registering agents, see [agents](/concepts/agents).
 
 <Info>
-  BeeAI includes several built-in providers, see our [agent
+  BeeAI includes several built-in agents, see our [agent
   catalog](https://beeai.dev/agents).
 </Info>
 
@@ -44,9 +44,9 @@ For details on registering providers, see [providers](/concepts/providers).
   source code.
 </Info>
 
-BeeAI server manages providers, spawns/destroys provider processes, and provides a unified endpoint for routing requests and notifications between providers and clients.
+BeeAI server manages agents, spawns/destroys agent processes, and provides a unified endpoint for routing requests and notifications between agents and clients.
 
-It also manages provider configurations and environment variables and offers a simple REST API for agent communication and telemetry data forwarding to the Arize Phoenix OTEL backend.
+It also manages agent configurations and environment variables and offers a simple REST API for agent communication and telemetry data forwarding to the Arize Phoenix OTEL backend.
 
 ## BeeAI CLI and UI
 

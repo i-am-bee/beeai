@@ -1,4 +1,4 @@
-# Copyright 2025 IBM Corp.
+# Copyright 2025 © BeeAI a Series of LF Projects, LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -467,7 +467,7 @@ async def run_agent(
 
     ui = agent.model_extra.get("ui", {}) or {}
     ui_type = ui.get("type", None)
-    is_sequential_workflow = agent.name in {"sequential-workflow", "composition"}
+    is_sequential_workflow = agent.name in {"sequential-workflow"}
 
     user_greeting = ui.get("userGreeting", None) or "How can I help you?"
     config = {}
@@ -672,6 +672,7 @@ async def agent_detail(
 ):
     """Show agent details."""
     agent = await _get_agent(name)
+
     if schema:
         console.print(Markdown(f"# Agent {agent.name}\n## Input Schema\n"))
         console.print(_render_schema(agent.inputSchema))
@@ -690,6 +691,13 @@ async def agent_detail(
         for key, value in omit(
             agent.model_extra, {"fullDescription", "inputSchema", "outputSchema", "examples"}
         ).items():
+            table.add_row(key, str(value))
+    console.print()
+    console.print(table)
+
+    provider = await get_provider(agent.provider)
+    with create_table(Column("Key", ratio=1), Column("Value", ratio=5), title="Provider") as table:
+        for key, value in omit(provider, {"image_id", "manifest", "source", "registry"}).items():
             table.add_row(key, str(value))
     console.print()
     console.print(table)

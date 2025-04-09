@@ -231,7 +231,7 @@ wheels = [
 
 [[package]]
 name = "beeai-cli"
-version = "0.0.8"
+version = "0.0.12"
 source = { editable = "apps/beeai-cli" }
 dependencies = [
     { name = "acp-sdk" },
@@ -272,7 +272,7 @@ requires-dist = [
 
 [[package]]
 name = "beeai-sdk"
-version = "0.0.20"
+version = "0.0.22"
 source = { editable = "packages/beeai-sdk" }
 dependencies = [
     { name = "acp-sdk" },
@@ -293,7 +293,7 @@ requires-dist = [
 
 [[package]]
 name = "beeai-server"
-version = "0.0.7"
+version = "0.0.12"
 source = { editable = "apps/beeai-server" }
 dependencies = [
     { name = "acp-sdk" },

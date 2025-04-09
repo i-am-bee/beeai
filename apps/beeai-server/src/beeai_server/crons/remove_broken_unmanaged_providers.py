@@ -1,4 +1,4 @@
-# Copyright 2025 IBM Corp.
+# Copyright 2025 © BeeAI a Series of LF Projects, LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -35,7 +35,11 @@ async def remove_broken_unmanaged_providers(configuration: Configuration, provid
         if isinstance(loaded_provider.provider, UnmanagedProvider)
     ]
     for provider in unmanaged_providers:
-        if provider.status in {LoadedProviderStatus.ready, LoadedProvider.last_error}:
+        if provider.status in {
+            LoadedProviderStatus.ready,
+            LoadedProviderStatus.running,
+            LoadedProvider.last_error,
+        }:
             try:
                 with anyio.fail_after(delay=timedelta(seconds=30).total_seconds()):
                     async with provider.session() as session:

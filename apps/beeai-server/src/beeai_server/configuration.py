@@ -1,4 +1,4 @@
-# Copyright 2025 IBM Corp.
+# Copyright 2025 © BeeAI a Series of LF Projects, LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -56,7 +56,7 @@ class OCIRegistryConfiguration(BaseModel, extra="allow"):
 
 
 class AgentRegistryConfiguration(BaseModel):
-    location: GithubUrl = GithubUrl(root="https://github.com/i-am-bee/beeai@main#path=agent-registry.yaml")
+    location: GithubUrl = GithubUrl(root="https://github.com/i-am-bee/beeai@release-v0.0.11#path=agent-registry.yaml")
     preinstall: bool = True
 
 
@@ -68,7 +68,7 @@ class Configuration(BaseSettings):
     oci_registry: dict[str, OCIRegistryConfiguration] = Field(default_factory=dict)
 
     provider_config_path: Path = Path.home() / ".beeai" / "providers.yaml"
-    telemetry_config_path: Path = Path.home() / ".beeai" / "telemetry.yaml"
+    telemetry_config_dir: Path = Path.home() / ".beeai" / "telemetry"
     env_path: Path = Path.home() / ".beeai" / ".env"
     cache_dir: Path = Path.home() / ".beeai" / "cache"
     port: int = 8333

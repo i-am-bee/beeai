@@ -318,7 +318,7 @@ wheels = [
 
 [[package]]
 name = "beeai-sdk"
-version = "0.0.20"
+version = "0.0.22"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "acp-sdk" },
@@ -327,9 +327,9 @@ dependencies = [
     { name = "pydantic" },
     { name = "pyyaml" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/1e/c6/62a8a61cfc1a0cb38fea788f320908b657c986eee1bff4232a8960120fd2/beeai_sdk-0.0.20.tar.gz", hash = "sha256:99ed1840ec018166b1b581f07fe1ede857c5f9bffdcb8e6c0ddd1ff89846e244", size = 11851 }
+sdist = { url = "https://files.pythonhosted.org/packages/2c/64/8af9f65485df9e7d4f5d7204d68002a5c0eeeaf7306684494c1813c3795c/beeai_sdk-0.0.22.tar.gz", hash = "sha256:8a9372dfebe96902b26168b481a67f7d9c0e1a880b925a0b737e45383e8f89fc", size = 12708 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/a6/96/ceb7adf489ca873455272c0e860a63127785002c0ab2a661108544a03c3c/beeai_sdk-0.0.20-py3-none-any.whl", hash = "sha256:7dbb49847b92d3009db4e06ec362897f5e8c3beafccebf6fb8515d52f244e431", size = 14701 },
+    { url = "https://files.pythonhosted.org/packages/70/01/4b411507dad40625067dfa7d493dbaa7f1e7990a78bebf5dc06046ea9217/beeai_sdk-0.0.22-py3-none-any.whl", hash = "sha256:5cd4c41f21338ef5c09c6f0ed7b3cef8728a0e2caf21f17526cd62ee7f9d483d", size = 15502 },
 ]
 
 [[package]]
@@ -1551,7 +1551,7 @@ requires-dist = [
     { name = "anthropic", specifier = ">=0.37.1" },
     { name = "audioop-lts", marker = "python_full_version >= '3.13'", specifier = "<1.0" },
     { name = "beautifulsoup4", specifier = ">=4.12.3" },
-    { name = "beeai-sdk", specifier = "==0.0.20" },
+    { name = "beeai-sdk", specifier = "==0.0.22" },
     { name = "bio" },
     { name = "chess" },
     { name = "datasets", specifier = ">=2.21.0" },

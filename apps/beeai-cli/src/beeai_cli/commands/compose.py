@@ -1,4 +1,4 @@
-# Copyright 2025 IBM Corp.
+# Copyright 2025 © BeeAI a Series of LF Projects, LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -29,4 +29,4 @@ async def sequential(
 ) -> None:
     """Compose agents into a sequential workflow."""
     # await run_agent(name="sequential-workflow", input=None, dump_files=dump_files)
-    await run_agent(name="composition", input=None, dump_files=dump_files)
+    await run_agent(name="sequential-workflow", input=None, dump_files=dump_files)

@@ -6,7 +6,7 @@ framework: BeeAI
 license: Apache 2.0
 languages: 
   - TypeScript
-githubUrl: https://github.com/i-am-bee/beeai/blob/main/agents/official/beeai-framework/src/podcast-creator
+githubUrl: https://github.com/i-am-bee/beeai/blob/main/agents/official/beeai-framework/podcast-creator
 avgRunTimeSeconds: 19
 avgRunTokens: 5409
 examples: 

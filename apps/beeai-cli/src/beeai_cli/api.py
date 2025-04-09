@@ -1,4 +1,4 @@
-# Copyright 2025 IBM Corp.
+# Copyright 2025 © BeeAI a Series of LF Projects, LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -94,7 +94,7 @@ async def resolve_connection_error():
 
     if process_status == ProcessStatus.running_new:
         with console.status(
-            "BeeAI service is still starting up. Waiting it to be ready, this may take a few minutes, please stand by... (you can cancel waiting with CTRL+C and re-try later)",
+            "BeeAI service is still starting up. This may take a few minutes, please stand by... (You can cancel waiting with CTRL+C and re-try later.)",
             spinner="dots",
         ):
             await wait_for_api()
@@ -145,7 +145,7 @@ async def wait_for_agents(initial_delay_seconds=5, wait_seconds=180):
     for i in range(wait_seconds):
         time.sleep(1)
         if all(
-            item["status"] in ["ready", "not_installed", "running"]
+            item["status"] in ["ready", "installing", "not_installed", "running"]
             for item in (await api_request("get", "provider"))["items"]
         ):
             return True

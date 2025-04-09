@@ -6,7 +6,7 @@ framework: Custom
 license: Apache 2.0
 languages: 
   - Python
-githubUrl: https://github.com/i-am-bee/beeai/tree/main/agents/community/gpt-researcher-agent/gpt_researcher_agent
+githubUrl: https://github.com/i-am-bee/beeai/tree/main/agents/community/gpt-researcher
 avgRunTimeSeconds: 2.1
 avgRunTokens: 111
 examples: 

@@ -7,5 +7,5 @@
 
 ```shell
 # run MCP server
-uv run gpt-researcher-agent
+uv run server
 ```

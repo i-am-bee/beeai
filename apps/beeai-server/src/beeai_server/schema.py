@@ -1,4 +1,4 @@
-# Copyright 2025 IBM Corp.
+# Copyright 2025 © BeeAI a Series of LF Projects, LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ from beeai_server.domain.model import (
     EnvVar,
     AgentManifest,
 )
+from beeai_server.utils.github import ResolvedGithubUrl
 
 BaseModelT = TypeVar("BaseModelT", bound=BaseModel)
 
@@ -61,6 +62,7 @@ StreamLogsRequest = InstallProviderRequest
 
 class ProviderWithStatus(BaseModel, extra="allow"):
     id: ID
+    registry: ResolvedGithubUrl | None = None
     manifest: AgentManifest
     status: LoadedProviderStatus
     last_error: LoadProviderErrorMessage | None = None

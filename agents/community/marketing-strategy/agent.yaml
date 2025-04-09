@@ -6,7 +6,7 @@ framework: CrewAI
 license: Apache 2.0
 languages: 
   - Python
-githubUrl: https://github.com/i-am-bee/beeai/tree/main/agents/community/crewai-agents/src/crewai_agents/marketing_strategy
+githubUrl: https://github.com/i-am-bee/beeai/tree/main/agents/community/marketing-strategy
 examples:
   cli:
     - command: beeai run marketing-strategy "Launch of a new eco-friendly product line targeting young adults interested in sustainable living."
