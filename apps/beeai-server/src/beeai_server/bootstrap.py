@@ -16,6 +16,7 @@ import asyncio
 import concurrent.futures
 import json
 import logging
+import platform
 import shutil
 import subprocess
 import time
@@ -62,7 +63,9 @@ def cmd(command: str) -> str:
 
 
 def _get_docker_host(configuration: Configuration):
-    if not configuration.force_lima:
+    is_wsl = "wsl2" in platform.uname().release.lower()
+
+    if not configuration.force_lima or is_wsl:  # Lima does not support WSL (yet), so we ignore FORCE_LIMA
         if configuration.docker_host:
             if Path(configuration.docker_host).is_socket():
                 return configuration.docker_host
@@ -85,6 +88,15 @@ def _get_docker_host(configuration: Configuration):
             podman_url = cmd('podman info --format "{{.Host.RemoteSocket.Path}}"').strip()
             if Path(podman_url).is_socket():
                 return f"unix://{podman_url}"
+
+        logger.info("Trying default socket location...")
+        if Path("/var/run/docker.sock").is_socket():
+            return "unix:///var/run/docker.sock"
+
+    if is_wsl:
+        raise ValueError(
+            "No compatible container runtime found. Please follow the Windows setup instructions in the installation guide (https://docs.beeai.dev/introduction/installation)."
+        )
 
     with suppress(subprocess.CalledProcessError):
         logger.info("Trying Lima...")
