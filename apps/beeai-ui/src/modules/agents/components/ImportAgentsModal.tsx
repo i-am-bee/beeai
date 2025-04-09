@@ -16,7 +16,6 @@
 
 import {
   Button,
-  Checkbox,
   FormLabel,
   InlineLoading,
   ListItem,
@@ -40,14 +39,30 @@ import { useRegisterManagedProvider } from '#modules/providers/api/mutations/use
 import type { RegisterManagedProviderBody } from '#modules/providers/api/types.ts';
 import { ProviderStatus } from '#modules/providers/api/types.ts';
 import { ProviderSourcePrefixes } from '#modules/providers/constants.ts';
-import { useMonitorProvider } from '#modules/providers/hooks/useMonitorProviderStatus.ts';
 import { ProviderSource } from '#modules/providers/types.ts';
 
+import { useListProviderAgents } from '../api/queries/useListProviderAgents';
+import { useAgentStatus } from '../hooks/useAgentStatus';
 import classes from './ImportAgentsModal.module.scss';
 
 export function ImportAgentsModal({ onRequestClose, ...modalProps }: ModalProps) {
+  const id = useId();
+  const [registeredProviderId, setRegisteredProviderId] = useState<string>();
+  const { status } = useAgentStatus({ provider: registeredProviderId });
+  const { data: agents } = useListProviderAgents({ provider: registeredProviderId });
+  const agentsCount = agents?.length ?? 0;
+
+  const { mutate: installProvider } = useInstallProvider();
+
+  const { mutate: registerManagedProvider, isPending } = useRegisterManagedProvider({
+    onSuccess: (provider) => {
+      setRegisteredProviderId(provider.id);
+
+      installProvider({ body: { id: provider.id } });
+    },
+  });
+
   const {
-    watch,
     register,
     handleSubmit,
     setValue,
@@ -61,25 +76,7 @@ export function ImportAgentsModal({ onRequestClose, ...modalProps }: ModalProps)
     },
   });
 
-  const shouldInstall = watch('shouldInstall');
   const { field: sourceField } = useController<FormValues, 'source'>({ name: 'source', control });
-
-  const id = useId();
-  const [registeredProviderId, setRegisteredProviderId] = useState<string>();
-  const { status, agents } = useMonitorProvider({ id: registeredProviderId, shouldInstall });
-  const agentsCount = agents?.length ?? 0;
-
-  const { mutate: installProvider } = useInstallProvider();
-
-  const { mutate: registerManagedProvider, isPending } = useRegisterManagedProvider({
-    onSuccess: (provider) => {
-      setRegisteredProviderId(provider.id);
-
-      if (shouldInstall) {
-        installProvider({ body: { id: provider.id } });
-      }
-    },
-  });
 
   const onSubmit = useCallback(
     ({ location, source }: FormValues) => {
@@ -135,15 +132,13 @@ export function ImportAgentsModal({ onRequestClose, ...modalProps }: ModalProps)
                 {...locationInputProps}
                 {...register('location', { required: true })}
               />
-
-              <Checkbox id={`${id}:install`} labelText="Install agents automatically" {...register('shouldInstall')} />
             </div>
           )}
 
-          {(isNotInstalled || isReady) && agentsCount > 0 && (
+          {isReady && agentsCount > 0 && (
             <div className={classes.agents}>
               <FormLabel>
-                {agentsCount} {pluralize('agent', agentsCount)} {isNotInstalled ? 'imported' : 'installed'}
+                {agentsCount} {pluralize('agent', agentsCount)} installed
               </FormLabel>
 
               <UnorderedList>

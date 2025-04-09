@@ -15,15 +15,26 @@
  */
 
 import { useMutation } from '@tanstack/react-query';
+import { useState } from 'react';
 
 import { agentKeys } from '#modules/agents/api/keys.ts';
+import { useMonitorProvider } from '#modules/providers/hooks/useMonitorProviderStatus.ts';
 
 import { installProvider } from '..';
 import { providerKeys } from '../keys';
+import type { InstallProviderBody } from '../types';
 
 export function useInstallProvider() {
+  const [id, setId] = useState<string | undefined>(undefined);
+
+  useMonitorProvider({ id });
+
   const mutation = useMutation({
-    mutationFn: installProvider,
+    mutationFn: ({ body }: { body: InstallProviderBody }) => {
+      setId(body.id);
+
+      return installProvider({ body });
+    },
     meta: {
       invalidates: [providerKeys.lists(), agentKeys.lists()],
       errorToast: {

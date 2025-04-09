@@ -19,14 +19,13 @@ import type { ButtonBaseProps } from '@carbon/react';
 import { Button, ButtonSkeleton, InlineLoading } from '@carbon/react';
 import clsx from 'clsx';
 import isEmpty from 'lodash/isEmpty';
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 
 import { TransitionLink } from '#components/TransitionLink/TransitionLink.tsx';
 import { useModal } from '#contexts/Modal/index.tsx';
 import { AddRequiredEnvsModal } from '#modules/envs/components/AddRequiredEnvsModal.tsx';
 import { useInstallProvider } from '#modules/providers/api/mutations/useInstallProvider.ts';
 import { ProviderStatus } from '#modules/providers/api/types.ts';
-import { useMonitorProvider } from '#modules/providers/hooks/useMonitorProviderStatus.ts';
 import { SupportedUis } from '#modules/run/constants.ts';
 import type { UiType } from '#modules/run/types.ts';
 import { routes } from '#utils/router.ts';
@@ -42,10 +41,9 @@ interface Props {
 }
 
 export function AgentLaunchButton({ agent }: Props) {
-  const [shouldMonitor, setShouldMonitor] = useState(false);
   const { openModal } = useModal();
   const { missingEnvs, isPending: isMissingEnvsPending } = useMissingEnvs({ agent });
-  const { status } = useAgentStatus({ agent });
+  const { status } = useAgentStatus({ provider: agent.provider });
   const { mutate: installProvider } = useInstallProvider();
 
   const { provider, ui } = agent;
@@ -56,15 +54,12 @@ export function AgentLaunchButton({ agent }: Props) {
     className: classes.button,
   };
 
-  useMonitorProvider({ id: shouldMonitor ? agent.provider : undefined });
-
   const isNotInstalled = status === ProviderStatus.NotInstalled;
   const isInstalling = status === ProviderStatus.Installing;
   const isInstallError = status === ProviderStatus.InstallError;
 
   const handleInstall = useCallback(() => {
     if (provider) {
-      setShouldMonitor(true);
       installProvider({ body: { id: provider } });
     }
   }, [installProvider, provider]);

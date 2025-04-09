@@ -27,10 +27,9 @@ import { ProviderStatus } from '../api/types';
 
 interface Props {
   id?: string;
-  shouldInstall?: boolean;
 }
 
-export function useMonitorProvider({ id, shouldInstall = true }: Props) {
+export function useMonitorProvider({ id }: Props) {
   const [isDone, setIsDone] = useState(false);
   const queryClient = useQueryClient();
   const { addToast } = useToast();
@@ -40,32 +39,27 @@ export function useMonitorProvider({ id, shouldInstall = true }: Props) {
     id,
     refetchInterval: (data) => {
       const status = data?.status;
-      const isNotInstalled = status === ProviderStatus.NotInstalled;
       const isReady = status === ProviderStatus.Ready;
 
-      return (shouldInstall && isReady) || (!shouldInstall && isNotInstalled) ? false : CHECK_PROVIDER_STATUS_INTERVAL;
+      return isReady ? false : CHECK_PROVIDER_STATUS_INTERVAL;
     },
   });
   const status = provider?.status;
-  const isNotInstalled = status === ProviderStatus.NotInstalled;
   const isReady = status === ProviderStatus.Ready;
   const { data: agents, refetch: refetchAgents } = useListProviderAgents({
     provider: id,
-    enabled: shouldInstall ? isReady : isNotInstalled,
+    enabled: isReady,
   });
 
   const checkProvider = useCallback(async () => {
     const { data: provider } = await refetchProvider();
     const status = provider?.status;
 
-    const isNotInstalled = status === ProviderStatus.NotInstalled;
     const isReady = status === ProviderStatus.Ready;
     const isInstallError = status === ProviderStatus.InstallError;
 
     if (isReady) {
       const { data: agents } = await refetchAgents();
-
-      queryClient.invalidateQueries({ queryKey: agentKeys.lists() });
 
       agents?.forEach(({ name }) => {
         addToast({
@@ -75,20 +69,24 @@ export function useMonitorProvider({ id, shouldInstall = true }: Props) {
         });
       });
     } else if (isInstallError) {
-      addToast({
-        title: 'Agents failed to install.',
-        timeout: 5_000,
+      agents?.forEach(({ name }) => {
+        addToast({
+          title: `${name} failed to install.`,
+          timeout: 5_000,
+        });
       });
     }
 
-    if (isReady || isInstallError || (!shouldInstall && isNotInstalled)) {
+    if (isReady || isInstallError) {
+      queryClient.invalidateQueries({ queryKey: agentKeys.lists() });
+
       if (id) {
         removeTask({ id, type: TaskType.ProviderStatusCheck });
       }
 
       setIsDone(true);
     }
-  }, [id, shouldInstall, queryClient, refetchProvider, refetchAgents, addToast, removeTask]);
+  }, [id, agents, queryClient, refetchProvider, refetchAgents, addToast, removeTask]);
 
   useEffect(() => {
     if (id && !isDone) {

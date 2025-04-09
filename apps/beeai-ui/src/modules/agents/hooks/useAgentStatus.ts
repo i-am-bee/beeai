@@ -16,14 +16,12 @@
 
 import { useProvider } from '#modules/providers/api/queries/useProvider.ts';
 
-import type { Agent } from '../api/types';
-
 interface Props {
-  agent?: Agent;
+  provider?: string;
 }
 
-export function useAgentStatus({ agent }: Props) {
-  const { data } = useProvider({ id: agent?.provider });
+export function useAgentStatus({ provider }: Props) {
+  const { data } = useProvider({ id: provider });
   const status = data?.status;
 
   return { status };

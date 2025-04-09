@@ -17,11 +17,10 @@
 import { CloudDownload } from '@carbon/icons-react';
 import { IconButton, InlineLoading } from '@carbon/react';
 import clsx from 'clsx';
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 
 import { useInstallProvider } from '#modules/providers/api/mutations/useInstallProvider.ts';
 import { ProviderStatus } from '#modules/providers/api/types.ts';
-import { useMonitorProvider } from '#modules/providers/hooks/useMonitorProviderStatus.ts';
 
 import type { Agent } from '../api/types';
 import { useAgentStatus } from '../hooks/useAgentStatus';
@@ -32,12 +31,9 @@ interface Props {
 }
 
 export function AgentStatusIndicator({ agent }: Props) {
-  const [shouldMonitor, setShouldMonitor] = useState(false);
   const { provider } = agent;
-  const { status } = useAgentStatus({ agent });
+  const { status } = useAgentStatus({ provider });
   const { mutate: installProvider } = useInstallProvider();
-
-  useMonitorProvider({ id: shouldMonitor ? agent.provider : undefined });
 
   const isInstalling = status === ProviderStatus.Installing;
   const isNotInstalled = status === ProviderStatus.NotInstalled;
@@ -45,7 +41,6 @@ export function AgentStatusIndicator({ agent }: Props) {
 
   const handleInstall = useCallback(() => {
     if (provider) {
-      setShouldMonitor(true);
       installProvider({ body: { id: provider } });
     }
   }, [installProvider, provider]);
