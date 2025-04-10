@@ -17,6 +17,6 @@
 import { ProviderSource } from './types';
 
 export const ProviderSourcePrefixes = {
-  [ProviderSource.Local]: 'file://',
   [ProviderSource.GitHub]: 'git+',
+  [ProviderSource.Docker]: '',
 } as const;

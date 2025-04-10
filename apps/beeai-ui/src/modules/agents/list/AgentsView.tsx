@@ -25,7 +25,7 @@ import type { Agent } from '../api/types';
 import { AgentCard } from '../components/AgentCard';
 import { AgentsFilters } from '../components/AgentsFilters';
 import { AgentsList } from '../components/AgentsList';
-// import { ImportAgents } from '../components/ImportAgents';
+import { ImportAgents } from '../components/ImportAgents';
 import type { AgentsFiltersParams } from '../providers/AgentsFiltersProvider';
 
 export function AgentsView() {
@@ -45,9 +45,7 @@ export function AgentsView() {
       );
 
     return (
-      // TODO: Agent import feature is temporarily removed as it is broken due to API changes
-      // <AgentsList agents={data} filters={filters} action={<ImportAgents />} isPending={isPending}>
-      <AgentsList agents={data} filters={filters} isPending={isPending}>
+      <AgentsList agents={data} filters={filters} action={<ImportAgents />} isPending={isPending}>
         {(filteredAgents) =>
           filteredAgents?.map((agent, idx) => (
             <li key={idx}>

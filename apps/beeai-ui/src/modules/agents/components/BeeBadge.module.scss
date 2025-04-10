@@ -14,22 +14,21 @@
  * limitations under the License.
  */
 
-.container {
-  display: inline-block;
-  margin-inline-start: $spacing-03;
-}
+.tag {
+  flex-shrink: 0;
 
-.tag:global(.#{$prefix}--tag--lg) {
-  padding-inline-start: rem(7px) !important;
-  padding-inline-end: rem(7px) !important;
+  &:global(.#{$prefix}--tag--lg) {
+    padding-inline-start: rem(7px) !important;
+    padding-inline-end: rem(7px) !important;
 
-  :global(.#{$prefix}--tag__custom-icon) {
-    block-size: rem(18px);
-    inline-size: rem(18px);
+    :global(.#{$prefix}--tag__custom-icon) {
+      block-size: rem(18px);
+      inline-size: rem(18px);
 
-    > svg {
-      block-size: rem(18px) !important;
-      inline-size: rem(18px) !important;
+      > svg {
+        block-size: rem(18px) !important;
+        inline-size: rem(18px) !important;
+      }
     }
   }
 }

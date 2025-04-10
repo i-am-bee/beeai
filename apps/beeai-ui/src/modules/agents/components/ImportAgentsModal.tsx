@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-// TODO: Agent import feature is temporarily removed as it is broken due to API changes
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
-
 import {
   Button,
   FormLabel,
@@ -38,23 +34,30 @@ import { useController, useForm } from 'react-hook-form';
 import { ErrorMessage } from '#components/ErrorMessage/ErrorMessage.tsx';
 import { Modal } from '#components/Modal/Modal.tsx';
 import type { ModalProps } from '#contexts/Modal/modal-context.ts';
-import { useCreateProvider } from '#modules/providers/api/mutations/useCreateProvider.ts';
-import type { CreateProviderBody } from '#modules/providers/api/types.ts';
+import { useInstallProvider } from '#modules/providers/api/mutations/useInstallProvider.ts';
+import { useRegisterManagedProvider } from '#modules/providers/api/mutations/useRegisterManagedProvider.ts';
+import type { RegisterManagedProviderBody } from '#modules/providers/api/types.ts';
 import { ProviderSourcePrefixes } from '#modules/providers/constants.ts';
-import { useMonitorProvider } from '#modules/providers/hooks/useMonitorProviderStatus.ts';
 import { ProviderSource } from '#modules/providers/types.ts';
 
+import { useListProviderAgents } from '../api/queries/useListProviderAgents';
+import { useAgentStatus } from '../hooks/useAgentStatus';
 import classes from './ImportAgentsModal.module.scss';
 
 export function ImportAgentsModal({ onRequestClose, ...modalProps }: ModalProps) {
   const id = useId();
-  const [createdProviderId, setCreatedProviderId] = useState<string>();
-  const { status, agents } = useMonitorProvider({ id: createdProviderId });
+  const [registeredProviderId, setRegisteredProviderId] = useState<string>();
+  const { isNotInstalled, isInstalling, isInstallError, isReady } = useAgentStatus({ provider: registeredProviderId });
+  const { data: agents } = useListProviderAgents({ provider: registeredProviderId });
   const agentsCount = agents?.length ?? 0;
 
-  const { mutate: createProvider, isPending } = useCreateProvider({
+  const { mutate: installProvider } = useInstallProvider();
+
+  const { mutate: registerManagedProvider, isPending } = useRegisterManagedProvider({
     onSuccess: (provider) => {
-      setCreatedProviderId(provider.id);
+      setRegisteredProviderId(provider.id);
+
+      installProvider({ body: { id: provider.id } });
     },
   });
 
@@ -67,7 +70,7 @@ export function ImportAgentsModal({ onRequestClose, ...modalProps }: ModalProps)
   } = useForm<FormValues>({
     mode: 'onChange',
     defaultValues: {
-      source: ProviderSource.Local,
+      source: ProviderSource.GitHub,
     },
   });
 
@@ -75,11 +78,11 @@ export function ImportAgentsModal({ onRequestClose, ...modalProps }: ModalProps)
 
   const onSubmit = useCallback(
     ({ location, source }: FormValues) => {
-      createProvider({
+      registerManagedProvider({
         body: { location: `${ProviderSourcePrefixes[source]}${location}` },
       });
     },
-    [createProvider],
+    [registerManagedProvider],
   );
 
   const locationInputProps = INPUTS_PROPS[sourceField.value];
@@ -93,16 +96,16 @@ export function ImportAgentsModal({ onRequestClose, ...modalProps }: ModalProps)
       <ModalHeader buttonOnClick={() => onRequestClose()}>
         <h2>Import your agents</h2>
 
-        {status === 'initializing' && (
+        {isInstalling && (
           <p className={classes.description}>
-            This could take a few minutes, you will be notified once your agents have been imported successfully.
+            This could take a few minutes, you will be notified once your agents have been installed successfully.
           </p>
         )}
       </ModalHeader>
 
       <ModalBody>
         <form onSubmit={handleSubmit(onSubmit)}>
-          {status !== 'initializing' && status !== 'ready' && (
+          {!isNotInstalled && !isInstalling && !isReady && (
             <div className={classes.stack}>
               <RadioButtonGroup
                 name={sourceField.name}
@@ -110,9 +113,9 @@ export function ImportAgentsModal({ onRequestClose, ...modalProps }: ModalProps)
                 valueSelected={sourceField.value}
                 onChange={sourceField.onChange}
               >
-                <RadioButton labelText="Local path" value={ProviderSource.Local} />
-
                 <RadioButton labelText="GitHub" value={ProviderSource.GitHub} />
+
+                <RadioButton labelText="Docker image" value={ProviderSource.Docker} />
               </RadioButtonGroup>
 
               <TextInput
@@ -125,10 +128,10 @@ export function ImportAgentsModal({ onRequestClose, ...modalProps }: ModalProps)
             </div>
           )}
 
-          {status === 'ready' && agentsCount > 0 && (
+          {isReady && agentsCount > 0 && (
             <div className={classes.agents}>
               <FormLabel>
-                {agentsCount} {pluralize('agent', agentsCount)} imported
+                {agentsCount} {pluralize('agent', agentsCount)} installed
               </FormLabel>
 
               <UnorderedList>
@@ -137,20 +140,18 @@ export function ImportAgentsModal({ onRequestClose, ...modalProps }: ModalProps)
             </div>
           )}
 
-          {status === 'initializing' && <InlineLoading description="Scraping repository&hellip;" />}
+          {isInstalling && <InlineLoading description="Installing agents&hellip;" />}
 
-          {status === 'error' && (
-            <ErrorMessage subtitle="Error during agents import. Check the files in the URL provided." />
-          )}
+          {isInstallError && <ErrorMessage subtitle="Agents failed to install." />}
         </form>
       </ModalBody>
 
       <ModalFooter>
         <Button kind="ghost" onClick={() => onRequestClose()}>
-          {status === 'initializing' || status === 'ready' ? 'Close' : 'Cancel'}
+          {isInstalling || isReady ? 'Close' : 'Cancel'}
         </Button>
 
-        {status !== 'initializing' && status !== 'ready' && (
+        {!isNotInstalled && !isInstalling && !isReady && (
           <Button onClick={() => handleSubmit(onSubmit)()} disabled={isPending || !isValid}>
             {isPending ? <InlineLoading description="Importing&hellip;" /> : 'Continue'}
           </Button>
@@ -160,14 +161,16 @@ export function ImportAgentsModal({ onRequestClose, ...modalProps }: ModalProps)
   );
 }
 
-type FormValues = CreateProviderBody & { source: ProviderSource };
+type FormValues = RegisterManagedProviderBody & { source: ProviderSource };
 
 const INPUTS_PROPS = {
-  [ProviderSource.Local]: {
-    labelText: 'Agent provider path',
+  [ProviderSource.Docker]: {
+    labelText: 'Docker image URL',
+    placeholder: 'Type your Docker image URL',
   },
   [ProviderSource.GitHub]: {
     labelText: 'GitHub repository URL',
+    placeholder: 'Type your GitHub repository URL',
     helperText: 'Make sure to provide a public link',
   },
 };

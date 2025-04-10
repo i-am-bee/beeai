@@ -33,10 +33,11 @@ export function AgentListOption({ agent, onClick }: Props) {
   return (
     <li className={classes.root} role="option" onClick={onClick}>
       <div className={classes.content}>
-        <span className={classes.name}>
-          {agent.name}
+        <div className={classes.name}>
+          <span>{agent.name}</span>
+
           <BeeBadge agent={agent} />
-        </span>
+        </div>
 
         <AgentTags agent={agent} size="sm" />
       </div>

@@ -15,5 +15,17 @@
  */
 
 .root {
+  display: flex;
+  flex-direction: column;
+  row-gap: $spacing-02;
+}
+
+.button {
   min-inline-size: rem(208px);
+  justify-content: flex-start;
+  align-items: center;
+  column-gap: $spacing-03;
+  :global(.cds--inline-loading__animation) {
+    margin-inline-end: 0;
+  }
 }

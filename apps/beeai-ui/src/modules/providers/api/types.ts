@@ -20,10 +20,22 @@ export type ProvidersList = ApiResponse<'/api/v1/provider'>;
 
 export type Provider = ProvidersList['items'][number];
 
-export type CreateProviderBody = ApiRequestBody<'/api/v1/provider'>;
+export type RegisterManagedProviderBody = ApiRequestBody<'/api/v1/provider/register/managed'>;
 
-export type CreateProviderResponse = ApiResponse<'/api/v1/provider', 'post'>;
+export type RegisterManagedProviderResponse = ApiResponse<'/api/v1/provider/register/managed', 'post'>;
 
-export type ProviderStatus = Provider['status'];
+export enum ProviderStatus {
+  NotInstalled = 'not_installed',
+  InstallError = 'install_error',
+  Installing = 'installing',
+  Starting = 'starting',
+  Ready = 'ready',
+  Running = 'running',
+  Error = 'error',
+}
 
 export type MissingEnvs = Provider['missing_configuration'];
+
+export type InstallProviderBody = ApiRequestBody<'/api/v1/provider/install'>;
+
+export type DeleteProviderBody = ApiRequestBody<'/api/v1/provider/delete'>;

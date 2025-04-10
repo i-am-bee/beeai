@@ -14,7 +14,24 @@
  * limitations under the License.
  */
 
-export enum ProviderSource {
-  GitHub = 'GitHub',
-  Docker = 'Docker',
+import { ErrorFilled } from '@carbon/icons-react';
+
+import { useIsOnline } from '#hooks/useIsOnline.ts';
+
+import classes from './InternetOffline.module.scss';
+
+export function InternetOffline() {
+  const isOnline = useIsOnline();
+
+  if (isOnline) {
+    return null;
+  }
+
+  return (
+    <span className={classes.root}>
+      <ErrorFilled />
+
+      <span>Internet offline</span>
+    </span>
+  );
 }

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { TRACEABILITY_LINK } from '#utils/constants.ts';
+
 export function TracesTooltip() {
   return (
     <>
@@ -22,7 +24,7 @@ export function TracesTooltip() {
       <br />
       The traceability service isn't currently set up or reachable. To enable it, please check your configuration or
       follow the steps in our{' '}
-      <a href="https://docs.beeai.dev/observability/agents-traceability" target={'_blank'}>
+      <a href={TRACEABILITY_LINK} target="_blank" rel="noreferrer">
         setup guide
       </a>
       .

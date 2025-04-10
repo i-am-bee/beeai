@@ -16,25 +16,30 @@
 
 import { api } from '#api/index.ts';
 
-import type { CreateProviderBody } from './types';
+import type { DeleteProviderBody, InstallProviderBody, RegisterManagedProviderBody } from './types';
 
-export async function createProvider({ body }: { body: CreateProviderBody }) {
-  // TODO: Agent import feature is temporarily removed as it is broken due to API changes
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-expect-error
-  const response = await api.POST('/api/v1/provider', { body });
+export async function registerManagedProvider({ body }: { body: RegisterManagedProviderBody }) {
+  const response = await api.POST('/api/v1/provider/register/managed', { body });
 
   if (response.error != null) {
-    throw new Error('Failed to create provider.');
+    throw new Error('Failed to register managed provider.');
   }
 
   return response.data;
 }
 
-export async function deleteProvider({ id }: { id: string }) {
-  const response = await api.POST('/api/v1/provider/delete', {
-    body: { id },
-  });
+export async function installProvider({ body }: { body: InstallProviderBody }) {
+  const response = await api.POST('/api/v1/provider/install', { body });
+
+  if (response.error != null) {
+    throw new Error('Failed to install provider.');
+  }
+
+  return response.data;
+}
+
+export async function deleteProvider({ body }: { body: DeleteProviderBody }) {
+  const response = await api.POST('/api/v1/provider/delete', { body });
 
   if (response.error != null) {
     throw new Error('Failed to delete provider.');

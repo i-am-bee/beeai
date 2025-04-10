@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-export enum ProviderSource {
-  GitHub = 'GitHub',
-  Docker = 'Docker',
+.root {
+  display: inline-flex;
+  align-items: center;
+  column-gap: $spacing-02;
+  color: $support-error-inverse;
+  font-size: rem(14px);
+  line-height: math.div(16, 14);
+  letter-spacing: $letter-spacing;
 }

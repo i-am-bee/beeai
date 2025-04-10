@@ -14,7 +14,31 @@
  * limitations under the License.
  */
 
-export enum ProviderSource {
-  GitHub = 'GitHub',
-  Docker = 'Docker',
+.root {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  inline-size: rem(16px);
+  block-size: rem(16px);
+  :global(.cds--inline-loading__animation) {
+    margin-inline-end: 0;
+  }
+}
+
+.button {
+  :global(.cds--btn) {
+    inline-size: rem(24px);
+    block-size: rem(24px);
+    min-block-size: 0;
+    &:hover,
+    &:active {
+      background-color: transparent;
+    }
+    &:focus {
+      outline-offset: 2px;
+    }
+  }
+  :global(.cds--popover) {
+    display: none;
+  }
 }

@@ -16,14 +16,14 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import { PHOENIX_SERVER_TARGET } from '#utils/vite-constants.ts';
+import { PHOENIX_SERVER_TARGET, PROD_MODE } from '#utils/vite-constants.ts';
 
 import { phoenixKeys } from '../keys';
 
 export function usePhoenix() {
   const query = useQuery({
     queryKey: phoenixKeys.all(),
-    refetchInterval: 5_000,
+    refetchInterval: PROD_MODE ? 5_000 : false,
     enabled: Boolean(PHOENIX_SERVER_TARGET),
     queryFn: () =>
       fetch(PHOENIX_SERVER_TARGET, { mode: 'no-cors' })

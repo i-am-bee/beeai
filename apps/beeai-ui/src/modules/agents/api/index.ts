@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-export enum ProviderSource {
-  GitHub = 'GitHub',
-  Docker = 'Docker',
+import { api } from '#api/index.ts';
+
+export async function listAgents() {
+  const response = await api.GET('/api/v1/agent');
+
+  if (response.error != null) {
+    throw new Error('Failed to list agents.');
+  }
+
+  return response.data;
 }

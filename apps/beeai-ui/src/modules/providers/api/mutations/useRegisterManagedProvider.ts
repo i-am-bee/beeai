@@ -18,17 +18,17 @@ import { useMutation } from '@tanstack/react-query';
 
 import { agentKeys } from '#modules/agents/api/keys.ts';
 
-import { createProvider } from '..';
+import { registerManagedProvider } from '..';
 import { providerKeys } from '../keys';
-import type { CreateProviderResponse } from '../types';
+import type { RegisterManagedProviderResponse } from '../types';
 
 interface Props {
-  onSuccess?: (data: CreateProviderResponse) => void;
+  onSuccess?: (data: RegisterManagedProviderResponse) => void;
 }
 
-export function useCreateProvider({ onSuccess }: Props = {}) {
+export function useRegisterManagedProvider({ onSuccess }: Props = {}) {
   const mutation = useMutation({
-    mutationFn: createProvider,
+    mutationFn: registerManagedProvider,
     onSuccess,
     meta: {
       invalidates: [providerKeys.lists(), agentKeys.lists()],
