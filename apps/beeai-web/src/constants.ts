@@ -17,3 +17,7 @@
 export const ACP_CLIENT_SERVER_URL = process.env.ACP_CLIENT_SERVER_URL;
 
 export const NEXT_PHASE_BUILD = process.env.NEXT_PHASE === 'phase-production-build';
+
+export const DOCKER_MANIFEST_LABEL_NAME = 'beeai.dev.agent.yaml';
+
+export const DOCKER_REGISTRY = 'https://ghcr.io';
