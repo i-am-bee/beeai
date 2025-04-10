@@ -15,14 +15,37 @@
  */
 
 import { useProvider } from '#modules/providers/api/queries/useProvider.ts';
+import { type Provider, ProviderStatus } from '#modules/providers/api/types.ts';
 
 interface Props {
   provider?: string;
 }
 
-export function useAgentStatus({ provider }: Props) {
-  const { data } = useProvider({ id: provider });
+function getStatusHelpers(data?: Provider) {
   const status = data?.status;
+  const isNotInstalled = status === ProviderStatus.NotInstalled;
+  const isInstalling = status === ProviderStatus.Installing;
+  const isInstallError = status === ProviderStatus.InstallError;
+  const isReady = status === ProviderStatus.Ready;
 
-  return { status };
+  return {
+    status,
+    isNotInstalled,
+    isInstalling,
+    isInstallError,
+    isReady,
+  };
+}
+
+export function useAgentStatus({ provider }: Props) {
+  const query = useProvider({ id: provider });
+
+  return {
+    refetch: async () => {
+      const { data } = await query.refetch();
+
+      return getStatusHelpers(data);
+    },
+    ...getStatusHelpers(query.data),
+  };
 }

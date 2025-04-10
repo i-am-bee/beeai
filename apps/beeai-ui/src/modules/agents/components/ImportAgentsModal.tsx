@@ -37,7 +37,6 @@ import type { ModalProps } from '#contexts/Modal/modal-context.ts';
 import { useInstallProvider } from '#modules/providers/api/mutations/useInstallProvider.ts';
 import { useRegisterManagedProvider } from '#modules/providers/api/mutations/useRegisterManagedProvider.ts';
 import type { RegisterManagedProviderBody } from '#modules/providers/api/types.ts';
-import { ProviderStatus } from '#modules/providers/api/types.ts';
 import { ProviderSourcePrefixes } from '#modules/providers/constants.ts';
 import { ProviderSource } from '#modules/providers/types.ts';
 
@@ -48,7 +47,7 @@ import classes from './ImportAgentsModal.module.scss';
 export function ImportAgentsModal({ onRequestClose, ...modalProps }: ModalProps) {
   const id = useId();
   const [registeredProviderId, setRegisteredProviderId] = useState<string>();
-  const { status } = useAgentStatus({ provider: registeredProviderId });
+  const { isNotInstalled, isInstalling, isInstallError, isReady } = useAgentStatus({ provider: registeredProviderId });
   const { data: agents } = useListProviderAgents({ provider: registeredProviderId });
   const agentsCount = agents?.length ?? 0;
 
@@ -87,11 +86,6 @@ export function ImportAgentsModal({ onRequestClose, ...modalProps }: ModalProps)
   );
 
   const locationInputProps = INPUTS_PROPS[sourceField.value];
-
-  const isNotInstalled = status === ProviderStatus.NotInstalled;
-  const isInstalling = status === ProviderStatus.Installing;
-  const isReady = status === ProviderStatus.Ready;
-  const isInstallError = status === ProviderStatus.InstallError;
 
   useEffect(() => {
     setValue('location', '');

@@ -20,7 +20,6 @@ import clsx from 'clsx';
 import { useCallback } from 'react';
 
 import { useInstallProvider } from '#modules/providers/api/mutations/useInstallProvider.ts';
-import { ProviderStatus } from '#modules/providers/api/types.ts';
 
 import type { Agent } from '../api/types';
 import { useAgentStatus } from '../hooks/useAgentStatus';
@@ -32,12 +31,8 @@ interface Props {
 
 export function AgentStatusIndicator({ agent }: Props) {
   const { provider } = agent;
-  const { status } = useAgentStatus({ provider });
+  const { isNotInstalled, isInstalling, isInstallError } = useAgentStatus({ provider });
   const { mutate: installProvider } = useInstallProvider();
-
-  const isInstalling = status === ProviderStatus.Installing;
-  const isNotInstalled = status === ProviderStatus.NotInstalled;
-  const isInstallError = status === ProviderStatus.InstallError;
 
   const handleInstall = useCallback(() => {
     if (provider) {

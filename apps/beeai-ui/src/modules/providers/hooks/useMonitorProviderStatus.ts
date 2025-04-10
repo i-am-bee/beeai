@@ -21,9 +21,7 @@ import { useToast } from '#contexts/Toast/index.ts';
 import { TaskType, useTasks } from '#hooks/useTasks.ts';
 import { agentKeys } from '#modules/agents/api/keys.ts';
 import { useListProviderAgents } from '#modules/agents/api/queries/useListProviderAgents.ts';
-
-import { useProvider } from '../api/queries/useProvider';
-import { ProviderStatus } from '../api/types';
+import { useAgentStatus } from '#modules/agents/hooks/useAgentStatus.ts';
 
 interface Props {
   id?: string;
@@ -35,32 +33,13 @@ export function useMonitorProvider({ id }: Props) {
   const { addToast } = useToast();
   const { addTask, removeTask } = useTasks();
 
-  const { data: provider, refetch: refetchProvider } = useProvider({
-    id,
-    refetchInterval: (data) => {
-      const status = data?.status;
-      const isReady = status === ProviderStatus.Ready;
-
-      return isReady ? false : CHECK_PROVIDER_STATUS_INTERVAL;
-    },
-  });
-  const status = provider?.status;
-  const isReady = status === ProviderStatus.Ready;
-  const { data: agents, refetch: refetchAgents } = useListProviderAgents({
-    provider: id,
-    enabled: isReady,
-  });
+  const { refetch: refetchStatus } = useAgentStatus({ provider: id });
+  const { data: agents } = useListProviderAgents({ provider: id });
 
   const checkProvider = useCallback(async () => {
-    const { data: provider } = await refetchProvider();
-    const status = provider?.status;
-
-    const isReady = status === ProviderStatus.Ready;
-    const isInstallError = status === ProviderStatus.InstallError;
+    const { isReady, isInstallError } = await refetchStatus();
 
     if (isReady) {
-      const { data: agents } = await refetchAgents();
-
       agents?.forEach(({ name }) => {
         addToast({
           title: `${name} has installed successfully.`,
@@ -86,7 +65,7 @@ export function useMonitorProvider({ id }: Props) {
 
       setIsDone(true);
     }
-  }, [id, agents, queryClient, refetchProvider, refetchAgents, addToast, removeTask]);
+  }, [id, agents, queryClient, refetchStatus, addToast, removeTask]);
 
   useEffect(() => {
     if (id && !isDone) {
@@ -96,13 +75,12 @@ export function useMonitorProvider({ id }: Props) {
         task: checkProvider,
         delay: CHECK_PROVIDER_STATUS_INTERVAL,
       });
-    }
-  }, [id, isDone, addTask, checkProvider]);
 
-  return {
-    status,
-    agents,
-  };
+      return () => {
+        removeTask({ id, type: TaskType.ProviderStatusCheck });
+      };
+    }
+  }, [id, isDone, addTask, removeTask, checkProvider]);
 }
 
 const CHECK_PROVIDER_STATUS_INTERVAL = 2000;

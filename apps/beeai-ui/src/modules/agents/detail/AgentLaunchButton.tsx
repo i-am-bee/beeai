@@ -25,7 +25,6 @@ import { TransitionLink } from '#components/TransitionLink/TransitionLink.tsx';
 import { useModal } from '#contexts/Modal/index.tsx';
 import { AddRequiredEnvsModal } from '#modules/envs/components/AddRequiredEnvsModal.tsx';
 import { useInstallProvider } from '#modules/providers/api/mutations/useInstallProvider.ts';
-import { ProviderStatus } from '#modules/providers/api/types.ts';
 import { SupportedUis } from '#modules/run/constants.ts';
 import type { UiType } from '#modules/run/types.ts';
 import { routes } from '#utils/router.ts';
@@ -43,7 +42,7 @@ interface Props {
 export function AgentLaunchButton({ agent }: Props) {
   const { openModal } = useModal();
   const { missingEnvs, isPending: isMissingEnvsPending } = useMissingEnvs({ agent });
-  const { status } = useAgentStatus({ provider: agent.provider });
+  const { isNotInstalled, isInstalling, isInstallError } = useAgentStatus({ provider: agent.provider });
   const { mutate: installProvider } = useInstallProvider();
 
   const { provider, ui } = agent;
@@ -53,10 +52,6 @@ export function AgentLaunchButton({ agent }: Props) {
     size: 'md',
     className: classes.button,
   };
-
-  const isNotInstalled = status === ProviderStatus.NotInstalled;
-  const isInstalling = status === ProviderStatus.Installing;
-  const isInstallError = status === ProviderStatus.InstallError;
 
   const handleInstall = useCallback(() => {
     if (provider) {
