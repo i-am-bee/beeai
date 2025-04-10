@@ -89,7 +89,8 @@
         "group": "Observability & Telemetry",
         "pages": [
           "/observability/agents-traceability",
-          "/observability/telemetry"
+          "/observability/telemetry",
+          "/observability/custom-agent-traceability"
         ]
       }
     ]
