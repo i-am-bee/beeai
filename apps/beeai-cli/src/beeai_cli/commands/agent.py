@@ -447,23 +447,26 @@ async def run_agent(
 
     agents_by_name = await _get_agents()
     agent = await _get_agent(name, agents_by_name)
-    provider = await get_provider(agent.provider)
-    if provider["status"] == "not_installed":
-        if not await inquirer.confirm(
-            message=f"The agent {name} is not installed. Do you want to install it now?",
-            default=True,
-        ).execute_async():
-            return
-        async for message in api_stream(
-            "POST", "provider/install", json={"id": provider["id"]}, params={"stream": True}
-        ):
-            _print_log(message, ansi_mode=True)
+
+    # Agent#provider is only available in platform, not when directly communicating with the agent
+    if hasattr(agent, "provider"):
         provider = await get_provider(agent.provider)
-        if provider["status"] == "install_error":
-            raise RuntimeError(f"Error during installation: {provider['last_error']}")
-        console.print("\n")
-    if provider["status"] not in {"ready", "running"}:
-        raise RuntimeError(f"Agent is not in a ready state: {provider['status']}, error: {provider['last_error']}")
+        if provider["status"] == "not_installed":
+            if not await inquirer.confirm(
+                message=f"The agent {name} is not installed. Do you want to install it now?",
+                default=True,
+            ).execute_async():
+                return
+            async for message in api_stream(
+                "POST", "provider/install", json={"id": provider["id"]}, params={"stream": True}
+            ):
+                _print_log(message, ansi_mode=True)
+            provider = await get_provider(agent.provider)
+            if provider["status"] == "install_error":
+                raise RuntimeError(f"Error during installation: {provider['last_error']}")
+            console.print("\n")
+        if provider["status"] not in {"ready", "running"}:
+            raise RuntimeError(f"Agent is not in a ready state: {provider['status']}, error: {provider['last_error']}")
 
     ui = agent.model_extra.get("ui", {}) or {}
     ui_type = ui.get("type", None)
