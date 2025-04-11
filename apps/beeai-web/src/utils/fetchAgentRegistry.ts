@@ -27,7 +27,7 @@ export async function fetchAgentRegistry(): Promise<AgentRegistry> {
   const registry = await ensureResponse<string>({
     response,
     errorContext: 'agent registry',
-    dataType: 'text',
+    resolveAs: 'text',
   });
 
   return parse(registry);

@@ -17,15 +17,15 @@
 export async function ensureResponse<T>({
   response,
   errorContext,
-  dataType = 'json',
+  resolveAs = 'json',
 }: {
   response: Response;
   errorContext: string;
-  dataType?: 'json' | 'text';
+  resolveAs?: 'json' | 'text';
 }) {
   if (!response.ok) {
     throw new Error(`Failed to fetch ${errorContext}: ${response.status}, ${await response.text()}`);
   }
 
-  return (dataType === 'json' ? response.json() : response.text()) as T;
+  return response[resolveAs]() as T;
 }
