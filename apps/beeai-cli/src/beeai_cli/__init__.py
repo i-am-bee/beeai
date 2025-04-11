@@ -40,6 +40,17 @@ for cmd in agent_alias.registered_commands:
 app.add_typer(agent_alias, name="", no_args_is_help=True)
 
 
+@app.command("version")
+def show_version():
+    """Print version of the BeeAI CLI and related libraries."""
+    from importlib.metadata import version
+
+    print("beeai-cli version:", version("beeai-cli"))
+    print("beeai-server version:", version("beeai-server"))
+    print("beeai-sdk version:", version("beeai-sdk"))
+    print("acp-sdk version:", version("acp-sdk"))
+
+
 @app.command("serve")
 async def serve():
     """Start server."""
