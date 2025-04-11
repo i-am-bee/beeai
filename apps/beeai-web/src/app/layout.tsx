@@ -18,9 +18,7 @@ import '../styles/style.scss';
 
 import type { Metadata } from 'next';
 
-import { AgentRoutesInitializer } from '@/components/AgentRoutesInitializer/AgentRoutesInitializer';
 import AppLayout from '@/layouts/AppLayout';
-import { agentRoutesInitialized } from '@/utils/initializeAgentRoutes';
 
 import Providers from './providers';
 
@@ -61,7 +59,6 @@ export default function RootLayout({
       <body>
         <Providers>
           <AppLayout>{children}</AppLayout>
-          <AgentRoutesInitializer initialized={agentRoutesInitialized} />
         </Providers>
       </body>
     </html>

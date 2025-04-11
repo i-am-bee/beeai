@@ -79,15 +79,15 @@ fullDescription: |
 
   #### CLI:
 
-  \`\`\`bash
+  ```bash
   beeai run ${agentName} "${exampleInputText}"
-  \`\`\`
+  ```
 
   #### Output:
 
-  \`\`\`json
+  ```json
   ${exampleOutput}
-  \`\`\`
+  ```
 
 env:
 - name: LLM_MODEL

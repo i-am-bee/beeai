@@ -16,4 +16,9 @@
 
 export const ACP_CLIENT_SERVER_URL = process.env.ACP_CLIENT_SERVER_URL;
 
-export const NEXT_PHASE_BUILD = process.env.NEXT_PHASE === 'phase-production-build';
+export const DOCKER_MANIFEST_LABEL_NAME = 'beeai.dev.agent.yaml';
+
+export const AGENT_REGISTRY_URL =
+  'https://raw.githubusercontent.com/i-am-bee/beeai/refs/heads/release-v0.0.11/agent-registry.yaml';
+
+export const SupportedDockerRegistries = ['ghcr.io'];

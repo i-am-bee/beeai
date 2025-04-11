@@ -25,16 +25,16 @@ import { TagsList } from '#components/TagsList/TagsList.tsx';
 import type { Agent } from '../api/types';
 import classes from './AgentCard.module.scss';
 import { AgentMetadata } from './AgentMetadata';
-import { AgentStatusIndicator } from './AgentStatusIndicator';
 import { AgentTags } from './AgentTags';
 import { BeeBadge } from './BeeBadge';
 
 interface Props {
   agent: Agent;
   renderTitle: (props: { className: string; agent: Agent }) => ReactNode;
+  statusIndicator?: ReactNode;
 }
 
-export function AgentCard({ agent, renderTitle }: Props) {
+export function AgentCard({ agent, renderTitle, statusIndicator }: Props) {
   const { description } = agent;
   return (
     <article className={classes.root}>
@@ -43,7 +43,7 @@ export function AgentCard({ agent, renderTitle }: Props) {
 
         <BeeBadge agent={agent} />
 
-        <AgentStatusIndicator agent={agent} />
+        {statusIndicator}
       </header>
 
       <div className={classes.body}>

@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-import { NextResponse } from 'next/server';
+export async function ensureResponse<T>({
+  response,
+  errorContext,
+  resolveAs = 'json',
+}: {
+  response: Response;
+  errorContext: string;
+  resolveAs?: 'json' | 'text';
+}) {
+  if (!response.ok) {
+    throw new Error(`Failed to fetch ${errorContext}: ${response.status}, ${await response.text()}`);
+  }
 
-import { initializeAgentRoutes } from '@/utils/initializeAgentRoutes';
-
-export async function GET() {
-  const result = initializeAgentRoutes();
-  return NextResponse.json({
-    result,
-  } satisfies InitAgentRoutesResponse);
-}
-
-export interface InitAgentRoutesResponse {
-  result?: boolean;
+  return response[resolveAs]() as T;
 }

@@ -14,18 +14,21 @@
  * limitations under the License.
  */
 
-import { cache } from 'react';
+import { parse } from 'yaml';
 
-import { getAcpClient } from './client';
+import { AGENT_REGISTRY_URL } from '@/constants';
 
-export const getAgentsList = cache(async () => {
-  let client: Awaited<ReturnType<typeof getAcpClient>> | undefined;
-  try {
-    client = await getAcpClient();
+import { ensureResponse } from './ensureResponse';
 
-    const { agents } = await client.listAgents();
-    return agents;
-  } finally {
-    await client?.close();
-  }
-});
+type AgentRegistry = { providers: { location: string }[] };
+
+export async function fetchAgentRegistry(): Promise<AgentRegistry> {
+  const response = await fetch(AGENT_REGISTRY_URL);
+  const registry = await ensureResponse<string>({
+    response,
+    errorContext: 'agent registry',
+    resolveAs: 'text',
+  });
+
+  return parse(registry);
+}
