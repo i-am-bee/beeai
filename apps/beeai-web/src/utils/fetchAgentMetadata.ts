@@ -15,31 +15,31 @@
  */
 
 import type { Metadata } from '@i-am-bee/beeai-sdk/schemas/metadata';
-import { parse } from 'yaml';
 
-import { DOCKER_MANIFEST_LABEL_NAME, DOCKER_REGISTRY } from '@/constants';
+import { DOCKER_MANIFEST_LABEL_NAME, SupportedDockerRegistries } from '@/constants';
+
+import { decodeBase64Yaml } from './decodeBase64Yaml';
+import { ensureResponse } from './ensureResponse';
+import { parseDockerImageId } from './parseDockerImageId';
 
 type TokenJson = { token: string };
 type ManifestJson = { config: { digest: string } };
 type ManifestListJson = { manifests: { digest: string }[] };
 type ConfigJson = { config: { Labels: { [key: string]: string } } };
 
-export async function fetchAgentMetadata({ repository, tag }: { repository: string; tag: string }): Promise<Metadata> {
-  const token = await fetchAuthToken({ repository });
+export async function fetchAgentMetadata({ dockerImageId }: { dockerImageId: string }): Promise<Metadata> {
+  const { registry, repository, tag } = parseDockerImageId(dockerImageId);
 
-  const headers = {
-    Accept: ACCEPT_HEADERS.join(','),
-    Authorization: `Bearer ${token}`,
-  };
+  assertSupportedRegistry(registry);
 
-  const manifest = await fetchManifest({ repository, tag, headers });
-  const config = await fetchConfig({ repository, digest: manifest.config.digest, headers });
-
-  const label = config.config.Labels?.[DOCKER_MANIFEST_LABEL_NAME];
-
-  if (!label) {
-    throw new Error(`The required label for the Docker image is missing: "${DOCKER_MANIFEST_LABEL_NAME}"`);
-  }
+  const headers = await fetchAuthHeaders({ registry, repository });
+  const {
+    config: { digest },
+  } = await fetchManifest({ registry, repository, tag, headers });
+  const {
+    config: { Labels },
+  } = await fetchConfig({ registry, repository, digest, headers });
+  const label = ensureLabel(Labels);
 
   return decodeBase64Yaml<Metadata>(label);
 }
@@ -51,41 +51,50 @@ const ACCEPT_HEADERS = [
   'application/vnd.docker.distribution.manifest.v2+json',
 ];
 
-async function ensureResponse<T>({ response, errorContext }: { response: Response; errorContext: string }) {
-  if (!response.ok) {
-    throw new Error(`Failed to fetch ${errorContext}: ${response.status}, ${await response.text()}`);
+function assertSupportedRegistry(registry: string) {
+  if (!SupportedDockerRegistries.includes(registry)) {
+    throw new Error(`Docker registry "${registry}" is not supported.`);
   }
-
-  return response.json() as T;
 }
 
 function isManifestList(manifest: ManifestJson | ManifestListJson): manifest is ManifestListJson {
   return 'manifests' in manifest;
 }
 
-async function fetchAuthToken({ repository }: { repository: string }): Promise<string> {
-  const url = `${DOCKER_REGISTRY}/token?service=ghcr.io&scope=repository:${repository}:pull`;
+async function fetchAuthHeaders({
+  registry,
+  repository,
+}: {
+  registry: string;
+  repository: string;
+}): Promise<HeadersInit> {
+  const url = `https://${registry}/token?service=ghcr.io&scope=repository:${repository}:pull`;
   const response = await fetch(url);
   const { token } = await ensureResponse<TokenJson>({
     response,
     errorContext: 'ghcr.io authentication token',
   });
+  const headers = {
+    Accept: ACCEPT_HEADERS.join(','),
+    Authorization: `Bearer ${token}`,
+  };
 
-  return token;
+  return headers;
 }
 
 async function fetchManifest({
+  registry,
   repository,
   tag,
   headers,
 }: {
+  registry: string;
   repository: string;
   tag: string;
   headers: HeadersInit;
 }): Promise<ManifestJson> {
-  const url = `${DOCKER_REGISTRY}/v2/${repository}/manifests`;
+  const url = `https://${registry}/v2/${repository}/manifests`;
   const response = await fetch(`${url}/${tag}`, { headers });
-
   let manifest = await ensureResponse<ManifestJson | ManifestListJson>({
     response,
     errorContext: 'manifest',
@@ -98,22 +107,24 @@ async function fetchManifest({
       throw new Error('No manifests found in manifest list.');
     }
 
-    manifest = await fetchManifest({ repository, tag: firstManifest.digest, headers });
+    manifest = await fetchManifest({ registry, repository, tag: firstManifest.digest, headers });
   }
 
   return manifest;
 }
 
 async function fetchConfig({
+  registry,
   repository,
   digest,
   headers,
 }: {
+  registry: string;
   repository: string;
   digest: string;
   headers: HeadersInit;
 }): Promise<ConfigJson> {
-  const url = `${DOCKER_REGISTRY}/v2/${repository}/blobs`;
+  const url = `https://${registry}/v2/${repository}/blobs`;
   const response = await fetch(`${url}/${digest}`, { headers });
   const config = await ensureResponse<ConfigJson>({
     response,
@@ -123,6 +134,12 @@ async function fetchConfig({
   return config;
 }
 
-function decodeBase64Yaml<T>(base64: string): T {
-  return parse(Buffer.from(base64, 'base64').toString('utf-8')) as T;
+function ensureLabel(Labels: ConfigJson['config']['Labels']) {
+  const label = Labels?.[DOCKER_MANIFEST_LABEL_NAME];
+
+  if (!label) {
+    throw new Error(`The required label for the Docker image is missing: "${DOCKER_MANIFEST_LABEL_NAME}"`);
+  }
+
+  return label;
 }

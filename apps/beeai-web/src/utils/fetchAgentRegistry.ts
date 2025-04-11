@@ -14,17 +14,21 @@
  * limitations under the License.
  */
 
-import { NextResponse } from 'next/server';
+import { parse } from 'yaml';
 
-import { initializeAgentRoutes } from '@/utils/initializeAgentRoutes';
+import { AGENT_REGISTRY_URL } from '@/constants';
 
-export async function GET() {
-  const result = initializeAgentRoutes();
-  return NextResponse.json({
-    result,
-  } satisfies InitAgentRoutesResponse);
-}
+import { ensureResponse } from './ensureResponse';
 
-export interface InitAgentRoutesResponse {
-  result?: boolean;
+type AgentRegistry = { providers: { location: string }[] };
+
+export async function fetchAgentRegistry(): Promise<AgentRegistry> {
+  const response = await fetch(AGENT_REGISTRY_URL);
+  const registry = await ensureResponse<string>({
+    response,
+    errorContext: 'agent registry',
+    dataType: 'text',
+  });
+
+  return parse(registry);
 }

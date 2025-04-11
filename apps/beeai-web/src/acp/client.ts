@@ -23,6 +23,7 @@ import { BodyInit, fetch as undiciFetch } from 'undici';
 
 import { ACP_CLIENT_SERVER_URL } from '@/constants';
 
+// TODO: This is not really used anywhere. We might consider deleting it.
 export async function getAcpClient() {
   if (!ACP_CLIENT_SERVER_URL) {
     throw new Error('ACP Transport has not been set');

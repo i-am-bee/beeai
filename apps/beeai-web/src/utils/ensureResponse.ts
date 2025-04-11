@@ -14,23 +14,18 @@
  * limitations under the License.
  */
 
-import { Container, ViewStack } from '@i-am-bee/beeai-ui';
+export async function ensureResponse<T>({
+  response,
+  errorContext,
+  dataType = 'json',
+}: {
+  response: Response;
+  errorContext: string;
+  dataType?: 'json' | 'text';
+}) {
+  if (!response.ok) {
+    throw new Error(`Failed to fetch ${errorContext}: ${response.status}, ${await response.text()}`);
+  }
 
-import { fetchAgentsList } from '@/api/fetchAgentsList';
-import { MainContent } from '@/layouts/MainContent';
-
-import { AgentsFilteredView } from './AgentsFilteredView';
-
-export default async function AgentsPage() {
-  const agents = await fetchAgentsList();
-
-  return (
-    <MainContent>
-      <Container>
-        <ViewStack>
-          <AgentsFilteredView agents={agents} />
-        </ViewStack>
-      </Container>
-    </MainContent>
-  );
+  return (dataType === 'json' ? response.json() : response.text()) as T;
 }

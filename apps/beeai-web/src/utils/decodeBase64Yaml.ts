@@ -14,27 +14,8 @@
  * limitations under the License.
  */
 
-import { revalidatePath } from 'next/cache';
+import { parse } from 'yaml';
 
-import { NEXT_PHASE_BUILD } from '@/constants';
-
-import { routeDefinitions } from './router';
-
-export let agentRoutesInitialized = false;
-
-export function initializeAgentRoutes() {
-  if (NEXT_PHASE_BUILD || agentRoutesInitialized) return;
-
-  try {
-    revalidatePath(routeDefinitions.agents, 'page');
-    revalidatePath(routeDefinitions.agentDetail, 'page');
-
-    agentRoutesInitialized = true;
-
-    return true;
-  } catch (error) {
-    console.error(error);
-  }
-
-  return agentRoutesInitialized;
+export function decodeBase64Yaml<T>(base64: string): T {
+  return parse(Buffer.from(base64, 'base64').toString('utf-8')) as T;
 }
