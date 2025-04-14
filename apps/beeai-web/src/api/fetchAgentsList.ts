@@ -14,23 +14,18 @@
  * limitations under the License.
  */
 
-import { Container, ViewStack } from '@i-am-bee/beeai-ui';
+import { Agent } from '@i-am-bee/beeai-ui';
 
-import { fetchAgentsList } from '@/api/fetchAgentsList';
-import { MainContent } from '@/layouts/MainContent';
+import { fetchAgentMetadata } from '@/utils/fetchAgentMetadata';
+import { fetchAgentRegistry } from '@/utils/fetchAgentRegistry';
 
-import { AgentsFilteredView } from './AgentsFilteredView';
-
-export default async function AgentsPage() {
-  const agents = await fetchAgentsList();
-
-  return (
-    <MainContent>
-      <Container>
-        <ViewStack>
-          <AgentsFilteredView agents={agents} />
-        </ViewStack>
-      </Container>
-    </MainContent>
+export async function fetchAgentsList() {
+  const registry = await fetchAgentRegistry();
+  const { providers } = registry;
+  const agents = await Promise.all(
+    providers.map(async ({ location }) => await fetchAgentMetadata({ dockerImageId: location })),
   );
+
+  /* The agents actually lack inputSchema and outputSchema, but we don't use them anywhere, so we can use type assertion. */
+  return agents as Agent[];
 }

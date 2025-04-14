@@ -76,7 +76,7 @@ The agent returns a structured JSON list representing the podcast conversation:
 - **Podcast Automation** – Converts written content into structured dialogue for AI-generated podcasts.
 - **Text-to-Speech Enhancement** – Creates AI-friendly scripts with proper pacing and interruptions.
 - **Conversational Content Adaptation** – Reformats structured information into engaging discussions.
-\`\`\``),
+`),
       new UserMessage(text),
     ],
     maxTokens: 8126,
