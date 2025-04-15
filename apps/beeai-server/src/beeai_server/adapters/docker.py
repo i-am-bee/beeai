@@ -15,25 +15,30 @@
 import asyncio
 import base64
 import logging
+import uuid
 from contextlib import asynccontextmanager, suppress, AsyncExitStack
+from datetime import timedelta
 from typing import Iterable, AsyncGenerator
 
 import aiohttp
 import anyio
 import anyio.to_thread
-import httpx
+from httpx import HTTPError as HttpxHTTPError
 from aiodocker import Docker, DockerError
-from aiohttp.web_exceptions import HTTPError
-from tenacity import AsyncRetrying, retry_if_exception_type, stop_after_attempt, wait_fixed
+from aiohttp.web_exceptions import HTTPError as AioHTTPError
+from httpx import AsyncClient
+from tenacity import AsyncRetrying, retry_if_exception_type, stop_after_attempt, wait_fixed, stop_after_delay
 
 from beeai_server.adapters.interface import IContainerBackend
 from beeai_server.configuration import Configuration, OCIRegistryConfiguration
 from beeai_server.custom_types import ID
 from beeai_server.domain.constants import DOCKER_MANIFEST_LABEL_NAME
+from beeai_server.exceptions import retry_if_exception_grp_type
 from beeai_server.utils.docker import DockerImageID, replace_localhost_url
 from beeai_server.utils.github import ResolvedGithubUrl
 from beeai_server.utils.logs_container import LogsContainer
-from beeai_server.utils.utils import cancel_task
+from beeai_server.utils.process import find_free_port
+from beeai_server.utils.utils import cancel_task, extract_messages
 
 logger = logging.getLogger(__name__)
 
@@ -75,6 +80,7 @@ class DockerContainerBackend(IContainerBackend):
         destination: DockerImageID | None = None,
         logs_container: LogsContainer | None = None,
     ) -> DockerImageID:
+        logs_container = logs_container or LogsContainer()
         path = f":{github_url.path}" if github_url.path else ""
         tag = (
             str(destination)
@@ -82,18 +88,51 @@ class DockerContainerBackend(IContainerBackend):
             else f"{github_url.org}/{github_url.repo}/{github_url.path}:{github_url.version}"
         )
         remote = f"https://github.com/{github_url.org}/{github_url.repo}.git#{github_url.version}{path}"
-        path = f"{github_url.path}/agent.yaml" if github_url.path else "agent.yaml"
-        async with httpx.AsyncClient() as client:
-            resp = await client.get(url=str(github_url.get_raw_url(path)))
-            labels = {DOCKER_MANIFEST_LABEL_NAME: base64.b64encode(resp.content).decode()}
+        tmp_image = uuid.uuid4().hex
         async with self._docker as docker:
-            if logs_container:
-                async for message in docker.images.build(remote=remote, tag=tag, labels=labels, stream=True):
-                    text = message["stream"] if "stream" in message else str(message)
-                    if text.strip():
-                        logs_container.add_stdout(text)
-            else:
+            logs_container.add_stdout("ℹ️ Building image")
+            async for message in docker.images.build(remote=remote, tag=tmp_image, stream=True):
+                text = message["stream"] if "stream" in message else str(message)
+                if text.strip():
+                    logs_container.add_stdout(text)
+            logs_container.add_stdout("ℹ️ Extracting agents")
+            host_port = await find_free_port()
+            container = await docker.containers.create_or_replace(
+                name=tmp_image,
+                config={
+                    "Image": tmp_image,
+                    "ExposedPorts": {"8000/tcp": {}},
+                    "Env": ["HOST=0.0.0.0"],
+                    "HostConfig": {
+                        "PortBindings": {"8000/tcp": [{"HostIp": "0.0.0.0", "HostPort": str(host_port)}]},
+                        "AutoRemove": True,
+                    },
+                },
+            )
+            try:
+                await container.start()
+                async for attempt in AsyncRetrying(
+                    stop=stop_after_delay(timedelta(seconds=30)),
+                    wait=wait_fixed(timedelta(seconds=0.5)),
+                    retry=retry_if_exception_grp_type(HttpxHTTPError),
+                    reraise=True,
+                ):
+                    with attempt:
+                        async with AsyncClient() as client:
+                            resp = await client.get(f"http://localhost:{host_port}/agents", timeout=1)
+                labels = {DOCKER_MANIFEST_LABEL_NAME: base64.b64encode(resp.content).decode()}
+                logs_container.add_stdout("ℹ️ Adding extracted labels to image")
                 await docker.images.build(remote=remote, tag=tag, labels=labels)
+                logs_container.add_stdout(f"✅ Successfully built image: {tag}")
+            except Exception as e:
+                message = f"Error when extracting labels out of image: {extract_messages(e)}"
+                logger.error(message, exc_info=e)
+                logs_container.add_stderr(message)
+                raise e
+            finally:
+                with suppress(DockerError):
+                    await container.delete(force=True)
+
         return DockerImageID(root=tag)
 
     async def check_image(self, *, image: DockerImageID) -> bool:
@@ -105,10 +144,8 @@ class DockerContainerBackend(IContainerBackend):
 
     async def extract_labels(self, *, image: DockerImageID) -> dict[str, str]:
         async with self._docker as docker:
-            with suppress(DockerError):
-                image_info = await docker.images.inspect(str(image))
-                image_info
-            return False
+            image_info = await docker.images.inspect(str(image))
+            return image_info["Config"]["Labels"]
 
     async def delete_image(self, *, image: DockerImageID):
         async with self._docker as docker:
@@ -145,12 +182,12 @@ class DockerContainerBackend(IContainerBackend):
         )
 
     async def stream_logs(self, container_id: ID, logs_container: LogsContainer):
-        async for attempt in AsyncRetrying(retry=retry_if_exception_type(HTTPError), reraise=True):
+        async for attempt in AsyncRetrying(retry=retry_if_exception_type(AioHTTPError), reraise=True):
             with attempt:
                 async with self._docker as docker:
                     container = await docker.containers.get(container_id)
                     async for log_message in container.log(stdout=True, stderr=True, follow=True):
-                        if log_message := log_message.strip():
+                        if log_message.strip():
                             logs_container.add_stdout(log_message)
 
     @asynccontextmanager

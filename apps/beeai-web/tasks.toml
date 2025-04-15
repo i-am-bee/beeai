@@ -25,7 +25,7 @@ sources = ["src/**/*.js", "src/**/*.jsx", "src/**/*.ts", "src/**/*.tsx"]
 outputs = { auto = true }
 
 ["beeai-web:check:tsc"]
-depends = ["setup:pnpm", "beeai-sdk:build:js", "acp-typescript-sdk:build", "beeai-web:check:next"]
+depends = ["setup:pnpm", "beeai-web:check:next"]
 dir = "{{config_root}}/apps/beeai-web"
 run = "pnpm tsc --noEmit -p tsconfig.json"
 sources = ["src/**/*.ts", "src/**/*.tsx"]
@@ -68,14 +68,14 @@ outputs = { auto = true }
 
 ["beeai-web:run"]
 description = "NOTE: You also need to have `beeai-server` running for the backend"
-depends = ["setup:pnpm", "beeai-sdk:build:js", "acp-typescript-sdk:build"]
+depends = ["setup:pnpm"]
 dir = "{{config_root}}/apps/beeai-web"
 run = "pnpm dev"
 
 # build
 
 ["beeai-web:build"]
-depends = ["setup:pnpm", "beeai-sdk:build:js", "acp-typescript-sdk:build"]
+depends = ["setup:pnpm"]
 dir = "{{config_root}}/apps/beeai-web"
 run = "pnpm build"
 sources = ["*.json", "*.js", "index.html", "src/**/*.tsx", "src/**/*.ts"]
@@ -84,7 +84,7 @@ outputs = [".next/**/*"]
 # preview
 
 ["beeai-web:preview"]
-depends = ["setup:pnpm", "beeai-sdk:build:js", "acp-typescript-sdk:build"]
+depends = ["setup:pnpm"]
 dir = "{{config_root}}/apps/beeai-web"
 run = "pnpm preview"
 

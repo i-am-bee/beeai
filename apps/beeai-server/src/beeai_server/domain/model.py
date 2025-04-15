@@ -15,26 +15,26 @@
 import abc
 import base64
 import logging
-from contextlib import asynccontextmanager, suppress
+from contextlib import suppress, AsyncExitStack
 from datetime import timedelta
 from enum import StrEnum
-from typing import Any, Literal, Optional, Self
+from typing import Any, Optional, Self
+from acp_sdk.models import Agent
+from functools import cached_property
 
-import httpx
 import yaml
-from acp.client.sse import sse_client
 from aiodocker import DockerError
 from beeai_server.adapters.interface import IContainerBackend
 from beeai_server.configuration import Configuration
-from beeai_server.custom_types import ID, McpClient
-from beeai_server.domain.constants import DEFAULT_MANIFEST_PATH, DOCKER_MANIFEST_LABEL_NAME, LOCAL_IMAGE_REGISTRY
+from beeai_server.custom_types import ID
+from beeai_server.domain.constants import DOCKER_MANIFEST_LABEL_NAME, LOCAL_IMAGE_REGISTRY
 from beeai_server.exceptions import MissingConfigurationError, retry_if_exception_grp_type
 from beeai_server.telemetry import OTEL_HTTP_ENDPOINT
 from beeai_server.utils.docker import DockerImageID, get_registry_image_config_and_labels, replace_localhost_url
 from beeai_server.utils.github import GithubUrl, ResolvedGithubUrl
 from beeai_server.utils.logs_container import LogsContainer
 from beeai_server.utils.process import find_free_port
-from httpx import HTTPError
+from httpx import HTTPError, AsyncClient
 from kink import inject
 from pydantic import AnyUrl, BaseModel, Field, PrivateAttr, RootModel, computed_field
 from tenacity import AsyncRetrying, stop_after_attempt, wait_exponential
@@ -46,11 +46,13 @@ class EnvVar(BaseModel):
     required: bool = False
 
 
-class AgentManifest(BaseModel, extra="allow"):
-    manifestVersion: Literal[1] = 1
-    name: str
-    ui: dict[str, Any] | None = None
+class AgentManifest(Agent, extra="allow"):
     env: list[EnvVar] = Field(default_factory=list, description="For configuration -- passed to the process")
+    ui: dict[str, Any] | None = None
+
+
+class ProviderManifest(BaseModel, extra="allow"):
+    agents: list[AgentManifest]
 
 
 logger = logging.getLogger(__name__)
@@ -99,18 +101,16 @@ class GithubProviderSource(BaseModel):
     async def is_installed(self, container_backend: IContainerBackend) -> bool:
         return await container_backend.check_image(image=self.image_id)
 
-    async def load_manifest(self) -> AgentManifest:
-        async with httpx.AsyncClient(
-            headers={"Cache-Control": "no-cache, no-store, must-revalidate", "Pragma": "no-cache", "Expires": "0"}
-        ) as client:
-            path = (
-                f"{self.location.path.rstrip('/')}/{DEFAULT_MANIFEST_PATH}"
-                if self.location.path
-                else DEFAULT_MANIFEST_PATH
+    @inject
+    async def load_manifest(self, container_backend: IContainerBackend) -> AgentManifest:
+        if not await self.is_installed():
+            raise RuntimeError(
+                "Github provider does not support static agent discovery, agents need to be installed first."
             )
-            resp = await client.get(str(self.location.get_raw_url(path)))
-            resp.raise_for_status()
-        return AgentManifest.model_validate(yaml.safe_load(resp.text))
+        labels = await container_backend.extract_labels(image=self.image_id)
+        if DOCKER_MANIFEST_LABEL_NAME not in labels:
+            raise ValueError(f"Docker image labels must contain 'beeai.dev.agent.yaml': {self.location}")
+        return ProviderManifest.model_validate(yaml.safe_load(base64.b64decode(labels[DOCKER_MANIFEST_LABEL_NAME])))
 
     def __str__(self):
         return str(self.location)
@@ -128,11 +128,15 @@ class DockerImageProviderSource(BaseModel):
     def image_id(self) -> DockerImageID:
         return self.location
 
-    async def load_manifest(self) -> AgentManifest:
-        full_config, labels = await get_registry_image_config_and_labels(self.location)
+    @inject
+    async def load_manifest(self, container_backend: IContainerBackend) -> AgentManifest:
+        if await self.is_installed():
+            labels = await container_backend.extract_labels(image=self.image_id)
+        else:
+            _, labels = await get_registry_image_config_and_labels(self.location)
         if DOCKER_MANIFEST_LABEL_NAME not in labels:
             raise ValueError(f"Docker image labels must contain 'beeai.dev.agent.yaml': {self.location}")
-        return AgentManifest.model_validate(yaml.safe_load(base64.b64decode(labels[DOCKER_MANIFEST_LABEL_NAME])))
+        return ProviderManifest.model_validate(yaml.safe_load(base64.b64decode(labels[DOCKER_MANIFEST_LABEL_NAME])))
 
     @inject
     async def install(self, container_backend: IContainerBackend, logs_container: LogsContainer | None = None):
@@ -172,21 +176,25 @@ ProviderLocation = GithubProviderLocation | DockerImageProviderLocation
 
 class BaseProvider(BaseModel, abc.ABC):
     id: ID
-    manifest: AgentManifest
+    manifest: ProviderManifest
     auto_stop_timeout: timedelta | None = Field(None, exclude=True)
 
+    @cached_property
+    def env(self):
+        return [EnvVar.model_validate(env) for agent in self.manifest.agents for env in agent.metadata.env]
+
     def check_env(self, env: dict[str, str] | None = None, raise_error: bool = True) -> list[EnvVar]:
-        required_env = {var.name for var in self.manifest.env if var.required}
-        all_env = {var.name for var in self.manifest.env}
-        missing_env = [var for var in self.manifest.env if var.name in all_env - env.keys()]
-        missing_required_env = [var for var in self.manifest.env if var.name in required_env - env.keys()]
+        required_env = {var.name for var in self.env if var.required}
+        all_env = {var.name for var in self.env}
+        missing_env = [var for var in self.env if var.name in all_env - env.keys()]
+        missing_required_env = [var for var in self.env if var.name in required_env - env.keys()]
         if missing_required_env and raise_error:
             raise MissingConfigurationError(missing_env=missing_env)
         return missing_env
 
     def extract_env(self, env: dict[str, str] | None = None) -> dict[str, str]:
         env = env or {}
-        declared_env_vars = {var.name for var in self.manifest.env}
+        declared_env_vars = {var.name for var in self.env}
         return {var: env[var] for var in env if var in declared_env_vars}
 
     async def is_installed(self) -> bool:
@@ -199,24 +207,34 @@ class BaseProvider(BaseModel, abc.ABC):
         pass
 
     @abc.abstractmethod
-    async def mcp_client(
+    async def start(
         self,
         *,
         env: dict[str, str] | None = None,
         with_dummy_env: bool = True,
         logs_container: Optional["LogsContainer"] = None,
-    ) -> McpClient:
+    ) -> str:
         """
         :param env: environment values passed to the process
         :param with_dummy_env: substitute all unfilled required variables from manifest by "dummy" value
         :param logs_container: capture logs of the provider process (if managed)
         """
 
+    async def stop(self):
+        pass
+
+    async def __aenter__(self):
+        return await self.start()
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        return await self.stop()
+
 
 class ManagedProvider(BaseProvider, extra="allow"):
     source: ProviderSource
     registry: ResolvedGithubUrl | None = None
     auto_stop_timeout: timedelta | None = Field(timedelta(minutes=5), exclude=True)
+    _container_exit_stack: AsyncExitStack = PrivateAttr(default_factory=AsyncExitStack)
 
     @classmethod
     async def load_from_source(cls, source: ProviderSource, registry: ResolvedGithubUrl | None = None) -> Self:
@@ -247,9 +265,11 @@ class ManagedProvider(BaseProvider, extra="allow"):
             "PLATFORM_URL": "http://host.docker.internal:8333",
         }
 
-    @asynccontextmanager
+    async def stop(self):
+        await self._container_exit_stack.aclose()
+
     @inject
-    async def mcp_client(
+    async def start(
         self,
         *,
         configuration: Configuration,
@@ -257,11 +277,11 @@ class ManagedProvider(BaseProvider, extra="allow"):
         env: dict[str, str] | None = None,
         with_dummy_env: bool = True,
         logs_container: LogsContainer | None = None,
-    ) -> McpClient:
+    ) -> str:
         if not with_dummy_env:
             self.check_env(env)
 
-        required_env_vars = {var.name for var in self.manifest.env if var.required}
+        required_env_vars = {var.name for var in self.env if var.required}
         env = {
             **self._global_env,
             **({var: "dummy" for var in required_env_vars} if with_dummy_env else {}),
@@ -269,12 +289,15 @@ class ManagedProvider(BaseProvider, extra="allow"):
         }
         port = str(await find_free_port())
 
-        async with container_backend.open_container(
-            image=self.image_id,
-            port_mappings={port: "8000"},
-            env={"PORT": "8000", "HOST": "0.0.0.0", **env},
-            logs_container=logs_container,
-        ):
+        try:
+            await self._container_exit_stack.enter_async_context(
+                container_backend.open_container(
+                    image=self.image_id,
+                    port_mappings={port: "8000"},
+                    env={"PORT": "8000", "HOST": "0.0.0.0", **env},
+                    logs_container=logs_container,
+                )
+            )
             async for attempt in AsyncRetrying(
                 stop=stop_after_attempt(8),
                 wait=wait_exponential(multiplier=1, max=3),
@@ -282,16 +305,24 @@ class ManagedProvider(BaseProvider, extra="allow"):
                 reraise=True,
             ):
                 with attempt:
-                    async with sse_client(url=f"http://localhost:{port}/sse", timeout=60) as streams:
-                        yield streams
+                    async with AsyncClient() as client:
+                        base_url = f"http://localhost:{port}/"
+                        await client.get(f"{base_url}agents", timeout=1)
+            return base_url
+        except BaseException:
+            await self._container_exit_stack.aclose()
+            raise
 
 
 class UnmanagedProvider(BaseProvider, extra="allow"):
     location: AnyUrl
 
-    @asynccontextmanager
-    @inject
-    async def mcp_client(self, *_args, **_kwargs) -> McpClient:
-        location = str(self.location).rstrip("/")
-        async with sse_client(url=f"{location}/sse", timeout=60) as streams:
-            yield streams
+    async def start(self, *_args, **_kwargs) -> str:
+        return f"{str(self.location).rstrip('/')}/"
+
+    @classmethod
+    async def load_from_location(cls, location: AnyUrl, id: str) -> Self:
+        async with AsyncClient() as client:
+            response = await client.get(f"{str(location).rstrip('/')}/agents", timeout=1)
+            manifest = ProviderManifest.model_validate(response.json())
+        return cls(manifest=manifest, location=location, id=id)

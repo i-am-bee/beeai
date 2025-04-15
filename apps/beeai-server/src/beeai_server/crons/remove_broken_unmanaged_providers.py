@@ -18,7 +18,7 @@ from datetime import timedelta
 import anyio
 from beeai_server.configuration import Configuration
 from beeai_server.domain.model import LoadedProviderStatus, UnmanagedProvider
-from beeai_server.services.mcp_proxy.provider import LoadedProvider, ProviderContainer
+from beeai_server.domain.provider import ProviderContainer, LoadedProvider
 from beeai_server.utils.periodic import periodic
 from beeai_server.utils.utils import extract_messages
 from kink import inject
@@ -42,8 +42,8 @@ async def remove_broken_unmanaged_providers(configuration: Configuration, provid
         }:
             try:
                 with anyio.fail_after(delay=timedelta(seconds=30).total_seconds()):
-                    async with provider.session() as session:
-                        await session.send_ping()
+                    async with provider.client() as client:
+                        await client.get("agents")
             except Exception as ex:
                 logger.error(f"Provider {provider.id} failed to respond to ping in 30 seconds: {extract_messages(ex)}")
                 await provider_container.remove(provider.provider)

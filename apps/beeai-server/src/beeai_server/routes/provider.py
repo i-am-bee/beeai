@@ -13,10 +13,7 @@
 # limitations under the License.
 
 import fastapi
-from pydantic import BaseModel, AnyUrl
 
-from beeai_server.custom_types import ID
-from beeai_server.domain.model import UnmanagedProvider, AgentManifest
 from beeai_server.routes.dependencies import ProviderServiceDependency
 from beeai_server.schema import (
     CreateManagedProviderRequest,
@@ -24,6 +21,7 @@ from beeai_server.schema import (
     InstallProviderRequest,
     PaginatedResponse,
     ProviderWithStatus,
+    RegisterUnmanagedProviderRequest,
 )
 from fastapi import Query, BackgroundTasks
 from starlette.responses import StreamingResponse
@@ -38,19 +36,11 @@ async def create_managed_provider(
     return await provider_service.register_managed_provider(location=request.location)
 
 
-class ProviderRequest(BaseModel):
-    location: AnyUrl
-    id: ID
-    manifest: AgentManifest
-
-
 @router.post("/register/unmanaged")
 async def add_unmanaged_provider(
-    provider: ProviderRequest, provider_service: ProviderServiceDependency, background_tasks: BackgroundTasks
+    request: RegisterUnmanagedProviderRequest, provider_service: ProviderServiceDependency
 ) -> None:
-    provider = UnmanagedProvider.model_validate(provider.model_dump())
-    # TODO: workaround for blocking registration in provider, later use normal await
-    background_tasks.add_task(provider_service.register_unmanaged_provider, provider)
+    await provider_service.register_unmanaged_provider(location=request.location, id=request.id)
 
 
 @router.post("/install")
@@ -60,7 +50,9 @@ async def install_provider(
     background_tasks: BackgroundTasks,
     stream: bool = Query(False),
 ) -> StreamingResponse:
-    iterator_or_awaitable = await provider_service.install_provider(id=request.id, stream=stream)
+    iterator_or_awaitable = await provider_service.install_provider(
+        id=request.id, location=request.location, stream=stream
+    )
     if stream:
         return StreamingResponse(iterator_or_awaitable(), media_type="text/event-stream")
     else:

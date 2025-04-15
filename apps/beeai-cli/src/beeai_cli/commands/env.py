@@ -51,7 +51,7 @@ async def list_env():
     """List stored environment variables"""
     # TODO: extract server schemas to a separate package
     resp = await api_request("get", "env")
-    with create_table(Column("name", style="yellow"), "value") as table:
+    with create_table(Column("name", style="yellow"), Column("value", ratio=1)) as table:
         for name, value in sorted(resp["env"].items()):
             table.add_row(name, value)
     console.print(table)

@@ -18,9 +18,23 @@ import inspect
 import json
 import random
 import re
+from enum import StrEnum
 
 import jsonref
 from InquirerPy import inquirer
+from acp_sdk import (
+    Message,
+    Agent,
+    ACPError,
+    Error,
+    ErrorCode,
+    GenericEvent,
+    MessagePartEvent,
+    MessagePart,
+    MessageCompletedEvent,
+    RunFailedEvent,
+)
+from acp_sdk.client import Client
 from rich.box import HORIZONTALS
 from rich.console import ConsoleRenderable, Group, NewLine
 from rich.panel import Panel
@@ -28,6 +42,7 @@ from rich.rule import Rule
 from rich.text import Text
 
 from beeai_cli.commands.env import ensure_llm_env
+
 
 try:
     # This is necessary for proper handling of arrow keys in interactive input
@@ -42,16 +57,18 @@ from typing import Any, Optional, Callable
 import jsonschema
 import rich.json
 import typer
-from acp import ErrorData, McpError, RunAgentResult, ServerNotification, types
-from acp.types import Agent, AgentRunProgressNotification, AgentRunProgressNotificationParams
-from beeai_sdk.schemas.metadata import UiType
-from click import BadParameter
 from rich.markdown import Markdown
 from rich.table import Column
 
-from beeai_cli.api import send_request, send_request_with_notifications, api_request, api_stream
+from beeai_cli.api import api_request, api_stream, acp_client
 from beeai_cli.async_typer import AsyncTyper, console, create_table, err_console
-from beeai_cli.utils import check_json, generate_schema_example, omit, prompt_user, filter_dict, remove_nullable
+from beeai_cli.utils import generate_schema_example, omit, prompt_user, filter_dict, remove_nullable
+
+
+class UiType(StrEnum):
+    chat = "chat"
+    hands_off = "hands-off"
+
 
 app = AsyncTyper()
 
@@ -85,13 +102,15 @@ async def install_agent(
 ):
     """Install discovered agent or add public docker image or github repository [aliases: install]"""
     provider = None
-    with contextlib.suppress(McpError):
+    with contextlib.suppress(ACPError):
         provider = (await _get_agent(name_or_location)).provider
-    if not provider:
-        provider = await api_request("POST", "provider/register/managed", {"location": name_or_location})
-        provider = provider["id"]
 
-    async for message in api_stream("POST", "provider/install", json={"id": provider}, params={"stream": True}):
+    async for message in api_stream(
+        "POST",
+        "provider/install",
+        json={"id": provider, "location": name_or_location if not provider else None},
+        params={"stream": True},
+    ):
         _print_log(message, ansi_mode=True)
     await list_agents()
 
@@ -101,7 +120,7 @@ async def uninstall_agent(name: str = typer.Argument(..., help="Agent name")) ->
     """Remove agent"""
     providers = (await api_request("get", "provider"))["items"]
     agent = await _get_agent(name)
-    [provider] = [provider for provider in providers if provider["id"] == agent.provider]
+    [provider] = [provider for provider in providers if provider["id"] == agent.metadata.provider]
     with console.status("Uninstalling agent (may take a few minutes)...", spinner="dots"):
         await api_request("post", "provider/delete", json={"id": provider["id"]})
     await list_agents()
@@ -111,69 +130,56 @@ async def uninstall_agent(name: str = typer.Argument(..., help="Agent name")) ->
 async def stream_logs(name: str = typer.Argument(..., help="Agent name")):
     """Stream agent provider logs"""
     agent = await _get_agent(name)
-    provider = agent.provider
+    provider = agent.metadata.provider
     async for message in api_stream("get", "provider/logs", params={"id": provider}):
         _print_log(message)
 
 
-async def _run_agent(name: str, input: dict[str, Any], dump_files_path: Path | None = None) -> RunAgentResult:
+async def _run_agent(client: Client, name: str, input: str, dump_files_path: Path | None = None):
     status = console.status(random.choice(processing_messages), spinner="dots")
     status.start()
-
-    last_was_stream = False
     status_stopped = False
 
-    async for message in send_request_with_notifications(
-        types.RunAgentRequest(method="agents/run", params=types.RunAgentRequestParams(name=name, input=input)),
-        types.RunAgentResult,
+    log_type = None
+    async for event in client.run_stream(
+        agent=name, inputs=[Message(parts=[MessagePart(content=input, content_type="text/plain", role="user")])]
     ):
         if not status_stopped:
             status_stopped = True
             status.stop()
 
-        match message:
-            case ServerNotification(
-                root=AgentRunProgressNotification(params=AgentRunProgressNotificationParams(delta=delta))
-            ):
-                for log in list(filter(bool, delta.get("logs", []))):
-                    if text := log.get("message", None):
-                        if last_was_stream:
-                            err_console.print()
-                        err_console.print(f"Log: {text.strip()}", style="dim")
-                        last_was_stream = False
-                if text := delta.get("text", None):
-                    console.print(text, end="")
-                    last_was_stream = True
-                elif messages := delta.get("messages", None):
-                    console.print(messages[-1]["content"], end="")
-                    last_was_stream = True
-                elif not delta.get("logs", None):
-                    last_was_stream = True
-                    console.print(delta)
-            case RunAgentResult() as result:
-                output_dict: dict = result.model_dump().get("output", {})
-                if not last_was_stream:
-                    if "text" in output_dict:
-                        console.print(output_dict["text"], end="")
-                    elif messages := output_dict.get("messages", None):
-                        console.print(messages[-1]["content"], end="")
-                    else:
-                        console.print(result.model_dump())
+        match event:
+            case GenericEvent():
+                [(new_log_type, content)] = event.generic.model_dump().items()
+                if new_log_type != log_type:
+                    if log_type is not None:
+                        err_console.print()
+                    err_console.print(f"{new_log_type}: ", style="dim", end="")
+                    log_type = new_log_type
+                err_console.print(content, style="dim", end="")
+            case MessagePartEvent():
+                if log_type:
+                    console.print()
+                    log_type = None
+                console.print(event.part.content, end="")
+            case MessageCompletedEvent():
                 console.print()
-                if dump_files_path is not None and (files := output_dict.get("files", {})):
-                    files: dict[str, str]
-                    dump_files_path.mkdir(parents=True, exist_ok=True)
+            case RunFailedEvent():
+                console.print(f"💥 [bold red]{event.run.error.code.value}:[/bold red] {event.run.error.message}")
 
-                    for file_path, content in files.items():
-                        full_path = dump_files_path / file_path
-                        with contextlib.suppress(ValueError):
-                            full_path.resolve().relative_to(dump_files_path.resolve())  # throws if outside folder
-                            full_path.parent.mkdir(parents=True, exist_ok=True)
-                            full_path.write_text(content)
-
-                    console.print(f"📁 Saved {len(files)} files to {dump_files_path}.")
-                return result
-    raise RuntimeError(f"Agent {name} did not produce a result")
+    #         if dump_files_path is not None and (files := output_dict.get("files", {})):
+    #             files: dict[str, str]
+    #             dump_files_path.mkdir(parents=True, exist_ok=True)
+    #
+    #             for file_path, content in files.items():
+    #                 full_path = dump_files_path / file_path
+    #                 with contextlib.suppress(ValueError):
+    #                     full_path.resolve().relative_to(dump_files_path.resolve())  # throws if outside folder
+    #                     full_path.parent.mkdir(parents=True, exist_ok=True)
+    #                     full_path.write_text(content)
+    #
+    #             console.print(f"📁 Saved {len(files)} files to {dump_files_path}.")
+    #         return result
 
 
 class InteractiveCommand(abc.ABC):
@@ -450,7 +456,7 @@ async def run_agent(
 
     # Agent#provider is only available in platform, not when directly communicating with the agent
     if hasattr(agent, "provider"):
-        provider = await get_provider(agent.provider)
+        provider = await get_provider(agent.metadata.provider)
         if provider["status"] == "not_installed":
             if not await inquirer.confirm(
                 message=f"The agent {name} is not installed. Do you want to install it now?",
@@ -461,14 +467,14 @@ async def run_agent(
                 "POST", "provider/install", json={"id": provider["id"]}, params={"stream": True}
             ):
                 _print_log(message, ansi_mode=True)
-            provider = await get_provider(agent.provider)
+            provider = await get_provider(agent.metadata.provider)
             if provider["status"] == "install_error":
                 raise RuntimeError(f"Error during installation: {provider['last_error']}")
             console.print("\n")
         if provider["status"] not in {"ready", "running"}:
             raise RuntimeError(f"Agent is not in a ready state: {provider['status']}, error: {provider['last_error']}")
 
-    ui = agent.model_extra.get("ui", {}) or {}
+    ui = agent.metadata.model_dump().get("ui", {}) or {}
     ui_type = ui.get("type", None)
     is_sequential_workflow = agent.name in {"sequential-workflow"}
 
@@ -482,20 +488,18 @@ async def run_agent(
                 f"Please use the agent according to the following examples and schema:"
             )
             err_console.print(_render_examples(agent))
-            err_console.print(Markdown("## Schema"), "")
-            err_console.print(_render_schema(agent.inputSchema))
+            # err_console.print(Markdown("## Schema"), "")
+            # err_console.print(_render_schema(agent.inputSchema))
             exit(1)
 
-        config_schema = _get_config_schema(agent.inputSchema)
+        # config_schema = _get_config_schema(agent.inputSchema)
 
         splash_screen = Group(
             Markdown(f"# {agent.name}  \n{agent.description}"),
             NewLine(),
         )
 
-        handle_input = _create_input_handler(
-            [ShowConfig(config_schema, config), Set(config_schema, config)], splash_screen=splash_screen
-        )
+        handle_input = _create_input_handler([], splash_screen=splash_screen)
 
         # console.print()
 
@@ -503,27 +507,20 @@ async def run_agent(
             messages = []
             console.print(f"{user_greeting}\n")
             input = handle_input()
-            while True:
-                console.print()
-                messages.append({"role": "user", "content": input})
-                result = await _run_agent(
-                    name, {"messages": messages, **({"config": config} if config else {})}, dump_files_path=dump_files
-                )
-                if not (new_messages := result.output.get("messages", None)):
-                    raise ValueError("Agent did not return messages in the output")
-                if all([message["role"] == "assistant" for message in new_messages]):
-                    messages.extend(new_messages)
-                else:
-                    messages = new_messages
-                console.print()
-                input = handle_input()
+            async with acp_client() as client, client.session() as session:
+                while True:
+                    console.print()
+                    result = await _run_agent(session, name, input, dump_files_path=dump_files)
+                    console.print()
+                    input = handle_input()
 
         elif ui_type == UiType.hands_off:
             user_greeting = ui.get("userGreeting", None) or "Enter your instructions."
             console.print(f"{user_greeting}\n")
             input = handle_input()
             console.print()
-            await _run_agent(name, {"text": input, "config": config}, dump_files_path=dump_files)
+            async with acp_client() as client:
+                await _run_agent(client, name, input, dump_files_path=dump_files)
         elif is_sequential_workflow:
             workflow_steps = _setup_sequential_workflow(agents_by_name, splash_screen=splash_screen)
             console.print()
@@ -531,22 +528,8 @@ async def run_agent(
             await _run_agent(name, input, dump_files_path=dump_files)
 
     else:
-        try:
-            input = check_json(input)
-        except BadParameter:
-            if ui_type == UiType.hands_off:
-                input = {"text": input}
-            elif ui_type == UiType.chat:
-                input = {"messages": [{"role": "user", "content": input}]}
-            else:
-                err_console.print(
-                    f"💥 [red][bold]Error[/red][/bold]: Agent {name} does not support plaintext input. See the following examples and agent schema:"
-                )
-                err_console.print(_render_examples(agent))
-                err_console.print(Markdown("## Schema"), "")
-                err_console.print(_render_schema(agent.inputSchema))
-                exit(1)
-        await _run_agent(name, input, dump_files_path=dump_files)
+        async with acp_client() as client:
+            await _run_agent(client, name, input, dump_files_path=dump_files)
 
 
 def render_enum(value: str, colors: dict[str, str]) -> str:
@@ -562,12 +545,12 @@ def _get_short_id(provider_id: str) -> str:
 @app.command("list")
 async def list_agents():
     """List agents."""
-    result = await send_request(types.ListAgentsRequest(method="agents/list"), types.ListAgentsResult)
+    agents = await _get_agents()
     providers_by_id = {p["id"]: p for p in (await api_request("GET", "provider"))["items"]}
     max_provider_len = max(len(_get_short_id(p_id)) for p_id in providers_by_id) if providers_by_id else 0
 
     def _sort_fn(agent: Agent):
-        if not (provider := providers_by_id.get(agent.provider)):
+        if not (provider := providers_by_id.get(agent.metadata.provider)):
             return agent.name
         status_rank = {"not_installed": "1"}
         return str(status_rank.get(provider["status"], 0)) + f"_{agent.name}" if "registry" in provider else agent.name
@@ -580,13 +563,14 @@ async def list_agents():
         Column("Location", max_width=min(max_provider_len, 70)),
         Column("Missing Env", max_width=50),
         Column("Last Error", ratio=1),
+        no_wrap=True,
     ) as table:
-        for agent in sorted(result.agents, key=_sort_fn):
+        for agent in sorted(agents.values(), key=_sort_fn):
             status = None
             missing_env = None
             location = None
             error = None
-            if provider := providers_by_id.get(agent.provider, None):
+            if provider := providers_by_id.get(agent.metadata.provider, None):
                 status = provider["status"]
                 missing_env = ",".join(var["name"] for var in provider["missing_configuration"])
                 location = _get_short_id(provider["id"])
@@ -609,8 +593,8 @@ async def list_agents():
                         "install_error": "red",
                     },
                 ),
-                agent.description or "<none>",
-                agent.model_extra.get("ui", {}).get("type", None) or "<none>",
+                (agent.description or "<none>").replace("\n", " "),
+                (agent.metadata.model_dump().get("ui", {}) or {}).get("type", None) or "<none>",
                 location or "<none>",
                 missing_env or "<none>",
                 error or "<none>",
@@ -619,8 +603,9 @@ async def list_agents():
 
 
 async def _get_agents() -> dict[str, Agent]:
-    result = await send_request(types.ListAgentsRequest(method="agents/list"), types.ListAgentsResult)
-    agents_by_name = {agent.name: agent for agent in result.agents}
+    async with acp_client() as client:
+        agents: list[Agent] = [agent async for agent in client.agents()]
+    agents_by_name = {agent.name: agent for agent in agents}
     return agents_by_name
 
 
@@ -629,7 +614,7 @@ async def _get_agent(name: str, agents_by_name: dict[str, Agent] | None = None) 
         agents_by_name = await _get_agents()
     if agent := agents_by_name.get(name, None):
         return agent
-    raise McpError(error=ErrorData(code=404, message=f"agent/{name} not found in any provider"))
+    raise ACPError(error=Error(code=ErrorCode.NOT_FOUND, message=f"agent/{name} not found in any provider"))
 
 
 def _render_schema(schema: dict[str, Any] | None):
@@ -637,12 +622,12 @@ def _render_schema(schema: dict[str, Any] | None):
 
 
 def _render_examples(agent: Agent):
-    if not (examples := (agent.model_extra.get("examples", {}) or {}).get("cli", []) or []):
+    if not (examples := (agent.metadata.model_dump().get("examples", {}) or {}).get("cli", []) or []):
         return Text()
     md = "## Examples"
     for i, example in enumerate(examples):
         processing_steps = "\n".join(
-            f"{i + 1}. {step}" for i, step in enumerate((example.get("processingSteps", []) or []))
+            f"{i + 1}. {step}" for i, step in enumerate((example.get("processing_steps", []) or []))
         )
         name = example.get("name", None) or f"Example #{i + 1}"
         output = f"""
@@ -669,36 +654,24 @@ def _render_examples(agent: Agent):
 
 
 @app.command("info")
-async def agent_detail(
-    name: str = typer.Argument(help="Name of agent tool to show"),
-    schema: bool | None = typer.Option(default=None),
-):
+async def agent_detail(name: str = typer.Argument(help="Name of agent tool to show")):
     """Show agent details."""
     agent = await _get_agent(name)
 
-    if schema:
-        console.print(Markdown(f"# Agent {agent.name}\n## Input Schema\n"))
-        console.print(_render_schema(agent.inputSchema))
-        console.print(Markdown("## Output Schema\n"))
-        console.print(_render_schema(agent.outputSchema))
-        return
-
-    agent_dict = agent.model_dump()
     basic_info = f"# {agent.name}\n{agent.description}"
 
-    console.print(Markdown(basic_info))
-    console.print(Markdown(agent_dict.get("fullDescription", None) or ""))
+    console.print(Markdown(basic_info), "")
+    console.print(Markdown(agent.metadata.documentation or ""))
     console.print(_render_examples(agent))
 
     with create_table(Column("Key", ratio=1), Column("Value", ratio=5), title="Extra information") as table:
-        for key, value in omit(
-            agent.model_extra, {"fullDescription", "inputSchema", "outputSchema", "examples"}
-        ).items():
-            table.add_row(key, str(value))
+        for key, value in omit(agent.metadata.model_dump(), {"documentation", "examples"}).items():
+            if value:
+                table.add_row(key, str(value))
     console.print()
     console.print(table)
 
-    provider = await get_provider(agent.provider)
+    provider = await get_provider(agent.metadata.provider)
     with create_table(Column("Key", ratio=1), Column("Value", ratio=5), title="Provider") as table:
         for key, value in omit(provider, {"image_id", "manifest", "source", "registry"}).items():
             table.add_row(key, str(value))

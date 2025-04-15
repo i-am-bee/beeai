@@ -24,5 +24,4 @@ class Configuration(pydantic_settings.BaseSettings):
         env_file=None, env_prefix="BEEAI__", env_nested_delimiter="__", extra="allow"
     )
     host: pydantic.AnyUrl = "http://localhost:8333"
-    mcp_sse_path: str = "/mcp/sse"
     debug: bool = False

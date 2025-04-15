@@ -16,12 +16,22 @@ import asyncio
 import contextlib
 import logging
 import pathlib
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, suppress
 from typing import Iterable
+
+from acp_sdk import ACPError
+from acp_sdk.server.errors import (
+    acp_error_handler,
+    validation_exception_handler,
+    catch_all_exception_handler,
+    http_exception_handler as acp_http_exception_handler,
+)
+from starlette.requests import Request
 
 from beeai_server.adapters.interface import IProviderRepository
 from beeai_server.crons.sync_registry_providers import preinstall_background_tasks
 from beeai_server.domain.model import LoadedProviderStatus
+from beeai_server.domain.provider import ProviderContainer
 from beeai_server.utils.fastapi import NoCacheStaticFiles
 from fastapi import FastAPI, APIRouter
 from fastapi import HTTPException
@@ -30,19 +40,19 @@ from fastapi.responses import ORJSONResponse
 from kink import inject, di
 from starlette.responses import FileResponse
 from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
+from starlette.exceptions import HTTPException as StarletteHttpException
 from opentelemetry.metrics import get_meter, Observation, CallbackOptions
+from fastapi.exceptions import RequestValidationError
 
 from beeai_server.telemetry import INSTRUMENTATION_NAME, shutdown_telemetry
 from beeai_server.domain.telemetry import TelemetryCollectorManager
 from beeai_server.bootstrap import bootstrap_dependencies_sync
 from beeai_server.configuration import Configuration
 from beeai_server.exceptions import ManifestLoadError
-from beeai_server.routes.mcp_sse import create_mcp_sse_app
 from beeai_server.routes.provider import router as provider_router
-from beeai_server.routes.agent import router as agent_router
+from beeai_server.routes.acp import router as acp_router
 from beeai_server.routes.env import router as env_router
 from beeai_server.routes.telemetry import router as telemetry_router
-from beeai_server.services.mcp_proxy.provider import ProviderContainer
 from beeai_server.utils.periodic import CRON_REGISTRY, run_all_crons
 
 logger = logging.getLogger(__name__)
@@ -61,12 +71,24 @@ def register_global_exception_handlers(app: FastAPI):
         return await http_exception_handler(request, HTTPException(status_code=exc.status_code, detail=str(exc)))
 
     @app.exception_handler(Exception)
-    async def custom_http_exception_handler(request, exc):
+    async def custom_http_exception_handler(request: Request, exc):
         """Include detail in all unhandled exceptions.
 
         This is not the beset security practice as it can reveal details about the internal workings of this service,
         but this is an open-source service anyway, so the risk is acceptable
         """
+
+        if request.url.path.startswith("/api/v1/acp"):
+            match exc:
+                case ACPError():
+                    return acp_error_handler(request, exc)
+                case StarletteHttpException():
+                    return acp_http_exception_handler(request, exc)
+                case RequestValidationError():
+                    return validation_exception_handler(request, exc)
+                case _:
+                    return catch_all_exception_handler(request, exc)
+
         logger.error("Error during HTTP request: %s", repr(extract_messages(exc)))
         return await http_exception_handler(
             request, HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=repr(extract_messages(exc)))
@@ -90,13 +112,12 @@ def mount_routes(app: FastAPI):
     )
 
     server_router = APIRouter()
-    server_router.include_router(agent_router, prefix="/agent", tags=["agent"])
+    server_router.include_router(acp_router, prefix="/acp")
     server_router.include_router(provider_router, prefix="/provider", tags=["provider"])
     server_router.include_router(env_router, prefix="/env", tags=["env"])
     server_router.include_router(telemetry_router, prefix="/telemetry", tags=["telemetry"])
 
     app.mount("/healthcheck", lambda: "OK")
-    app.mount("/mcp", create_mcp_sse_app())
     app.include_router(server_router, prefix="/api/v1", tags=["provider"])
     app.mount("/", ui_app)
 
@@ -143,12 +164,13 @@ async def lifespan(
 
         try:
             initialize_task = asyncio.create_task(_initialize_providers())
+            initialize_task.add_done_callback(
+                lambda task: logger.critical(f"Initialization failed: {task.exception()}") if task.exception() else None
+            )
             yield
         finally:
-            try:
+            with suppress(Exception):
                 await initialize_task
-            except Exception as ex:
-                logger.error(f"Initialization failed: {ex}")
 
             # Cancel unfinished installation tasks
             for task in preinstall_background_tasks.values():

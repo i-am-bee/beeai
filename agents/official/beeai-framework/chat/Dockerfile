@@ -1,24 +1,14 @@
-FROM node:20-alpine AS base
+FROM python:3.11-slim-bookworm
+COPY --from=ghcr.io/astral-sh/uv:0.6.8 /uv /uvx /bin/
 
-ENV APP_DIR=/home/node/app
+ENV UV_LINK_MODE=copy
+ENV PRODUCTION_MODE=True
 
-WORKDIR ${APP_DIR}
+ADD . /app
+WORKDIR /app
 
-FROM base AS builder
+RUN uv sync
 
-COPY package*.json ./
-RUN npm install
+ENV PATH="/app/.venv/bin:$PATH"
 
-COPY . ./
-RUN npx tsc
-
-RUN npm prune --production
-
-FROM base AS runner
-
-COPY --from=builder ${APP_DIR}/dist ./
-COPY --from=builder ${APP_DIR}/node_modules ./node_modules
-
-EXPOSE 8000
-
-CMD [ "node", "./server.js" ]
+CMD ["uv", "run", "server"]

@@ -16,17 +16,7 @@ jobs:
     strategy:
       matrix:
         agent:
-          - official/sequential-workflow
-          - official/agent-docs-creator
-          - official/beeai-framework/content-judge
           - official/beeai-framework/chat
-          - official/beeai-framework/podcast-creator
-          - official/beeai-supervisor
-          - community/aider
-          - community/gpt-researcher
-          - community/literature-review
-          - community/marketing-strategy
-          - community/ollama-deep-researcher
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -40,10 +30,27 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build temporary docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./agents/${{ matrix.agent }}
+          push: false
+          load: true
+          tags: tmp-agent-image
       - name: Read agent manifest
         id: agent-manifest
         run: |
-          AGENT_MANIFEST=$(cat ./agents/${{ matrix.agent }}/agent.yaml | base64 -w 0)
+          set -e
+          docker run -d --rm --name=tmp-agent -p 8000:8000 -e HOST=0.0.0.0 tmp-agent-image
+          success=0
+          for i in {1..30}; do
+            echo "Extracting manifest: attempt $i"
+            response=$(curl http://localhost:8000/agents 2>/dev/null) && success=1 && break
+            sleep 0.5
+          done
+          [[ "$success" == 1 ]] || (echo "Failed to discover agents" && exit 1)
+          docker kill tmp-agent
+          AGENT_MANIFEST=$(echo "$response" | base64 -w 0)
           echo "content=$AGENT_MANIFEST" >> $GITHUB_OUTPUT
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
