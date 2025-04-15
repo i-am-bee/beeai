@@ -1483,7 +1483,6 @@ dependencies = [
     { name = "crewai", extra = ["tools"] },
     { name = "databricks-sdk" },
     { name = "openinference-instrumentation-crewai" },
-    { name = "openinference-instrumentation-langchain" },
 ]
 
 [package.metadata]
@@ -1492,7 +1491,6 @@ requires-dist = [
     { name = "crewai", extras = ["tools"], specifier = ">=0.102.0,<1.0.0" },
     { name = "databricks-sdk", specifier = ">=0.46.0" },
     { name = "openinference-instrumentation-crewai", specifier = ">=0.1.7" },
-    { name = "openinference-instrumentation-langchain", specifier = ">=0.1.36" },
 ]
 
 [[package]]
@@ -1753,23 +1751,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/2e/b2/7c4df84d1557f5f0abdafdec3d3e53e291eaadbc5b6a6d25fba43f42809b/openinference_instrumentation_crewai-0.1.7.tar.gz", hash = "sha256:500a4d672b941d6cba4e949e879c51cfc16c85fed65ca3499c2c78fe7bd59fcd", size = 10151 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/8d/a3/14d0847c514095703237f55079235ebdd48fda2d6291b01376184f554654/openinference_instrumentation_crewai-0.1.7-py3-none-any.whl", hash = "sha256:49be2a675299753cc7d6d4c894b498a288242cc0798a47922fe7adb8b4f5b59a", size = 11660 },
-]
-
-[[package]]
-name = "openinference-instrumentation-langchain"
-version = "0.1.39"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "openinference-instrumentation" },
-    { name = "openinference-semantic-conventions" },
-    { name = "opentelemetry-api" },
-    { name = "opentelemetry-instrumentation" },
-    { name = "opentelemetry-semantic-conventions" },
-    { name = "wrapt" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/d0/e4/0d878733441de15bcfb3ffbf7e947cb178d2bd3414e31d0e501730322957/openinference_instrumentation_langchain-0.1.39.tar.gz", hash = "sha256:8b05245d8f611d476dcf3c845c1578f45bc965691b43eb68edeb2ce80b239c6e", size = 50726 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/64/36/3643827b500a35a3d411cf3ba4893e0c75e248b387777a1638ae80ff4ae6/openinference_instrumentation_langchain-0.1.39-py3-none-any.whl", hash = "sha256:36a0ec21e6efc4b3fe34efc0953d9e16d79607aa612ae35874541b6182915f03", size = 18627 },
 ]
 
 [[package]]
