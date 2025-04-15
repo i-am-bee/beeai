@@ -6,14 +6,14 @@ depends = ["beeai-server:check:*"]
 ["beeai-server:check:ruff-check"]
 depends = ["setup:uv"]
 dir = "{{config_root}}/apps/beeai-server"
-run = "uv run ruff check --quiet"
+run = "uv run python -m ruff check --quiet"
 sources = ["src/**/*.py"]
 outputs = { auto = true }
 
 ["beeai-server:check:ruff-format"]
 depends = ["setup:uv"]
 dir = "{{config_root}}/apps/beeai-server"
-run = "uv run ruff format --quiet --check"
+run = "uv run python -m ruff format --quiet --check"
 sources = ["src/**/*.py"]
 outputs = { auto = true }
 
@@ -21,7 +21,7 @@ outputs = { auto = true }
 # ["beeai-server:check:pyright"]
 # depends = ["setup:uv"]
 # dir = "{{config_root}}/apps/beeai-server"
-# run = "uv run pyright"
+# run = "uv run python -m pyright"
 # sources = ["src/**/*.py"]
 # outputs = { auto = true }
 
@@ -33,14 +33,14 @@ depends = ["beeai-server:fix:*"]
 ["beeai-server:fix:ruff-check"]
 depends = ["setup:uv"]
 dir = "{{config_root}}/apps/beeai-server"
-run = "uv run ruff check --quiet --fix"
+run = "uv run python -m ruff check --quiet --fix"
 sources = ["src/**/*.py"]
 outputs = { auto = true }
 
 ["beeai-server:fix:ruff-format"]
 depends = ["setup:uv"]
 dir = "{{config_root}}/apps/beeai-server"
-run = "uv run ruff format --quiet"
+run = "uv run python -m ruff format --quiet"
 sources = ["src/**/*.py"]
 outputs = { auto = true }
 
