@@ -40,9 +40,6 @@ class AgentNotInstalledError(Exception):
         message = message or f"Agent provider is not installed: {source}"
 
 
-class UnsupportedProviderError(FileNotFoundError): ...
-
-
 class MissingConfigurationError(Exception):
     def __init__(self, missing_env: list["EnvVar"]):
         self.missing_env = missing_env

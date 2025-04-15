@@ -22,6 +22,7 @@ from typing import Iterable
 from beeai_server.adapters.interface import IProviderRepository
 from beeai_server.crons.sync_registry_providers import preinstall_background_tasks
 from beeai_server.domain.model import LoadedProviderStatus
+from beeai_server.domain.provider import ProviderContainer
 from beeai_server.utils.fastapi import NoCacheStaticFiles
 from fastapi import FastAPI, APIRouter
 from fastapi import HTTPException
@@ -37,12 +38,10 @@ from beeai_server.domain.telemetry import TelemetryCollectorManager
 from beeai_server.bootstrap import bootstrap_dependencies_sync
 from beeai_server.configuration import Configuration
 from beeai_server.exceptions import ManifestLoadError
-from beeai_server.routes.mcp_sse import create_mcp_sse_app
 from beeai_server.routes.provider import router as provider_router
-from beeai_server.routes.agent import router as agent_router
+from beeai_server.routes.acp import router as acp_router
 from beeai_server.routes.env import router as env_router
 from beeai_server.routes.telemetry import router as telemetry_router
-from beeai_server.services.mcp_proxy.provider import ProviderContainer
 from beeai_server.utils.periodic import CRON_REGISTRY, run_all_crons
 
 logger = logging.getLogger(__name__)
@@ -90,13 +89,12 @@ def mount_routes(app: FastAPI):
     )
 
     server_router = APIRouter()
-    server_router.include_router(agent_router, prefix="/agent", tags=["agent"])
+    server_router.include_router(acp_router, prefix="/acp", tags=["acp"])
     server_router.include_router(provider_router, prefix="/provider", tags=["provider"])
     server_router.include_router(env_router, prefix="/env", tags=["env"])
     server_router.include_router(telemetry_router, prefix="/telemetry", tags=["telemetry"])
 
     app.mount("/healthcheck", lambda: "OK")
-    app.mount("/mcp", create_mcp_sse_app())
     app.include_router(server_router, prefix="/api/v1", tags=["provider"])
     app.mount("/", ui_app)
 

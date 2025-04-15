@@ -23,6 +23,7 @@ from fastapi import HTTPException
 from kink import inject
 from starlette.status import HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND
 
+from acp_sdk import Agent
 from beeai_server.adapters.interface import IProviderRepository, IEnvVariableRepository
 from beeai_server.custom_types import ID
 from beeai_server.domain.model import (
@@ -31,9 +32,9 @@ from beeai_server.domain.model import (
     ProviderLocation,
     LoadedProviderStatus,
 )
+from beeai_server.domain.provider import ProviderContainer, LoadedProvider
 from beeai_server.schema import ProviderWithStatus
 from beeai_server.exceptions import ManifestLoadError
-from beeai_server.services.mcp_proxy.provider import ProviderContainer, LoadedProvider
 from beeai_server.utils.github import ResolvedGithubUrl
 from beeai_server.utils.logs_container import LogsContainer
 
@@ -148,6 +149,11 @@ class ProviderService:
             for provider in self._loaded_provider_container.loaded_providers.values()
         ]
 
+    async def list_agents(self) -> list[Agent]:
+        return [
+            agent for provider in self._loaded_provider_container.loaded_providers.values() for agent in provider.agents
+        ]
+
     async def stream_logs(self, id: ID) -> Callable[..., AsyncIterator[str]]:
         if not (provider := self._loaded_provider_container.loaded_providers.get(id, None)):
             raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="Provider not found")
@@ -158,3 +164,15 @@ class ProviderService:
                     yield json.dumps(message.model_dump(mode="json"))
 
         return logs_iterator
+
+    async def get_provider_by_agent_name(self, *, agent_name: str) -> LoadedProvider:
+        try:
+            return self._loaded_provider_container.get_provider_by_agent(agent_name=agent_name)
+        except ValueError as ex:
+            raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail=f"Agent {agent_name} not found") from ex
+
+    async def get_provider_by_run_id(self, *, run_id: str) -> LoadedProvider:
+        try:
+            return self._loaded_provider_container.get_provider_by_run(run_id=run_id)
+        except ValueError as ex:
+            raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail=f"Run {run_id} not found") from ex

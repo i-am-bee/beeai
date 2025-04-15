@@ -29,7 +29,6 @@ import ssl
 
 import anyio
 import anyio.to_thread
-from acp.server.sse import SseServerTransport
 from beeai_server.adapters.docker import DockerContainerBackend
 from beeai_server.adapters.filesystem import (
     FilesystemEnvVariableRepository,
@@ -44,8 +43,8 @@ from beeai_server.adapters.interface import (
 )
 from beeai_server.configuration import Configuration, get_configuration
 from beeai_server.domain.collector.constants import TELEMETRY_BASE_CONFIG_PATH, TELEMETRY_BEEAI_CONFIG_PATH
+from beeai_server.domain.provider import ProviderContainer
 from beeai_server.domain.telemetry import TelemetryCollectorManager
-from beeai_server.services.mcp_proxy.provider import ProviderContainer
 from beeai_server.utils.periodic import register_all_crons
 from kink import di
 
@@ -204,7 +203,6 @@ async def bootstrap_dependencies():
         telemetry_config_path=di[Configuration].telemetry_config_dir / "telemetry.yaml"
     )
     di[IContainerBackend] = await resolve_container_runtime_cmd(di[Configuration])
-    di[SseServerTransport] = SseServerTransport("/mcp/messages/")  # global SSE transport
 
     di[ProviderContainer] = ProviderContainer(
         env_repository=di[IEnvVariableRepository], autostart_providers=di[Configuration].autostart_providers

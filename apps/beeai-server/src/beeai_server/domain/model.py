@@ -15,18 +15,17 @@
 import abc
 import base64
 import logging
-from contextlib import asynccontextmanager, suppress
+from contextlib import suppress, AsyncExitStack
 from datetime import timedelta
 from enum import StrEnum
 from typing import Any, Literal, Optional, Self
 
 import httpx
 import yaml
-from acp.client.sse import sse_client
 from aiodocker import DockerError
 from beeai_server.adapters.interface import IContainerBackend
 from beeai_server.configuration import Configuration
-from beeai_server.custom_types import ID, McpClient
+from beeai_server.custom_types import ID
 from beeai_server.domain.constants import DEFAULT_MANIFEST_PATH, DOCKER_MANIFEST_LABEL_NAME, LOCAL_IMAGE_REGISTRY
 from beeai_server.exceptions import MissingConfigurationError, retry_if_exception_grp_type
 from beeai_server.telemetry import OTEL_HTTP_ENDPOINT
@@ -34,7 +33,7 @@ from beeai_server.utils.docker import DockerImageID, get_registry_image_config_a
 from beeai_server.utils.github import GithubUrl, ResolvedGithubUrl
 from beeai_server.utils.logs_container import LogsContainer
 from beeai_server.utils.process import find_free_port
-from httpx import HTTPError
+from httpx import HTTPError, AsyncClient
 from kink import inject
 from pydantic import AnyUrl, BaseModel, Field, PrivateAttr, RootModel, computed_field
 from tenacity import AsyncRetrying, stop_after_attempt, wait_exponential
@@ -199,24 +198,34 @@ class BaseProvider(BaseModel, abc.ABC):
         pass
 
     @abc.abstractmethod
-    async def mcp_client(
+    async def start(
         self,
         *,
         env: dict[str, str] | None = None,
         with_dummy_env: bool = True,
         logs_container: Optional["LogsContainer"] = None,
-    ) -> McpClient:
+    ) -> str:
         """
         :param env: environment values passed to the process
         :param with_dummy_env: substitute all unfilled required variables from manifest by "dummy" value
         :param logs_container: capture logs of the provider process (if managed)
         """
 
+    async def stop(self):
+        pass
+
+    async def __aenter__(self):
+        return await self.start()
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        return await self.stop()
+
 
 class ManagedProvider(BaseProvider, extra="allow"):
     source: ProviderSource
     registry: ResolvedGithubUrl | None = None
     auto_stop_timeout: timedelta | None = Field(timedelta(minutes=5), exclude=True)
+    _container_exit_stack: AsyncExitStack = PrivateAttr(default_factory=AsyncExitStack)
 
     @classmethod
     async def load_from_source(cls, source: ProviderSource, registry: ResolvedGithubUrl | None = None) -> Self:
@@ -247,9 +256,11 @@ class ManagedProvider(BaseProvider, extra="allow"):
             "PLATFORM_URL": "http://host.docker.internal:8333",
         }
 
-    @asynccontextmanager
+    async def stop(self):
+        await self._container_exit_stack.aclose()
+
     @inject
-    async def mcp_client(
+    async def start(
         self,
         *,
         configuration: Configuration,
@@ -257,7 +268,7 @@ class ManagedProvider(BaseProvider, extra="allow"):
         env: dict[str, str] | None = None,
         with_dummy_env: bool = True,
         logs_container: LogsContainer | None = None,
-    ) -> McpClient:
+    ) -> str:
         if not with_dummy_env:
             self.check_env(env)
 
@@ -269,29 +280,32 @@ class ManagedProvider(BaseProvider, extra="allow"):
         }
         port = str(await find_free_port())
 
-        async with container_backend.open_container(
-            image=self.image_id,
-            port_mappings={port: "8000"},
-            env={"PORT": "8000", "HOST": "0.0.0.0", **env},
-            logs_container=logs_container,
-        ):
+        try:
+            await self._container_exit_stack.enter_async_context(
+                container_backend.open_container(
+                    image=self.image_id,
+                    port_mappings={port: "8000"},
+                    env={"PORT": "8000", "HOST": "0.0.0.0", **env},
+                    logs_container=logs_container,
+                )
+            )
             async for attempt in AsyncRetrying(
                 stop=stop_after_attempt(8),
                 wait=wait_exponential(multiplier=1, max=3),
                 retry=retry_if_exception_grp_type(HTTPError),
                 reraise=True,
             ):
-                with attempt:
-                    async with sse_client(url=f"http://localhost:{port}/sse", timeout=60) as streams:
-                        yield streams
+                async with AsyncClient() as client:
+                    base_url = f"http://localhost:{port}/"
+                    await client.get(f"{base_url}/agents", timeout=1)
+            return base_url
+        except BaseException:
+            await self._container_exit_stack.aclose()
+            raise
 
 
 class UnmanagedProvider(BaseProvider, extra="allow"):
     location: AnyUrl
 
-    @asynccontextmanager
-    @inject
-    async def mcp_client(self, *_args, **_kwargs) -> McpClient:
-        location = str(self.location).rstrip("/")
-        async with sse_client(url=f"{location}/sse", timeout=60) as streams:
-            yield streams
+    async def start(self, *_args, **_kwargs) -> str:
+        return f"{str(self.location).rstrip('/')}/"

@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+from contextlib import asynccontextmanager
 from typing import TYPE_CHECKING, Iterable, Protocol, runtime_checkable
 
 from beeai_server.utils.docker import DockerImageID
@@ -51,6 +51,8 @@ class IContainerBackend(Protocol):
     ): ...
     async def check_image(self, *, image: DockerImageID) -> bool: ...
     async def extract_labels(self, *, image: DockerImageID) -> dict[str, str]: ...
+
+    @asynccontextmanager
     async def open_container(
         self,
         *,

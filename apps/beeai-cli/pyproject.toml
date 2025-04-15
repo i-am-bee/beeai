@@ -7,8 +7,6 @@ authors = [{ name = "IBM Corp." }]
 requires-python = ">=3.11,<4.0"
 dependencies = [
     "beeai-server==0.0.12",
-    "acp-sdk", # version determined by beeai-server
-    "beeai-sdk", # version determined by beeai-server
     "anyio>=4.8.0",
     "pydantic>=2.10.6",
     "pydantic-settings>=2.7.1",
@@ -25,7 +23,6 @@ dependencies = [
 
 [tool.uv.sources]
 beeai-server = { workspace = true }
-acp-sdk = { workspace = true }
 beeai-sdk = { workspace = true }
 
 [project.scripts]
