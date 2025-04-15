@@ -76,7 +76,7 @@ outputs = { auto = true }
 [tasks."setup:uv"]
 hide = true
 dir = "{{config_root}}"
-run = "uv sync --all-extras"
+run = "uv sync --all-extras --dev"
 sources = ["uv.lock", "pyproject.toml", "apps/*/pyproject.toml", "packages/*/pyproject.toml"]
 outputs = { auto = true }
 

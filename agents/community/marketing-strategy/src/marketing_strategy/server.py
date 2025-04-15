@@ -1,7 +1,6 @@
 import json
 
 from openinference.instrumentation.crewai import CrewAIInstrumentor
-from openinference.instrumentation.langchain import LangChainInstrumentor
 from beeai_sdk.providers.agent import Server, Context
 from beeai_sdk.schemas.base import Log, LogLevel
 from crewai.agents.parser import AgentAction, AgentFinish
@@ -12,7 +11,6 @@ from marketing_strategy.crew import MarketingPostsCrew
 from beeai_sdk.schemas.text import TextInput, TextOutput
 
 CrewAIInstrumentor().instrument()
-LangChainInstrumentor().instrument()
 load_env()
 
 server = Server("crewai-agents")

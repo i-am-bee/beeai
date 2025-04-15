@@ -20,8 +20,11 @@ processors:
   filter/phoenix:
     traces:
       span:
-        - 'resource.attributes["service.namespace"] != "beeai-agent-provider"'
-        - 'instrumentation_scope.name == "acp.shared.session" or instrumentation_scope.name == "acp"'
+        ## Filter for openinference packages
+        #### Python format `openinference.instrumentation.${package_name}`
+        #### - crewAI exception `crewai.telemetry`
+        #### Javascript format `@arizeai/openinference-instrumentation-${packageName}`
+        - not(IsMatch(instrumentation_scope.name, "^openinference\\.instrumentation\\..*") or IsMatch(instrumentation_scope.name, "^@arizeai/openinference-instrumentation-.*") or instrumentation_scope.name == "crewai.telemetry")
 
 extensions:
   health_check:

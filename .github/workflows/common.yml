@@ -16,5 +16,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
-      - run: mise check
-      - run: mise test
+      - run: mise run --force setup
+      - run: mise run --force check
+      - run: mise run --force test
