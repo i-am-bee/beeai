@@ -1,6 +1,6 @@
 #!/usr/bin/env -S npx -y tsx@latest
 
-import { Monitor } from "@i-am-bee/beeai-supervisor/ui/monitor.js";
+import { Monitor } from "@i-am-bee/beekeeper/ui/monitor.js";
 import { OUTPUT_DIR } from "./supervisor.js";
 import process from 'process';
 

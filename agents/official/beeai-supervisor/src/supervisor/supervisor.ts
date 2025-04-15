@@ -7,8 +7,8 @@ import {
 import {
   createRuntime as createSupervisor,
   RuntimeOutputMethod,
-} from "@i-am-bee/beeai-supervisor";
-import { CreateAgentConfig } from "@i-am-bee/beeai-supervisor/agents/registry/registry.js";
+} from "@i-am-bee/beekeeper";
+import { CreateAgentConfig } from "@i-am-bee/beekeeper/agents/registry/registry.js";
 import { Logger } from "beeai-framework";
 import { z } from "zod";
 import { AgentFactory } from "./agent-factory.js";
@@ -99,7 +99,7 @@ const run =
       signal ?? new AbortController().signal
     ); // FIXME
     return {
-      text: response || '',
+      text: response || "",
       logs: [],
     };
   };
