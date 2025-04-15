@@ -16,5 +16,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
+      - run: mise run --force setup
+      - run: mise exec -- uv pip freeze
+      - run: ls .venv/bin
       - run: mise run --force check
       - run: mise run --force test
