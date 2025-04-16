@@ -2,7 +2,7 @@
 providers:
   # Official
   - location: ghcr.io/i-am-bee/beeai/official/sequential-workflow:agents-v0.0.72
-  - location: ghcr.io/i-am-bee/beeai/official/beeai-supervisor:agents-v0.0.72
+  - location: ghcr.io/i-am-bee/beeai/official/beeai-supervisor:agents-v0.0.74
   - location: ghcr.io/i-am-bee/beeai/official/agent-docs-creator:agents-v0.0.72
   - location: ghcr.io/i-am-bee/beeai/official/beeai-framework/chat:agents-v0.0.72
   - location: ghcr.io/i-am-bee/beeai/official/beeai-framework/content-judge:agents-v0.0.72
