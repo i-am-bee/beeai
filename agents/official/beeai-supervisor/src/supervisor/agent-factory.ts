@@ -2,15 +2,15 @@ import { ReActAgent } from "beeai-framework/agents/react/agent";
 import {
   BaseAgentFactory,
   CreateAgentInput,
-} from "@i-am-bee/beeai-supervisor/agents/base/agent-factory.js";
+} from "@i-am-bee/beekeeper/agents/base/agent-factory.js";
 import { PlatformSdk } from "./platform-sdk.js";
-import { Switches } from "@i-am-bee/beeai-supervisor";
-import { supervisor } from "@i-am-bee/beeai-supervisor/agents/index.js";
-import { AgentIdValue } from "@i-am-bee/beeai-supervisor/agents/registry/dto.js";
-import { agentType } from "@i-am-bee/beeai-supervisor/ui/config.js";
+import { Switches } from "@i-am-bee/beekeeper";
+import { supervisor } from "@i-am-bee/beekeeper/agents/index.js";
+import { AgentIdValue } from "@i-am-bee/beekeeper/agents/registry/dto.js";
+import { agentType } from "@i-am-bee/beekeeper/ui/config.js";
 import { TokenMemory } from "beeai-framework/memory/tokenMemory";
-import { getChatLLM } from "@i-am-bee/beeai-supervisor/helpers/llm.js";
-import { BaseToolsFactory } from "@i-am-bee/beeai-supervisor/base/tools-factory.js";
+import { getChatLLM } from "@i-am-bee/beekeeper/helpers/llm.js";
+import { BaseToolsFactory } from "@i-am-bee/beekeeper/base/tools-factory.js";
 
 class BeeAiAgent {
   constructor(

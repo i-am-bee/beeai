@@ -5,10 +5,11 @@ import {
   textOutputSchema,
 } from "@i-am-bee/beeai-sdk/schemas/text";
 import {
-  createRuntime as createSupervisor,
+  createRuntime,
+  disposeRuntime,
   RuntimeOutputMethod,
-} from "@i-am-bee/beeai-supervisor";
-import { CreateAgentConfig } from "@i-am-bee/beeai-supervisor/agents/registry/registry.js";
+} from "@i-am-bee/beekeeper";
+import { CreateAgentConfig } from "@i-am-bee/beekeeper/agents/registry/registry.js";
 import { Logger } from "beeai-framework";
 import { z } from "zod";
 import { AgentFactory } from "./agent-factory.js";
@@ -21,7 +22,6 @@ type Input = z.infer<typeof inputSchema>;
 const outputSchema = textOutputSchema;
 
 export const OUTPUT_DIR = `./beeai-supervisor-output`;
-
 const run =
   (server: AcpServer) =>
   async (
@@ -57,54 +57,61 @@ const run =
         }) as CreateAgentConfig
     );
 
-    const supervisorAgent = await createSupervisor({
-      agentConfigFixtures,
-      agentFactory: new AgentFactory(),
-      switches: {
-        agentRegistry: {
-          mutableAgentConfigs: false,
-          restoration: false,
-        },
-        taskManager: {
-          restoration: false,
-        },
-      },
-      workspace: "beeai",
-      outputDirPath: OUTPUT_DIR,
-      logger: Logger.root,
-      signal,
-    });
-
-    const output: RuntimeOutputMethod = async (output) => {
-      let role;
-      if (output.agent) {
-        role = `🤖 [${output.agent.agentId}] `;
-      } else {
-        role = `📋 [${output.taskRun.taskRunId}] `;
-      }
-
-      if (_meta?.progressToken) {
-        await server.server.sendAgentRunProgress({
-          progressToken: _meta.progressToken,
-          delta: {
-            text: `${role} ${output.text}\n\n`,
+    let runtime;
+    try {
+      runtime = await createRuntime({
+        agentConfigFixtures,
+        agentFactory: new AgentFactory(),
+        switches: {
+          agentRegistry: {
+            mutableAgentConfigs: false,
+            restoration: false,
           },
-        });
-      }
-    };
+          taskManager: {
+            restoration: false,
+          },
+        },
+        workspace: "beeai",
+        outputDirPath: OUTPUT_DIR,
+        logger: Logger.root,
+        signal,
+      });
 
-    const response = await supervisorAgent.run(
-      input.text,
-      output,
-      signal ?? new AbortController().signal
-    ); // FIXME
-    return {
-      text: response || '',
-      logs: [],
-    };
+      const output: RuntimeOutputMethod = async (output) => {
+        let role;
+        if (output.agent) {
+          role = `🤖 [${output.agent.agentId}] `;
+        } else {
+          role = `📋 [${output.taskRun.taskRunId}] `;
+        }
+
+        if (_meta?.progressToken) {
+          await server.server.sendAgentRunProgress({
+            progressToken: _meta.progressToken,
+            delta: {
+              text: `${role} ${output.text}\n\n`,
+            },
+          });
+        }
+      };
+
+      const response = await runtime.run(
+        input.text,
+        output,
+        signal ?? new AbortController().signal
+      ); // FIXME
+      return {
+        text: response || "",
+        logs: [],
+      };
+    } finally {
+      if (runtime) {
+        disposeRuntime(runtime);
+      }
+    }
   };
 
-const agentName = "supervisor";
+const agentName = "beeai-supervisor";
 
 export const agent = {
   name: agentName,
