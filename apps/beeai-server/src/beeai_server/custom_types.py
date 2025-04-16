@@ -12,13 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import AsyncGenerator, TypeAlias
+from typing import TypeAlias
 
-from anyio.streams.memory import MemoryObjectReceiveStream, MemoryObjectSendStream
-from acp.types import JSONRPCMessage
 
 ID: TypeAlias = str
-
-McpClient: TypeAlias = AsyncGenerator[
-    tuple[MemoryObjectReceiveStream[JSONRPCMessage | Exception], MemoryObjectSendStream[JSONRPCMessage]], None
-]

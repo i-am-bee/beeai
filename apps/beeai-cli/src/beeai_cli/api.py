@@ -14,29 +14,28 @@
 
 import contextlib
 import enum
-import functools
 import json
 import subprocess
 import time
 import urllib
 import urllib.parse
+from contextlib import asynccontextmanager
 from datetime import timedelta, datetime
 from typing import AsyncIterator, Any
 
 import httpx
 import psutil
+from acp_sdk.client import Client
 from httpx import HTTPStatusError
 
 from beeai_cli.configuration import Configuration
-from beeai_sdk.utils.api import send_request as _send_request
-from beeai_sdk.utils.api import send_request_with_notifications as _send_request_with_notifications
 from beeai_cli.console import console, err_console
 
 
 config = Configuration()
 BASE_URL = str(config.host).rstrip("/")
 API_BASE_URL = f"{BASE_URL}/api/v1/"
-MCP_URL = f"{BASE_URL}{config.mcp_sse_path}"
+ACP_URL = f"{API_BASE_URL}acp"
 
 
 class BrewServiceStatus(enum.StrEnum):
@@ -205,5 +204,7 @@ async def api_stream(
                 yield jsonlib.loads(line)
 
 
-send_request_with_notifications = functools.partial(_send_request_with_notifications, MCP_URL)
-send_request = functools.partial(_send_request, MCP_URL)
+@asynccontextmanager
+async def acp_client() -> AsyncIterator[Client]:
+    async with Client(base_url=ACP_URL) as client:
+        yield client

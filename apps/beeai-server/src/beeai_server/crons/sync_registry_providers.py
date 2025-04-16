@@ -36,6 +36,8 @@ preinstall_background_tasks: dict[str, Task] = {}
 @periodic(period=timedelta(minutes=10))
 @inject
 async def check_official_registry(configuration: Configuration, provider_service: ProviderService):
+    if not configuration.agent_registry.enabled:
+        return
     registry = await configuration.agent_registry.location.resolve_version()
     managed_providers = {provider.id for provider in await provider_service.list_providers() if provider.registry}
     errors = []

@@ -19,14 +19,12 @@ import beeai_cli.commands.agent
 import beeai_cli.commands.compose
 import beeai_cli.commands.env
 import beeai_cli.commands.telemetry
-import beeai_cli.commands.tool
 from beeai_cli.async_typer import AsyncTyper
 from beeai_cli.configuration import Configuration
 
 logging.basicConfig(level=logging.INFO if Configuration().debug else logging.FATAL)
 
 app = AsyncTyper(no_args_is_help=True)
-app.add_typer(beeai_cli.commands.tool.app, name="tool", no_args_is_help=True, help="Manage tools.")
 app.add_typer(beeai_cli.commands.env.app, name="env", no_args_is_help=True, help="Manage environment variables.")
 app.add_typer(beeai_cli.commands.agent.app, name="agent", no_args_is_help=True, help="Manage agents.")
 app.add_typer(beeai_cli.commands.telemetry.app, name="telemetry", no_args_is_help=True, help="Configure telemetry.")

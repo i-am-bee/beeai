@@ -94,12 +94,12 @@ class LoadedProvider:
                     "description": provider.manifest.model_extra.get("description", None),
                     "inputSchema": {"type": "object", "additionalProperties": True},
                     "outputSchema": {"type": "object", "additionalProperties": True},
-                    "metadata": provider.manifest.model_dump(exclude={"name", "description"}),
+                    "metadata": {**provider.manifest.model_dump(exclude={"name", "description"}), "provider": self.id},
                 }
             )
         ]
 
-    @bind_logging_context
+    # @bind_logging_context
     async def handle_reload_env(self, env: dict[str, str]) -> None:
         self.env = env
         if self.status in {LoadedProviderStatus.running, LoadedProviderStatus.starting, LoadedProviderStatus.error}:
@@ -128,10 +128,8 @@ class LoadedProvider:
         if self.status not in {LoadedProviderStatus.running, LoadedProviderStatus.starting}:
             await self.start()
         try:
-            async with httpx.AsyncClient(base_url=self._base_url) as client:
-                with anyio.fail_after(timedelta(seconds=5).total_seconds()):
-                    resp = await client.get("agents")
-                    self.agents = [Agent.model_validate(agent) for agent in resp.json()['agents']]
+            async with httpx.AsyncClient(base_url=self._base_url, timeout=5) as client:
+                await client.get("agents")
         except BaseException as ex:
             message = f"Restoring broken session for provider {self.id}: {extract_messages(ex)}"
             logger.warning(message)
