@@ -79,7 +79,7 @@ async def send_request(
 @router.post("/runs")
 async def create_run(request: RunCreateRequest, provider_service: ProviderServiceDependency) -> RunCreateResponse:
     provider = await provider_service.get_provider_by_agent_name(agent_name=request.agent_name)
-    return await send_request(provider.client(), "POST", "/runs", request.model_dump())
+    return await send_request(provider.client(), "POST", "/runs", request.model_dump(mode="json"))
 
 
 @router.get("/runs/{run_id}")
@@ -93,7 +93,7 @@ async def resume_run(
     run_id: RunId, request: RunResumeRequest, provider_service: ProviderServiceDependency
 ) -> RunResumeResponse:
     provider = await provider_service.get_provider_by_run_id(run_id=str(run_id))
-    return await send_request(provider.client(), "POST", f"/runs/{run_id}", request.model_dump())
+    return await send_request(provider.client(), "POST", f"/runs/{run_id}", request.model_dump(mode="json"))
 
 
 @router.post("/runs/{run_id}/cancel")

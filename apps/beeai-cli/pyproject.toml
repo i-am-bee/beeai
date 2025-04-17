@@ -19,7 +19,7 @@ dependencies = [
     "jsonref>=1.1.0",
     "inquirerpy>=0.3.4",
     "psutil>=7.0.0",
-    "acp-sdk[client]>=0.1.0rc7",
+    "acp-sdk[client]>=0.2.1"
 ]
 
 [tool.uv.sources]

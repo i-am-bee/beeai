@@ -1,6 +1,7 @@
 [tool.uv.workspace]
 members = [
-    "apps/beeai-cli"
+    "apps/beeai-cli",
+    "apps/beeai-server"
 ]
 
 [tool.ruff]

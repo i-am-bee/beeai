@@ -22,7 +22,18 @@ from enum import StrEnum
 
 import jsonref
 from InquirerPy import inquirer
-from acp_sdk import TextMessagePart, Message, Agent, ACPError, Error, ErrorCode, GenericEvent, MessageEvent
+from acp_sdk import (
+    Message,
+    Agent,
+    ACPError,
+    Error,
+    ErrorCode,
+    GenericEvent,
+    MessagePartEvent,
+    MessagePart,
+    MessageCompletedEvent,
+)
+from acp_sdk.client import Client
 from rich.box import HORIZONTALS
 from rich.console import ConsoleRenderable, Group, NewLine
 from rich.panel import Panel
@@ -45,13 +56,12 @@ from typing import Any, Optional, Callable
 import jsonschema
 import rich.json
 import typer
-from click import BadParameter
 from rich.markdown import Markdown
 from rich.table import Column
 
 from beeai_cli.api import api_request, api_stream, acp_client
 from beeai_cli.async_typer import AsyncTyper, console, create_table, err_console
-from beeai_cli.utils import check_json, generate_schema_example, omit, prompt_user, filter_dict, remove_nullable
+from beeai_cli.utils import generate_schema_example, omit, prompt_user, filter_dict, remove_nullable
 
 
 class UiType(StrEnum):
@@ -122,66 +132,41 @@ async def stream_logs(name: str = typer.Argument(..., help="Agent name")):
         _print_log(message)
 
 
-async def _run_agent(name: str, input: str, dump_files_path: Path | None = None):
+async def _run_agent(client: Client, name: str, input: str, dump_files_path: Path | None = None):
     status = console.status(random.choice(processing_messages), spinner="dots")
     status.start()
-
-    last_was_stream = False
     status_stopped = False
 
-    async with acp_client() as client:
-        async for event in client.run_stream(agent=name, input=Message(TextMessagePart(content=input))):
-            print(event)
-            if not status_stopped:
-                status_stopped = True
-                status.stop()
+    async for event in client.run_stream(
+        agent=name, inputs=[Message(parts=[MessagePart(content=input, content_type="text/plain")])]
+    ):
+        if not status_stopped:
+            status_stopped = True
+            status.stop()
 
-            match event:
-                case GenericEvent():
-                    print(event.generic.model_dump())
-                case MessageEvent():
-                    console.print(str(event.message))
+        match event:
+            case GenericEvent():
+                err_console.print(event.generic.model_dump(), style="dim")
+            case MessagePartEvent():
+                if event.part.content_type.startswith("text/"):
+                    console.print(event.part.content, end="")
+            case MessageCompletedEvent():
+                if event.message.parts[-1].content_type.startswith("text/"):
+                    console.print()
 
-            #     case _:
-            #         for log in list(filter(bool, delta.get("logs", []))):
-            #             if text := log.get("message", None):
-            #                 if last_was_stream:
-            #                     err_console.print()
-            #                 err_console.print(f"Log: {text.strip()}", style="dim")
-            #                 last_was_stream = False
-            #         if text := delta.get("text", None):
-            #             console.print(text, end="")
-            #             last_was_stream = True
-            #         elif messages := delta.get("messages", None):
-            #             console.print(messages[-1]["content"], end="")
-            #             last_was_stream = True
-            #         elif not delta.get("logs", None):
-            #             last_was_stream = True
-            #             console.print(delta)
-            #     case RunAgentResult() as result:
-            #         output_dict: dict = result.model_dump().get("output", {})
-            #         if not last_was_stream:
-            #             if "text" in output_dict:
-            #                 console.print(output_dict["text"], end="")
-            #             elif messages := output_dict.get("messages", None):
-            #                 console.print(messages[-1]["content"], end="")
-            #             else:
-            #                 console.print(result.model_dump())
-            #         console.print()
-            #         if dump_files_path is not None and (files := output_dict.get("files", {})):
-            #             files: dict[str, str]
-            #             dump_files_path.mkdir(parents=True, exist_ok=True)
-            #
-            #             for file_path, content in files.items():
-            #                 full_path = dump_files_path / file_path
-            #                 with contextlib.suppress(ValueError):
-            #                     full_path.resolve().relative_to(dump_files_path.resolve())  # throws if outside folder
-            #                     full_path.parent.mkdir(parents=True, exist_ok=True)
-            #                     full_path.write_text(content)
-            #
-            #             console.print(f"📁 Saved {len(files)} files to {dump_files_path}.")
-            #         return result
-    raise RuntimeError(f"Agent {name} did not produce a result")
+    #         if dump_files_path is not None and (files := output_dict.get("files", {})):
+    #             files: dict[str, str]
+    #             dump_files_path.mkdir(parents=True, exist_ok=True)
+    #
+    #             for file_path, content in files.items():
+    #                 full_path = dump_files_path / file_path
+    #                 with contextlib.suppress(ValueError):
+    #                     full_path.resolve().relative_to(dump_files_path.resolve())  # throws if outside folder
+    #                     full_path.parent.mkdir(parents=True, exist_ok=True)
+    #                     full_path.write_text(content)
+    #
+    #             console.print(f"📁 Saved {len(files)} files to {dump_files_path}.")
+    #         return result
 
 
 class InteractiveCommand(abc.ABC):
@@ -490,20 +475,18 @@ async def run_agent(
                 f"Please use the agent according to the following examples and schema:"
             )
             err_console.print(_render_examples(agent))
-            err_console.print(Markdown("## Schema"), "")
-            err_console.print(_render_schema(agent.inputSchema))
+            # err_console.print(Markdown("## Schema"), "")
+            # err_console.print(_render_schema(agent.inputSchema))
             exit(1)
 
-        config_schema = _get_config_schema(agent.inputSchema)
+        # config_schema = _get_config_schema(agent.inputSchema)
 
         splash_screen = Group(
             Markdown(f"# {agent.name}  \n{agent.description}"),
             NewLine(),
         )
 
-        handle_input = _create_input_handler(
-            [ShowConfig(config_schema, config), Set(config_schema, config)], splash_screen=splash_screen
-        )
+        handle_input = _create_input_handler([], splash_screen=splash_screen)
 
         # console.print()
 
@@ -511,24 +494,20 @@ async def run_agent(
             messages = []
             console.print(f"{user_greeting}\n")
             input = handle_input()
-            while True:
-                console.print()
-                result = await _run_agent(name, input, dump_files_path=dump_files)
-                if not (new_messages := result.output.get("messages", None)):
-                    raise ValueError("Agent did not return messages in the output")
-                if all([message["role"] == "assistant" for message in new_messages]):
-                    messages.extend(new_messages)
-                else:
-                    messages = new_messages
-                console.print()
-                input = handle_input()
+            async with acp_client() as client, client.session() as session:
+                while True:
+                    console.print()
+                    result = await _run_agent(session, name, input, dump_files_path=dump_files)
+                    console.print()
+                    input = handle_input()
 
         elif ui_type == UiType.hands_off:
             user_greeting = ui.get("userGreeting", None) or "Enter your instructions."
             console.print(f"{user_greeting}\n")
             input = handle_input()
             console.print()
-            await _run_agent(name, input, dump_files_path=dump_files)
+            async with acp_client() as client:
+                await _run_agent(client, name, input, dump_files_path=dump_files)
         elif is_sequential_workflow:
             workflow_steps = _setup_sequential_workflow(agents_by_name, splash_screen=splash_screen)
             console.print()
@@ -536,22 +515,8 @@ async def run_agent(
             await _run_agent(name, input, dump_files_path=dump_files)
 
     else:
-        try:
-            input = check_json(input)
-        except BadParameter:
-            ...
-            # if ui_type == UiType.hands_off:
-            # elif ui_type == UiType.chat:
-            #     input = {"messages": [{"role": "user", "content": input}]}
-            # else:
-            #     err_console.print(
-            #         f"💥 [red][bold]Error[/red][/bold]: Agent {name} does not support plaintext input. See the following examples and agent schema:"
-            #     )
-            #     err_console.print(_render_examples(agent))
-            #     err_console.print(Markdown("## Schema"), "")
-            #     err_console.print(_render_schema(agent.inputSchema))
-            #     exit(1)
-        await _run_agent(name, input, dump_files_path=dump_files)
+        async with acp_client() as client:
+            await _run_agent(client, name, input, dump_files_path=dump_files)
 
 
 def render_enum(value: str, colors: dict[str, str]) -> str:
@@ -643,7 +608,7 @@ def _render_schema(schema: dict[str, Any] | None):
 
 
 def _render_examples(agent: Agent):
-    if not (examples := (agent.model_extra.get("examples", {}) or {}).get("cli", []) or []):
+    if not (examples := (agent.metadata.model_dump().get("examples", {}) or {}).get("cli", []) or []):
         return Text()
     md = "## Examples"
     for i, example in enumerate(examples):
