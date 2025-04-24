@@ -1,7 +1,9 @@
 # EXPERIMENTAL registry for development purposes
 providers:
   # Official
-  - location: ghcr.io/i-am-bee/beeai-platform/official/sequential-workflow:agents-v0.0.74
+    # This is my workaround for the broken sequential workflow agent for now. I want others to be able to test this
+    # TODO: Revert before merge
+  - location: ghcr.io/i-am-bee/beeai/official/sequential-workflow:agents-v0.0.72
   - location: ghcr.io/i-am-bee/beeai-platform/official/beeai-supervisor:agents-v0.0.74
   - location: ghcr.io/i-am-bee/beeai-platform/official/agent-docs-creator:agents-v0.0.74
   - location: ghcr.io/i-am-bee/beeai-platform/official/beeai-framework/chat:agents-v0.0.74
