@@ -19,7 +19,8 @@ from contextlib import suppress, AsyncExitStack
 from datetime import timedelta
 from enum import StrEnum
 from typing import Any, Optional, Self
-from acp_sdk.models import Agent
+
+from acp_sdk.models import Agent, Metadata
 from functools import cached_property
 
 import yaml
@@ -46,9 +47,13 @@ class EnvVar(BaseModel):
     required: bool = False
 
 
-class AgentManifest(Agent, extra="allow"):
+class AgentMetadata(Metadata):
     env: list[EnvVar] = Field(default_factory=list, description="For configuration -- passed to the process")
     ui: dict[str, Any] | None = None
+
+
+class AgentManifest(Agent, extra="allow"):
+    metadata: AgentMetadata = AgentMetadata()
 
 
 class ProviderManifest(BaseModel, extra="allow"):
@@ -102,7 +107,7 @@ class GithubProviderSource(BaseModel):
         return await container_backend.check_image(image=self.image_id)
 
     @inject
-    async def load_manifest(self, container_backend: IContainerBackend) -> AgentManifest:
+    async def load_manifest(self, container_backend: IContainerBackend) -> ProviderManifest:
         if not await self.is_installed():
             raise RuntimeError(
                 "Github provider does not support static agent discovery, agents need to be installed first."
