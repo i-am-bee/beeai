@@ -478,7 +478,7 @@ async def run_agent(
     ui_type = ui.get("type", None)
     is_sequential_workflow = agent.name in {"sequential-workflow"}
 
-    user_greeting = ui.get("userGreeting", None) or "How can I help you?"
+    user_greeting = ui.get("user_greeting", None) or "How can I help you?"
     config = {}
 
     if not input:
@@ -515,7 +515,7 @@ async def run_agent(
                     input = handle_input()
 
         elif ui_type == UiType.hands_off:
-            user_greeting = ui.get("userGreeting", None) or "Enter your instructions."
+            user_greeting = ui.get("user_greeting", None) or "Enter your instructions."
             console.print(f"{user_greeting}\n")
             input = handle_input()
             console.print()

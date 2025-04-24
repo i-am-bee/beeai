@@ -42,7 +42,7 @@ def to_framework_message(role: Role, content: str) -> beeai_framework.backend.Me
             )
         ],
         documentation=dedent(
-            """
+            """\
             The agent is an AI-powered conversational system designed to process user messages, maintain context,
             and generate intelligent responses. Built on the **BeeAI framework**, it leverages memory and external 
             tools to enhance interactions. It supports real-time web search, Wikipedia lookups, and weather updates,
@@ -74,7 +74,7 @@ def to_framework_message(role: Role, content: str) -> beeai_framework.backend.Me
             - **Agents with Long-Term Memory** – Maintains context across conversations for improved interactions.
             """
         ),
-        ui={"type": "chat", "userGreeting": "How can I help you?"},
+        ui={"type": "chat", "user_greeting": "How can I help you?"},
         examples={
             "cli": [
                 {
