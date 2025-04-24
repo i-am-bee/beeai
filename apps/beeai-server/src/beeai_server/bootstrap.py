@@ -30,6 +30,7 @@ import ssl
 import anyio
 import anyio.to_thread
 from acp.server.sse import SseServerTransport
+from beeai_server.adapters.database import Database
 from beeai_server.adapters.docker import DockerContainerBackend
 from beeai_server.adapters.filesystem import (
     FilesystemEnvVariableRepository,
@@ -42,6 +43,7 @@ from beeai_server.adapters.interface import (
     IProviderRepository,
     ITelemetryRepository,
 )
+from beeai_server.adapters.repositories.workflow import WorkflowRepository
 from beeai_server.configuration import Configuration, get_configuration
 from beeai_server.domain.collector.constants import TELEMETRY_BASE_CONFIG_PATH, TELEMETRY_BEEAI_CONFIG_PATH
 from beeai_server.domain.telemetry import TelemetryCollectorManager
@@ -205,6 +207,16 @@ async def bootstrap_dependencies():
     )
     di[IContainerBackend] = await resolve_container_runtime_cmd(di[Configuration])
     di[SseServerTransport] = SseServerTransport("/mcp/messages/")  # global SSE transport
+
+    if di[Configuration].database.is_postgres():
+        logger.info("Initializing PostgreSQL database connection...")
+        database = Database(di[Configuration])
+        await database.connect()
+        di[Database] = database
+
+        di[WorkflowRepository] = WorkflowRepository(database.async_session_factory)
+
+        logger.info("Database connection initialized")
 
     di[ProviderContainer] = ProviderContainer(
         env_repository=di[IEnvVariableRepository], autostart_providers=di[Configuration].autostart_providers
