@@ -26,6 +26,7 @@ import { ThemeProvider } from '#contexts/Theme/ThemeProvider.tsx';
 import { ToastProvider } from '#contexts/Toast/ToastProvider.tsx';
 import { ComposeLanding } from '#modules/compose/ComposeLanding.tsx';
 import { ComposeSequential } from '#modules/compose/ComposeSequential.tsx';
+import { WorkflowSelection } from '#modules/compose/WorkflowSelection.tsx';
 import { Agents } from '#pages/Agents.tsx';
 import { Agent } from '#pages/agents/Agent.tsx';
 import { NotFound } from '#pages/NotFound.tsx';
@@ -52,6 +53,7 @@ export function App() {
                       <Route path={routeDefinitions.agentDetail()} element={<Agent />} />
                       <Route path={routeDefinitions.agentRun()} element={<AgentRunPage />} />
                       <Route path={routeDefinitions.compose()} element={<ComposeLanding />} />
+                      <Route path={routeDefinitions.workflowSelection()} element={<WorkflowSelection />} />
                       <Route path={routeDefinitions.composeSequential()} element={<ComposeSequential />} />
                       <Route path={routeDefinitions.settings()} element={<Settings />} />
 
