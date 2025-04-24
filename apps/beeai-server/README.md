@@ -13,12 +13,6 @@ Database connection is configured via a `.env` file in the root of the `beeai-se
 ```
 # Database configuration
 DATABASE_URL=postgresql://beeai:iambee-dev@localhost:5432/beeai
-
-# PostgreSQL credentials
-POSTGRES_USER=beeai
-POSTGRES_PASSWORD=password
-POSTGRES_HOST=localhost
-POSTGRES_DB=beeai_workflows
 ```
 
 For Docker Compose environments, these values are automatically set via the environment variables in the docker-compose.yml file.
