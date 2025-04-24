@@ -45,7 +45,7 @@ export function useListWorkflows(params?: { skip?: number; limit?: number }) {
     }
 
     fetchWorkflows();
-  }, [params?.skip, params?.limit]);
+  }, [params?.skip, params?.limit, params]);
 
   return { data, isLoading, error };
 }
