@@ -50,6 +50,7 @@ class EnvVar(BaseModel):
 class Metadata(AcpMetadata):
     env: list[EnvVar] = Field(default_factory=list, description="For configuration -- passed to the process")
     ui: dict[str, Any] | None = None
+    provider: str | None = None
 
 
 class Agent(AcpAgent, extra="allow"):
