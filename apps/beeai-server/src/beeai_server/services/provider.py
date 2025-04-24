@@ -24,7 +24,6 @@ from kink import inject
 from pydantic import AnyUrl
 from starlette.status import HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND
 
-from acp_sdk import Agent
 from beeai_server.adapters.interface import IProviderRepository, IEnvVariableRepository
 from beeai_server.custom_types import ID
 from beeai_server.domain.model import (
@@ -33,6 +32,7 @@ from beeai_server.domain.model import (
     LoadedProviderStatus,
     DockerImageProviderLocation,
     UnmanagedProvider,
+    Agent,
 )
 from beeai_server.domain.provider import ProviderContainer, LoadedProvider
 from beeai_server.schema import ProviderWithStatus

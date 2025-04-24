@@ -26,13 +26,13 @@ import httpx
 from cachetools import TTLCache
 from httpx import Response
 
-from acp_sdk import Agent
 from beeai_server.adapters.interface import IEnvVariableRepository
 from beeai_server.domain.model import (
     BaseProvider,
     EnvVar,
     LoadedProviderStatus,
     LoadProviderErrorMessage,
+    Agent,
 )
 from beeai_server.utils.logs_container import LogsContainer
 from beeai_server.utils.utils import cancel_task, extract_messages

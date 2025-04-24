@@ -20,7 +20,7 @@ from datetime import timedelta
 from enum import StrEnum
 from typing import Any, Optional, Self
 
-from acp_sdk.models import Agent, Metadata
+from acp_sdk.models import Agent as AcpAgent, Metadata as AcpMetadata
 from functools import cached_property
 
 import yaml
@@ -47,17 +47,17 @@ class EnvVar(BaseModel):
     required: bool = False
 
 
-class AgentMetadata(Metadata):
+class Metadata(AcpMetadata):
     env: list[EnvVar] = Field(default_factory=list, description="For configuration -- passed to the process")
     ui: dict[str, Any] | None = None
 
 
-class AgentManifest(Agent, extra="allow"):
-    metadata: AgentMetadata = AgentMetadata()
+class Agent(AcpAgent, extra="allow"):
+    metadata: Metadata = Metadata()
 
 
 class ProviderManifest(BaseModel, extra="allow"):
-    agents: list[AgentManifest]
+    agents: list[Agent]
 
 
 logger = logging.getLogger(__name__)
@@ -134,7 +134,7 @@ class DockerImageProviderSource(BaseModel):
         return self.location
 
     @inject
-    async def load_manifest(self, container_backend: IContainerBackend) -> AgentManifest:
+    async def load_manifest(self, container_backend: IContainerBackend) -> Agent:
         if await self.is_installed():
             labels = await container_backend.extract_labels(image=self.image_id)
         else:
