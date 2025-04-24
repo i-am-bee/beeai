@@ -15,34 +15,35 @@
 from abc import ABC, abstractmethod
 from typing import Generic, List, Optional, TypeVar
 
-T = TypeVar('T')
-C = TypeVar('C')
-U = TypeVar('U')
+T = TypeVar("T")
+C = TypeVar("C")
+U = TypeVar("U")
+
 
 class Repository(ABC, Generic[T, C, U]):
     """Base repository interface for CRUD operations."""
-    
+
     @abstractmethod
     async def create(self, create_dto: C) -> T:
         """Create a new entity."""
         pass
-    
+
     @abstractmethod
     async def get_by_id(self, entity_id: str) -> Optional[T]:
         """Get an entity by ID."""
         pass
-    
+
     @abstractmethod
     async def list(self, skip: int = 0, limit: int = 100) -> List[T]:
         """List entities with pagination."""
         pass
-    
+
     @abstractmethod
     async def update(self, entity_id: str, update_dto: U) -> Optional[T]:
         """Update an entity."""
         pass
-    
+
     @abstractmethod
     async def delete(self, entity_id: str) -> bool:
         """Delete an entity."""
-        pass 
+        pass
