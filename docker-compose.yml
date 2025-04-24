@@ -1,0 +1,38 @@
+services:
+  beeai-server:
+    build: 
+      context: ./apps/beeai-server
+    profiles: ["backend", "all"]
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://beeai:iambee-dev@db:5432/beeai
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./apps/beeai-server:/app
+
+  db:
+    image: postgres:15
+    profiles: ["db", "backend", "all"]
+    environment:
+      - POSTGRES_USER=beeai
+      - POSTGRES_PASSWORD=iambee-dev
+      - POSTGRES_DB=beeai
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U beeai"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+networks:
+  default:
+    name: beeai-network
+
+volumes:
+  postgres_data: 
