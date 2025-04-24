@@ -13,13 +13,14 @@
 # limitations under the License.
 
 import logging
-from typing import AsyncGenerator, Optional
+from typing import AsyncGenerator
 
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 
 from beeai_server.configuration import Configuration
 
 logger = logging.getLogger(__name__)
+
 
 class Database:
     def __init__(self, configuration: Configuration):
@@ -33,12 +34,10 @@ class Database:
         if self.configuration.database.is_postgres():
             logger.info("Connecting to PostgreSQL database...")
             # Use the database URL from the DatabaseConfig
-            db_url = self.configuration.database.database_url.replace('postgresql://', 'postgresql+asyncpg://')
+            db_url = self.configuration.database.database_url.replace("postgresql://", "postgresql+asyncpg://")
             self.engine = create_async_engine(db_url, echo=True)
-            self.async_session_factory = async_sessionmaker(
-                self.engine, class_=AsyncSession, expire_on_commit=False
-            )
-            
+            self.async_session_factory = async_sessionmaker(self.engine, class_=AsyncSession, expire_on_commit=False)
+
             # We don't create tables here - this is handled by Alembic migrations
             logger.info("Successfully connected to PostgreSQL database.")
         else:
@@ -48,12 +47,12 @@ class Database:
         """Get a database session."""
         if not self.async_session_factory:
             raise RuntimeError("Database is not connected. Call connect() first.")
-        
+
         async with self.async_session_factory() as session:
             yield session
-            
+
     async def disconnect(self) -> None:
         """Disconnect from the database."""
         if self.engine:
             await self.engine.dispose()
-            logger.info("Disconnected from database.") 
+            logger.info("Disconnected from database.")

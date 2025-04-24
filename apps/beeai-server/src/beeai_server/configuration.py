@@ -39,6 +39,14 @@ class LoggingConfiguration(BaseModel):
         return v if isinstance(v, int) else logging.getLevelNamesMapping()[v]
 
 
+class DatabaseConfig(BaseModel):
+    database_url: str = "postgresql://beeai:iambee-dev@localhost:5432/beeai"
+
+    def is_postgres(self) -> bool:
+        """Check if this is a PostgreSQL database."""
+        return self.database_url.startswith("postgresql://")
+
+
 class OCIRegistryConfiguration(BaseModel, extra="allow"):
     username: str | None = None
     password: str | None = None
@@ -61,11 +69,17 @@ class AgentRegistryConfiguration(BaseModel):
 
 
 class Configuration(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", env_nested_delimiter="__")
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        env_nested_delimiter="__",
+        extra="allow",  # Allow extra fields from environment variables
+    )
 
     logging: LoggingConfiguration = LoggingConfiguration()
     agent_registry: AgentRegistryConfiguration = AgentRegistryConfiguration()
     oci_registry: dict[str, OCIRegistryConfiguration] = Field(default_factory=dict)
+    database_url: str = Field(default="postgresql://beeai:iambee-dev@localhost:5432/beeai")
 
     provider_config_path: Path = Path.home() / ".beeai" / "providers.yaml"
     telemetry_config_dir: Path = Path.home() / ".beeai" / "telemetry"
@@ -76,6 +90,10 @@ class Configuration(BaseSettings):
     docker_host: str | None = None
     force_lima: bool = False
     autostart_providers: bool = False
+
+    @property
+    def database(self) -> DatabaseConfig:
+        return DatabaseConfig(database_url=self.database_url)
 
     @model_validator(mode="after")
     def _oci_registry_defaultdict(self):
