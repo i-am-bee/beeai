@@ -44,7 +44,7 @@ run = "uv run python -m ruff format --quiet"
 sources = ["src/**/*.py"]
 outputs = { auto = true }
 
-# run
+# run
 
 ["beeai-server:run"]
 depends = ["setup:uv", "beeai-ui:build"]
@@ -65,3 +65,31 @@ outputs = ["dist/**/*"]
 ["beeai-server:clean"]
 dir = "{{config_root}}/apps/beeai-server"
 run = "rm -rf ./dist"
+
+# database migrations
+
+["beeai-server:db:migrate"]
+depends = ["setup:uv"]
+dir = "{{config_root}}/apps/beeai-server"
+run = "uv run python -m alembic upgrade head"
+sources = ["migrations/**/*", "src/**/*.py"]
+outputs = { auto = true }
+
+["beeai-server:db:generate"]
+depends = ["setup:uv"]
+dir = "{{config_root}}/apps/beeai-server"
+run = "uv run python -m alembic revision --autogenerate -m '{{ args.message }}'"
+sources = ["migrations/**/*", "src/**/*.py"]
+outputs = { auto = true }
+
+["beeai-server:db:downgrade"]
+depends = ["setup:uv"]
+dir = "{{config_root}}/apps/beeai-server"
+run = "uv run python -m alembic downgrade {{ args.revision || '-1' }}"
+sources = ["migrations/**/*", "src/**/*.py"]
+outputs = { auto = true }
+
+["beeai-server:db:history"]
+depends = ["setup:uv"]
+dir = "{{config_root}}/apps/beeai-server"
+run = "uv run python -m alembic history"
