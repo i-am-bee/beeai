@@ -30,7 +30,7 @@ interface Props {
 }
 
 export function BeeBadge({ agent, size }: Props) {
-  const { framework } = agent;
+  const { framework } = agent.metadata;
   return (
     <>
       {framework === BEE_AI_FRAMEWORK_TAG && (

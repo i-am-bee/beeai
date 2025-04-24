@@ -30,7 +30,7 @@ interface Props {
 }
 
 export function AgentStatusIndicator({ agent }: Props) {
-  const { provider } = agent;
+  const { provider } = agent.metadata;
   const { isNotInstalled, isInstalling, isInstallError } = useAgentStatus({ provider });
   const { mutate: installProvider } = useInstallProvider();
 

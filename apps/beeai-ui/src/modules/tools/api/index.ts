@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import type { Client as MCPClient } from '@i-am-bee/acp-sdk/client/index';
-import { createContext } from 'react';
+import type { Tool } from './types';
 
-export const MCPClientContext = createContext<MCPClient | null>(null);
+// TODO: The API does not yet support tools, so this is just to suppress TypeScript errors.
+export async function listTools() {
+  return {
+    tools: [{ name: 'search' }, { name: 'wikipedia' }, { name: 'weather' }] as Tool[],
+  };
+}

@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-export const ACP_CLIENT_SERVER_URL = process.env.ACP_CLIENT_SERVER_URL;
-
 export const DOCKER_MANIFEST_LABEL_NAME = 'beeai.dev.agent.yaml';
 
 export const AGENT_REGISTRY_URL =

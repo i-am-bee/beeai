@@ -50,10 +50,6 @@ export function StepResult({ step }: Props) {
             title={
               <div className={classes.result}>
                 <div>{isFinished ? 'Output' : null}</div>
-                {/* TODO: hiding temporarily
-          <div className={classes.loading}>
-            <ElapsedTime stats={stats} className={classes.elapsed} />
-          </div> */}
               </div>
             }
           >

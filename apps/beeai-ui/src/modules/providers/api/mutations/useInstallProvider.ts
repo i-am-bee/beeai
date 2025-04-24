@@ -31,7 +31,11 @@ export function useInstallProvider() {
 
   const mutation = useMutation({
     mutationFn: ({ body }: { body: InstallProviderBody }) => {
-      setId(body.id);
+      const { id } = body;
+
+      if (id) {
+        setId(id);
+      }
 
       return installProvider({ body });
     },

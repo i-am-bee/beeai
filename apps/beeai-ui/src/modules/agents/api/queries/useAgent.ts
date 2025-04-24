@@ -16,8 +16,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import { useMCPClient } from '#contexts/MCPClient/index.ts';
-
+import { listAgents } from '..';
 import { agentKeys } from '../keys';
 import type { Agent } from '../types';
 
@@ -26,16 +25,13 @@ interface Props {
 }
 
 export function useAgent({ name }: Props) {
-  const client = useMCPClient();
-
   return useQuery({
     queryKey: agentKeys.list(),
-    queryFn: () => client!.listAgents(),
-    enabled: Boolean(client),
+    queryFn: listAgents,
     select: (data) => {
       const agent = data.agents.find((item) => name === item.name);
 
-      return agent ? (agent as Agent) : undefined;
+      return agent as Agent;
     },
   });
 }

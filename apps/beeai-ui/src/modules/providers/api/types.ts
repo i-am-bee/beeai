@@ -20,6 +20,8 @@ export type ProvidersList = ApiResponse<'/api/v1/provider'>;
 
 export type Provider = ProvidersList['items'][number];
 
+export type ProviderManifest = Provider['manifest'];
+
 export type RegisterManagedProviderBody = ApiRequestBody<'/api/v1/provider/register/managed'>;
 
 export type RegisterManagedProviderResponse = ApiResponse<'/api/v1/provider/register/managed', 'post'>;

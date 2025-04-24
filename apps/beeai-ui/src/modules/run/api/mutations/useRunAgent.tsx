@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { AgentRunProgressNotificationSchema } from '@i-am-bee/acp-sdk/types';
 import { useMutation } from '@tanstack/react-query';
 import type z from 'zod';
 import type { ZodLiteral, ZodObject } from 'zod';
 
-import { useCreateMCPClient } from '#api/mcp-client/useCreateMCPClient.ts';
 import type { QueryMetadata } from '#contexts/QueryProvider/types.ts';
 import type { Agent } from '#modules/agents/api/types.ts';
 
@@ -46,34 +44,26 @@ export function useRunAgent<
     method: ZodLiteral<string>;
   }>,
 >({ notifications, queryMetadata }: Props<NotificationsSchema>) {
-  const { createClient, closeClient } = useCreateMCPClient();
-
   const { mutateAsync, isPending } = useMutation({
     mutationFn: async ({ agent, input, abortController }: RunMutationProps<Input>) => {
-      const client = await createClient({ reconnectOnError: false });
-      if (!client) throw new Error('Connecting to MCP server failed.');
-
-      if (notifications) {
-        client.setNotificationHandler(
-          AgentRunProgressNotificationSchema as unknown as NotificationsSchema,
-          notifications.handler,
-        );
-      }
-
-      return client.runAgent(
-        {
-          _meta: { progressToken: notifications ? crypto.randomUUID() : undefined },
-          name: agent.name,
-          input,
-        },
-        {
-          timeout: 10 * 60 * 1000, // 10 minutes
-          signal: abortController?.signal,
-        },
-      );
-    },
-    onSettled: () => {
-      closeClient();
+      // TODO
+      // if (notifications) {
+      //   client.setNotificationHandler(
+      //     AgentRunProgressNotificationSchema as unknown as NotificationsSchema,
+      //     notifications.handler,
+      //   );
+      // }
+      // return client.runAgent(
+      //   {
+      //     _meta: { progressToken: notifications ? crypto.randomUUID() : undefined },
+      //     name: agent.name,
+      //     input,
+      //   },
+      //   {
+      //     timeout: 10 * 60 * 1000, // 10 minutes
+      //     signal: abortController?.signal,
+      //   },
+      // );
     },
     meta: queryMetadata ?? {
       errorToast: {

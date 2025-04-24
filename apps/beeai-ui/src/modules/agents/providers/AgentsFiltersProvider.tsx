@@ -22,7 +22,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 export interface AgentsFiltersParams {
   search: string;
   frameworks: string[];
-  languages: string[];
+  programmingLanguages: string[];
   licenses: string[];
 }
 
@@ -32,7 +32,7 @@ export function AgentsFiltersProvider({ children }: PropsWithChildren) {
     defaultValues: {
       search: '',
       frameworks: [],
-      languages: [],
+      programmingLanguages: [],
       licenses: [],
     },
   });

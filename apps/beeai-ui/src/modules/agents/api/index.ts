@@ -15,13 +15,10 @@
  */
 
 import { api } from '#api/index.ts';
+import { ensureData } from '#api/utils.ts';
 
 export async function listAgents() {
-  const response = await api.GET('/api/v1/agent');
+  const response = await api.GET('/api/v1/acp/agents');
 
-  if (response.error != null) {
-    throw new Error('Failed to list agents.');
-  }
-
-  return response.data;
+  return ensureData({ response, errorMessage: 'Failed to list agents.' });
 }

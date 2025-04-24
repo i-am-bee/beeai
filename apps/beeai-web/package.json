@@ -20,13 +20,10 @@
   },
   "dependencies": {
     "@bprogress/next": "^3.2.10",
-    "@i-am-bee/acp-sdk": "workspace:*",
-    "@i-am-bee/beeai-sdk": "workspace:*",
     "@i-am-bee/beeai-ui": "workspace:*",
     "clsx": "^2.1.1",
     "next": "15.2.4",
     "server-only": "^0.0.1",
-    "undici": "^7.5.0",
     "yaml": "^2.7.1"
   },
   "devDependencies": {

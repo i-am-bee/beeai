@@ -36,5 +36,5 @@ export function stripProviderSourcePrefix(id: string) {
 }
 
 export const groupAgentsByProvider = (agents: Agent[] | undefined) => {
-  return groupBy(agents, (agent) => agent.provider);
+  return groupBy(agents, (agent) => agent.metadata.provider);
 };

@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-.body {
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-05;
-}
+import type { FetchResponse } from 'openapi-fetch';
+import type { MediaType } from 'openapi-typescript-helpers';
 
-.description {
-  font-size: rem(14px);
-}
+export function ensureData<T extends Record<string | number, unknown>, O, M extends MediaType>({
+  response,
+  errorMessage = 'API request failed.',
+}: {
+  response: FetchResponse<T, O, M>;
+  errorMessage?: string;
+}) {
+  if ('error' in response) {
+    throw new Error(errorMessage);
+  }
 
-.runAgent {
-  margin-block-start: $spacing-08;
-  display: grid;
-  grid-template-columns: 1fr max-content;
-  gap: $spacing-04;
+  return response.data;
 }

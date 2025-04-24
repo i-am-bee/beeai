@@ -22,7 +22,7 @@ import { envKeys } from '../keys';
 export function useListEnvs() {
   const query = useQuery({
     queryKey: envKeys.list(),
-    queryFn: () => getEnvs(),
+    queryFn: getEnvs,
   });
 
   return query;

@@ -44,8 +44,8 @@ interface Props {
 }
 
 export function AgentDetail({ agent, buttons }: Props) {
-  const { name, description, fullDescription, examples } = agent;
-  // TODO: This will probably need to be modified through a different metadata structure
+  const { name, description, metadata } = agent;
+  const { examples, documentation } = metadata;
   const exampleCommand = examples?.cli?.at(0)?.command ?? examples?.command;
   return (
     <div className={classes.root}>
@@ -56,7 +56,7 @@ export function AgentDetail({ agent, buttons }: Props) {
       </motion.header>
 
       <motion.div {...fadeInPropsWithMarginShift({ start: { from: spacing[3] } })}>
-        <AgentMetadata agent={agent} showGithub className={classes.metadata} />
+        <AgentMetadata agent={agent} showSourceCodeLink className={classes.metadata} />
 
         {description && <MarkdownContent className={classes.description}>{description}</MarkdownContent>}
 
@@ -72,7 +72,7 @@ export function AgentDetail({ agent, buttons }: Props) {
         {buttons}
       </motion.div>
 
-      {(exampleCommand || fullDescription) && (
+      {(exampleCommand || documentation) && (
         <motion.hr
           {...fadeInPropsWithMarginShift({
             start: { from: spacing[7], to: spacing[6] },
@@ -94,10 +94,10 @@ export function AgentDetail({ agent, buttons }: Props) {
         </motion.div>
       )}
 
-      {fullDescription && (
+      {documentation && (
         <motion.div {...fadeInPropsWithMarginShift()}>
           <AgentDetailSection title="Description" titleSpacing="large">
-            <MarkdownContent className={classes.fullDescription}>{fullDescription}</MarkdownContent>
+            <MarkdownContent className={classes.documentation}>{documentation}</MarkdownContent>
           </AgentDetailSection>
         </motion.div>
       )}

@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-import { UiType } from './types';
+import { UiType } from '#modules/agents/api/types.ts';
 
 export const SupportedUis: UiType[] = [UiType.Chat, UiType.HandsOff];

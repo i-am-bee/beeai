@@ -16,7 +16,6 @@
 
 import { Tag } from '@carbon/react';
 import type { TagBaseProps } from '@carbon/react/lib/components/Tag/Tag';
-import type { ReactElement } from 'react';
 
 import { TagsList } from '#components/TagsList/TagsList.tsx';
 import { isNotNull } from '#utils/helpers.ts';
@@ -30,9 +29,8 @@ interface Props {
 }
 
 export function AgentTags({ agent, className }: Props) {
-  const { framework } = agent;
-
-  const tags: ReactElement[] = [framework ? <AgentTag key={framework} name={framework} /> : null].filter(isNotNull);
+  const { framework } = agent.metadata;
+  const tags = [framework ? <AgentTag key={framework} name={framework} /> : null].filter(isNotNull);
 
   return <TagsList tags={tags} className={className} />;
 }

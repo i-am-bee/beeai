@@ -16,25 +16,20 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import { useMCPClient } from '#contexts/MCPClient/index.ts';
-
+import { listAgents } from '..';
 import { agentKeys } from '../keys';
-import type { ListAgentsParams } from '../types';
 
 interface Props {
-  provider?: string;
-  params?: ListAgentsParams;
+  provider: string | undefined;
   enabled?: boolean;
 }
 
-export function useListProviderAgents({ provider, params, enabled = true }: Props) {
-  const client = useMCPClient();
-
+export function useListProviderAgents({ provider, enabled = true }: Props) {
   const query = useQuery({
-    queryKey: agentKeys.list({ params, provider }),
-    queryFn: () => client!.listAgents(params),
-    enabled: Boolean(enabled && provider && client),
-    select: (data) => data.agents.filter((agent) => agent.provider === provider),
+    queryKey: agentKeys.list({ provider }),
+    queryFn: listAgents,
+    enabled: Boolean(enabled && provider),
+    select: (data) => data.agents.filter((agent) => agent.metadata.provider === provider),
   });
 
   return query;

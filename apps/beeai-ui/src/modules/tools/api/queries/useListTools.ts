@@ -16,22 +16,13 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import { useMCPClient } from '#contexts/MCPClient/index.ts';
-
+import { listTools } from '..';
 import { toolKeys } from '../keys';
-import type { ListToolsParams } from '../types';
 
-interface Props {
-  params?: ListToolsParams;
-}
-
-export function useListTools({ params }: Props = {}) {
-  const client = useMCPClient();
-
+export function useListTools() {
   const query = useQuery({
-    queryKey: toolKeys.list(params),
-    queryFn: () => client!.listTools(params),
-    enabled: Boolean(client),
+    queryKey: toolKeys.list(),
+    queryFn: listTools,
   });
 
   return query;

@@ -36,7 +36,7 @@ import { useModal } from '#contexts/Modal/index.tsx';
 import { useTableSearch } from '#hooks/useTableSearch.ts';
 import { useListAgents } from '#modules/agents/api/queries/useListAgents.ts';
 import { ImportAgentsModal } from '#modules/agents/components/ImportAgentsModal.tsx';
-import { getAgentsLanguages } from '#modules/agents/utils.ts';
+import { getAgentsProgrammingLanguages } from '#modules/agents/utils.ts';
 
 import { useDeleteProvider } from '../api/mutations/useDeleteProvider';
 import { useListProviders } from '../api/queries/useListProviders';
@@ -59,7 +59,7 @@ export function ProvidersView() {
               id,
               url: stripProviderSourcePrefix(id),
               source,
-              runtime: getAgentsLanguages(agents).join(', '),
+              runtime: getAgentsProgrammingLanguages(agents).join(', '),
               agents: agents?.length ?? 0,
               actions: (
                 <TableViewActions>

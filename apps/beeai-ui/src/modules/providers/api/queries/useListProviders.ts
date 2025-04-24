@@ -22,7 +22,7 @@ import { providerKeys } from '../keys';
 export function useListProviders() {
   const query = useQuery({
     queryKey: providerKeys.list(),
-    queryFn: () => getProviders(),
+    queryFn: getProviders,
   });
 
   return query;

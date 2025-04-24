@@ -19,30 +19,38 @@ import { SkeletonText } from '@carbon/react';
 import clsx from 'clsx';
 
 import type { Agent } from '../api/types';
+import { getAgentSourceCodeUrl, getAgentStatusMetadata } from '../utils';
 import classes from './AgentMetadata.module.scss';
 
 interface Props {
   agent: Agent;
   className?: string;
-  showGithub?: boolean;
+  showSourceCodeLink?: boolean;
 }
 
-export function AgentMetadata({ agent, className, showGithub }: Props) {
-  const { avgRunTimeSeconds, avgRunTokens, license, githubUrl } = agent;
+export function AgentMetadata({ agent, className, showSourceCodeLink }: Props) {
+  const { license } = agent.metadata;
+  const sourceCodeUrl = getAgentSourceCodeUrl(agent);
+  const { avg_run_time_seconds, avg_run_tokens } = getAgentStatusMetadata({
+    agent,
+    keys: ['avg_run_time_seconds', 'avg_run_tokens'],
+  });
 
   return (
     <ul className={clsx(classes.root, className)}>
-      {avgRunTimeSeconds && (
+      {avg_run_time_seconds && (
         <li className={classes.item}>
           <Time />
-          {avgRunTimeSeconds}s/run (avg)
+          {avg_run_time_seconds}s/run (avg)
         </li>
       )}
-      {avgRunTokens && <li className={classes.item}>{avgRunTokens} tokens/run (avg)</li>}
+      {avg_run_tokens && <li className={classes.item}>{avg_run_tokens} tokens/run (avg)</li>}
+
       {license && <li className={classes.item}>{license}</li>}
-      {showGithub && githubUrl && (
+
+      {showSourceCodeLink && sourceCodeUrl && (
         <li className={classes.item}>
-          <GithubLink githubUrl={githubUrl} />
+          <SourceCodeLink url={sourceCodeUrl} />
         </li>
       )}
     </ul>
@@ -57,9 +65,15 @@ AgentMetadata.Skeleton = function AgentMetadataSkeleton({ className }: SkeletonP
   return <SkeletonText className={clsx(classes.root, className)} width="33%" />;
 };
 
-function GithubLink({ githubUrl }: { githubUrl: string }) {
+function SourceCodeLink({ url }: { url: string }) {
   return (
-    <a target="_blank" rel="noreferrer" href={githubUrl} className={classes.githubLink} aria-label="Open on Github">
+    <a
+      target="_blank"
+      rel="noreferrer"
+      href={url}
+      className={classes.sourceCodeLink}
+      aria-label="View source code on Github"
+    >
       <LogoGithub size={16} />
 
       <span>View code</span>

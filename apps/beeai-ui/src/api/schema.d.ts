@@ -20,7 +20,7 @@
  */
 
 export interface paths {
-  '/api/v1/agent': {
+  '/api/v1/acp/agents': {
     parameters: {
       query?: never;
       header?: never;
@@ -28,7 +28,7 @@ export interface paths {
       cookie?: never;
     };
     /** List Agents */
-    get: operations['list_agents_api_v1_agent_get'];
+    get: operations['list_agents_api_v1_acp_agents_get'];
     put?: never;
     post?: never;
     delete?: never;
@@ -37,15 +37,15 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/v1/agent/{name}': {
+  '/api/v1/acp/agents/{name}': {
     parameters: {
       query?: never;
       header?: never;
       path?: never;
       cookie?: never;
     };
-    /** Get Agent Detail */
-    get: operations['get_agent_detail_api_v1_agent__name__get'];
+    /** Read Agent */
+    get: operations['read_agent_api_v1_acp_agents__name__get'];
     put?: never;
     post?: never;
     delete?: never;
@@ -54,7 +54,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/v1/agent/{name}/run': {
+  '/api/v1/acp/runs': {
     parameters: {
       query?: never;
       header?: never;
@@ -63,8 +63,43 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    /** Run Agent */
-    post: operations['run_agent_api_v1_agent__name__run_post'];
+    /** Create Run */
+    post: operations['create_run_api_v1_acp_runs_post'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/acp/runs/{run_id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Read Run */
+    get: operations['read_run_api_v1_acp_runs__run_id__get'];
+    put?: never;
+    /** Resume Run */
+    post: operations['resume_run_api_v1_acp_runs__run_id__post'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/acp/runs/{run_id}/cancel': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Cancel Run */
+    post: operations['cancel_run_api_v1_acp_runs__run_id__cancel_post'];
     delete?: never;
     options?: never;
     head?: never;
@@ -250,47 +285,75 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
   schemas: {
-    /**
-     * Agent
-     * @description Definition for an agent.
-     */
+    /** Agent */
     Agent: {
       /** Description */
       description?: string | null;
-      /** Inputschema */
-      inputSchema: Record<string, never>;
+      /** @default {
+       *       "env": []
+       *     } */
+      metadata: components['schemas']['Metadata'];
       /** Name */
       name: string;
-      /** Outputschema */
-      outputSchema: Record<string, never>;
     } & {
       [key: string]: unknown;
     };
-    /** AgentManifest */
-    AgentManifest: {
-      /**
-       * Env
-       * @description For configuration -- passed to the process
-       */
-      env?: components['schemas']['EnvVar'][];
-      /**
-       * Manifestversion
-       * @default 1
-       * @constant
-       */
-      manifestVersion: 1;
+    /** AgentReadResponse */
+    AgentReadResponse: {
+      /** Description */
+      description?: string | null;
+      /** @default {
+       *       "env": []
+       *     } */
+      metadata: components['schemas']['Metadata'];
       /** Name */
       name: string;
-      /** Ui */
-      ui?: Record<string, never> | null;
     } & {
       [key: string]: unknown;
+    };
+    /** AgentsListResponse */
+    AgentsListResponse: {
+      /** Agents */
+      agents: components['schemas']['Agent'][];
+    };
+    /** AnyModel */
+    AnyModel: {
+      [key: string]: unknown;
+    };
+    /** Author */
+    Author: {
+      /** Email */
+      email?: string | null;
+      /** Name */
+      name: string;
+      /** Url */
+      url?: string | null;
+    };
+    /** Contributor */
+    Contributor: {
+      /** Email */
+      email?: string | null;
+      /** Name */
+      name: string;
+      /** Url */
+      url?: string | null;
     };
     /** CreateManagedProviderRequest */
     CreateManagedProviderRequest: {
       /** Location */
       location: components['schemas']['GithubProviderLocation'] | components['schemas']['DockerImageProviderLocation'];
     };
+    /** Dependency */
+    Dependency: {
+      /** Name */
+      name: string;
+      type: components['schemas']['DependencyType'];
+    };
+    /**
+     * DependencyType
+     * @enum {string}
+     */
+    DependencyType: 'agent' | 'tool' | 'model';
     /** DockerImageID */
     DockerImageID: string;
     /** DockerImageProviderLocation */
@@ -307,10 +370,26 @@ export interface components {
        */
       required: boolean;
     };
+    /** Error */
+    Error: {
+      code: components['schemas']['ErrorCode'];
+      /** Message */
+      message: string;
+    };
+    /**
+     * ErrorCode
+     * @enum {string}
+     */
+    ErrorCode: 'server_error' | 'invalid_input' | 'not_found';
     /** GithubProviderLocation */
     GithubProviderLocation: components['schemas']['GithubUrl'];
     /** GithubUrl */
     GithubUrl: string;
+    /**
+     * GithubVersionType
+     * @enum {string}
+     */
+    GithubVersionType: 'head' | 'tag';
     /** HTTPValidationError */
     HTTPValidationError: {
       /** Detail */
@@ -319,8 +398,27 @@ export interface components {
     /** InstallProviderRequest */
     InstallProviderRequest: {
       /** Id */
-      id: string;
+      id?: string | null;
+      /** Location */
+      location?:
+        | components['schemas']['GithubProviderLocation']
+        | components['schemas']['DockerImageProviderLocation']
+        | null;
     };
+    /** Link */
+    Link: {
+      type: components['schemas']['LinkType'];
+      /**
+       * Url
+       * Format: uri
+       */
+      url: string;
+    };
+    /**
+     * LinkType
+     * @enum {string}
+     */
+    LinkType: 'source-code' | 'container-image' | 'homepage' | 'documentation';
     /** ListEnvSchema */
     ListEnvSchema: {
       /** Env */
@@ -338,12 +436,95 @@ export interface components {
       /** Message */
       message: string;
     };
-    /** PaginatedResponse[Agent] */
-    PaginatedResponse_Agent_: {
-      /** Items */
-      items: components['schemas']['Agent'][];
-      /** Total Count */
-      total_count: number;
+    /** Message */
+    Message: {
+      /** Parts */
+      parts: components['schemas']['MessagePart'][];
+    };
+    /** MessageAwaitRequest */
+    MessageAwaitRequest: {
+      message: components['schemas']['Message'];
+      /**
+       * Type
+       * @default message
+       * @constant
+       */
+      type: 'message';
+    };
+    /** MessageAwaitResume */
+    MessageAwaitResume: {
+      message: components['schemas']['Message'];
+      /**
+       * Type
+       * @default message
+       * @constant
+       */
+      type: 'message';
+    };
+    /** MessagePart */
+    MessagePart: {
+      /** Content */
+      content?: string | null;
+      /**
+       * Content Encoding
+       * @default plain
+       */
+      content_encoding: ('plain' | 'base64') | null;
+      /**
+       * Content Type
+       * @default text/plain
+       */
+      content_type: string | null;
+      /** Content Url */
+      content_url?: string | null;
+      /** Name */
+      name?: string | null;
+    } & {
+      [key: string]: unknown;
+    };
+    /** Metadata */
+    Metadata: {
+      annotations?: components['schemas']['AnyModel'] | null;
+      author?: components['schemas']['Author'] | null;
+      /** Contributors */
+      contributors?: components['schemas']['Contributor'][] | null;
+      /** Created At */
+      created_at?: string | null;
+      /** Dependencies */
+      dependencies?: components['schemas']['Dependency'][] | null;
+      /** Documentation */
+      documentation?: string | null;
+      /**
+       * Env
+       * @description For configuration -- passed to the process
+       */
+      env?: components['schemas']['EnvVar'][];
+      /** Framework */
+      framework?: string | null;
+      /** License */
+      license?: string | null;
+      /** Links */
+      links?: components['schemas']['Link'][] | null;
+      /** Natural Languages */
+      natural_languages?: string[] | null;
+      /** Programming Language */
+      programming_language?: string | null;
+      /** Provider */
+      provider?: string | null;
+      /** Recommended Models */
+      recommended_models?: string[] | null;
+      /** Tags */
+      tags?: string[] | null;
+      /** Ui */
+      ui?: {
+        [key: string]: unknown;
+      } | null;
+      /** Updated At */
+      updated_at?: string | null;
+      /** Use Cases */
+      use_cases?: string[] | null;
+    } & {
+      [key: string]: unknown;
     };
     /** PaginatedResponse[ProviderWithStatus] */
     PaginatedResponse_ProviderWithStatus_: {
@@ -352,8 +533,28 @@ export interface components {
       /** Total Count */
       total_count: number;
     };
-    /** ProviderRequest */
-    ProviderRequest: {
+    /** ProviderManifest */
+    ProviderManifest: {
+      /** Agents */
+      agents: components['schemas']['Agent'][];
+    } & {
+      [key: string]: unknown;
+    };
+    /** ProviderWithStatus */
+    ProviderWithStatus: {
+      /** Id */
+      id: string;
+      last_error?: components['schemas']['LoadProviderErrorMessage'] | null;
+      manifest: components['schemas']['ProviderManifest'];
+      /** Missing Configuration */
+      missing_configuration?: components['schemas']['EnvVar'][];
+      registry?: components['schemas']['ResolvedGithubUrl'] | null;
+      status: components['schemas']['LoadedProviderStatus'];
+    } & {
+      [key: string]: unknown;
+    };
+    /** RegisterUnmanagedProviderRequest */
+    RegisterUnmanagedProviderRequest: {
       /** Id */
       id: string;
       /**
@@ -361,22 +562,131 @@ export interface components {
        * Format: uri
        */
       location: string;
-      manifest: components['schemas']['AgentManifest'];
     };
-    /** ProviderWithStatus */
-    ProviderWithStatus: {
-      /** Id */
-      id: string;
-      last_error?: components['schemas']['LoadProviderErrorMessage'] | null;
-      manifest: components['schemas']['AgentManifest'];
-      /** Missing Configuration */
-      missing_configuration?: components['schemas']['EnvVar'][];
-      status: components['schemas']['LoadedProviderStatus'];
-    } & {
-      [key: string]: unknown;
+    /** ResolvedGithubUrl */
+    ResolvedGithubUrl: {
+      /** Commit Hash */
+      commit_hash: string;
+      /** Org */
+      org: string;
+      /** Path */
+      path?: string | null;
+      /** Repo */
+      repo: string;
+      /** Version */
+      version: string;
+      version_type: components['schemas']['GithubVersionType'];
     };
-    /** RootModel[dict[str, Any]] */
-    RootModel_dict_str__Any__: Record<string, never>;
+    /** RunCancelResponse */
+    RunCancelResponse: {
+      /** Agent Name */
+      agent_name: string;
+      await_request?: components['schemas']['MessageAwaitRequest'] | null;
+      error?: components['schemas']['Error'] | null;
+      /**
+       * Outputs
+       * @default []
+       */
+      outputs: components['schemas']['Message'][];
+      /**
+       * Run Id
+       * Format: uuid
+       */
+      run_id?: string;
+      /** Session Id */
+      session_id?: string | null;
+      /** @default created */
+      status: components['schemas']['RunStatus'];
+    };
+    /** RunCreateRequest */
+    RunCreateRequest: {
+      /** Agent Name */
+      agent_name: string;
+      /** Inputs */
+      inputs: components['schemas']['Message'][];
+      /** @default sync */
+      mode: components['schemas']['RunMode'];
+      /** Session Id */
+      session_id?: string | null;
+    };
+    /** RunCreateResponse */
+    RunCreateResponse: {
+      /** Agent Name */
+      agent_name: string;
+      await_request?: components['schemas']['MessageAwaitRequest'] | null;
+      error?: components['schemas']['Error'] | null;
+      /**
+       * Outputs
+       * @default []
+       */
+      outputs: components['schemas']['Message'][];
+      /**
+       * Run Id
+       * Format: uuid
+       */
+      run_id?: string;
+      /** Session Id */
+      session_id?: string | null;
+      /** @default created */
+      status: components['schemas']['RunStatus'];
+    };
+    /**
+     * RunMode
+     * @enum {string}
+     */
+    RunMode: 'sync' | 'async' | 'stream';
+    /** RunReadResponse */
+    RunReadResponse: {
+      /** Agent Name */
+      agent_name: string;
+      await_request?: components['schemas']['MessageAwaitRequest'] | null;
+      error?: components['schemas']['Error'] | null;
+      /**
+       * Outputs
+       * @default []
+       */
+      outputs: components['schemas']['Message'][];
+      /**
+       * Run Id
+       * Format: uuid
+       */
+      run_id?: string;
+      /** Session Id */
+      session_id?: string | null;
+      /** @default created */
+      status: components['schemas']['RunStatus'];
+    };
+    /** RunResumeRequest */
+    RunResumeRequest: {
+      await_resume: components['schemas']['MessageAwaitResume'];
+      mode: components['schemas']['RunMode'];
+    };
+    /** RunResumeResponse */
+    RunResumeResponse: {
+      /** Agent Name */
+      agent_name: string;
+      await_request?: components['schemas']['MessageAwaitRequest'] | null;
+      error?: components['schemas']['Error'] | null;
+      /**
+       * Outputs
+       * @default []
+       */
+      outputs: components['schemas']['Message'][];
+      /**
+       * Run Id
+       * Format: uuid
+       */
+      run_id?: string;
+      /** Session Id */
+      session_id?: string | null;
+      /** @default created */
+      status: components['schemas']['RunStatus'];
+    };
+    /**
+     * RunStatus
+     * @enum {string}
+     */
+    RunStatus: 'created' | 'in-progress' | 'awaiting' | 'cancelling' | 'cancelled' | 'completed' | 'failed';
     /** UpdateEnvRequest */
     UpdateEnvRequest: {
       /** Env */
@@ -407,7 +717,7 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
-  list_agents_api_v1_agent_get: {
+  list_agents_api_v1_acp_agents_get: {
     parameters: {
       query?: never;
       header?: never;
@@ -422,12 +732,12 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          'application/json': components['schemas']['PaginatedResponse_Agent_'];
+          'application/json': components['schemas']['AgentsListResponse'];
         };
       };
     };
   };
-  get_agent_detail_api_v1_agent__name__get: {
+  read_agent_api_v1_acp_agents__name__get: {
     parameters: {
       query?: never;
       header?: never;
@@ -444,7 +754,7 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          'application/json': components['schemas']['Agent'];
+          'application/json': components['schemas']['AgentReadResponse'];
         };
       };
       /** @description Validation Error */
@@ -458,18 +768,16 @@ export interface operations {
       };
     };
   };
-  run_agent_api_v1_agent__name__run_post: {
+  create_run_api_v1_acp_runs_post: {
     parameters: {
       query?: never;
       header?: never;
-      path: {
-        name: string;
-      };
+      path?: never;
       cookie?: never;
     };
     requestBody: {
       content: {
-        'application/json': components['schemas']['RootModel_dict_str__Any__'];
+        'application/json': components['schemas']['RunCreateRequest'];
       };
     };
     responses: {
@@ -479,7 +787,104 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          'application/json': Record<string, never>;
+          'application/json': components['schemas']['RunCreateResponse'];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  read_run_api_v1_acp_runs__run_id__get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        run_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['RunReadResponse'];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  resume_run_api_v1_acp_runs__run_id__post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        run_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['RunResumeRequest'];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['RunResumeResponse'];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  cancel_run_api_v1_acp_runs__run_id__cancel_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        run_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['RunCancelResponse'];
         };
       };
       /** @description Validation Error */
@@ -757,7 +1162,7 @@ export interface operations {
     };
     requestBody: {
       content: {
-        'application/json': components['schemas']['ProviderRequest'];
+        'application/json': components['schemas']['RegisterUnmanagedProviderRequest'];
       };
     };
     responses: {

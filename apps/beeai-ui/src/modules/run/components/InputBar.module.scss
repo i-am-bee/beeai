@@ -58,7 +58,7 @@
   column-gap: $spacing-04;
 }
 
-.tools {
+.settings {
   display: flex;
   :global(.#{$prefix}--btn) {
     &:hover,

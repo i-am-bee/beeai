@@ -28,6 +28,7 @@ export default async function AgentPage({ params }: Props) {
   const { name } = await params;
   const agents = await fetchAgentsList();
   const agent = agents.find((agent) => agent.name === name);
+
   if (!agent) {
     notFound();
   }

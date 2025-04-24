@@ -14,19 +14,17 @@
  * limitations under the License.
  */
 
-import type { JSONSchema } from '#helpers/validateJsonSchema.ts';
-import { validateJsonSchema } from '#helpers/validateJsonSchema.ts';
-import type { Agent } from '#modules/agents/api/types.ts';
-import { UiType } from '#modules/run/types.ts';
+// import type { JSONSchema } from '#helpers/validateJsonSchema.ts';
+// import { validateJsonSchema } from '#helpers/validateJsonSchema.ts';
+import { type Agent, UiType } from '#modules/agents/api/types.ts';
 
-import { SEQUENTIAL_COMPOSE_AGENT_NAME, textInputJsonSchema, textOutputJsonSchema } from './constants';
+import { SEQUENTIAL_COMPOSE_AGENT_NAME } from './constants';
 
 export function isValidForSequentialWorkflow(agent: Agent) {
-  return (
-    agent.ui?.type === UiType.HandsOff ||
-    (validateJsonSchema(agent.inputSchema as JSONSchema, textInputJsonSchema as JSONSchema) &&
-      validateJsonSchema(agent.outputSchema as JSONSchema, textOutputJsonSchema as JSONSchema))
-  );
+  return agent.metadata.ui?.type === UiType.HandsOff;
+  //  ||
+  // (validateJsonSchema(agent.inputSchema as JSONSchema, textInputJsonSchema as JSONSchema) &&
+  //   validateJsonSchema(agent.outputSchema as JSONSchema, textOutputJsonSchema as JSONSchema))
 }
 
 export function getSequentialComposeAgent(agents?: Agent[]) {

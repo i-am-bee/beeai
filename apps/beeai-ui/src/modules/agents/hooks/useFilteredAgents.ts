@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import intersection from 'lodash/intersection';
 import { useMemo } from 'react';
 
 import { compareStrings } from '#utils/helpers.ts';
@@ -29,31 +28,34 @@ interface Props {
 
 export function useFilteredAgents({ agents, filters }: Props) {
   const filteredAgents = useMemo(() => {
-    const { search, frameworks, languages, licenses } = filters;
+    const { search, frameworks, programmingLanguages, licenses } = filters;
 
     const searchQuery = search.trim().toLowerCase();
     const searchRegex = searchQuery ? new RegExp(searchQuery, 'i') : null;
 
     return agents
       ?.filter((agent) => {
-        if (frameworks.length && !frameworks.includes(agent.framework ?? '')) {
+        const { name, description, metadata } = agent;
+        const { framework, programming_language, license, documentation } = metadata;
+
+        if (frameworks.length && !frameworks.includes(framework ?? '')) {
           return false;
         }
 
-        if (languages.length && !intersection(languages, agent.languages ?? []).length) {
+        if (programmingLanguages.length && !programmingLanguages.includes(programming_language ?? '')) {
           return false;
         }
 
-        if (licenses.length && !licenses.includes(agent.license ?? '')) {
+        if (licenses.length && !licenses.includes(license ?? '')) {
           return false;
         }
 
         if (searchRegex) {
-          const nameMatch = searchRegex.test(agent.name);
-          const descriptionMatch = agent.description ? searchRegex.test(agent.description) : false;
-          const fullDescriptionMatch = agent.fullDescription ? searchRegex.test(agent.fullDescription) : false;
+          const nameMatch = searchRegex.test(name);
+          const descriptionMatch = description ? searchRegex.test(description) : false;
+          const documentationMatch = documentation ? searchRegex.test(documentation) : false;
 
-          if (!nameMatch && !descriptionMatch && !fullDescriptionMatch) {
+          if (!nameMatch && !descriptionMatch && !documentationMatch) {
             return false;
           }
         }

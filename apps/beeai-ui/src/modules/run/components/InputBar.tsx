@@ -24,7 +24,7 @@ import classes from './InputBar.module.scss';
 
 interface Props {
   isSubmitDisabled?: boolean;
-  tools?: ReactNode;
+  settings?: ReactNode;
   formRef?: Ref<InputBarFormHandle>;
   inputProps?: TextareaHTMLAttributes<HTMLTextAreaElement>;
   onSubmit?: FormEventHandler;
@@ -36,7 +36,7 @@ export type InputBarFormHandle = {
 
 export function InputBar({
   isSubmitDisabled,
-  tools,
+  settings,
   formRef: formRefProp,
   inputProps,
   onSubmit,
@@ -80,7 +80,7 @@ export function InputBar({
       />
 
       <div className={classes.actionBar}>
-        {tools && <div className={classes.tools}>{tools}</div>}
+        {settings && <div className={classes.settings}>{settings}</div>}
 
         <div className={classes.submit}>{children}</div>
       </div>

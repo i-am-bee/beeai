@@ -19,14 +19,13 @@ import { Loading } from '@carbon/react';
 import { ErrorMessage } from '#components/ErrorMessage/ErrorMessage.tsx';
 import { Container } from '#components/layouts/Container.tsx';
 import { MainContent } from '#components/layouts/MainContent.tsx';
-import type { Agent } from '#modules/agents/api/types.ts';
+import { type Agent, UiType } from '#modules/agents/api/types.ts';
 
 import { useAgent } from '../../agents/api/queries/useAgent';
 import { Chat } from '../chat/Chat';
 import { ChatProvider } from '../contexts/chat/ChatProvider';
 import { HandsOffProvider } from '../contexts/hands-off/HandsOffProvider';
 import { HandsOff } from '../hands-off/HandsOff';
-import { UiType } from '../types';
 import classes from './AgentRun.module.scss';
 
 interface Props {
@@ -61,7 +60,7 @@ export function AgentRun({ name }: Props) {
 }
 
 const renderUi = ({ agent }: { agent: Agent }) => {
-  const type = agent.ui?.type;
+  const type = agent.metadata.ui?.type;
 
   switch (type) {
     case UiType.Chat:

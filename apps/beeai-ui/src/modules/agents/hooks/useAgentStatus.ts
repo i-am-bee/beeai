@@ -18,7 +18,7 @@ import { useProvider } from '#modules/providers/api/queries/useProvider.ts';
 import { type Provider, ProviderStatus } from '#modules/providers/api/types.ts';
 
 interface Props {
-  provider?: string;
+  provider: string | null | undefined;
 }
 
 function getStatusHelpers(data?: Provider) {

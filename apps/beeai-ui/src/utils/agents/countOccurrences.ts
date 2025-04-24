@@ -22,7 +22,7 @@ type AgentsCounts = Record<string, number>;
 export type AgentsCountedOccurrence = { label: string; count: number }[];
 type AgentsCountedOccurrences = {
   frameworks: AgentsCountedOccurrence;
-  languages: AgentsCountedOccurrence;
+  programming_languages: AgentsCountedOccurrence;
   licenses: AgentsCountedOccurrence;
 };
 
@@ -33,17 +33,19 @@ export function countOccurrences(agents: Agent[]): AgentsCountedOccurrences {
 
   const counts = agents.reduce(
     (acc, agent) => {
-      if (agent.framework) {
-        updateCount(acc.frameworks, agent.framework);
+      const { framework, license, programming_language } = agent.metadata;
+
+      if (framework) {
+        updateCount(acc.frameworks, framework);
       }
 
-      if (agent.license) {
-        updateCount(acc.licenses, agent.license);
+      if (license) {
+        updateCount(acc.licenses, license);
       }
 
-      if (agent.languages) {
-        for (const language of agent.languages) {
-          updateCount(acc.languages, language);
+      if (programming_language) {
+        for (const language of programming_language) {
+          updateCount(acc.programming_languages, language);
         }
       }
 
@@ -51,14 +53,14 @@ export function countOccurrences(agents: Agent[]): AgentsCountedOccurrences {
     },
     {
       frameworks: {} as AgentsCounts,
-      languages: {} as AgentsCounts,
+      programming_languages: {} as AgentsCounts,
       licenses: {} as AgentsCounts,
     },
   );
 
   return {
     frameworks: sort(counts.frameworks, BEE_AI_FRAMEWORK_TAG),
-    languages: sort(counts.languages),
+    programming_languages: sort(counts.programming_languages),
     licenses: sort(counts.licenses),
   };
 }

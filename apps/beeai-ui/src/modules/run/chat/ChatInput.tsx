@@ -22,7 +22,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import type { InputBarFormHandle } from '../components/InputBar';
 import { InputBar } from '../components/InputBar';
 import { useChat } from '../contexts/chat';
-import { ChatSettings } from './ChatSettings';
+// import { ChatSettings } from './ChatSettings';
 import { ChatDefaultTools } from './constants';
 
 interface Props {
@@ -71,7 +71,8 @@ export const ChatInput = memo(function ChatInput({ onMessageSubmit }: Props) {
             })();
           }}
           isSubmitDisabled={isSubmitDisabled}
-          tools={<ChatSettings containerRef={containerRef} />}
+          // TODO: The API does not yet support tools.
+          // settings={<ChatSettings containerRef={containerRef} />}
           formRef={formRef}
           inputProps={{
             placeholder: 'Ask a question…',

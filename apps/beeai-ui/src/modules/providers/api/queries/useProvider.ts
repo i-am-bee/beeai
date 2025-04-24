@@ -20,13 +20,13 @@ import { getProviders } from '..';
 import { providerKeys } from '../keys';
 
 interface Props {
-  id?: string;
+  id: string | null | undefined;
 }
 
 export function useProvider({ id }: Props) {
   const query = useQuery({
     queryKey: providerKeys.list(),
-    queryFn: () => getProviders(),
+    queryFn: getProviders,
     select: (data) => data?.items.find((item) => id === item.id),
     enabled: Boolean(id),
   });

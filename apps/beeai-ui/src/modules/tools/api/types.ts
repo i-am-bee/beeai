@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import type { ListToolsRequest, Tool as SdkTool } from '@i-am-bee/acp-sdk/types';
-
-export type ListToolsParams = ListToolsRequest['params'];
-
-export type Tool = SdkTool;
+// TODO: The API does not yet support tools, so this is just to suppress TypeScript errors.
+export type Tool = {
+  name: 'search' | 'wikipedia' | 'weather';
+};

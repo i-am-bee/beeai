@@ -26,7 +26,7 @@ import { TaskStatusBar } from './TaskStatusBar';
 
 export function HandsOff() {
   const { agent, logs, text, isPending, onClear } = useHandsOff();
-  const userGreeting = agent.ui?.userGreeting;
+  const userGreeting = agent.metadata.ui?.user_greeting;
 
   const isPendingOrText = Boolean(isPending || text);
   const isFinal = Boolean(text && !isPending);

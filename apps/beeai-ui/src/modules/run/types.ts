@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-export enum UiType {
-  Chat = 'chat',
-  HandsOff = 'hands-off',
-}
-
 export interface RunStats {
   startTime?: number;
   endTime?: number;

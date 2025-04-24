@@ -26,10 +26,9 @@ import { useModal } from '#contexts/Modal/index.tsx';
 import { AddRequiredEnvsModal } from '#modules/envs/components/AddRequiredEnvsModal.tsx';
 import { useInstallProvider } from '#modules/providers/api/mutations/useInstallProvider.ts';
 import { SupportedUis } from '#modules/run/constants.ts';
-import type { UiType } from '#modules/run/types.ts';
 import { routes } from '#utils/router.ts';
 
-import type { Agent } from '../api/types';
+import type { Agent, UiType } from '../api/types';
 import { useAgentStatus } from '../hooks/useAgentStatus';
 import { useMissingEnvs } from '../hooks/useMissingEnvs';
 import classes from './AgentLaunchButton.module.scss';
@@ -41,11 +40,11 @@ interface Props {
 
 export function AgentLaunchButton({ agent }: Props) {
   const { openModal } = useModal();
+  const { provider, ui } = agent.metadata;
   const { missingEnvs, isPending: isMissingEnvsPending } = useMissingEnvs({ agent });
-  const { isNotInstalled, isInstalling, isInstallError } = useAgentStatus({ provider: agent.provider });
+  const { isNotInstalled, isInstalling, isInstallError } = useAgentStatus({ provider });
   const { mutate: installProvider } = useInstallProvider();
 
-  const { provider, ui } = agent;
   const uiType = ui?.type;
   const sharedProps: ButtonBaseProps = {
     kind: 'primary',
