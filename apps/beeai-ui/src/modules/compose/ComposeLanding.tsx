@@ -63,9 +63,9 @@ export function ComposeLanding() {
         </ul>
 
         <div className={classes.actionBar}>
-          <TransitionLink href={selected.route} asChild>
-            <Button renderIcon={ArrowRight} href={selected.route} className={classes.startBtn}>
-              Start composing
+          <TransitionLink href={selected.id === 'sequential' ? routes.workflowSelection() : selected.route} asChild>
+            <Button renderIcon={ArrowRight} className={classes.startBtn}>
+              {selected.id === 'sequential' ? 'Next' : 'Start composing'}
             </Button>
           </TransitionLink>
         </div>
@@ -89,4 +89,5 @@ const WORKFLOWS = [
     image: SupervisorIllustration,
   },
 ];
+
 type Workflow = (typeof WORKFLOWS)[number];

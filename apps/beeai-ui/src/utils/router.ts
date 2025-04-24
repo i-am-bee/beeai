@@ -22,6 +22,7 @@ export const routeDefinitions = {
   agentDetail: () => `/${sections.agents}/:agentName` as const,
   compose: () => `/${sections.compose}` as const,
   composeSequential: () => `/${sections.compose}/sequential` as const,
+  workflowSelection: () => `/${sections.compose}/select` as const,
   settings: () => '/settings' as const,
 };
 
