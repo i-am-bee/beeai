@@ -42,6 +42,7 @@ from beeai_server.routes.provider import router as provider_router
 from beeai_server.routes.agent import router as agent_router
 from beeai_server.routes.env import router as env_router
 from beeai_server.routes.telemetry import router as telemetry_router
+from beeai_server.routes.workflow import router as workflow_router
 from beeai_server.services.mcp_proxy.provider import ProviderContainer
 from beeai_server.utils.periodic import CRON_REGISTRY, run_all_crons
 
@@ -94,6 +95,7 @@ def mount_routes(app: FastAPI):
     server_router.include_router(provider_router, prefix="/provider", tags=["provider"])
     server_router.include_router(env_router, prefix="/env", tags=["env"])
     server_router.include_router(telemetry_router, prefix="/telemetry", tags=["telemetry"])
+    server_router.include_router(workflow_router, prefix="/workflows", tags=["workflows"])
 
     app.mount("/healthcheck", lambda: "OK")
     app.mount("/mcp", create_mcp_sse_app())
