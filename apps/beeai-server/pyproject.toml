@@ -27,6 +27,11 @@ dependencies = [
     "opentelemetry-exporter-otlp-proto-http>=1.30.0",
     "aiodocker>=0.24.0",
     "tenacity>=9.0.0",
+    "sqlalchemy>=2.0.23",
+    "asyncpg>=0.28.0",
+    "alembic>=1.12.1",
+    "psycopg2-binary>=2.9.9",
+    "python-dotenv>=1.0.0",
 ]
 
 [tool.ruff]
