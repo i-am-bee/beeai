@@ -47,6 +47,8 @@ processing_steps = [
             "**Text-to-Speech Enhancement** – Creates AI-friendly scripts with proper pacing and interruptions.",
             "**Conversational Content Adaptation** – Reformats structured information into engaging discussions.",
         ],
+        license="Apache 2.0",
+        framework="BeeAI",
         documentation=dedent(
             """\
             The agent converts structured content into a dynamic, natural-sounding podcast script optimized for
@@ -81,7 +83,7 @@ processing_steps = [
                 curiosity and engagement.
             """
         ),
-        ui={"type": "hands_off", "user_greeting": "Add the content from which you'd like to create your podcast"},
+        ui={"type": "hands-off", "user_greeting": "Add the content from which you'd like to create your podcast"},
         examples={
             "cli": [
                 {

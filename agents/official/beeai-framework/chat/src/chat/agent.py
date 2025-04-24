@@ -41,6 +41,8 @@ def to_framework_message(role: Role, content: str) -> beeai_framework.backend.Me
                 ),
             )
         ],
+        license="Apache 2.0",
+        framework="BeeAI",
         documentation=dedent(
             """\
             The agent is an AI-powered conversational system designed to process user messages, maintain context,
@@ -66,14 +68,14 @@ def to_framework_message(role: Role, content: str) -> beeai_framework.backend.Me
                 - **Tool Integration** – Supports real-time search, Wikipedia lookups, and weather updates.
             - **Event-Based Streaming** – Can send partial updates to clients as responses are generated.
             - **Customizable Configuration** – Users can enable or disable specific tools for enhanced responses.
-
-            ## Use Cases
-            - **Chatbots** – Can be used in AI-powered chat applications with memory.
-                - **Research Assistance** – Retrieves relevant information from web search and Wikipedia.
-            - **Weather Inquiries** – Provides real-time weather updates based on location.
-            - **Agents with Long-Term Memory** – Maintains context across conversations for improved interactions.
             """
         ),
+        use_cases=[
+            "**Chatbots** – Can be used in AI-powered chat applications with memory.",
+            "**Research Assistance** – Retrieves relevant information from web search and Wikipedia.",
+            "**Weather Inquiries** – Provides real-time weather updates based on location.",
+            "**Agents with Long-Term Memory** – Maintains context across conversations for improved interactions.",
+        ],
         ui={"type": "chat", "user_greeting": "How can I help you?"},
         examples={
             "cli": [

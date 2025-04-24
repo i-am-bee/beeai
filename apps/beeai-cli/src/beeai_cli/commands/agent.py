@@ -62,7 +62,7 @@ from rich.table import Column
 
 from beeai_cli.api import api_request, api_stream, acp_client
 from beeai_cli.async_typer import AsyncTyper, console, create_table, err_console
-from beeai_cli.utils import generate_schema_example, omit, prompt_user, filter_dict, remove_nullable
+from beeai_cli.utils import generate_schema_example, omit, prompt_user, remove_nullable
 
 
 class UiType(StrEnum):
@@ -135,22 +135,28 @@ async def stream_logs(name: str = typer.Argument(..., help="Agent name")):
         _print_log(message)
 
 
-async def _run_agent(client: Client, name: str, input: str, dump_files_path: Path | None = None):
+async def _run_agent(client: Client, name: str, input: str | list[Message], dump_files_path: Path | None = None):
     status = console.status(random.choice(processing_messages), spinner="dots")
     status.start()
     status_stopped = False
 
+    inputs = [Message(parts=[MessagePart(content=input, role="user")])] if isinstance(input, str) else input
+
     log_type = None
-    async for event in client.run_stream(
-        agent=name, inputs=[Message(parts=[MessagePart(content=input, content_type="text/plain", role="user")])]
-    ):
+    current_agent = None
+    async for event in client.run_stream(agent=name, inputs=inputs):
         if not status_stopped:
             status_stopped = True
             status.stop()
 
         match event:
             case GenericEvent():
-                [(new_log_type, content)] = event.generic.model_dump().items()
+                data = event.generic.model_dump()
+                if "agent_name" in data:
+                    [(new_log_type, content)] = omit(data, {"agent_name", "agent_idx"}).items()
+                    new_log_type = f"\[{data['agent_name']}]: {new_log_type}"
+                else:
+                    [(new_log_type, content)] = data.items()
                 if new_log_type != log_type:
                     if log_type is not None:
                         err_console.print()
@@ -161,7 +167,13 @@ async def _run_agent(client: Client, name: str, input: str, dump_files_path: Pat
                 if log_type:
                     console.print()
                     log_type = None
-                console.print(event.part.content, end="")
+                if new_agent := event.part.model_dump().get("agent_name", None):
+                    if new_agent != current_agent:
+                        current_agent = new_agent
+                        err_console.print(f"\n[bold]{new_agent} output[/bold]\n", style="dim")
+                    err_console.print(event.part.content, style="dim", end="")
+                else:
+                    console.print(event.part.content, end="")
             case MessageCompletedEvent():
                 console.print()
             case RunFailedEvent():
@@ -376,7 +388,7 @@ def _setup_sequential_workflow(agents_by_name: dict[str, Agent], splash_screen: 
     prompt_agents = {
         name: agent
         for name, agent in agents_by_name.items()
-        if (agent.model_extra.get("ui", {}) or {}).get("type", None) == UiType.hands_off
+        if (agent.metadata.model_dump().get("ui", {}) or {}).get("type", None) == UiType.hands_off
     }
     steps = []
 
@@ -463,10 +475,10 @@ async def run_agent(
                 default=True,
             ).execute_async():
                 return
-            async for message in api_stream(
+            async for message_part in api_stream(
                 "POST", "provider/install", json={"id": provider["id"]}, params={"stream": True}
             ):
-                _print_log(message, ansi_mode=True)
+                _print_log(message_part, ansi_mode=True)
             provider = await get_provider(agent.metadata.provider)
             if provider["status"] == "install_error":
                 raise RuntimeError(f"Error during installation: {provider['last_error']}")
@@ -476,7 +488,7 @@ async def run_agent(
 
     ui = agent.metadata.model_dump().get("ui", {}) or {}
     ui_type = ui.get("type", None)
-    is_sequential_workflow = agent.name in {"sequential-workflow"}
+    is_sequential_workflow = agent.name in {"sequential_workflow"}
 
     user_greeting = ui.get("user_greeting", None) or "How can I help you?"
     config = {}
@@ -524,8 +536,9 @@ async def run_agent(
         elif is_sequential_workflow:
             workflow_steps = _setup_sequential_workflow(agents_by_name, splash_screen=splash_screen)
             console.print()
-            input = filter_dict({**config, "steps": workflow_steps})
-            await _run_agent(name, input, dump_files_path=dump_files)
+            message_part = MessagePart(content_type="application/json", content=json.dumps({"steps": workflow_steps}))
+            async with acp_client() as client:
+                await _run_agent(client, name, [Message(parts=[message_part])], dump_files_path=dump_files)
 
     else:
         async with acp_client() as client:
