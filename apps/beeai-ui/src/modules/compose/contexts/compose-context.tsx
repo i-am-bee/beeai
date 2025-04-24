@@ -31,6 +31,7 @@ interface ComposeContextValue {
   onCancel: () => void;
   onClear: () => void;
   onReset: () => void;
+  onSave: (name: string, description?: string) => Promise<unknown>;
 }
 
 export interface ComposeStep {
