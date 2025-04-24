@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import { useState } from 'react';
-
 import { Add, ArrowLeft, ErrorFilled, Flow, Time, Tools, TrashCan } from '@carbon/icons-react';
 import { Button, InlineLoading, Modal, Tile } from '@carbon/react';
+import { useState } from 'react';
 
 import { Container } from '#components/layouts/Container.tsx';
 import { MainContent } from '#components/layouts/MainContent.tsx';
@@ -134,9 +133,9 @@ export function WorkflowSelection() {
                               Open Workflow
                             </Button>
                           </TransitionLink>
-                          <Button 
-                            kind="danger--ghost" 
-                            renderIcon={TrashCan} 
+                          <Button
+                            kind="danger--ghost"
+                            renderIcon={TrashCan}
                             iconDescription="Delete Workflow"
                             onClick={() => handleDeleteClick(workflow.id)}
                             className={classes.deleteButton}
