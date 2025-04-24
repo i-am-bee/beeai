@@ -12,7 +12,8 @@
         try {
           const html = document.documentElement;
           const darkMode = window.localStorage.getItem('@i-am-bee/beeai/DARK_MODE');
-          const isDarkMode =  darkMode === 'true' || (darkMode == null && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          const isDarkMode =
+            darkMode === 'true' || (darkMode == null && window.matchMedia('(prefers-color-scheme: dark)').matches);
 
           if (isDarkMode) {
             html.classList.add('cds--g90');
