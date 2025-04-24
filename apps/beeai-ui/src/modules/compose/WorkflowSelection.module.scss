@@ -1,0 +1,294 @@
+/* These @use statements are provided by the common styles */
+
+.container {
+  margin: 0 auto;
+  max-width: 1280px;
+  padding: $spacing-05;
+  margin-bottom: $spacing-09;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: $spacing-07;
+}
+
+.backButton {
+  align-self: flex-start;
+  margin-bottom: $spacing-03;
+  transition: transform $duration-fast-01 ease;
+
+  &:hover {
+    transform: translateX(-4px);
+  }
+}
+
+.title {
+  @include type-style('heading-04');
+  display: flex;
+  align-items: center;
+  gap: $spacing-03;
+  color: $text-primary;
+}
+
+.newWorkflowSection {
+  margin-bottom: $spacing-07;
+  background: linear-gradient(to right, $layer-01, $layer-02);
+  border-radius: $border-radius;
+  padding: $spacing-06;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  box-shadow: $box-shadow;
+  border: 1px solid $border-subtle;
+
+  svg {
+    color: $interactive;
+    margin-bottom: $spacing-03;
+  }
+
+  h2 {
+    @include type-style('heading-03');
+    margin-bottom: $spacing-03;
+    color: $text-primary;
+  }
+
+  button {
+    margin-top: $spacing-05;
+    transition: transform $duration-fast-01 ease;
+    margin: $spacing-03;
+
+    &:hover {
+      transform: scale(1.02);
+    }
+  }
+}
+
+.description {
+  @include type-style('body-01');
+  margin-top: $spacing-03;
+  color: $text-secondary;
+}
+
+.newWorkflowButton {
+  margin-top: $spacing-06;
+  margin-bottom: $spacing-05;
+  transition: transform $duration-fast-01 ease;
+}
+
+.divider {
+  height: 1px;
+  background-color: $border-subtle;
+  margin: $spacing-05 0;
+}
+
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}
+
+.error {
+  @include type-style('body-01');
+  color: $support-error;
+  padding: $spacing-05;
+  border-radius: $border-radius;
+  background-color: rgba($support-error, 0.1);
+  border: 1px solid $support-error;
+  display: flex;
+  align-items: center;
+  gap: $spacing-03;
+}
+
+.emptyState {
+  @include type-style('body-01');
+  color: $text-secondary;
+  padding: $spacing-07;
+  text-align: center;
+  border-radius: $border-radius;
+  border: 1px dashed $border-subtle;
+  background-color: $layer-01;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+
+  svg {
+    color: $text-secondary;
+    margin-bottom: $spacing-05;
+  }
+
+  p {
+    margin-bottom: $spacing-06;
+    @include type-style('heading-01');
+  }
+
+  button {
+    transition: transform $duration-fast-01 ease;
+
+    &:hover {
+      transform: scale(1.02);
+    }
+  }
+}
+
+.column {
+  margin-bottom: $spacing-05;
+}
+
+.workflowTile {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: $spacing-05;
+  border-radius: $border-radius;
+  border: 1px solid $border-subtle;
+  background-color: $layer-01;
+  transition: all $duration-moderate-01 ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: $box-shadow;
+    border-color: $border-strong;
+  }
+}
+
+.workflowTitle {
+  @include type-style('heading-02');
+  margin-bottom: $spacing-03;
+  color: $text-primary;
+}
+
+.workflowDescription {
+  @include type-style('body-01');
+  color: $text-secondary;
+  margin-bottom: $spacing-05;
+}
+
+.workflowMeta {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-03;
+  margin-bottom: 0;
+}
+
+.workflowSteps {
+  @include type-style('label-01');
+  color: $interactive;
+  display: inline-block;
+  background-color: rgba($interactive, 0.1);
+  padding: $spacing-02 $spacing-03;
+  border-radius: 12px;
+  font-weight: 600;
+  align-self: flex-start;
+}
+
+.workflowDate {
+  @include type-style('caption-01');
+  color: $text-helper;
+  display: flex;
+  align-items: center;
+  gap: $spacing-02;
+
+  svg {
+    flex-shrink: 0;
+  }
+}
+
+.workflowActions {
+  margin-top: 0;
+  padding-top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-03;
+}
+
+.workflowButton {
+  width: 100%;
+  transition: transform $duration-fast-01 ease;
+
+  &:hover {
+    transform: scale(1.02);
+  }
+}
+
+.workflowList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-05;
+  margin-top: $spacing-09;
+}
+
+.horizontalWorkflowTile {
+  width: 100%;
+  border-radius: $border-radius;
+  border: 1px solid $border-subtle;
+  background-color: $layer-01;
+  transition: all $duration-moderate-01 ease;
+  padding: $spacing-05;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $box-shadow;
+    border-color: $border-strong;
+  }
+}
+
+.workflowContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $spacing-05;
+  }
+}
+
+.workflowInfo {
+  flex: 1;
+  padding-right: $spacing-05;
+}
+
+.workflowDetails {
+  display: flex;
+  align-items: center;
+  gap: $spacing-05;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+.modalRoot {
+  :global(.cds--modal-footer) {
+    :global(.cds--btn) {
+      justify-content: center;
+      padding-inline-end: $spacing-05;
+      max-width: rem(125px);
+      height: rem(40px);
+      min-height: rem(40px);
+    }
+    
+    gap: $spacing-05;
+  }
+}
+
+.modalContent {
+  padding: $spacing-03 0;
+  
+  p {
+    margin-bottom: 5px;
+    @include type-style('body-01');
+    color: $text-primary;
+  }
+}
+
+.workflowsContainer {
+  margin-top: $spacing-10;
+}
