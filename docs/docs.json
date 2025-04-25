@@ -43,18 +43,7 @@
       },
       {
         "group": "Agent Communication Protocol",
-        "pages": [
-          "/acp/alpha/introduction",
-          {
-            "group": "Pre-alpha (deprecated)",
-            "pages": [
-              "/acp/pre-alpha/introduction",
-              "/acp/pre-alpha/architecture",
-              "/acp/pre-alpha/specification",
-              "/acp/pre-alpha/sdk"
-            ]
-          }
-        ]
+        "pages": ["/acp-docs"]
       },
       {
         "group": "Observability & Telemetry",
@@ -91,5 +80,15 @@
       "bluesky": "https://bsky.app/profile/beeaiagents.bsky.social",
       "youtube": "https://www.youtube.com/@BeeAIAgents"
     }
-  }
+  },
+  "redirects": [
+    {
+      "source": "/acp/spec/openapi.yaml",
+      "destination": "https://github.com/i-am-bee/acp/blob/main/docs/spec/openapi.yaml"
+    },
+    {
+      "source": "/acp/:slug*",
+      "destination": "https://agentcommunicationprotocol.dev"
+    }
+  ]
 }
