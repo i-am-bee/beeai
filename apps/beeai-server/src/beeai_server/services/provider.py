@@ -80,8 +80,15 @@ class ProviderService:
             missing_configuration=[var for var in loaded_provider.missing_configuration if var.required],
         )
 
-    async def register_unmanaged_provider(self, location: AnyUrl, id: str) -> ProviderWithStatus:
-        provider = await UnmanagedProvider.load_from_location(location=location, id=id)
+    async def register_unmanaged_provider(self, location: AnyUrl, id: str, persist: bool = False) -> ProviderWithStatus:
+        try:
+            provider = await UnmanagedProvider.load_from_location(location=location, id=id, persistent=persist)
+            if persist:
+                await self._repository.create(provider=provider)
+        except ValueError as ex:
+            raise ManifestLoadError(location=location, message=str(ex), status_code=HTTP_400_BAD_REQUEST) from ex
+        except Exception as ex:
+            raise ManifestLoadError(location=location, message=str(ex)) from ex
         await self._loaded_provider_container.add(provider)
         return self._get_provider_with_status(self._loaded_provider_container.loaded_providers[provider.id])
 
@@ -153,7 +160,7 @@ class ProviderService:
     async def delete_provider(self, *, id: ID, force: bool = False):
         provider = await self._repository.get(provider_id=id)
 
-        if provider.registry and not force:
+        if getattr(provider, "registry", None) and not force:
             await self._loaded_provider_container.loaded_providers[provider.id].uninstall()
         else:
             await self._loaded_provider_container.loaded_providers[provider.id].uninstall()

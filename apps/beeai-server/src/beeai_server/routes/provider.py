@@ -56,9 +56,9 @@ async def create_managed_provider(
 
 @router.post("/register/unmanaged")
 async def add_unmanaged_provider(
-    request: RegisterUnmanagedProviderRequest, provider_service: ProviderServiceDependency
+    request: RegisterUnmanagedProviderRequest, provider_service: ProviderServiceDependency, persist: bool = Query(False)
 ) -> ProviderWithStatus:
-    return await provider_service.register_unmanaged_provider(location=request.location, id=request.id)
+    return await provider_service.register_unmanaged_provider(location=request.location, id=request.id, persist=persist)
 
 
 @router.put("/{id}/install")

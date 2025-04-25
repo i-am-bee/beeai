@@ -34,16 +34,21 @@ async def remove_broken_unmanaged_providers(configuration: Configuration, provid
         for loaded_provider in provider_container.loaded_providers.values()
         if isinstance(loaded_provider.provider, UnmanagedProvider)
     ]
-    for provider in unmanaged_providers:
-        if provider.status in {
+    for loaded_provider in unmanaged_providers:
+        if loaded_provider.status in {
             LoadedProviderStatus.ready,
+            LoadedProviderStatus.error,
             LoadedProviderStatus.running,
             LoadedProvider.last_error,
         }:
             try:
                 with anyio.fail_after(delay=timedelta(seconds=30).total_seconds()):
-                    async with provider.client() as client:
+                    async with loaded_provider.client() as client:
                         await client.get("agents")
             except Exception as ex:
-                logger.error(f"Provider {provider.id} failed to respond to ping in 30 seconds: {extract_messages(ex)}")
-                await provider_container.remove(provider.provider)
+                logger.error(
+                    f"Provider {loaded_provider.id} failed to respond to ping in 30 seconds: {extract_messages(ex)}"
+                )
+                loaded_provider.status = LoadedProviderStatus.error
+                if not loaded_provider.provider.persistent:
+                    await provider_container.remove(loaded_provider.provider)

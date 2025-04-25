@@ -338,6 +338,7 @@ class ManagedProvider(BaseProvider, extra="allow"):
 class UnmanagedProvider(BaseProvider, extra="allow"):
     location: AnyUrl
     source: ID
+    persistent: bool = False
 
     @computed_field()
     @cached_property
@@ -350,11 +351,17 @@ class UnmanagedProvider(BaseProvider, extra="allow"):
         return self.source
 
     async def start(self, *_args, **_kwargs) -> str:
-        return f"{str(self.location).rstrip('/')}/"
+        base_url = f"{str(self.location).rstrip('/')}/"
+        async with AsyncClient(base_url=base_url) as client:
+            await client.get("agents")
+        return base_url
 
     @classmethod
-    async def load_from_location(cls, location: AnyUrl, id: str) -> Self:
+    async def load_from_location(cls, location: AnyUrl, id: str, persistent: bool = False) -> Self:
         async with AsyncClient() as client:
             response = await client.get(f"{str(location).rstrip('/')}/agents", timeout=1)
             manifest = ProviderManifest.model_validate(response.json())
-        return cls(manifest=manifest, location=location, source=id)
+        return cls(manifest=manifest, location=location, source=id, persistent=persistent)
+
+
+Provider = ManagedProvider | UnmanagedProvider
