@@ -8,14 +8,15 @@ from autogen_ext.models.openai import OpenAIChatCompletionClient
 
 def get_client():
     return OpenAIChatCompletionClient(
-        model=os.getenv("LLM_MODEL"),
-        base_url=os.getenv("LLM_API_BASE"),
-        api_key=os.getenv("LLM_API_KEY"),
+        model=os.getenv("LLM_MODEL", "llama3.1"),
+        base_url=os.getenv("LLM_API_BASE", "http://localhost:11434/v1"),
+        api_key=os.getenv("LLM_API_KEY", "dummy"),
         model_info={
             "vision": False,
             "function_calling": True,
             "json_output": False,
             "family": "unknown",
+            "structured_output": False,
         },
     )
 
@@ -103,6 +104,7 @@ def arxiv_search(query: str, max_results: int = 2) -> list:
     """
     import arxiv
 
+    max_results = min(max_results, 100)  # prevent abuse or infinite loops
     client = arxiv.Client()
     search = arxiv.Search(query=query, max_results=max_results, sort_by=arxiv.SortCriterion.Relevance)
 
@@ -117,6 +119,9 @@ def arxiv_search(query: str, max_results: int = 2) -> list:
                 "pdf_url": paper.pdf_url,
             }
         )
+
+    if not results:
+        return [{"title": "No results found", "abstract": "", "pdf_url": "", "authors": [], "published": ""}]
 
     return results
 
