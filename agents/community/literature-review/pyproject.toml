@@ -1,20 +1,19 @@
 [project]
 name = "literature-review"
-version = "0.0.1"
+version = "0.1.0"
 description = "Collection of autogen agents"
-readme = "README.md"
-authors = []
-requires-python = ">=3.11,<4.0"
+authors = [{ name = "IBM Corp." }]
+requires-python = ">=3.11,<3.12"
 dependencies = [
+    "acp-sdk>=0.5.0",
     "arxiv>=2.1.3",
     "autogen-agentchat>=0.4.7",
     "autogen-ext[openai]>=0.4.7",
-    "beeai-sdk==0.0.22",
-    "bs4>=0.0.2",
+    "bs4>=0.0.2"
 ]
 
 [project.scripts]
-server = "literature_review.server:server"
+server = "literature_review.server:run"
 
 [build-system]
 requires = ["hatchling"]
