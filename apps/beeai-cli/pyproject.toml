@@ -19,7 +19,7 @@ dependencies = [
     "jsonref>=1.1.0",
     "inquirerpy>=0.3.4",
     "psutil>=7.0.0",
-    "acp-sdk[client]>=0.2.1",
+    "acp-sdk[client]>=0.6.0",
     "tenacity>=9.1.2",
 ]
 

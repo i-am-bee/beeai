@@ -99,7 +99,7 @@ def to_framework_message(role: Role, content: str) -> beeai_framework.backend.Me
         ],
     )
 )
-async def chat(inputs: list[Message], context: Context) -> AsyncGenerator:
+async def chat(input: list[Message], context: Context) -> AsyncGenerator:
     """
     The agent is an AI-powered conversational system with memory, supporting real-time search, Wikipedia lookups,
     and weather updates through integrated tools.
@@ -116,7 +116,7 @@ async def chat(inputs: list[Message], context: Context) -> AsyncGenerator:
     # Create agent with memory and tools
     agent = ReActAgent(llm=llm, tools=tools, memory=UnconstrainedMemory())
 
-    framework_messages = [to_framework_message(Role(message.parts[0].role), str(message)) for message in inputs]
+    framework_messages = [to_framework_message(Role(message.parts[0].role), str(message)) for message in input]
     await agent.memory.add_many(framework_messages)
 
     async for data, event in agent.run():

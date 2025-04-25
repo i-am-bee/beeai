@@ -109,7 +109,7 @@ processing_steps = [
         ],
     )
 )
-async def podcast_creator(inputs: list[Message], context: Context) -> AsyncGenerator:
+async def podcast_creator(input: list[Message], context: Context) -> AsyncGenerator:
     """
     The agent creates structured podcast-style dialogues optimized for AI-driven text-to-speech (TTS).
     It formats natural conversations with a lead speaker and an inquisitive co-host, ensuring realistic interruptions
@@ -155,7 +155,7 @@ async def podcast_creator(inputs: list[Message], context: Context) -> AsyncGener
                     """
                 )
             ),
-            UserMessage(str(inputs[-1])),
+            UserMessage(str(input[-1])),
         ],
         max_tokens=8126,
         temperature=0.7,

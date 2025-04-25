@@ -136,11 +136,11 @@ server = Server()
         ],
     ),
 )
-async def aider(inputs: list[Message], context: Context) -> AsyncGenerator:
+async def aider(input: list[Message], context: Context) -> AsyncGenerator:
     """
     An AI pair programmer that edits code in a local Git repository using natural language, executing commands and providing feedback.
     """
-    user_message = str(inputs[-1])
+    user_message = str(input[-1])
     with tempfile.TemporaryDirectory() as tmp_dir:
         tmp_path = Path(tmp_dir)
         try:

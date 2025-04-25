@@ -98,13 +98,13 @@ server = Server()
         },
     )
 )
-async def sequential_workflow(inputs: list[Message]) -> AsyncIterator:
+async def sequential_workflow(input: list[Message]) -> AsyncIterator:
     """
     The agent orchestrates a sequence of text-processing AI agents, managing the flow of information and instructions
     between them.
     """
     try:
-        last_message = inputs[-1]
+        last_message = input[-1]
         step_part = [part for part in last_message.parts if part.content_type == "application/json"]
         if not step_part:
             raise ValueError("Missing steps configuration")

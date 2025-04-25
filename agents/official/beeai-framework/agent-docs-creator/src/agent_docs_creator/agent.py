@@ -104,7 +104,7 @@ processing_steps = [
         ],
     )
 )
-async def agent_docs_creator(inputs: list[Message], context: Context) -> AsyncGenerator:
+async def agent_docs_creator(input: list[Message], context: Context) -> AsyncGenerator:
     """
     The agent analyzes AI source code to generate structured, clear, and complete documentation in a consistent
     template, supporting multiple languages.`,
@@ -170,7 +170,7 @@ async def agent_docs_creator(inputs: list[Message], context: Context) -> AsyncGe
                     """
                 )
             ),
-            UserMessage(str(inputs[-1])),
+            UserMessage(str(input[-1])),
         ],
         max_tokens=8126,
         temperature=0.75,

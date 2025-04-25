@@ -51,7 +51,7 @@ server = Server()
         examples={
             "cli": [
                 {
-                    "command": 'beeai run literature-review "quantum"',
+                    "command": 'beeai run literature_review "quantum"',
                     "name": "Literature Review",
                     "description": "Conducting a Literature Review on AI in Healthcare",
                     "output": "The current temperature in Paris is 12°C with partly cloudy skies.",
@@ -73,7 +73,7 @@ server = Server()
         ],
     ),
 )
-async def literature_review(inputs: list[Message], context: Context) -> AsyncGenerator:
+async def literature_review(input: list[Message], context: Context) -> AsyncGenerator:
     def encode_value(value):
         if dataclasses.is_dataclass(value):
             return dataclasses.asdict(value)
@@ -86,7 +86,7 @@ async def literature_review(inputs: list[Message], context: Context) -> AsyncGen
             return ""
 
     try:
-        async for value in team.run_stream(task=str(inputs[-1])):
+        async for value in team.run_stream(task=str(input[-1])):
             if isinstance(value, BaseChatMessage) or isinstance(value, BaseAgentEvent):
                 action = {
                     "content": value.content,

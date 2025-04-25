@@ -84,15 +84,15 @@ server = Server()
         },
     )
 )
-async def ollama_deep_researcher(inputs: list[Message]) -> AsyncIterator:
+async def ollama_deep_researcher(input: list[Message]) -> AsyncIterator:
     """
     The agent performs AI-driven research by generating queries, gathering web data, summarizing findings, and refining
     results through iterative knowledge gap analysis.
     """
-    inputs = SummaryStateInput(research_topic=inputs[-1].parts[-1].content)
+    input = SummaryStateInput(research_topic=input[-1].parts[-1].content)
     try:
         output = None
-        async for event in graph.astream(inputs, stream_mode="updates"):
+        async for event in graph.astream(input, stream_mode="updates"):
             yield {
                 "message": "\n".join(
                     f"🚶‍♂️{key}: {str(value)[:100] + '...' if len(str(value)) > 100 else str(value)}"

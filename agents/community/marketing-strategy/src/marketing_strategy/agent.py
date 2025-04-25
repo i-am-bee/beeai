@@ -83,7 +83,7 @@ server = Server()
         ],
     )
 )
-def marketing_strategy(inputs: list[Message], context: Context) -> Iterator:
+def marketing_strategy(input: list[Message], context: Context) -> Iterator:
     """
     The agent performs comprehensive marketing strategy analysis for projects, generating detailed strategies,
     campaign ideas, and compelling marketing copies through a structured process involving multiple expert roles.
@@ -111,8 +111,8 @@ def marketing_strategy(inputs: list[Message], context: Context) -> Iterator:
                 return  # unsupported event
 
     try:
-        inputs = {"project_description": inputs[-1].parts[-1].content}
-        result = create_marketing_crew(llm, step_callback).kickoff(inputs=inputs)
+        input = {"project_description": input[-1].parts[-1].content}
+        result = create_marketing_crew(llm, step_callback).kickoff(inputs=input)
         yield MessagePart(content=result.raw)
     except Exception as e:
         raise Exception(f"An error occurred while running the crew: {e}")

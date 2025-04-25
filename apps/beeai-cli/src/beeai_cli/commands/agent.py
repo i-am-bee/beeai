@@ -150,11 +150,11 @@ async def _run_agent(client: Client, name: str, input: str | list[Message], dump
     status.start()
     status_stopped = False
 
-    inputs = [Message(parts=[MessagePart(content=input, role="user")])] if isinstance(input, str) else input
+    input = [Message(parts=[MessagePart(content=input, role="user")])] if isinstance(input, str) else input
 
     log_type = None
     current_agent = None
-    async for event in client.run_stream(agent=name, inputs=inputs):
+    async for event in client.run_stream(agent=name, input=input):
         if not status_stopped:
             status_stopped = True
             status.stop()
@@ -518,11 +518,7 @@ async def run_agent(
                 f"Please use the agent according to the following examples and schema:"
             )
             err_console.print(_render_examples(agent))
-            # err_console.print(Markdown("## Schema"), "")
-            # err_console.print(_render_schema(agent.inputSchema))
             exit(1)
-
-        # config_schema = _get_config_schema(agent.inputSchema)
 
         splash_screen = Group(
             Markdown(f"# {agent.name}  \n{agent.description}"),
@@ -530,8 +526,6 @@ async def run_agent(
         )
 
         handle_input = _create_input_handler([], splash_screen=splash_screen)
-
-        # console.print()
 
         if ui_type == UiType.chat:
             messages = []

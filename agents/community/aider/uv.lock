@@ -4,9 +4,10 @@ requires-python = "==3.11.*"
 
 [[package]]
 name = "acp-sdk"
-version = "0.4.0"
+version = "0.7.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
+    { name = "cachetools" },
     { name = "fastapi", extra = ["standard"] },
     { name = "httpx" },
     { name = "httpx-sse" },
@@ -18,9 +19,9 @@ dependencies = [
     { name = "opentelemetry-sdk" },
     { name = "pydantic" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/8a/63/3a0ad0402daa19b2476531e85df691e59f82f39e4ad3bd36bbde0aebb530/acp_sdk-0.4.0.tar.gz", hash = "sha256:7ae7e046fa966e80ac5f4afba57eec019ebecabce58861a79b8f23bdb1f3b4d6", size = 18610 }
+sdist = { url = "https://files.pythonhosted.org/packages/53/ea/4718fa90d0c0fbe85c84ae29b88f5e1ad52a63b84326e3faabf044cceb7b/acp_sdk-0.7.1.tar.gz", hash = "sha256:f521c94aa65f8001770164fe2bbad499cfa0f60d76cca2bc913cef11050f2389", size = 20363 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/e1/5e/7177f0fe35d469f86ec8ce0551a14cfb60d91933903b02a343974a28b243/acp_sdk-0.4.0-py3-none-any.whl", hash = "sha256:c9b6be71658b48ce5d011d957739101903e14a9f99aecf931deb5c1ded373462", size = 17484 },
+    { url = "https://files.pythonhosted.org/packages/49/3e/a8ef00516ecefac1c1f4899c41596bbc17a28cf233e4bba6b981657913a3/acp_sdk-0.7.1-py3-none-any.whl", hash = "sha256:73473ecf222acf8f72296f4a3206527141484139e8ead2c4bec3472b8b25747a", size = 18897 },
 ]
 
 [[package]]
@@ -37,7 +38,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "acp-sdk", specifier = ">=0.3.3" },
+    { name = "acp-sdk", specifier = ">=0.6.0" },
     { name = "aider-chat", specifier = ">=0.18.1" },
     { name = "google-generativeai", specifier = ">=0.8.4" },
     { name = "pydantic", specifier = ">=2.10.6" },
