@@ -4,6 +4,10 @@ description: "Exposing tools through BeeAI"
 icon: "screwdriver-wrench"
 ---
 
+import OutdatedWarning from "/snippets/outdated-warning.mdx";
+
+<OutdatedWarning />
+
 Tools in BeeAI follow the [Model Context Protocol](https://modelcontextprotocol.io/). Adding a tool to a provider is simple and requires minimal setup.
 
 ## Implementing a tool
@@ -28,7 +32,7 @@ def main():
 
 ## Registering the provider
 
-After registering the provider (see [Providers](/concepts/providers)), the tool will be available via the command line. You can check for its presence using:
+After registering the provider, the tool will be available via the command line. You can check for its presence using:
 
 ```sh
 beeai tool list
@@ -42,7 +46,7 @@ beeai tool run add '{"a": 1, "b": 2}'
 
 ## Agent usage
 
-Tools can be accessed programmatically by agents through the [ACP SDK](/acp/pre-alpha/sdk) package or directly via [MCP](https://modelcontextprotocol.io/). This enables integration with frameworks through adapters such as:
+Tools can be accessed programmatically by agents through the ACP SDK package or directly via [MCP](https://modelcontextprotocol.io/). This enables integration with frameworks through adapters such as:
 
 - [BeeAI framework MCP Tool](https://i-am-bee.github.io/beeai-framework/#/python/tools?id=mcp-tool)
 - [LangChain MCP Adapters](https://github.com/langchain-ai/langchain-mcp-adapters)

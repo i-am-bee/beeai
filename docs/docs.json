@@ -32,7 +32,6 @@
         "group": "Core Concepts",
         "pages": [
           "/concepts/architecture",
-          "/concepts/providers",
           "/concepts/agents",
           "/concepts/tools"
         ]

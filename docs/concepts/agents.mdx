@@ -4,9 +4,13 @@ description: "How BeeAI implements agents, their types, and schemas"
 icon: "browser"
 ---
 
+import OutdatedWarning from "/snippets/outdated-warning.mdx";
+
+<OutdatedWarning />
+
 Agents are implemented in BeeAI as stateless functions that process input objects according to an input schema and return results in the output schema format. During execution, agents have the ability to stream progress.
 
-The registration of agents is facilitated through the [Agent Communication Protocol SDK](/acp/pre-alpha/sdk).
+The registration of agents is facilitated through the Agent Communication Protocol SDK.
 
 Logic for agents can be implemented using any framework, language, or runtime. For example:
 
@@ -19,8 +23,7 @@ Logic for agents can be implemented using any framework, language, or runtime. F
 Each agent has input and output schemas based on the `beeai-sdk` package:
 
 <Note>
-  In [ACP Alpha](/acp/alpha), `beeai-sdk` is meging into a single library
-  `acp-sdk`.
+  In ACP Alpha, `beeai-sdk` is meging into a single library `acp-sdk`.
 </Note>
 
 ```python
@@ -62,9 +65,9 @@ Agents can define their own input/output schemas or opt into standardized schema
 Chat agents use the `chat` interface, which requires the `MessageInput` and `MessageOutput` schemas. They must declare this interface in their metadata.
 
 <Note>
-  In [ACP Pre-alpha](/acp/pre-alpha), chat agents are stateless and need to
-  re-create any persistent state, like memory, on each invocation. [ACP
-  Alpha](/acp/alpha) is introducing stateful agents.
+  In ACP Pre-alpha, chat agents are stateless and need to re-create any
+  persistent state, like memory, on each invocation. ACP Alpha is introducing
+  stateful agents.
 </Note>
 
 <Expandable title="example">

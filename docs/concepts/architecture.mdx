@@ -4,11 +4,9 @@ description: "An overview of BeeAI core concepts and architecture"
 icon: "sitemap"
 ---
 
-<Warning>
-  Fundamental breaking changes are happening now, affecting protocol, transport,
-  and APIs. Consider this version experimental. Join [Alpha
-  discussions](/acp/alpha/architecture#discussions) to help shape it.
-</Warning>
+import OutdatedWarning from "/snippets/outdated-warning.mdx";
+
+<OutdatedWarning />
 
 ## Architecture
 
@@ -27,7 +25,7 @@ The platform is made up of several core concepts as shown in the following diagr
 
 ## Agents
 
-An agent is a container that communicates using the [Agent Communication Protocol](/acp). Agents typically define a manifest that instructs BeeAI on how to run them and may include additional features like tools.
+An agent is a container that communicates using the [Agent Communication Protocol](https://agentcommunicationprotocol.dev). Agents typically define a manifest that instructs BeeAI on how to run them and may include additional features like tools.
 
 For details on registering agents, see [agents](/concepts/agents).
 
@@ -65,15 +63,7 @@ Use `beeai run <name>` or the graphical chat at [localhost:8333](http://localhos
 
 ## Python and TypeScript clients
 
-<Info>
-  Explore the
-  [acp-python-sdk](https://github.com/i-am-bee/beeai/tree/main/packages/acp-python-sdk)
-  and
-  [acp-typescript-sdk](https://github.com/i-am-bee/beeai/tree/main/packages/acp-typescript-sdk)
-  source code.
-</Info>
-
-You can use the [ACP SDK](/acp/pre-alpha/sdk#using-the-acp-client) to programmatically interact with the agents and integrate multiple agents into a workflow for your application.
+You can use the ACP SDK to programmatically interact with the agents and integrate multiple agents into a workflow for your application.
 
 ## Arize Phoenix
 
