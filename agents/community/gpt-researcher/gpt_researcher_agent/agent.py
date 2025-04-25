@@ -77,6 +77,10 @@ server = Server()
     )
 )
 async def gpt_researcher(input: list[Message], context: Context) -> None:
+    """
+    The agent conducts in-depth local and web research using a language model to generate comprehensive reports with
+    citations, aimed at delivering factual, unbiased information.
+    """
     os.environ["RETRIEVER"] = "duckduckgo"
     os.environ["OPENAI_BASE_URL"] = os.getenv("LLM_API_BASE", "http://localhost:11434/v1")
     os.environ["OPENAI_API_KEY"] = os.getenv("LLM_API_KEY", "dummy")
@@ -102,11 +106,7 @@ async def gpt_researcher(input: list[Message], context: Context) -> None:
                 case "report":
                     await context.yield_async(Message(parts=[MessagePart(content=data["output"])]))
 
-    researcher = GPTResearcher(
-        query="Impact of climate change on global agriculture",
-        report_type="research_report",
-        websocket=CustomLogsHandler(),
-    )
+    researcher = GPTResearcher(query=str(input[-1]), report_type="research_report", websocket=CustomLogsHandler())
     await researcher.conduct_research()
     await researcher.write_report()
 
