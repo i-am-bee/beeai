@@ -14,64 +14,63 @@
  * limitations under the License.
  */
 
-import { useMutation } from '@tanstack/react-query';
-import type z from 'zod';
-import type { ZodLiteral, ZodObject } from 'zod';
+// import { useMutation } from '@tanstack/react-query';
+// import type z from 'zod';
+// import type { ZodLiteral, ZodObject } from 'zod';
 
-import type { QueryMetadata } from '#contexts/QueryProvider/types.ts';
-import type { Agent } from '#modules/agents/api/types.ts';
+// import type { QueryMetadata } from '#contexts/QueryProvider/types.ts';
+// import type { Agent } from '#modules/agents/api/types.ts';
 
-interface Props<
-  NotificationsSchema extends ZodObject<{
-    method: ZodLiteral<string>;
-  }>,
-> {
-  notifications?: {
-    handler: (notification: z.infer<NotificationsSchema>) => void | Promise<void>;
-  };
-  queryMetadata?: QueryMetadata;
-}
+// interface Props<
+//   NotificationsSchema extends ZodObject<{
+//     method: ZodLiteral<string>;
+//   }>,
+// > {
+//   notifications?: {
+//     handler: (notification: z.infer<NotificationsSchema>) => void | Promise<void>;
+//   };
+//   queryMetadata?: QueryMetadata;
+// }
 
-interface RunMutationProps<Input extends { [x: string]: unknown }> {
-  agent: Agent;
-  input: Input;
-  abortController?: AbortController;
-}
+// interface RunMutationProps<Input extends { [x: string]: unknown }> {
+//   agent: Agent;
+//   input: Input;
+//   abortController?: AbortController;
+// }
 
-export function useRunAgent<
-  Input extends { [x: string]: unknown },
-  NotificationsSchema extends ZodObject<{
-    method: ZodLiteral<string>;
-  }>,
->({ notifications, queryMetadata }: Props<NotificationsSchema>) {
-  const { mutateAsync, isPending } = useMutation({
-    mutationFn: async ({ agent, input, abortController }: RunMutationProps<Input>) => {
-      // TODO
-      // if (notifications) {
-      //   client.setNotificationHandler(
-      //     AgentRunProgressNotificationSchema as unknown as NotificationsSchema,
-      //     notifications.handler,
-      //   );
-      // }
-      // return client.runAgent(
-      //   {
-      //     _meta: { progressToken: notifications ? crypto.randomUUID() : undefined },
-      //     name: agent.name,
-      //     input,
-      //   },
-      //   {
-      //     timeout: 10 * 60 * 1000, // 10 minutes
-      //     signal: abortController?.signal,
-      //   },
-      // );
-    },
-    meta: queryMetadata ?? {
-      errorToast: {
-        title: 'Agent run failed',
-        includeErrorMessage: true,
-      },
-    },
-  });
+// export function useRunAgent<
+//   Input extends { [x: string]: unknown },
+//   NotificationsSchema extends ZodObject<{
+//     method: ZodLiteral<string>;
+//   }>,
+// >({ notifications, queryMetadata }: Props<NotificationsSchema>) {
+//   const { mutateAsync, isPending } = useMutation({
+//     mutationFn: async ({ agent, input, abortController }: RunMutationProps<Input>) => {
+//       if (notifications) {
+//         client.setNotificationHandler(
+//           AgentRunProgressNotificationSchema as unknown as NotificationsSchema,
+//           notifications.handler,
+//         );
+//       }
+//       return client.runAgent(
+//         {
+//           _meta: { progressToken: notifications ? crypto.randomUUID() : undefined },
+//           name: agent.name,
+//           input,
+//         },
+//         {
+//           timeout: 10 * 60 * 1000, // 10 minutes
+//           signal: abortController?.signal,
+//         },
+//       );
+//     },
+//     meta: queryMetadata ?? {
+//       errorToast: {
+//         title: 'Agent run failed',
+//         includeErrorMessage: true,
+//       },
+//     },
+//   });
 
-  return { runAgent: mutateAsync, isPending };
-}
+//   return { runAgent: mutateAsync, isPending };
+// }

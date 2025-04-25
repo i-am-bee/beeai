@@ -14,8 +14,23 @@
  * limitations under the License.
  */
 
-import type { ComposeNotificationDelta } from './types';
+import { useNavigate, useParams } from 'react-router';
 
-export function getComposeDeltaResultText(result: ComposeNotificationDelta) {
-  return Array.isArray(result.messages) ? result.messages.at(-1)?.content : (result.text ?? '');
+import { AgentRun } from '#modules/runs/components/AgentRun.tsx';
+import { routes } from '#utils/router.ts';
+
+type Params = {
+  agentName: string;
+};
+
+export function AgentRunPage() {
+  const { agentName } = useParams<Params>();
+  const navigate = useNavigate();
+
+  if (!agentName) {
+    navigate(routes.notFound(), { replace: true });
+    return null;
+  }
+
+  return <AgentRun name={agentName} />;
 }

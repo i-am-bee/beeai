@@ -63,11 +63,13 @@ export const ChatInput = memo(function ChatInput({ onMessageSubmit }: Props) {
       <div ref={containerRef}>
         <InputBar
           onSubmit={() => {
-            handleSubmit(async ({ input, tools }) => {
+            handleSubmit(async ({ input }) => {
+              // handleSubmit(async ({ input, tools }) => {
               onMessageSubmit?.();
               resetForm();
 
-              await sendMessage({ input, config: { tools } });
+              await sendMessage({ input });
+              // await sendMessage({ input, config: { tools } });
             })();
           }}
           isSubmitDisabled={isSubmitDisabled}

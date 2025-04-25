@@ -14,20 +14,11 @@
  * limitations under the License.
  */
 
-import type { TextInput } from '@i-am-bee/beeai-sdk/schemas/text';
 import type { PropsWithChildren } from 'react';
 import { useCallback, useMemo, useRef, useState } from 'react';
 
 import type { Agent } from '#modules/agents/api/types.ts';
-import { useRunAgent } from '#modules/runs/api/mutations/useRunAgent.tsx';
-import type {
-  TextNotification,
-  TextNotificationLogs,
-  TextNotificationSchema,
-  TextResult,
-} from '#modules/runs/api/types.ts';
 import type { RunStats } from '#modules/runs/types.ts';
-import { isNotNull } from '#utils/helpers.ts';
 
 import { HandsOffContext } from './hands-off-context';
 
@@ -36,28 +27,30 @@ interface Props {
 }
 
 export function HandsOffProvider({ agent, children }: PropsWithChildren<Props>) {
-  const [input, setInput] = useState<TextInput>();
+  // TODO
+  const [input, setInput] = useState<{ text: string }>();
   const [stats, setStats] = useState<RunStats>();
-  const [logs, setLogs] = useState<TextNotificationLogs>([]);
+  // TODO
+  const [logs, setLogs] = useState<[]>([]);
   const [text, setText] = useState<string>('');
   const [isPending, setIsPending] = useState<boolean>(false);
   const abortControllerRef = useRef<AbortController | null>(null);
 
-  const { runAgent } = useRunAgent<TextInput, TextNotificationSchema>({
-    notifications: {
-      handler: (notification) => handleNotification(notification),
-    },
-  });
+  // const { runAgent } = useRunAgent<TextInput, TextNotificationSchema>({
+  //   notifications: {
+  //     handler: (notification) => handleNotification(notification),
+  //   },
+  // });
 
-  const handleNotification = useCallback((notification: TextNotification) => {
-    const { logs: logsDelta, text: textDelta } = notification.params.delta;
+  // const handleNotification = useCallback((notification: TextNotification) => {
+  //   const { logs: logsDelta, text: textDelta } = notification.params.delta;
 
-    setLogs((logs) => [
-      ...logs,
-      ...logsDelta.filter((log): log is NonNullable<typeof log> => isNotNull(log) && log.message !== ''),
-    ]);
-    setText((text) => (textDelta ? text.concat(textDelta) : text));
-  }, []);
+  //   setLogs((logs) => [
+  //     ...logs,
+  //     ...logsDelta.filter((log): log is NonNullable<typeof log> => isNotNull(log) && log.message !== ''),
+  //   ]);
+  //   setText((text) => (textDelta ? text.concat(textDelta) : text));
+  // }, []);
 
   const handleCancel = useCallback(() => {
     abortControllerRef.current?.abort();
@@ -88,13 +81,13 @@ export function HandsOffProvider({ agent, children }: PropsWithChildren<Props>) 
         setStats({ startTime: Date.now() });
         setIsPending(true);
 
-        const response = (await runAgent({
-          agent,
-          input,
-          abortController,
-        })) as TextResult;
+        // const response = (await runAgent({
+        //   agent,
+        //   input,
+        //   abortController,
+        // }));
 
-        setText(response.output.text);
+        // setText(response.output.text);
       } catch (error) {
         console.error(error);
       } finally {
@@ -102,7 +95,7 @@ export function HandsOffProvider({ agent, children }: PropsWithChildren<Props>) 
         setIsPending(false);
       }
     },
-    [agent, runAgent, handleReset],
+    [handleReset],
   );
 
   const contextValue = useMemo(

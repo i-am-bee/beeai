@@ -18,7 +18,7 @@ import { createContext } from 'react';
 import type { UseFieldArrayReturn } from 'react-hook-form';
 
 import type { Agent } from '#modules/agents/api/types.ts';
-import type { RunStats } from '#modules/run/types.ts';
+import type { RunStats } from '#modules/runs/types.ts';
 
 export const ComposeContext = createContext<ComposeContextValue | null>(null);
 

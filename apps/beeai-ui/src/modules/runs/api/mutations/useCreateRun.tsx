@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-import { AgentRunProgressNotificationSchema } from '@i-am-bee/acp-sdk/types';
-import { outputSchema } from '@i-am-bee/beeai-sdk/schemas/base';
-import { z } from 'zod';
+import { useMutation } from '@tanstack/react-query';
 
-export const composeNotificationSchema = AgentRunProgressNotificationSchema.extend({
-  params: z.object({
-    delta: outputSchema.extend({
-      agent_idx: z.number(),
-      agent_name: z.string(),
-    }),
-  }),
-});
-export type ComposeNotificationSchema = typeof composeNotificationSchema;
-export type ComposeNotification = z.infer<ComposeNotificationSchema>;
-export type ComposeNotificationDelta = ComposeNotification['params']['delta'];
+import { createRun } from '..';
+
+export function useCreateRun() {
+  const mutation = useMutation({
+    mutationFn: createRun,
+    meta: {
+      errorToast: {
+        title: 'Failed to run agent.',
+      },
+    },
+  });
+
+  return mutation;
+}

@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-import type { MessageInput } from '@i-am-bee/beeai-sdk/schemas/message';
 import type { PropsWithChildren } from 'react';
 import { useCallback, useMemo, useRef } from 'react';
 import { v4 as uuid } from 'uuid';
 
 import { useImmerWithGetter } from '#hooks/useImmerWithGetter.ts';
 import type { Agent } from '#modules/agents/api/types.ts';
-import { useRunAgent } from '#modules/runs/api/mutations/useRunAgent.tsx';
-import type { MessagesNotificationSchema, MessagesResult } from '#modules/runs/api/types.ts';
+import { useCreateRun } from '#modules/runs/api/mutations/useCreateRun.tsx';
 import type { AgentMessage, ChatMessage, SendMessageParams } from '#modules/runs/chat/types.ts';
 
 import { ChatContext, ChatMessagesContext } from './chat-context';
@@ -48,25 +46,28 @@ export function ChatProvider({ agent, children }: PropsWithChildren<Props>) {
     [setMessages],
   );
 
-  const { runAgent, isPending } = useRunAgent<MessageInput, MessagesNotificationSchema>({
-    notifications: {
-      handler: (notification) => {
-        const text = String(notification.params.delta.messages.at(-1)?.content);
-        updateLastAgentMessage((message) => {
-          message.content += text;
-        });
-      },
-    },
-  });
+  const { isPending } = useCreateRun();
 
-  const getInputMessages = useCallback(() => {
-    return getMessages()
-      .slice(0, -1)
-      .map(({ role, content }) => ({ role, content }));
-  }, [getMessages]);
+  // const { runAgent, isPending } = useRunAgent<MessageInput, MessagesNotificationSchema>({
+  //   notifications: {
+  //     handler: (notification) => {
+  //       const text = String(notification.params.delta.messages.at(-1)?.content);
+  //       updateLastAgentMessage((message) => {
+  //         message.content += text;
+  //       });
+  //     },
+  //   },
+  // });
+
+  // const getInputMessages = useCallback(() => {
+  //   return getMessages()
+  //     .slice(0, -1)
+  //     .map(({ role, content }) => ({ role, content }));
+  // }, [getMessages]);
 
   const sendMessage = useCallback(
-    async ({ input, config }: SendMessageParams) => {
+    async ({ input }: SendMessageParams) => {
+      // async ({ input, config }: SendMessageParams) => {
       setMessages((messages) => {
         messages.push({
           key: uuid(),
@@ -85,19 +86,21 @@ export function ChatProvider({ agent, children }: PropsWithChildren<Props>) {
         const abortController = new AbortController();
         abortControllerRef.current = abortController;
 
-        const response = (await runAgent({
-          agent,
-          input: {
-            messages: getInputMessages(),
-            config,
-          },
-          abortController,
-        })) as MessagesResult;
+        console.log('send');
 
-        updateLastAgentMessage((message) => {
-          message.content = String(response.output.messages.at(-1)?.content);
-          message.status = 'success';
-        });
+        // const response = await createRun({
+        //   agent,
+        //   input: {
+        //     messages: getInputMessages(),
+        //     config,
+        //   },
+        //   abortController,
+        // });
+
+        // updateLastAgentMessage((message) => {
+        //   message.content = String(response.output.messages.at(-1)?.content);
+        //   message.status = 'success';
+        // });
       } catch (error) {
         console.error(error);
 
@@ -107,7 +110,7 @@ export function ChatProvider({ agent, children }: PropsWithChildren<Props>) {
         });
       }
     },
-    [agent, getInputMessages, runAgent, setMessages, updateLastAgentMessage],
+    [setMessages, updateLastAgentMessage],
   );
 
   const handleCancel = useCallback(() => {

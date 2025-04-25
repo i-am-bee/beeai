@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import type { MessageInput } from '@i-am-bee/beeai-sdk/schemas/message';
-
 export interface MessageBase {
   key: string;
   content: string;
@@ -30,4 +28,4 @@ export interface AgentMessage extends MessageBase {
 }
 export type ChatMessage = ClientMessage | AgentMessage;
 
-export type SendMessageParams = { input: string; config?: MessageInput['config'] };
+export type SendMessageParams = { input: string };

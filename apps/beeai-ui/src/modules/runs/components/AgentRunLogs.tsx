@@ -20,12 +20,12 @@ import { useState } from 'react';
 
 import { useAutoScroll } from '#hooks/useAutoScroll.ts';
 
-import type { TextNotificationLogs } from '../api/types';
 import { AgentRunLogItem } from './AgentRunLogItem';
 import classes from './AgentRunLogs.module.scss';
 
 interface Props {
-  logs: TextNotificationLogs;
+  // TODO
+  logs: [];
   toggleable?: boolean;
 }
 

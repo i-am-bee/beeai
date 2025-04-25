@@ -22,14 +22,10 @@ import { useSearchParams } from 'react-router';
 import { useHandleError } from '#hooks/useHandleError.ts';
 import { usePrevious } from '#hooks/usePrevious.ts';
 import { useListAgents } from '#modules/agents/api/queries/useListAgents.ts';
-import { useRunAgent } from '#modules/runs/api/mutations/useRunAgent.tsx';
-import type { TextResult } from '#modules/runs/api/types.ts';
 import { isNotNull } from '#utils/helpers.ts';
 
 import { SEQUENTIAL_COMPOSE_AGENT_NAME } from '../sequential/constants';
-import type { SequentialWorkflowInput } from '../sequential/types';
 import { getSequentialComposeAgent } from '../sequential/utils';
-import type { ComposeNotificationDelta, ComposeNotificationSchema } from '../types';
 import type { ComposeStep, RunStatus, SequentialFormValues } from './compose-context';
 import { ComposeContext } from './compose-context';
 
@@ -89,86 +85,86 @@ export function ComposeProvider({ children }: PropsWithChildren) {
     }
   }, [availableAgents, replaceSteps, searchParams, steps.length]);
 
-  const handleSuccessLog = useCallback(
-    (logs: ComposeNotificationDelta['logs']) => {
-      const successLog = logs.find((log) => log?.level === 'success');
-      if (successLog) {
-        const steps = getValues('steps');
-        const pendingStepIndex = steps.findIndex((step) => step.isPending);
-        const pendingStep = steps.at(pendingStepIndex);
-        if (pendingStep) {
-          const updatedStep = {
-            ...pendingStep,
-            isPending: false,
-            stats: { ...pendingStep.stats, endTime: Date.now() },
-          };
-          updateStep(pendingStepIndex, updatedStep);
+  // const handleSuccessLog = useCallback(
+  //   (logs: ComposeNotificationDelta['logs']) => {
+  //     const successLog = logs.find((log) => log?.level === 'success');
+  //     if (successLog) {
+  //       const steps = getValues('steps');
+  //       const pendingStepIndex = steps.findIndex((step) => step.isPending);
+  //       const pendingStep = steps.at(pendingStepIndex);
+  //       if (pendingStep) {
+  //         const updatedStep = {
+  //           ...pendingStep,
+  //           isPending: false,
+  //           stats: { ...pendingStep.stats, endTime: Date.now() },
+  //         };
+  //         updateStep(pendingStepIndex, updatedStep);
 
-          const nextStepIndex = pendingStepIndex + 1;
-          const nextStep = steps.at(pendingStepIndex + 1);
-          if (nextStep) {
-            const nextUpdatedStep = {
-              ...nextStep,
-              isPending: true,
-              stats: {
-                startTime: nextStep.stats?.startTime ?? Date.now(),
-              },
-            };
-            updateStep(nextStepIndex, nextUpdatedStep);
-          }
-        }
-      }
-    },
-    [getValues, updateStep],
-  );
+  //         const nextStepIndex = pendingStepIndex + 1;
+  //         const nextStep = steps.at(pendingStepIndex + 1);
+  //         if (nextStep) {
+  //           const nextUpdatedStep = {
+  //             ...nextStep,
+  //             isPending: true,
+  //             stats: {
+  //               startTime: nextStep.stats?.startTime ?? Date.now(),
+  //             },
+  //           };
+  //           updateStep(nextStepIndex, nextUpdatedStep);
+  //         }
+  //       }
+  //     }
+  //   },
+  //   [getValues, updateStep],
+  // );
 
-  const handleRunDelta = useCallback(
-    (delta: ComposeNotificationDelta) => {
-      if (delta.agent_idx === undefined) {
-        handleSuccessLog(delta.logs);
-        return;
-      }
+  // const handleRunDelta = useCallback(
+  //   (delta: ComposeNotificationDelta) => {
+  //     if (delta.agent_idx === undefined) {
+  //       handleSuccessLog(delta.logs);
+  //       return;
+  //     }
 
-      const fieldName = `steps.${delta.agent_idx}` as const;
-      const step = getValues(fieldName);
+  //     const fieldName = `steps.${delta.agent_idx}` as const;
+  //     const step = getValues(fieldName);
 
-      if (!step) return;
+  //     if (!step) return;
 
-      const updatedStep = {
-        ...step,
-        isPending: true,
-        stats: {
-          startTime: step.stats?.startTime ?? Date.now(),
-        },
-        result: `${step.result ?? ''}${delta.text ?? ''}`,
-        logs: [...(step.logs ?? []), ...delta.logs.filter(isNotNull).map((item) => item.message)],
-      };
+  //     const updatedStep = {
+  //       ...step,
+  //       isPending: true,
+  //       stats: {
+  //         startTime: step.stats?.startTime ?? Date.now(),
+  //       },
+  //       result: `${step.result ?? ''}${delta.text ?? ''}`,
+  //       logs: [...(step.logs ?? []), ...delta.logs.filter(isNotNull).map((item) => item.message)],
+  //     };
 
-      updateStep(delta.agent_idx, updatedStep);
+  //     updateStep(delta.agent_idx, updatedStep);
 
-      if (delta.agent_idx > 0) {
-        const stepsBefore = getValues('steps').slice(0, delta.agent_idx);
+  //     if (delta.agent_idx > 0) {
+  //       const stepsBefore = getValues('steps').slice(0, delta.agent_idx);
 
-        stepsBefore.forEach((step, stepsBeforeIndex) => {
-          if (step.isPending || !step.stats?.endTime) {
-            updateStep(stepsBeforeIndex, { ...step, isPending: false, stats: { ...step.stats, endTime: Date.now() } });
-          }
-        });
-      }
-    },
-    [getValues, handleSuccessLog, updateStep],
-  );
+  //       stepsBefore.forEach((step, stepsBeforeIndex) => {
+  //         if (step.isPending || !step.stats?.endTime) {
+  //           updateStep(stepsBeforeIndex, { ...step, isPending: false, stats: { ...step.stats, endTime: Date.now() } });
+  //         }
+  //       });
+  //     }
+  //   },
+  //   [getValues, handleSuccessLog, updateStep],
+  // );
 
-  const { runAgent } = useRunAgent<SequentialWorkflowInput, ComposeNotificationSchema>({
-    notifications: {
-      handler: (notification) => {
-        handleRunDelta(notification.params.delta);
-      },
-    },
-    queryMetadata: {
-      errorToast: false,
-    },
-  });
+  // const { runAgent } = useRunAgent<SequentialWorkflowInput, ComposeNotificationSchema>({
+  //   notifications: {
+  //     handler: (notification) => {
+  //       handleRunDelta(notification.params.delta);
+  //     },
+  //   },
+  //   queryMetadata: {
+  //     errorToast: false,
+  //   },
+  // });
 
   const send = useCallback(
     async (steps: ComposeStep[]) => {
@@ -194,16 +190,16 @@ export function ComposeProvider({ children }: PropsWithChildren) {
           });
         });
 
-        const result = (await runAgent({
-          agent: composeAgent,
-          input: {
-            steps: steps.map(({ data, instruction }) => ({ agent: data.name, instruction })),
-          },
-          abortController,
-        })) as TextResult;
+        // const result = await runAgent({
+        //   agent: composeAgent,
+        //   input: {
+        //     steps: steps.map(({ data, instruction }) => ({ agent: data.name, instruction })),
+        //   },
+        //   abortController,
+        // });
 
-        const lastStep = getValues('steps').at(-1);
-        updateStep(steps.length - 1, { ...lastStep!, result: result.output.text });
+        // const lastStep = getValues('steps').at(-1);
+        // updateStep(steps.length - 1, { ...lastStep!, result: result.output.text });
       } catch (error) {
         if (abortControllerRef.current?.signal.aborted) return;
 
@@ -222,7 +218,7 @@ export function ComposeProvider({ children }: PropsWithChildren) {
         );
       }
     },
-    [availableAgents, getValues, handleError, replaceSteps, runAgent, updateStep],
+    [availableAgents, getValues, handleError, replaceSteps, updateStep],
   );
 
   const onSubmit = useCallback(() => {

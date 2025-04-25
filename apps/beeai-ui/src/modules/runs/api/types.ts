@@ -26,26 +26,4 @@ export type ResumeRunRequest = ApiRequest<'/api/v1/acp/runs/{run_id}'>;
 
 export type CancelRunPath = ApiPath<'/api/v1/acp/runs/{run_id}/cancel', 'post'>;
 
-// import { AgentRunProgressNotificationSchema, RunAgentResultSchema } from '@i-am-bee/acp-sdk/types';
-// import { messageOutputSchema } from '@i-am-bee/beeai-sdk/schemas/message';
-// import { textOutputSchema } from '@i-am-bee/beeai-sdk/schemas/text';
-// import { z } from 'zod';
-
-// export const textNotificationSchema = AgentRunProgressNotificationSchema.extend({
-//   // The text in delta should always be a string, but the agent could actually return undefined.
-//   params: z.object({ delta: textOutputSchema.partial({ text: true }) }),
-// });
-// export type TextNotificationSchema = typeof textNotificationSchema;
-// export type TextNotification = z.infer<TextNotificationSchema>;
-// export type TextNotificationLogs = Exclude<TextNotification['params']['delta']['logs'][number], null>[];
-
-// export const textResultSchema = RunAgentResultSchema.extend({ output: textOutputSchema });
-// export type TextResult = z.infer<typeof textResultSchema>;
-
-// export const messagesNotificationSchema = AgentRunProgressNotificationSchema.extend({
-//   params: z.object({ delta: messageOutputSchema }),
-// });
-// export type MessagesNotificationSchema = typeof messagesNotificationSchema;
-
-// export const messagesResultSchema = RunAgentResultSchema.extend({ output: messageOutputSchema });
-// export type MessagesResult = z.infer<typeof messagesResultSchema>;
+export type MessagePart = CreateRunRequest['inputs'][number]['parts'][number];
