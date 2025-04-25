@@ -95,7 +95,7 @@ async def literature_review(inputs: list[Message], context: Context) -> AsyncGen
                     "source": value.source,
                 }
                 
-                yield MessagePart(content=serialize_json(action))
+                yield {"message": serialize_json(action)}
             if isinstance(value, TaskResult):
                 content = value.messages[-1].content
                 yield MessagePart(content=content)
