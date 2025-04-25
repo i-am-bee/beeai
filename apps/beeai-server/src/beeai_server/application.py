@@ -71,6 +71,7 @@ def register_global_exception_handlers(app: FastAPI):
         return await http_exception_handler(request, HTTPException(status_code=exc.status_code, detail=str(exc)))
 
     @app.exception_handler(Exception)
+    @app.exception_handler(HTTPException)
     async def custom_http_exception_handler(request: Request, exc):
         """Include detail in all unhandled exceptions.
 
