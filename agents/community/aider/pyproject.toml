@@ -6,7 +6,7 @@ authors = [{ name = "IBM Corp." }]
 readme = "README.md"
 requires-python = ">=3.11,<3.12"
 dependencies = [
-    "beeai-sdk==0.0.22",
+    "acp-sdk>=0.3.3",
     "aider-chat>=0.18.1",
     "pydantic-settings>=2.7.1",
     "pydantic>=2.10.6",
@@ -14,7 +14,7 @@ dependencies = [
 ]
 
 [project.scripts]
-server = "aider_agent.agent:server"
+server = "aider_agent.agent:run"
 
 [build-system]
 requires = ["hatchling"]

@@ -8,11 +8,10 @@ A code-writing agent that uses [Aider](https://github.com/Aider-AI/aider) as a P
 - Running shell commands
 - Support for multiple programming languages
 
-## Setup
+## Run
 
 ```shell
-# run MCP server
-uv run aider-agent
+uv run server
 ```
 
 ## Configuration

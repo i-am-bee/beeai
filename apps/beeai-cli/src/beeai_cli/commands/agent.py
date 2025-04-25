@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import abc
+import base64
 import contextlib
 import inspect
 import json
@@ -23,6 +24,7 @@ from enum import StrEnum
 import jsonref
 from InquirerPy import inquirer
 from acp_sdk import (
+    ArtifactEvent,
     Message,
     Agent,
     ACPError,
@@ -178,20 +180,28 @@ async def _run_agent(client: Client, name: str, input: str | list[Message], dump
                 console.print()
             case RunFailedEvent():
                 console.print(f"💥 [bold red]{event.run.error.code.value}:[/bold red] {event.run.error.message}")
-
-    #         if dump_files_path is not None and (files := output_dict.get("files", {})):
-    #             files: dict[str, str]
-    #             dump_files_path.mkdir(parents=True, exist_ok=True)
-    #
-    #             for file_path, content in files.items():
-    #                 full_path = dump_files_path / file_path
-    #                 with contextlib.suppress(ValueError):
-    #                     full_path.resolve().relative_to(dump_files_path.resolve())  # throws if outside folder
-    #                     full_path.parent.mkdir(parents=True, exist_ok=True)
-    #                     full_path.write_text(content)
-    #
-    #             console.print(f"📁 Saved {len(files)} files to {dump_files_path}.")
-    #         return result
+            case ArtifactEvent():
+                if dump_files_path is None:
+                    continue
+                dump_files_path.mkdir(parents=True, exist_ok=True)
+                full_path = dump_files_path / event.part.name.lstrip("/")
+                with contextlib.suppress(ValueError):
+                    full_path.resolve().relative_to(dump_files_path.resolve())  # throws if outside folder
+                    full_path.parent.mkdir(parents=True, exist_ok=True)
+                    if event.part.content_url:
+                        err_console.print(
+                            f"⚠️ Downloading files is not supported by --dump-files, skipping {event.part.name} ({event.part.content_url})"
+                        )
+                    elif event.part.content_encoding == "base64":
+                        full_path.write_bytes(base64.b64decode(event.part.content))
+                        console.print(f"📁 Saved {full_path}")
+                    elif event.part.content_encoding == "plain" or not event.part.content_encoding:
+                        full_path.write_text(event.part.content)
+                        console.print(f"📁 Saved {full_path}")
+                    else:
+                        err_console.print(
+                            f"⚠️ Unknown encoding {event.part.content_encoding}, skipping {event.part.name}"
+                        )
 
 
 class InteractiveCommand(abc.ABC):
