@@ -18,6 +18,3 @@ server = "literature_review.server:run"
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
-
-[tool.hatch.build.targets.wheel]
-packages = ["src/literature_review"]
