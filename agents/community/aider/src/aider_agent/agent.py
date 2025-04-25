@@ -17,8 +17,6 @@ server = Server()
 
 
 @server.agent(
-    name="aider",
-    description="An AI pair programmer that edits code in a local Git repository using natural language, executing commands and providing feedback.",
     metadata=Metadata(
         programming_language="Python",
         links=[
@@ -33,7 +31,7 @@ server = Server()
         license="Apache 2.0",
         framework="Custom",
         documentation=dedent(
-            """
+            """\
             > ℹ️ NOTE
             > 
             > This agent works in stateless mode at the moment. While the CLI only shows the textual output, the created files are also available through the API.
@@ -57,15 +55,15 @@ server = Server()
             - **Local Environment Integration** – Operates directly within the user's local environment, simulating changes in a temporary workspace.
             - **Real-Time Feedback** – Provides continuous updates on the execution progress and returns detailed results.
             - **Error Handling** – Captures and reports errors encountered during execution, assisting with debugging.
-
-            ## Use Cases
-            - **Program Generation from Natural Language** – Converts user requests into fully functional programs.
-            - **Code Editing and Refactoring** – Assists developers in modifying existing codebases without manual intervention.
-            - **Debugging Support** – Provides insights and suggestions for resolving coding errors or inefficiencies.
-            - **Collaborative Programming** – Simulates a pair programming experience, enhancing coding efficiency and learning.
-            - **Bash/Shell Scripting Assistance** – Automates script writing, optimization, and debugging.
             """
         ),
+        use_cases=[
+            "**Program Generation from Natural Language** – Converts user requests into fully functional programs.",
+            "**Code Editing and Refactoring** – Assists developers in modifying existing codebases without manual intervention.",
+            "**Debugging Support** – Provides insights and suggestions for resolving coding errors or inefficiencies.",
+            "**Collaborative Programming** – Simulates a pair programming experience, enhancing coding efficiency and learning.",
+            "**Bash/Shell Scripting Assistance** – Automates script writing, optimization, and debugging.",
+        ],
         ui={"type": "hands-off", "user_greeting": "Define your programming task"},
         env=[
             {
@@ -140,8 +138,7 @@ server = Server()
 )
 async def aider(inputs: list[Message], context: Context) -> AsyncGenerator:
     """
-    Runs the aider tool to modify code based on the user's request.
-    Streams the output and returns modified files as artifacts.
+    An AI pair programmer that edits code in a local Git repository using natural language, executing commands and providing feedback.
     """
     user_message = str(inputs[-1])
     with tempfile.TemporaryDirectory() as tmp_dir:
