@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from typing import TypeVar, Generic, Any
-from pydantic import BaseModel, RootModel, Field, model_validator, AnyUrl
+from pydantic import BaseModel, RootModel, Field, AnyUrl
 
 from beeai_server.custom_types import ID
 from beeai_server.domain.model import (
@@ -37,14 +37,7 @@ class CreateManagedProviderRequest(BaseModel):
 
 
 class InstallProviderRequest(BaseModel):
-    id: ID | None = None
-    location: ProviderLocation | None = None
-
-    @model_validator(mode="after")
-    def level_uvicorn_validator(self):
-        if not (bool(self.id) ^ bool(self.location)):
-            raise ValueError("Exactly one of `location` or `id` must be specified")
-        return self
+    location: ProviderLocation
 
 
 class RegisterUnmanagedProviderRequest(BaseModel):
@@ -65,10 +58,6 @@ class UpdateTelemetryConfigRequest(BaseModel):
 
 
 RunAgentInput = RootModel[dict[str, Any]]
-
-
-DeleteProviderRequest = InstallProviderRequest
-StreamLogsRequest = InstallProviderRequest
 
 
 class ProviderWithStatus(BaseModel, extra="allow"):

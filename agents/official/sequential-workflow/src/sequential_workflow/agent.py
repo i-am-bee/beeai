@@ -146,12 +146,6 @@ async def sequential_workflow(input: list[Message]) -> AsyncIterator:
                             yield generic.model_copy(update={"agent_idx": idx, "agent_name": step.agent})
                         case MessageCompletedEvent(message=message):
                             previous_output = str(message)
-                            output = MessagePart(content=previous_output, agent_name=step.agent, agent_idx=idx)
-                            event = (
-                                str(previous_output)[:100] + "..."
-                                if len(str(previous_output)) > 100
-                                else str(previous_output)
-                            )
                             yield {
                                 "agent_name": step.agent,
                                 "agent_idx": idx,

@@ -39,7 +39,7 @@ from fastapi.exception_handlers import http_exception_handler
 from fastapi.responses import ORJSONResponse
 from kink import inject, di
 from starlette.responses import FileResponse
-from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
+from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR, HTTP_400_BAD_REQUEST
 from starlette.exceptions import HTTPException as StarletteHttpException
 from opentelemetry.metrics import get_meter, Observation, CallbackOptions
 from fastapi.exceptions import RequestValidationError
@@ -48,7 +48,7 @@ from beeai_server.telemetry import INSTRUMENTATION_NAME, shutdown_telemetry
 from beeai_server.domain.telemetry import TelemetryCollectorManager
 from beeai_server.bootstrap import bootstrap_dependencies_sync
 from beeai_server.configuration import Configuration
-from beeai_server.exceptions import ManifestLoadError
+from beeai_server.exceptions import ManifestLoadError, ProviderNotInstalledError
 from beeai_server.routes.provider import router as provider_router
 from beeai_server.routes.acp import router as acp_router
 from beeai_server.routes.env import router as env_router
@@ -81,13 +81,17 @@ def register_global_exception_handlers(app: FastAPI):
         if request.url.path.startswith("/api/v1/acp"):
             match exc:
                 case ACPError():
-                    return acp_error_handler(request, exc)
+                    return await acp_error_handler(request, exc)
                 case StarletteHttpException():
-                    return acp_http_exception_handler(request, exc)
+                    return await acp_http_exception_handler(request, exc)
                 case RequestValidationError():
-                    return validation_exception_handler(request, exc)
+                    return await validation_exception_handler(request, exc)
+                case ProviderNotInstalledError():
+                    return await acp_http_exception_handler(
+                        request, HTTPException(status_code=HTTP_400_BAD_REQUEST, detail=str(exc))
+                    )
                 case _:
-                    return catch_all_exception_handler(request, exc)
+                    return await catch_all_exception_handler(request, exc)
 
         logger.error("Error during HTTP request: %s", repr(extract_messages(exc)))
         return await http_exception_handler(

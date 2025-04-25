@@ -113,26 +113,29 @@ async def install_agent(
     """Install discovered agent or add public docker image or github repository [aliases: install]"""
     provider = None
     with contextlib.suppress(ACPError):
-        provider = (await _get_agent(name_or_location)).provider
+        provider = (await _get_agent(name_or_location)).metadata.provider
 
-    async for message in api_stream(
-        "POST",
-        "provider/install",
-        json={"id": provider, "location": name_or_location if not provider else None},
-        params={"stream": True},
-    ):
-        _print_log(message, ansi_mode=True)
+    if provider:
+        async for message in api_stream("PUT", f"provider/{provider}/install", params={"stream": True}):
+            _print_log(message, ansi_mode=True)
+    else:
+        async for message in api_stream(
+            "POST",
+            "provider/register/managed",
+            json={"location": name_or_location},
+            params={"stream": True, "install": True},
+        ):
+            _print_log(message, ansi_mode=True)
+
     await list_agents()
 
 
 @app.command("remove | uninstall | rm | delete")
 async def uninstall_agent(name: str = typer.Argument(..., help="Agent name")) -> None:
     """Remove agent"""
-    providers = (await api_request("get", "provider"))["items"]
     agent = await _get_agent(name)
-    [provider] = [provider for provider in providers if provider["id"] == agent.metadata.provider]
     with console.status("Uninstalling agent (may take a few minutes)...", spinner="dots"):
-        await api_request("post", "provider/delete", json={"id": provider["id"]})
+        await api_request("delete", f"provider/{agent.metadata.provider}")
     await list_agents()
 
 
@@ -141,7 +144,7 @@ async def stream_logs(name: str = typer.Argument(..., help="Agent name")):
     """Stream agent provider logs"""
     agent = await _get_agent(name)
     provider = agent.metadata.provider
-    async for message in api_stream("get", "provider/logs", params={"id": provider}):
+    async for message in api_stream("get", f"provider/{provider}/logs"):
         _print_log(message)
 
 
@@ -465,8 +468,7 @@ def _get_config_schema(schema: dict[str, Any] | None) -> dict[str, Any] | None:
 
 
 async def get_provider(provider_id: str):
-    providers = (await api_request("GET", "provider"))["items"]
-    return [provider for provider in providers if provider["id"] == provider_id][0]
+    return await api_request("GET", f"provider/{provider_id}")
 
 
 @app.command("run")
@@ -509,7 +511,6 @@ async def run_agent(
     is_sequential_workflow = agent.name in {"sequential_workflow"}
 
     user_greeting = ui.get("user_greeting", None) or "How can I help you?"
-    config = {}
 
     if not input:
         if ui_type not in {UiType.chat, UiType.hands_off} and not is_sequential_workflow:
@@ -528,13 +529,12 @@ async def run_agent(
         handle_input = _create_input_handler([], splash_screen=splash_screen)
 
         if ui_type == UiType.chat:
-            messages = []
             console.print(f"{user_greeting}\n")
             input = handle_input()
             async with acp_client() as client, client.session() as session:
                 while True:
                     console.print()
-                    result = await _run_agent(session, name, input, dump_files_path=dump_files)
+                    await _run_agent(session, name, input, dump_files_path=dump_files)
                     console.print()
                     input = handle_input()
 
@@ -563,8 +563,8 @@ def render_enum(value: str, colors: dict[str, str]) -> str:
     return value
 
 
-def _get_short_id(provider_id: str) -> str:
-    return re.sub(r"[a-z]*.io/i-am-bee/beeai/", "", provider_id)
+def _get_short_location(provider_id: str) -> str:
+    return re.sub(r"[a-z]*.io/i-am-bee/beeai-platform/", "", provider_id)
 
 
 @app.command("list")
@@ -572,7 +572,9 @@ async def list_agents():
     """List agents."""
     agents = await _get_agents()
     providers_by_id = {p["id"]: p for p in (await api_request("GET", "provider"))["items"]}
-    max_provider_len = max(len(_get_short_id(p_id)) for p_id in providers_by_id) if providers_by_id else 0
+    max_provider_len = (
+        max(len(_get_short_location(p["source_id"])) for p in providers_by_id.values()) if providers_by_id else 0
+    )
 
     def _sort_fn(agent: Agent):
         if not (provider := providers_by_id.get(agent.metadata.provider)):
@@ -598,7 +600,7 @@ async def list_agents():
             if provider := providers_by_id.get(agent.metadata.provider, None):
                 status = provider["status"]
                 missing_env = ",".join(var["name"] for var in provider["missing_configuration"])
-                location = _get_short_id(provider["id"])
+                location = _get_short_location(provider["source_id"])
                 error = (
                     (provider.get("last_error") or {}).get("message", None)
                     if provider["status"] != "ready"

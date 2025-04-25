@@ -94,8 +94,6 @@ async def gpt_researcher(input: list[Message], context: Context) -> None:
     if embedding_model:
         os.environ["EMBEDDING"] = embedding_model
 
-    output: str = ""
-
     class CustomLogsHandler:
         async def send_json(self, data: dict[str, Any]) -> None:
             if "output" not in data:

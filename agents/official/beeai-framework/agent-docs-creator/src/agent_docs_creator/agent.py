@@ -115,7 +115,6 @@ async def agent_docs_creator(input: list[Message], context: Context) -> AsyncGen
     os.environ["OPENAI_API_KEY"] = os.getenv("LLM_API_KEY", "dummy")
     llm = ChatModel.from_name(f"openai:{os.getenv('LLM_MODEL', 'llama3.1')}", ChatModelParameters(temperature=0))
 
-    podcast_writer_output = None
     async for data, event in llm.create(
         stream=True,
         messages=[

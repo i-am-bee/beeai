@@ -34,6 +34,7 @@ from beeai_server.domain.model import (
     LoadProviderErrorMessage,
     Agent,
 )
+from beeai_server.exceptions import ProviderNotInstalledError
 from beeai_server.utils.logs_container import LogsContainer
 from beeai_server.utils.utils import cancel_task, extract_messages
 from pydantic import BaseModel
@@ -102,7 +103,7 @@ class LoadedProvider:
             LoadedProviderStatus.not_installed,
             LoadedProviderStatus.install_error,
         }:
-            raise RuntimeError(f"Cannot initialize session to provider with status: {self.status}")
+            raise ProviderNotInstalledError(f"Cannot initialize session to provider with status: {self.status}")
 
         async def _on_response(response: Response):
             if "Run-ID" in response.headers:

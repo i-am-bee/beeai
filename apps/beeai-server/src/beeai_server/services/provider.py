@@ -166,6 +166,16 @@ class ProviderService:
             for provider in self._loaded_provider_container.loaded_providers.values()
         ]
 
+    async def get_provider(self, id: ID) -> ProviderWithStatus:
+        providers = [
+            self._get_provider_with_status(provider)
+            for provider in self._loaded_provider_container.loaded_providers.values()
+            if provider.id == id
+        ]
+        if not providers:
+            raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail=f"Provider with ID: {str(id)} not found")
+        return providers[0]
+
     async def list_agents(self) -> list[Agent]:
         return [
             agent for provider in self._loaded_provider_container.loaded_providers.values() for agent in provider.agents

@@ -13,17 +13,19 @@
 # limitations under the License.
 
 import fastapi
+from starlette.status import HTTP_202_ACCEPTED
 
+from beeai_server.custom_types import ID
+from beeai_server.domain.model import GithubProviderLocation
 from beeai_server.routes.dependencies import ProviderServiceDependency
 from beeai_server.schema import (
     CreateManagedProviderRequest,
-    DeleteProviderRequest,
-    InstallProviderRequest,
     PaginatedResponse,
     ProviderWithStatus,
     RegisterUnmanagedProviderRequest,
 )
 from fastapi import Query, BackgroundTasks
+from fastapi.responses import Response
 from starlette.responses import StreamingResponse
 
 from beeai_server.utils.fastapi import streaming_response
@@ -33,28 +35,40 @@ router = fastapi.APIRouter()
 
 @router.post("/register/managed")
 async def create_managed_provider(
-    request: CreateManagedProviderRequest, provider_service: ProviderServiceDependency
+    request: CreateManagedProviderRequest,
+    provider_service: ProviderServiceDependency,
+    background_tasks: BackgroundTasks,
+    install: bool = Query(True),
+    stream: bool = Query(False),
 ) -> ProviderWithStatus:
-    return await provider_service.register_managed_provider(location=request.location)
+    if install:
+        iterator_or_awaitable = await provider_service.install_provider(location=request.location, stream=stream)
+        if stream:
+            return streaming_response(iterator_or_awaitable())
+        else:
+            background_tasks.add_task(iterator_or_awaitable)
+            return Response(status_code=HTTP_202_ACCEPTED)
+    else:
+        if isinstance(request.location, GithubProviderLocation):
+            raise ValueError("Github provider must be installed to be registered, use /register/managed?install=true")
+        return await provider_service.register_managed_provider(location=request.location)
 
 
 @router.post("/register/unmanaged")
 async def add_unmanaged_provider(
     request: RegisterUnmanagedProviderRequest, provider_service: ProviderServiceDependency
-) -> None:
-    await provider_service.register_unmanaged_provider(location=request.location, id=request.id)
+) -> ProviderWithStatus:
+    return await provider_service.register_unmanaged_provider(location=request.location, id=request.id)
 
 
-@router.post("/install")
+@router.put("/{id}/install")
 async def install_provider(
-    request: InstallProviderRequest,
+    id: ID,
     provider_service: ProviderServiceDependency,
     background_tasks: BackgroundTasks,
     stream: bool = Query(False),
 ) -> StreamingResponse:
-    iterator_or_awaitable = await provider_service.install_provider(
-        id=request.id, location=request.location, stream=stream
-    )
+    iterator_or_awaitable = await provider_service.install_provider(id=id, stream=stream)
     if stream:
         return streaming_response(iterator_or_awaitable())
     else:
@@ -74,14 +88,17 @@ async def list_providers(provider_service: ProviderServiceDependency) -> Paginat
     return PaginatedResponse(items=providers, total_count=len(providers))
 
 
-@router.post("/delete", status_code=fastapi.status.HTTP_204_NO_CONTENT)
-async def delete_provider(request: DeleteProviderRequest, provider_service: ProviderServiceDependency) -> None:
-    await provider_service.delete_provider(id=request.id)
+@router.get("/{id}")
+async def get_provider(id: ID, provider_service: ProviderServiceDependency) -> ProviderWithStatus:
+    return await provider_service.get_provider(id)
 
 
-@router.get("/logs", status_code=fastapi.status.HTTP_204_NO_CONTENT)
-async def stream_logs(
-    provider_service: ProviderServiceDependency, id: str = Query(..., description="Provider ID")
-) -> StreamingResponse:
+@router.delete("/{id}", status_code=fastapi.status.HTTP_204_NO_CONTENT)
+async def delete_provider(id: ID, provider_service: ProviderServiceDependency) -> None:
+    await provider_service.delete_provider(id=id)
+
+
+@router.get("/{id}/logs", status_code=fastapi.status.HTTP_204_NO_CONTENT)
+async def stream_logs(id: ID, provider_service: ProviderServiceDependency) -> StreamingResponse:
     logs_iterator = await provider_service.stream_logs(id=id)
     return streaming_response(logs_iterator())

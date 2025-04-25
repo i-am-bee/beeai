@@ -36,6 +36,9 @@ class MissingConfigurationError(Exception):
         self.missing_env = missing_env
 
 
+class ProviderNotInstalledError(Exception): ...
+
+
 def retry_if_exception_grp_type(*exception_types: type[BaseException]) -> retry_base:
     """Handle also exception groups"""
 

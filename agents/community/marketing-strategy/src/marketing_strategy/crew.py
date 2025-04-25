@@ -136,7 +136,13 @@ def create_marketing_crew(llm: LLM, step_callback: Callable):
 
     return Crew(
         agents=[lead_market_analyst, chief_marketing_strategist, creative_content_creator],
-        tasks=[project_understanding_task, marketing_strategy_task, campaign_idea_task, copy_creation_task],
+        tasks=[
+            research_task,
+            project_understanding_task,
+            marketing_strategy_task,
+            campaign_idea_task,
+            copy_creation_task,
+        ],
         process=Process.sequential,
         verbose=True,
         step_callback=step_callback,

@@ -130,7 +130,6 @@ async def chat(input: list[Message], context: Context) -> AsyncGenerator:
                         yield {data.update.key: update}
                     case "final_answer":
                         yield MessagePart(content=update, role="assistant")
-                last_key = data.update.key
 
 
 def run():

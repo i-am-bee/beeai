@@ -14,7 +14,9 @@
 
 import abc
 import base64
+import hashlib
 import logging
+from abc import abstractmethod
 from contextlib import suppress, AsyncExitStack
 from datetime import timedelta
 from enum import StrEnum
@@ -181,9 +183,12 @@ ProviderLocation = GithubProviderLocation | DockerImageProviderLocation
 
 
 class BaseProvider(BaseModel, abc.ABC):
-    id: ID
     manifest: ProviderManifest
     auto_stop_timeout: timedelta | None = Field(None, exclude=True)
+
+    @property
+    @abstractmethod
+    def id(self) -> ID: ...
 
     @cached_property
     def env(self):
@@ -242,10 +247,20 @@ class ManagedProvider(BaseProvider, extra="allow"):
     auto_stop_timeout: timedelta | None = Field(timedelta(minutes=5), exclude=True)
     _container_exit_stack: AsyncExitStack = PrivateAttr(default_factory=AsyncExitStack)
 
+    @computed_field()
+    @cached_property
+    def id(self) -> ID:
+        return hashlib.sha256(str(self.source).encode()).hexdigest()[:16]
+
+    @computed_field()
+    @cached_property
+    def source_id(self) -> ID:
+        return str(self.source)
+
     @classmethod
     async def load_from_source(cls, source: ProviderSource, registry: ResolvedGithubUrl | None = None) -> Self:
         manifest = await source.load_manifest()
-        return cls(manifest=manifest, source=source, id=str(source), registry=registry)
+        return cls(manifest=manifest, source=source, registry=registry)
 
     @computed_field
     @property
@@ -322,6 +337,17 @@ class ManagedProvider(BaseProvider, extra="allow"):
 
 class UnmanagedProvider(BaseProvider, extra="allow"):
     location: AnyUrl
+    source: ID
+
+    @computed_field()
+    @cached_property
+    def id(self) -> ID:
+        return self.source
+
+    @computed_field()
+    @cached_property
+    def source_id(self) -> ID:
+        return self.source
 
     async def start(self, *_args, **_kwargs) -> str:
         return f"{str(self.location).rstrip('/')}/"
@@ -331,4 +357,4 @@ class UnmanagedProvider(BaseProvider, extra="allow"):
         async with AsyncClient() as client:
             response = await client.get(f"{str(location).rstrip('/')}/agents", timeout=1)
             manifest = ProviderManifest.model_validate(response.json())
-        return cls(manifest=manifest, location=location, id=id)
+        return cls(manifest=manifest, location=location, source=id)
