@@ -1,17 +1,16 @@
 [project]
-name = "chat"
+name = "agent-docs-creator"
 version = "0.1.0"
-description = "AI-powered conversational system with memory and tools."
 authors = [{ name = "IBM Corp." }]
 requires-python = ">=3.11,<3.12"
 dependencies = [
     "acp-sdk>=0.5.0",
-    "beeai-framework[duckduckgo,wikipedia]>=0.1.17",
+    "beeai-framework>=0.1.18",
     "pydantic-settings>=2.9.0",
 ]
 
 [project.scripts]
-server = "chat.agent:run"
+server = "agent_docs_creator.agent:run"
 
 [build-system]
 requires = ["hatchling"]
