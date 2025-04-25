@@ -30,7 +30,7 @@ from typer.core import TyperGroup
 from beeai_cli.console import console, err_console
 from beeai_cli.api import resolve_connection_error
 from beeai_cli.configuration import Configuration
-from beeai_cli.utils import extract_messages
+from beeai_cli.utils import extract_messages, format_error
 
 DEBUG = Configuration().debug
 
@@ -100,7 +100,7 @@ class AsyncTyper(typer.Typer):
                                 raise
                 except* Exception as ex:
                     for exc_type, message in extract_messages(ex):
-                        err_console.print(f":boom: [bold red]{exc_type}[/bold red]: {message}")
+                        err_console.print(format_error(exc_type, message))
                         if exc_type == "McpError":
                             err_console.print(
                                 "💡 [yellow]HINT[/yellow]: Is your configuration correct? Try re-entering your LLM API details with: [green]beeai env setup[/green]"

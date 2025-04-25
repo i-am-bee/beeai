@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 from typing import TypeVar, Generic, Any
 from pydantic import BaseModel, RootModel, Field, model_validator, AnyUrl
 
@@ -79,3 +78,13 @@ class ProviderWithStatus(BaseModel, extra="allow"):
     status: LoadedProviderStatus
     last_error: LoadProviderErrorMessage | None = None
     missing_configuration: list[EnvVar] = Field(default_factory=list)
+
+
+class ErrorStreamResponseError(BaseModel, extra="allow"):
+    status_code: int
+    type: str
+    detail: str
+
+
+class ErrorStreamResponse(BaseModel, extra="allow"):
+    error: ErrorStreamResponseError

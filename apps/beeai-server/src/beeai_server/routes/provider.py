@@ -26,6 +26,8 @@ from beeai_server.schema import (
 from fastapi import Query, BackgroundTasks
 from starlette.responses import StreamingResponse
 
+from beeai_server.utils.fastapi import streaming_response
+
 router = fastapi.APIRouter()
 
 
@@ -54,7 +56,7 @@ async def install_provider(
         id=request.id, location=request.location, stream=stream
     )
     if stream:
-        return StreamingResponse(iterator_or_awaitable(), media_type="text/event-stream")
+        return streaming_response(iterator_or_awaitable())
     else:
         background_tasks.add_task(iterator_or_awaitable)
 
@@ -82,4 +84,4 @@ async def stream_logs(
     provider_service: ProviderServiceDependency, id: str = Query(..., description="Provider ID")
 ) -> StreamingResponse:
     logs_iterator = await provider_service.stream_logs(id=id)
-    return StreamingResponse(logs_iterator(), media_type="text/event-stream")
+    return streaming_response(logs_iterator())

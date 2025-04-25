@@ -26,7 +26,7 @@ from InquirerPy.validator import EmptyInputValidator
 
 from beeai_cli.api import api_request, wait_for_agents
 from beeai_cli.async_typer import AsyncTyper, console, err_console, create_table
-from beeai_cli.utils import parse_env_var
+from beeai_cli.utils import parse_env_var, format_error
 
 app = AsyncTyper()
 
@@ -150,14 +150,14 @@ async def setup() -> bool:
                         available_models = []
                     else:
                         console.print(
-                            "💥 [bold red]Error:[/bold red] API key was rejected. Please check your API key and re-try."
+                            format_error("Error", "API key was rejected. Please check your API key and re-try.")
                         )
                         return False
                 else:
                     response.raise_for_status()
                     available_models = [m.get("id", "") for m in response.json().get("data", []) or []]
     except httpx.HTTPError as e:
-        console.print(f"💥 [bold red]Error:[/bold red] {str(e)}")
+        console.print(format_error("Error", str(e)))
         match provider_name:
             case "Ollama":
                 console.print("💡 [yellow]HINT[/yellow]: We could not connect to Ollama. Is it running?")
@@ -275,10 +275,10 @@ async def setup() -> bool:
         test_response.raise_for_status()
         response_text = test_response.json().get("choices", [{}])[0].get("message", {}).get("content", "")
         if "Hello!" not in response_text:
-            console.print("[bold red]Model did not provide a proper response.[/bold red]")
+            err_console.print(format_error("Error", "Model did not provide a proper response."))
             return False
     except Exception as e:
-        console.print(f"[bold red]Error during model test: {str(e)}[/bold red]")
+        err_console.print(format_error("Error", f"Error during model test: {str(e)}"))
         return False
 
     with console.status("Saving configuration...", spinner="dots"):
@@ -314,7 +314,7 @@ async def ensure_llm_env():
     console.print("Let's start by configuring your LLM environment.\n")
     if not await setup():
         err_console.print(
-            ":boom: [bold red]Error[/bold red]: Could not continue because the LLM environment is not properly set up."
+            format_error("Error", "Could not continue because the LLM environment is not properly set up.")
         )
         err_console.print(
             "💡 [yellow]HINT[/yellow]: Try re-entering your LLM API details with: [green]beeai env setup[/green]"

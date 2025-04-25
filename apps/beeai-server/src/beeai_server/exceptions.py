@@ -14,11 +14,11 @@
 
 from typing import TYPE_CHECKING
 
-from starlette.status import HTTP_404_NOT_FOUND, HTTP_400_BAD_REQUEST
+from starlette.status import HTTP_404_NOT_FOUND
 from tenacity import retry_if_exception, retry_base
 
 if TYPE_CHECKING:
-    from beeai_server.domain.model import EnvVar, ProviderSource, ProviderLocation
+    from beeai_server.domain.model import EnvVar, ProviderLocation
 
 
 class ManifestLoadError(Exception):
@@ -29,15 +29,6 @@ class ManifestLoadError(Exception):
         message = message or f"Manifest at location {location} not found."
         self.status_code = status_code
         super().__init__(message)
-
-
-class LoadFeaturesError(Exception): ...
-
-
-class AgentNotInstalledError(Exception):
-    def __init__(self, source: "ProviderSource", message: str | None = None, status_code: int = HTTP_400_BAD_REQUEST):
-        self.status_code = status_code
-        message = message or f"Agent provider is not installed: {source}"
 
 
 class MissingConfigurationError(Exception):

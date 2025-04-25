@@ -37,6 +37,10 @@ def format_model(value: BaseModel | list[BaseModel]) -> str:
     return yaml.dump(value.model_dump(mode="json"))
 
 
+def format_error(name: str, message: str) -> str:
+    return f":boom: [bold red]{name}:[/bold red] {message}"
+
+
 def extract_messages(exc):
     if isinstance(exc, BaseExceptionGroup):
         return [(exc_type, msg) for e in exc.exceptions for exc_type, msg in extract_messages(e)]

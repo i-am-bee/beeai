@@ -12,6 +12,7 @@ from autogen_agentchat.base import TaskResult
 
 server = Server()
 
+
 @server.agent(
     metadata=Metadata(
         programming_language="Python",
@@ -85,16 +86,14 @@ async def literature_review(inputs: list[Message], context: Context) -> AsyncGen
             return ""
 
     try:
-        async for value in team.run_stream(
-            task=str(inputs[-1])
-        ):
+        async for value in team.run_stream(task=str(inputs[-1])):
             if isinstance(value, BaseChatMessage) or isinstance(value, BaseAgentEvent):
                 action = {
                     "content": value.content,
                     "type": value.type,
                     "source": value.source,
                 }
-                
+
                 yield {"message": serialize_json(action)}
             if isinstance(value, TaskResult):
                 content = value.messages[-1].content
@@ -103,8 +102,10 @@ async def literature_review(inputs: list[Message], context: Context) -> AsyncGen
     except Exception as e:
         raise Exception(f"An error occurred while running the agent: {e}")
 
+
 def run():
     server.run(host=os.getenv("HOST", "127.0.0.1"), port=int(os.getenv("PORT", 8000)))
+
 
 if __name__ == "__main__":
     run()

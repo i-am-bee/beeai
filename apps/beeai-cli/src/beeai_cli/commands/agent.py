@@ -64,7 +64,7 @@ from rich.table import Column
 
 from beeai_cli.api import api_request, api_stream, acp_client
 from beeai_cli.async_typer import AsyncTyper, console, create_table, err_console
-from beeai_cli.utils import generate_schema_example, omit, prompt_user, remove_nullable, filter_dict
+from beeai_cli.utils import generate_schema_example, omit, prompt_user, remove_nullable, filter_dict, format_error
 
 
 class UiType(StrEnum):
@@ -89,6 +89,14 @@ processing_messages = [
 
 
 def _print_log(line, ansi_mode=False):
+    if "error" in line:
+
+        class CustomError(Exception): ...
+
+        CustomError.__name__ = line["error"]["type"]
+
+        raise CustomError(line["error"]["detail"])
+
     def decode(text: str):
         return Text.from_ansi(text) if ansi_mode else text
 
@@ -179,7 +187,7 @@ async def _run_agent(client: Client, name: str, input: str | list[Message], dump
             case MessageCompletedEvent():
                 console.print()
             case RunFailedEvent():
-                console.print(f"💥 [bold red]{event.run.error.code.value}:[/bold red] {event.run.error.message}")
+                console.print(format_error(event.run.error.code.value, event.run.error.message))
             case ArtifactEvent():
                 if dump_files_path is None:
                     continue

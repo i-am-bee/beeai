@@ -13,6 +13,11 @@
 # limitations under the License.
 
 from fastapi.staticfiles import StaticFiles
+from starlette.responses import StreamingResponse, AsyncContentStream
+from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
+
+from beeai_server.schema import ErrorStreamResponse, ErrorStreamResponseError
+from beeai_server.utils.utils import extract_messages
 
 
 class NoCacheStaticFiles(StaticFiles):
@@ -22,3 +27,29 @@ class NoCacheStaticFiles(StaticFiles):
         response.headers["Pragma"] = "no-cache"
         response.headers["Expires"] = "0"
         return response
+
+
+def streaming_response(content: AsyncContentStream):
+    async def wrapper(stream):
+        try:
+            async for chunk in stream:
+                yield chunk
+        except Exception as ex:
+            errors = extract_messages(ex)
+            if len(errors) == 1:
+                [(error, message)] = errors
+            else:
+                error = "ExceptionGroup"
+                message = repr(errors)
+            yield ErrorStreamResponse(
+                error=ErrorStreamResponseError(status_code=HTTP_500_INTERNAL_SERVER_ERROR, type=error, detail=message)
+            ).model_dump_json()
+
+    return StreamingResponse(
+        wrapper(content),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+        },
+    )
