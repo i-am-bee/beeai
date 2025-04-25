@@ -18,9 +18,10 @@ import { useQuery } from '@tanstack/react-query';
 
 import { listAgents } from '..';
 import { agentKeys } from '../keys';
+import type { AgentProvider } from '../types';
 
 interface Props {
-  provider: string | undefined;
+  provider: AgentProvider;
   enabled?: boolean;
 }
 

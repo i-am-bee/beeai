@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ApiResponse } from '#@types/utils.ts';
+import type { ApiPath, ApiResponse } from '#@types/utils.ts';
 
 export type Agent = ApiResponse<'/api/v1/acp/agents/{name}'> & {
   metadata: {
@@ -28,6 +28,10 @@ export type Agent = ApiResponse<'/api/v1/acp/agents/{name}'> & {
     };
   };
 };
+
+export type ReadAgentPath = ApiPath<'/api/v1/acp/agents/{name}'>;
+
+export type AgentProvider = Agent['metadata']['provider'];
 
 export enum UiType {
   Chat = 'chat',

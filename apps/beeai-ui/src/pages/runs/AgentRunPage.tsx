@@ -14,28 +14,23 @@
  * limitations under the License.
  */
 
-import { useMutation } from '@tanstack/react-query';
+import { useNavigate, useParams } from 'react-router';
 
-import { providerKeys } from '#modules/providers/api/keys.ts';
+import { AgentRun } from '#modules/runs/components/AgentRun.tsx';
+import { routes } from '#utils/router.ts';
 
-import { createEnv } from '..';
-import { envKeys } from '../keys';
+type Params = {
+  agentName: string;
+};
 
-interface Props {
-  onSuccess?: () => void;
-}
+export function AgentRunPage() {
+  const { agentName } = useParams<Params>();
+  const navigate = useNavigate();
 
-export function useCreateEnv({ onSuccess }: Props = {}) {
-  const mutation = useMutation({
-    mutationFn: createEnv,
-    onSuccess,
-    meta: {
-      invalidates: [envKeys.lists(), providerKeys.lists()],
-      errorToast: {
-        title: 'Failed to create env variable.',
-      },
-    },
-  });
+  if (!agentName) {
+    navigate(routes.notFound(), { replace: true });
+    return null;
+  }
 
-  return mutation;
+  return <AgentRun name={agentName} />;
 }

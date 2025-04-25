@@ -73,7 +73,7 @@ export function AgentsFilters({ agents }: Props) {
                   onChange: (value) => setValue('frameworks', value),
                 }),
                 createGroup({
-                  label: 'Language',
+                  label: 'Programming languages',
                   occurrence: occurrences.programming_languages,
                   selected: selectedProgrammingLanguages,
                   onChange: (value) => setValue('programmingLanguages', value),

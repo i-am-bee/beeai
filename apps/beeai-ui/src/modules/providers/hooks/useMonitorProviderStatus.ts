@@ -21,10 +21,11 @@ import { useToast } from '#contexts/Toast/index.ts';
 import { TaskType, useTasks } from '#hooks/useTasks.ts';
 import { agentKeys } from '#modules/agents/api/keys.ts';
 import { useListProviderAgents } from '#modules/agents/api/queries/useListProviderAgents.ts';
+import type { AgentProvider } from '#modules/agents/api/types.ts';
 import { useAgentStatus } from '#modules/agents/hooks/useAgentStatus.ts';
 
 interface Props {
-  id?: string;
+  id: AgentProvider;
 }
 
 export function useMonitorProvider({ id }: Props) {

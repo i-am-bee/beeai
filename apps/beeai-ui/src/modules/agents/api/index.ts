@@ -17,8 +17,16 @@
 import { api } from '#api/index.ts';
 import { ensureData } from '#api/utils.ts';
 
+import type { ReadAgentPath } from './types';
+
 export async function listAgents() {
   const response = await api.GET('/api/v1/acp/agents');
 
   return ensureData({ response, errorMessage: 'Failed to list agents.' });
+}
+
+export async function readAgent({ name }: ReadAgentPath) {
+  const response = await api.GET('/api/v1/acp/agents/{name}', { params: { path: { name } } });
+
+  return ensureData({ response, errorMessage: 'Failed to get agent.' });
 }

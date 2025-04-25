@@ -22,8 +22,8 @@ import { useSearchParams } from 'react-router';
 import { useHandleError } from '#hooks/useHandleError.ts';
 import { usePrevious } from '#hooks/usePrevious.ts';
 import { useListAgents } from '#modules/agents/api/queries/useListAgents.ts';
-import { useRunAgent } from '#modules/run/api/mutations/useRunAgent.tsx';
-import type { TextResult } from '#modules/run/api/types.ts';
+import { useRunAgent } from '#modules/runs/api/mutations/useRunAgent.tsx';
+import type { TextResult } from '#modules/runs/api/types.ts';
 import { isNotNull } from '#utils/helpers.ts';
 
 import { SEQUENTIAL_COMPOSE_AGENT_NAME } from '../sequential/constants';

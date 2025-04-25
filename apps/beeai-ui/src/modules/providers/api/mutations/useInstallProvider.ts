@@ -18,19 +18,20 @@ import { useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
 
 import { agentKeys } from '#modules/agents/api/keys.ts';
+import type { AgentProvider } from '#modules/agents/api/types.ts';
 import { useMonitorProvider } from '#modules/providers/hooks/useMonitorProviderStatus.ts';
 
 import { installProvider } from '..';
 import { providerKeys } from '../keys';
-import type { InstallProviderBody } from '../types';
+import type { InstallProviderRequest } from '../types';
 
 export function useInstallProvider() {
-  const [id, setId] = useState<string | undefined>(undefined);
+  const [id, setId] = useState<AgentProvider>(undefined);
 
   useMonitorProvider({ id });
 
   const mutation = useMutation({
-    mutationFn: ({ body }: { body: InstallProviderBody }) => {
+    mutationFn: ({ body }: { body: InstallProviderRequest }) => {
       const { id } = body;
 
       if (id) {

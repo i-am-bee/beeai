@@ -19,14 +19,14 @@ import type { PropsWithChildren } from 'react';
 import { useCallback, useMemo, useRef, useState } from 'react';
 
 import type { Agent } from '#modules/agents/api/types.ts';
-import { useRunAgent } from '#modules/run/api/mutations/useRunAgent.tsx';
+import { useRunAgent } from '#modules/runs/api/mutations/useRunAgent.tsx';
 import type {
   TextNotification,
   TextNotificationLogs,
   TextNotificationSchema,
   TextResult,
-} from '#modules/run/api/types.ts';
-import type { RunStats } from '#modules/run/types.ts';
+} from '#modules/runs/api/types.ts';
+import type { RunStats } from '#modules/runs/types.ts';
 import { isNotNull } from '#utils/helpers.ts';
 
 import { HandsOffContext } from './hands-off-context';

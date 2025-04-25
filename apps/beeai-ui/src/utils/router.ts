@@ -18,8 +18,8 @@ export const routeDefinitions = {
   home: () => '/' as const,
   notFound: () => '/not-found' as const,
   agents: () => `/${sections.agents}` as const,
-  agentRun: () => `/${sections.agents}/run/:agentName` as const,
   agentDetail: () => `/${sections.agents}/:agentName` as const,
+  agentRun: () => `/${sections.agents}/:agentName/run` as const,
   compose: () => `/${sections.compose}` as const,
   composeSequential: () => `/${sections.compose}/sequential` as const,
   settings: () => '/settings' as const,
@@ -28,7 +28,7 @@ export const routeDefinitions = {
 export const routes = {
   ...routeDefinitions,
   agentDetail: ({ name }: { name: string }) => `/${sections.agents}/${name}`,
-  agentRun: ({ name }: { name: string }) => `/${sections.agents}/run/${name}`,
+  agentRun: ({ name }: { name: string }) => `/${sections.agents}/${name}/run`,
 };
 
 export const sections = { agents: 'agents', compose: 'compose' } as const;

@@ -19,7 +19,7 @@ import clsx from 'clsx';
 
 import { MarkdownContent } from '#components/MarkdownContent/MarkdownContent.tsx';
 import { useAutoScroll } from '#hooks/useAutoScroll.ts';
-import { AgentRunLogItem } from '#modules/run/components/AgentRunLogItem.tsx';
+import { AgentRunLogItem } from '#modules/runs/components/AgentRunLogItem.tsx';
 
 import type { ComposeStep } from '../contexts/compose-context';
 import classes from './StepResult.module.scss';

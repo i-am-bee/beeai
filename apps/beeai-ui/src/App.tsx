@@ -28,7 +28,7 @@ import { ComposeSequential } from '#modules/compose/ComposeSequential.tsx';
 import { Agents } from '#pages/Agents.tsx';
 import { Agent } from '#pages/agents/Agent.tsx';
 import { NotFound } from '#pages/NotFound.tsx';
-import { AgentRunPage } from '#pages/run/AgentRunPage.tsx';
+import { AgentRunPage } from '#pages/runs/AgentRunPage.tsx';
 import { Settings } from '#pages/Settings.tsx';
 import { routeDefinitions } from '#utils/router.ts';
 

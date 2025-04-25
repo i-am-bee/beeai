@@ -17,28 +17,22 @@
 import { api } from '#api/index.ts';
 import { ensureData } from '#api/utils.ts';
 
-import type { CreateEnvBody } from './types';
+import type { UpdateEnvRequest } from './types';
 
-export async function createEnv({ body }: { body: CreateEnvBody['env'] }) {
-  const response = await api.PUT('/api/v1/env', {
-    body: { env: body },
-  });
+export async function listEnvs() {
+  const response = await api.GET('/api/v1/env');
 
-  return ensureData({ response, errorMessage: 'Failed to create env variable.' });
+  return ensureData({ response, errorMessage: 'Failed to list env variables.' });
+}
+
+export async function updateEnv({ body }: { body: UpdateEnvRequest['env'] }) {
+  const response = await api.PUT('/api/v1/env', { body: { env: body } });
+
+  return ensureData({ response, errorMessage: 'Failed to update env variable.' });
 }
 
 export async function deleteEnv({ name }: { name: string }) {
-  const response = await api.PUT('/api/v1/env', {
-    body: {
-      env: { [name]: null },
-    },
-  });
+  const response = await api.PUT('/api/v1/env', { body: { env: { [name]: null } } });
 
   return ensureData({ response, errorMessage: 'Failed to delete env variable.' });
-}
-
-export async function getEnvs() {
-  const response = await api.GET('/api/v1/env');
-
-  return ensureData({ response, errorMessage: 'Failed to get env variables.' });
 }

@@ -36,7 +36,7 @@ import { Modal } from '#components/Modal/Modal.tsx';
 import type { ModalProps } from '#contexts/Modal/modal-context.ts';
 import { useInstallProvider } from '#modules/providers/api/mutations/useInstallProvider.ts';
 import { useRegisterManagedProvider } from '#modules/providers/api/mutations/useRegisterManagedProvider.ts';
-import type { RegisterManagedProviderBody } from '#modules/providers/api/types.ts';
+import type { RegisterManagedProviderRequest } from '#modules/providers/api/types.ts';
 import { ProviderSourcePrefixes } from '#modules/providers/constants.ts';
 import { ProviderSource } from '#modules/providers/types.ts';
 
@@ -161,7 +161,7 @@ export function ImportAgentsModal({ onRequestClose, ...modalProps }: ModalProps)
   );
 }
 
-type FormValues = RegisterManagedProviderBody & { source: ProviderSource };
+type FormValues = RegisterManagedProviderRequest & { source: ProviderSource };
 
 const INPUTS_PROPS = {
   [ProviderSource.Docker]: {

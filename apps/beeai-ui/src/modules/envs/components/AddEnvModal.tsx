@@ -21,13 +21,13 @@ import { useForm } from 'react-hook-form';
 import { Modal } from '#components/Modal/Modal.tsx';
 import type { ModalProps } from '#contexts/Modal/modal-context.ts';
 
-import { useCreateEnv } from '../api/mutations/useCreateEnv';
+import { useUpdateEnv } from '../api/mutations/useUpdateEnv';
 import classes from './AddEnvModal.module.scss';
 
 export function AddEnvModal({ onRequestClose, ...modalProps }: ModalProps) {
   const id = useId();
 
-  const { mutate: createEnv, isPending } = useCreateEnv({
+  const { mutate: updateEnv, isPending } = useUpdateEnv({
     onSuccess: onRequestClose,
   });
 
@@ -41,9 +41,9 @@ export function AddEnvModal({ onRequestClose, ...modalProps }: ModalProps) {
 
   const onSubmit = useCallback(
     ({ name, value }: FormValues) => {
-      createEnv({ body: { [name]: value } });
+      updateEnv({ body: { [name]: value } });
     },
-    [createEnv],
+    [updateEnv],
   );
 
   return (

@@ -22,7 +22,7 @@ import { Modal } from '#components/Modal/Modal.tsx';
 import type { ModalProps } from '#contexts/Modal/modal-context.ts';
 import type { MissingEnvs } from '#modules/providers/api/types.ts';
 
-import { useCreateEnv } from '../api/mutations/useCreateEnv';
+import { useUpdateEnv } from '../api/mutations/useUpdateEnv';
 import classes from './AddRequiredEnvsModal.module.scss';
 
 interface Props extends ModalProps {
@@ -38,15 +38,15 @@ export function AddRequiredEnvsModal({ missingEnvs, onRequestClose, ...modalProp
     mode: 'onChange',
   });
 
-  const { mutate: createEnv, isPending } = useCreateEnv({
+  const { mutate: updateEnv, isPending } = useUpdateEnv({
     onSuccess: onRequestClose,
   });
 
   const onSubmit = useCallback(
     (body: FormValues) => {
-      createEnv({ body });
+      updateEnv({ body });
     },
-    [createEnv],
+    [updateEnv],
   );
 
   return (

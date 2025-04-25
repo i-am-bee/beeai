@@ -16,17 +16,19 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import { getProviders } from '..';
+import type { AgentProvider } from '#modules/agents/api/types.ts';
+
+import { listProviders } from '..';
 import { providerKeys } from '../keys';
 
 interface Props {
-  id: string | null | undefined;
+  id: AgentProvider;
 }
 
 export function useProvider({ id }: Props) {
   const query = useQuery({
     queryKey: providerKeys.list(),
-    queryFn: getProviders,
+    queryFn: listProviders,
     select: (data) => data?.items.find((item) => id === item.id),
     enabled: Boolean(id),
   });

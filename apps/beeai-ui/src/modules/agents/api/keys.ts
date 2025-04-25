@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
+import type { AgentProvider } from './types';
+
 export const agentKeys = {
   all: () => ['agents'] as const,
   lists: () => [...agentKeys.all(), 'list'] as const,
-  list: ({ provider }: { provider?: string } = {}) => [...agentKeys.lists(), { provider }] as const,
+  list: ({ provider }: { provider?: AgentProvider } = {}) => [...agentKeys.lists(), { provider }] as const,
 };

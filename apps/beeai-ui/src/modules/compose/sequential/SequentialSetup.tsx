@@ -22,7 +22,7 @@ import { useFormState } from 'react-hook-form';
 import { TransitionLink } from '#components/TransitionLink/TransitionLink.tsx';
 import { VersionTag } from '#components/VersionTag/VersionTag.tsx';
 import type { Agent } from '#modules/agents/api/types.ts';
-import NewSession from '#modules/run/components/NewSession.svg';
+import NewSession from '#modules/runs/components/NewSession.svg';
 import { routes } from '#utils/router.ts';
 
 import { AddAgentButton } from '../components/AddAgentButton';

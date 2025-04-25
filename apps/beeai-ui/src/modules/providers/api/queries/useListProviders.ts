@@ -16,13 +16,13 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import { getProviders } from '..';
+import { listProviders } from '..';
 import { providerKeys } from '../keys';
 
 export function useListProviders() {
   const query = useQuery({
     queryKey: providerKeys.list(),
-    queryFn: getProviders,
+    queryFn: listProviders,
   });
 
   return query;

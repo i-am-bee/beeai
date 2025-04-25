@@ -21,9 +21,9 @@ import { v4 as uuid } from 'uuid';
 
 import { useImmerWithGetter } from '#hooks/useImmerWithGetter.ts';
 import type { Agent } from '#modules/agents/api/types.ts';
-import { useRunAgent } from '#modules/run/api/mutations/useRunAgent.tsx';
-import type { MessagesNotificationSchema, MessagesResult } from '#modules/run/api/types.ts';
-import type { AgentMessage, ChatMessage, SendMessageParams } from '#modules/run/chat/types.ts';
+import { useRunAgent } from '#modules/runs/api/mutations/useRunAgent.tsx';
+import type { MessagesNotificationSchema, MessagesResult } from '#modules/runs/api/types.ts';
+import type { AgentMessage, ChatMessage, SendMessageParams } from '#modules/runs/chat/types.ts';
 
 import { ChatContext, ChatMessagesContext } from './chat-context';
 

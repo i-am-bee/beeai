@@ -39,7 +39,7 @@ export type ApiResponse<
       : never
   : never;
 
-export type ApiRequestBody<
+export type ApiRequest<
   Path extends keyof paths,
   Method extends keyof paths[Path] & ('get' | 'post' | 'delete' | 'put') = 'post',
   ContentType extends 'application/json' | 'multipart/form-data' = 'application/json',
@@ -68,5 +68,16 @@ export type ApiQuery<
 }
   ? Q extends Record<string, unknown>
     ? Q
+    : never
+  : never;
+
+export type ApiPath<
+  Path extends keyof paths,
+  Method extends keyof paths[Path] & ('get' | 'post') = 'get',
+> = paths[Path][Method] extends {
+  parameters: { path?: infer P };
+}
+  ? P extends Record<string, unknown>
+    ? P
     : never
   : never;

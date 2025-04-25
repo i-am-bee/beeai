@@ -44,9 +44,7 @@ export function countOccurrences(agents: Agent[]): AgentsCountedOccurrences {
       }
 
       if (programming_language) {
-        for (const language of programming_language) {
-          updateCount(acc.programming_languages, language);
-        }
+        updateCount(acc.programming_languages, programming_language);
       }
 
       return acc;

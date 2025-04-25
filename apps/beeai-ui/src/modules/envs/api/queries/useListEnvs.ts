@@ -16,13 +16,13 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import { getEnvs } from '..';
+import { listEnvs } from '..';
 import { envKeys } from '../keys';
 
 export function useListEnvs() {
   const query = useQuery({
     queryKey: envKeys.list(),
-    queryFn: getEnvs,
+    queryFn: listEnvs,
   });
 
   return query;

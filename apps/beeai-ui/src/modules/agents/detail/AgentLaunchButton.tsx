@@ -25,7 +25,7 @@ import { TransitionLink } from '#components/TransitionLink/TransitionLink.tsx';
 import { useModal } from '#contexts/Modal/index.tsx';
 import { AddRequiredEnvsModal } from '#modules/envs/components/AddRequiredEnvsModal.tsx';
 import { useInstallProvider } from '#modules/providers/api/mutations/useInstallProvider.ts';
-import { SupportedUis } from '#modules/run/constants.ts';
+import { SupportedUis } from '#modules/runs/constants.ts';
 import { routes } from '#utils/router.ts';
 
 import type { Agent, UiType } from '../api/types';
