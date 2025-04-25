@@ -86,7 +86,7 @@ async def literature_review(inputs: list[Message], context: Context) -> AsyncGen
 
     try:
         async for value in team.run_stream(
-            task=inputs[-1].__str__(),
+            task=str(inputs[-1])
         ):
             if isinstance(value, BaseChatMessage) or isinstance(value, BaseAgentEvent):
                 action = {
