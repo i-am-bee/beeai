@@ -18,14 +18,14 @@ from starlette.status import HTTP_404_NOT_FOUND, HTTP_400_BAD_REQUEST
 from tenacity import retry_if_exception, retry_base
 
 if TYPE_CHECKING:
-    from beeai_server.domain.model import EnvVar, ProviderSource
+    from beeai_server.domain.model import EnvVar, ProviderSource, ProviderLocation
 
 
 class ManifestLoadError(Exception):
-    location: str
+    location: "ProviderLocation"
     status_code: int
 
-    def __init__(self, location: str, message: str | None = None, status_code: int = HTTP_404_NOT_FOUND):
+    def __init__(self, location: "ProviderLocation", message: str | None = None, status_code: int = HTTP_404_NOT_FOUND):
         message = message or f"Manifest at location {location} not found."
         self.status_code = status_code
         super().__init__(message)

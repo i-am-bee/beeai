@@ -62,7 +62,7 @@ from rich.table import Column
 
 from beeai_cli.api import api_request, api_stream, acp_client
 from beeai_cli.async_typer import AsyncTyper, console, create_table, err_console
-from beeai_cli.utils import generate_schema_example, omit, prompt_user, remove_nullable
+from beeai_cli.utils import generate_schema_example, omit, prompt_user, remove_nullable, filter_dict
 
 
 class UiType(StrEnum):
@@ -151,12 +151,12 @@ async def _run_agent(client: Client, name: str, input: str | list[Message], dump
 
         match event:
             case GenericEvent():
-                data = event.generic.model_dump()
+                data = filter_dict(event.generic.model_dump(), None)
                 if "agent_name" in data:
-                    [(new_log_type, content)] = omit(data, {"agent_name", "agent_idx"}).items()
+                    (new_log_type, content) = list(omit(data, {"agent_name", "agent_idx"}))[0]
                     new_log_type = f"\[{data['agent_name']}]: {new_log_type}"
                 else:
-                    [(new_log_type, content)] = data.items()
+                    (new_log_type, content) = list(data.items())[0]
                 if new_log_type != log_type:
                     if log_type is not None:
                         err_console.print()

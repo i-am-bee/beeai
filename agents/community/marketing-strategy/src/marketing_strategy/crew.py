@@ -1,11 +1,5 @@
-from typing import List
-from crewai import Agent, Crew, Process, Task
-from crewai.project import CrewBase, agent, crew, task
-
-# Uncomment the following line to use an example of a custom tool
-# from marketing_strategy.tools.custom_tool import MyCustomTool
-
-# Check our tools documentations for more information on how to use them
+from typing import List, Callable
+from crewai import Agent, Crew, Process, Task, LLM
 from crewai_tools import SerperDevTool, ScrapeWebsiteTool
 from pydantic import BaseModel, Field
 
@@ -35,80 +29,115 @@ class Copy(BaseModel):
     body: str = Field(..., description="Body of the copy")
 
 
-@CrewBase
-class MarketingPostsCrew:
-    """MarketingPosts crew"""
+def create_marketing_crew(llm: LLM, step_callback: Callable):
+    lead_market_analyst = Agent(
+        role="Lead Market Analyst",
+        tools=[SerperDevTool(), ScrapeWebsiteTool()],
+        goal=(
+            "Conduct amazing analysis of the products and competitors, providing in-depth "
+            "insights to guide marketing strategies."
+        ),
+        backstory=(
+            "As the Lead Market Analyst at a premier digital marketing firm, you specialize "
+            "in dissecting online business landscapes."
+        ),
+        verbose=True,
+        llm=llm,
+    )
 
-    agents_config = "config/agents.yaml"
-    tasks_config = "config/tasks.yaml"
+    chief_marketing_strategist = Agent(
+        role="Chief Marketing Strategist",
+        goal="Synthesize amazing insights from product analysis to formulate incredible marketing strategies.",
+        backstory=(
+            "You are the Chief Marketing Strategist at a leading digital marketing agency, "
+            "known for crafting bespoke strategies that drive success."
+        ),
+        tools=[SerperDevTool(), ScrapeWebsiteTool()],
+        verbose=True,
+        llm=llm,
+    )
 
-    @agent
-    def lead_market_analyst(self) -> Agent:
-        return Agent(
-            config=self.agents_config["lead_market_analyst"],
-            tools=[SerperDevTool(), ScrapeWebsiteTool()],
-            verbose=True,
-            memory=False,
-        )
+    creative_content_creator = Agent(
+        role="Creative Content Creator",
+        goal=(
+            "Develop compelling and innovative content for social media campaigns, with a "
+            "focus on creating high-impact ad copies."
+        ),
+        backstory=(
+            "As a Creative Content Creator at a top-tier digital marketing agency, you "
+            "excel in crafting narratives that resonate with audiences. Your expertise "
+            "lies in turning marketing strategies into engaging stories and visual "
+            "content that capture attention and inspire action."
+        ),
+        verbose=True,
+        llm=llm,
+    )
 
-    @agent
-    def chief_marketing_strategist(self) -> Agent:
-        return Agent(
-            config=self.agents_config["chief_marketing_strategist"],
-            tools=[SerperDevTool(), ScrapeWebsiteTool()],
-            verbose=True,
-            memory=False,
-        )
+    research_task = Task(
+        description=(
+            "Conduct a thorough research about the customer and competitors. "
+            "Make sure you find any interesting and relevant information given the "
+            "current year is 2024. "
+            "We are working with them on the following project: {project_description}."
+        ),
+        expected_output=(
+            "A complete report on the customer and their customers and competitors, "
+            "including their demographics, preferences, market positioning and audience engagement."
+        ),
+        agent=lead_market_analyst,
+    )
 
-    @agent
-    def creative_content_creator(self) -> Agent:
-        return Agent(
-            config=self.agents_config["creative_content_creator"],
-            verbose=True,
-            memory=False,
-        )
+    project_understanding_task = Task(
+        description=(
+            "Understand the project details and the target audience for "
+            "{project_description}. "
+            "Review any provided materials and gather additional information as needed."
+        ),
+        expected_output="A detailed summary of the project and a profile of the target audience.",
+        agent=chief_marketing_strategist,
+    )
 
-    @task
-    def research_task(self) -> Task:
-        return Task(config=self.tasks_config["research_task"], agent=self.lead_market_analyst())
+    marketing_strategy_task = Task(
+        description=(
+            "Formulate a comprehensive marketing strategy for the project "
+            "{project_description} of the customer. "
+            "Use the insights from the research task and the project understanding "
+            "task to create a high-quality strategy."
+        ),
+        expected_output=(
+            "A detailed marketing strategy document that outlines the goals, target "
+            "audience, key messages, and proposed tactics, make sure to have name, tactics, "
+            "channels and KPIs"
+        ),
+        agent=chief_marketing_strategist,
+        output_json=MarketStrategy,
+    )
 
-    @task
-    def project_understanding_task(self) -> Task:
-        return Task(config=self.tasks_config["project_understanding_task"], agent=self.chief_marketing_strategist())
+    campaign_idea_task = Task(
+        description=(
+            "Develop creative marketing campaign ideas for {project_description}. "
+            "Ensure the ideas are innovative, engaging, and aligned with the overall marketing strategy."
+        ),
+        expected_output="A list of 5 campaign ideas, each with a brief description and expected impact.",
+        agent=creative_content_creator,
+        output_json=CampaignIdea,
+    )
 
-    @task
-    def marketing_strategy_task(self) -> Task:
-        return Task(
-            config=self.tasks_config["marketing_strategy_task"],
-            agent=self.chief_marketing_strategist(),
-            output_json=MarketStrategy,
-        )
+    copy_creation_task = Task(
+        description=(
+            "Create marketing copies based on the approved campaign ideas for {project_description}. "
+            "Ensure the copies are compelling, clear, and tailored to the target audience."
+        ),
+        expected_output="Marketing copies for each campaign idea.",
+        agent=creative_content_creator,
+        context=[marketing_strategy_task, campaign_idea_task],
+        output_json=Copy,
+    )
 
-    @task
-    def campaign_idea_task(self) -> Task:
-        return Task(
-            config=self.tasks_config["campaign_idea_task"],
-            agent=self.creative_content_creator(),
-            output_json=CampaignIdea,
-        )
-
-    @task
-    def copy_creation_task(self) -> Task:
-        return Task(
-            config=self.tasks_config["copy_creation_task"],
-            agent=self.creative_content_creator(),
-            context=[self.marketing_strategy_task(), self.campaign_idea_task()],
-            output_json=Copy,
-        )
-
-    @crew
-    def crew(self, step_callback) -> Crew:
-        """Creates the MarketingPosts crew"""
-        return Crew(
-            agents=self.agents,  # Automatically created by the @agent decorator
-            tasks=self.tasks,  # Automatically created by the @task decorator
-            process=Process.sequential,
-            verbose=True,
-            step_callback=step_callback,
-            # process=Process.hierarchical, # In case you wanna use that instead https://docs.crewai.com/how-to/Hierarchical/
-        )
+    return Crew(
+        agents=[lead_market_analyst, chief_marketing_strategist, creative_content_creator],
+        tasks=[project_understanding_task, marketing_strategy_task, campaign_idea_task, copy_creation_task],
+        process=Process.sequential,
+        verbose=True,
+        step_callback=step_callback,
+    )

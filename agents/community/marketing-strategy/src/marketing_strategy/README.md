@@ -1,3 +1,0 @@
-# marketing-strategy
-
-TBD
