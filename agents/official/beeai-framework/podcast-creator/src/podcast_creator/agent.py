@@ -87,14 +87,14 @@ processing_steps = [
         examples={
             "cli": [
                 {
-                    "command": f"beeai run podcast-creator {example_input}",
+                    "command": f"beeai run podcast_creator {example_input}",
                     "name": "Insert article directly",
                     "description": "Provide the entire article on the command line",
                     "output": example_output,
                     "processing_steps": processing_steps,
                 },
                 {
-                    "command": "cat /path/to/article.txt | beeai run podcast-creator",
+                    "command": "cat /path/to/article.txt | beeai run podcast_creator",
                     "name": "Insert article directly",
                     "description": "Provide the entire article on the command line",
                     "output": example_output,

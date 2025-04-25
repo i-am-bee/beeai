@@ -91,7 +91,7 @@ server = Server()
             "cli": [
                 {
                     "name": "Compose agents",
-                    "command": "beeai run sequential-workflow",
+                    "command": "beeai run sequential_workflow",
                     "input": "Long article text here...",
                 },
             ]

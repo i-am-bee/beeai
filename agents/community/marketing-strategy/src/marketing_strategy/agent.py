@@ -25,7 +25,7 @@ server = Server()
                 type=LinkType.SOURCE_CODE,
                 url=AnyUrl(
                     f"https://github.com/i-am-bee/beeai-platform/blob/{os.getenv('RELEASE_VERSION', 'main')}"
-                    "/agents/official/beeai-framework/chat"
+                    "/agents/community/marketing-strategy"
                 ),
             )
         ],
