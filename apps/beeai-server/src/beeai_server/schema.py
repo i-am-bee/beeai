@@ -12,8 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import TypeVar, Generic, Any
+from typing import TypeVar, Generic, Any, List, Optional
 from pydantic import BaseModel, RootModel, Field
+from datetime import datetime
 
 from beeai_server.custom_types import ID
 from beeai_server.domain.model import (
@@ -67,3 +68,29 @@ class ProviderWithStatus(BaseModel, extra="allow"):
     status: LoadedProviderStatus
     last_error: LoadProviderErrorMessage | None = None
     missing_configuration: list[EnvVar] = Field(default_factory=list)
+
+
+class WorkflowStep(BaseModel):
+    agent_name: str
+    instruction: str
+
+
+class Workflow(BaseModel):
+    id: Optional[str] = None
+    name: str
+    description: Optional[str] = None
+    steps: List[WorkflowStep]
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+
+
+class WorkflowCreate(BaseModel):
+    name: str
+    description: Optional[str] = None
+    steps: List[WorkflowStep]
+
+
+class WorkflowUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    steps: Optional[List[WorkflowStep]] = None

@@ -17,6 +17,7 @@
 import { ArrowLeft, PlayFilledAlt, StopOutlineFilled } from '@carbon/icons-react';
 import { Button, IconButton } from '@carbon/react';
 import clsx from 'clsx';
+import { useState } from 'react';
 import { useFormState } from 'react-hook-form';
 
 import { TransitionLink } from '#components/TransitionLink/TransitionLink.tsx';
@@ -27,6 +28,7 @@ import { routes } from '#utils/router.ts';
 
 import { AddAgentButton } from '../components/AddAgentButton';
 import { ComposeStepListItem } from '../components/ComposeStepListItem';
+import { SaveWorkflowDialog } from '../components/SaveWorkflowDialog';
 import { useCompose } from '../contexts';
 import type { SequentialFormValues } from '../contexts/compose-context';
 import classes from './SequentialSetup.module.scss';
@@ -39,11 +41,20 @@ export function SequentialSetup() {
     result,
     status,
     stepsFields: { append, fields },
+    onSave,
   } = useCompose();
 
   const { isValid } = useFormState<SequentialFormValues>();
 
   const isPending = status === 'pending';
+
+  const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
+
+  // Wrapper to make onSave return Promise<void>
+  const handleSave = async (name: string, description?: string) => {
+    await onSave(name, description);
+    return;
+  };
 
   return (
     <form
@@ -89,9 +100,9 @@ export function SequentialSetup() {
       </div>
 
       <div className={classes.actionBar}>
-        <TransitionLink href={routes.compose()} asChild>
-          <Button kind="ghost" size="md" className={classes.backButton} href={routes.compose()}>
-            <ArrowLeft /> Back to patterns
+        <TransitionLink href={routes.workflowSelection()} asChild>
+          <Button kind="ghost" size="md" className={classes.backButton} href={routes.workflowSelection()}>
+            <ArrowLeft /> Back to workflows
           </Button>
         </TransitionLink>
 
@@ -121,7 +132,13 @@ export function SequentialSetup() {
               Stop
             </Button>
           ))}
+
+        <Button kind="secondary" size="md" onClick={() => setIsSaveDialogOpen(true)} disabled={fields.length === 0}>
+          Save Workflow
+        </Button>
       </div>
+
+      <SaveWorkflowDialog open={isSaveDialogOpen} onClose={() => setIsSaveDialogOpen(false)} onSave={handleSave} />
     </form>
   );
 }

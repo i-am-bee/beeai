@@ -19,11 +19,14 @@ import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { useSearchParams } from 'react-router';
 
+import { useToast } from '#contexts/Toast/index.ts';
 import { useHandleError } from '#hooks/useHandleError.ts';
 import { usePrevious } from '#hooks/usePrevious.ts';
 import { useListAgents } from '#modules/agents/api/queries/useListAgents.ts';
 import { useRunAgent } from '#modules/run/api/mutations/useRunAgent.tsx';
 import type { TextResult } from '#modules/run/api/types.ts';
+import { workflowsApi } from '#modules/workflows/api/client.ts';
+import type { WorkflowCreate } from '#modules/workflows/api/types.ts';
 import { isNotNull } from '#utils/helpers.ts';
 
 import { SEQUENTIAL_COMPOSE_AGENT_NAME } from '../sequential/constants';
@@ -38,6 +41,7 @@ export function ComposeProvider({ children }: PropsWithChildren) {
   const [searchParams, setSearchParams] = useSearchParams();
   const abortControllerRef = useRef<AbortController | null>(null);
   const handleError = useHandleError();
+  const { addToast } = useToast();
 
   const {
     handleSubmit,
@@ -62,13 +66,13 @@ export function ComposeProvider({ children }: PropsWithChildren) {
 
   const previousSteps = usePrevious(steps);
   useEffect(() => {
-    if (!availableAgents || steps.length === previousSteps.length) return;
+    if (!availableAgents || steps.length === previousSteps?.length) return;
 
     setSearchParams((searchParams) => {
       searchParams.set('agents', steps.map(({ data }) => data.name).join(','));
       return searchParams;
     });
-  }, [availableAgents, previousSteps.length, setSearchParams, steps]);
+  }, [availableAgents, previousSteps?.length, setSearchParams, steps]);
 
   useEffect(() => {
     if (!availableAgents) return;
@@ -248,6 +252,40 @@ export function ComposeProvider({ children }: PropsWithChildren) {
   const lastStep = steps.at(-1);
   const result = useMemo(() => lastStep?.result, [lastStep]);
 
+  const saveWorkflow = useCallback(
+    async (name: string, description?: string) => {
+      try {
+        const steps = getValues('steps');
+        const workflowData: WorkflowCreate = {
+          name,
+          description,
+          steps: steps.map((step) => ({
+            agent_name: step.data?.name || '',
+            instruction: step.instruction || '',
+          })),
+        };
+
+        const savedWorkflow = await workflowsApi.create(workflowData);
+        addToast({
+          kind: 'success',
+          title: 'Workflow saved',
+          subtitle: `Workflow "${name}" saved successfully`,
+        });
+        return savedWorkflow;
+      } catch (error) {
+        console.error('Failed to save workflow:', error);
+        handleError(error, {
+          errorToast: {
+            title: 'Failed to save workflow',
+            includeErrorMessage: true,
+          },
+        });
+        return null;
+      }
+    },
+    [getValues, handleError, addToast],
+  );
+
   const value = useMemo(
     () => ({
       result,
@@ -257,8 +295,9 @@ export function ComposeProvider({ children }: PropsWithChildren) {
       onCancel: handleCancel,
       onClear: () => replaceSteps([]),
       onReset: handleReset,
+      onSave: saveWorkflow,
     }),
-    [handleCancel, handleReset, isSubmitting, onSubmit, replaceSteps, result, stepsFields],
+    [handleCancel, handleReset, isSubmitting, onSubmit, replaceSteps, result, stepsFields, saveWorkflow],
   );
 
   return <ComposeContext.Provider value={value}>{children}</ComposeContext.Provider>;
