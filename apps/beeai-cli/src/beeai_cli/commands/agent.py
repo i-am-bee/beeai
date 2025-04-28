@@ -573,7 +573,7 @@ async def list_agents():
     agents = await _get_agents()
     providers_by_id = {p["id"]: p for p in (await api_request("GET", "provider"))["items"]}
     max_provider_len = (
-        max(len(_get_short_location(p["source_id"])) for p in providers_by_id.values()) if providers_by_id else 0
+        max(len(_get_short_location(p["location"])) for p in providers_by_id.values()) if providers_by_id else 0
     )
 
     def _sort_fn(agent: Agent):
@@ -600,13 +600,12 @@ async def list_agents():
             if provider := providers_by_id.get(agent.metadata.provider, None):
                 status = provider["status"]
                 missing_env = ",".join(var["name"] for var in provider["missing_configuration"])
-                location = _get_short_location(provider["source_id"])
+                location = _get_short_location(provider["location"])
                 error = (
                     (provider.get("last_error") or {}).get("message", None)
                     if provider["status"] != "ready"
                     else "<none>"
                 )
-
             table.add_row(
                 agent.name,
                 render_enum(
@@ -641,7 +640,7 @@ async def _get_agent(name: str, agents_by_name: dict[str, Agent] | None = None) 
         agents_by_name = await _get_agents()
     if agent := agents_by_name.get(name, None):
         return agent
-    raise ACPError(error=Error(code=ErrorCode.NOT_FOUND, message=f"agent/{name} not found in any provider"))
+    raise ACPError(error=Error(code=ErrorCode.NOT_FOUND, message=f"Agent '{name}' not found in any provider"))
 
 
 def _render_schema(schema: dict[str, Any] | None):

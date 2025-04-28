@@ -49,6 +49,9 @@ class DockerImageID(RootModel):
         image_id: DockerImageID = handler(data)
 
         pattern = r"""
+            # Forbid starting with http:// or https://
+            ^(?!https?://)
+            
             # Registry (optional) - ends with slash and contains at least one dot
             ((?P<registry>[^/]+\.[^/]+)/)?
             

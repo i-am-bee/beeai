@@ -27,7 +27,7 @@ from beeai_server.adapters.interface import (
     TelemetryConfig,
     NOT_SET,
 )
-from beeai_server.domain.model import Provider
+from beeai_server.domain.provider.model import Provider
 from beeai_server.utils.utils import filter_dict
 
 

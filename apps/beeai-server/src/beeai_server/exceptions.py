@@ -18,7 +18,7 @@ from starlette.status import HTTP_404_NOT_FOUND
 from tenacity import retry_if_exception, retry_base
 
 if TYPE_CHECKING:
-    from beeai_server.domain.model import EnvVar, ProviderLocation
+    from beeai_server.domain.provider.model import EnvVar, ProviderLocation
 
 
 class ManifestLoadError(Exception):

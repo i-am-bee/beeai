@@ -18,8 +18,9 @@ from collections import defaultdict
 from functools import cache
 from pathlib import Path
 
+from beeai_server.domain.registry import GithubRegistryLocation, RegistryLocation
 from beeai_server.utils.github import GithubUrl
-from pydantic import BaseModel, Field, ValidationError, field_validator, model_validator
+from pydantic import BaseModel, Field, ValidationError, field_validator, model_validator, AnyHttpUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -56,9 +57,9 @@ class OCIRegistryConfiguration(BaseModel, extra="allow"):
 
 
 class AgentRegistryConfiguration(BaseModel):
-    enabled: bool = False
-    location: GithubUrl = GithubUrl(
-        root="https://github.com/i-am-bee/beeai@pre-release-v0.0.13#path=agent-registry.yaml"
+    enabled: bool = True
+    location: RegistryLocation = GithubRegistryLocation(
+        root=GithubUrl(root="https://github.com/i-am-bee/beeai-platform@pre-release-v0.0.13#path=agent-registry.yaml")
     )
     preinstall: bool = True
 
@@ -74,8 +75,12 @@ class Configuration(BaseSettings):
     telemetry_config_dir: Path = Path.home() / ".beeai" / "telemetry"
     env_path: Path = Path.home() / ".beeai" / ".env"
     cache_dir: Path = Path.home() / ".beeai" / "cache"
+
     port: int = 8333
-    collector_port: int = 8335
+    collector_host: AnyHttpUrl | None = "http://localhost:8335/"
+    collector_managed: bool = True
+
+    disable_docker: bool = False
     docker_host: str | None = None
     force_lima: bool = False
     autostart_providers: bool = False

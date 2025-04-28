@@ -27,13 +27,7 @@ from cachetools import TTLCache
 from httpx import Response
 
 from beeai_server.adapters.interface import IEnvVariableRepository
-from beeai_server.domain.model import (
-    BaseProvider,
-    EnvVar,
-    LoadedProviderStatus,
-    LoadProviderErrorMessage,
-    Agent,
-)
+from beeai_server.domain.provider.model import BaseProvider, EnvVar, Agent, ProviderStatus, ProviderErrorMessage
 from beeai_server.exceptions import ProviderNotInstalledError
 from beeai_server.utils.logs_container import LogsContainer
 from beeai_server.utils.utils import cancel_task, extract_messages
@@ -59,8 +53,8 @@ def bind_logging_context(method: Callable) -> Callable:
 
 class LoadedProvider:
     INITIALIZE_TIMEOUT = timedelta(seconds=30)
-    status: LoadedProviderStatus = LoadedProviderStatus.not_installed
-    last_error: LoadProviderErrorMessage | None = None
+    status: ProviderStatus = ProviderStatus.not_installed
+    last_error: ProviderErrorMessage | None = None
     provider: BaseProvider
     id: str
     missing_configuration: list[EnvVar] = []
@@ -91,7 +85,7 @@ class LoadedProvider:
     # @bind_logging_context
     async def handle_reload_env(self, env: dict[str, str]) -> None:
         self.env = env
-        if self.status in {LoadedProviderStatus.running, LoadedProviderStatus.starting, LoadedProviderStatus.error}:
+        if self.status in {ProviderStatus.running, ProviderStatus.starting, ProviderStatus.error}:
             await self.stop()
         if self._autostart:
             await self.start()
@@ -100,8 +94,8 @@ class LoadedProvider:
     async def client(self) -> AsyncIterator[httpx.AsyncClient]:
         bind_contextvars(provider=self.id)
         if self.status in {
-            LoadedProviderStatus.not_installed,
-            LoadedProviderStatus.install_error,
+            ProviderStatus.not_installed,
+            ProviderStatus.install_error,
         }:
             raise ProviderNotInstalledError(f"Cannot initialize session to provider with status: {self.status}")
 
@@ -110,7 +104,7 @@ class LoadedProvider:
                 self.runs[response.headers["Run-ID"]] = self
             return response
 
-        if self.status not in {LoadedProviderStatus.running, LoadedProviderStatus.starting}:
+        if self.status not in {ProviderStatus.running, ProviderStatus.starting}:
             await self.start()
         try:
             async with httpx.AsyncClient(base_url=self._base_url, timeout=5) as client:
@@ -118,8 +112,8 @@ class LoadedProvider:
         except BaseException as ex:
             message = f"Restoring broken session for provider {self.id}: {extract_messages(ex)}"
             logger.warning(message)
-            self.status = LoadedProviderStatus.error
-            self.last_error = LoadProviderErrorMessage(message=message)
+            self.status = ProviderStatus.error
+            self.last_error = ProviderErrorMessage(message=message)
             await self.start()
         try:
             async with httpx.AsyncClient(
@@ -150,57 +144,57 @@ class LoadedProvider:
 
     @bind_logging_context
     async def install(self, logs_container: LogsContainer | None = None) -> None:
-        if self.status not in {LoadedProviderStatus.not_installed, LoadedProviderStatus.install_error}:
+        if self.status not in {ProviderStatus.not_installed, ProviderStatus.install_error}:
             return
         try:
-            self.status = LoadedProviderStatus.installing
+            self.status = ProviderStatus.installing
             logger.info(f"Installing provider {self.id}")
             self.logs_container.clear()
             await self.provider.install(logs_container=logs_container or self.logs_container)
             self.logs_container.clear()
-            self.status = LoadedProviderStatus.ready
+            self.status = ProviderStatus.ready
         except Exception as ex:
-            self.last_error = LoadProviderErrorMessage(message=str(extract_messages(ex)))
-            self.status = LoadedProviderStatus.install_error
+            self.last_error = ProviderErrorMessage(message=str(extract_messages(ex)))
+            self.status = ProviderStatus.install_error
 
     @bind_logging_context
     async def uninstall(self):
         await self.stop()
         await self.provider.uninstall()
-        self.status = LoadedProviderStatus.not_installed
+        self.status = ProviderStatus.not_installed
 
     @bind_logging_context
     async def start(self):
-        if self.status == LoadedProviderStatus.starting:
+        if self.status == ProviderStatus.starting:
             logger.warning("Provider is already starting")
             await self._start_task
             return
 
-        if self.status not in {LoadedProviderStatus.ready, LoadedProviderStatus.error}:
+        if self.status not in {ProviderStatus.ready, ProviderStatus.error}:
             logger.warning(f"Attempting to start provider that is not in a ready state: {self.status}")
             return
         if not await self.provider.is_installed():
             logger.warning("Provider was uninstalled externally. Resetting state to 'not_installed'")
-            self.status = LoadedProviderStatus.not_installed
+            self.status = ProviderStatus.not_installed
             return
         await self.stop()
         try:
-            self.status = LoadedProviderStatus.starting
+            self.status = ProviderStatus.starting
             self.missing_configuration = self.provider.check_env(env=self.env)
             self._start_task = asyncio.create_task(
                 self.provider.start(env=self.env, logs_container=self.logs_container)
             )
             self._base_url = await self._start_task
-            self.status = LoadedProviderStatus.running
+            self.status = ProviderStatus.running
         except BaseException as ex:
-            self.last_error = LoadProviderErrorMessage(message=f"Error connecting to provider: {extract_messages(ex)}")
-            self.status = LoadedProviderStatus.error
+            self.last_error = ProviderErrorMessage(message=f"Error connecting to provider: {extract_messages(ex)}")
+            self.status = ProviderStatus.error
 
     @bind_logging_context
     async def stop(self):
         try:
             if self._start_task:
-                if self.status == LoadedProviderStatus.starting:
+                if self.status == ProviderStatus.starting:
                     await cancel_task(self._start_task)
                 else:
                     await self._start_task
@@ -209,14 +203,14 @@ class LoadedProvider:
             logger.warning(f"Exception occurred when stopping session: {ex!r}")
 
         if self.status == self.status.running:
-            self.status = LoadedProviderStatus.ready
+            self.status = ProviderStatus.ready
 
         self._start_task = None
 
     @bind_logging_context
     async def initialize(self):
-        if self.status == LoadedProviderStatus.not_installed and await self.provider.is_installed():
-            self.status = LoadedProviderStatus.ready
+        if self.status == ProviderStatus.not_installed and await self.provider.is_installed():
+            self.status = ProviderStatus.ready
             if self._autostart:
                 await self.start()
 
@@ -279,6 +273,11 @@ class ProviderContainer:
     async def remove(self, provider: BaseProvider):
         provider = self.loaded_providers.pop(provider.id)
         await provider.close()
+
+    async def add_or_replace(self, provider: BaseProvider):
+        if provider.id in self.loaded_providers:
+            await self.remove(provider)
+        await self.add(provider)
 
     async def handle_reload_on_env_update(self):
         self._env = await self._env_repository.get_all()

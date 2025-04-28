@@ -27,20 +27,24 @@ from functools import cached_property
 
 import yaml
 from aiodocker import DockerError
+
 from beeai_server.adapters.interface import IContainerBackend
 from beeai_server.configuration import Configuration
 from beeai_server.custom_types import ID
 from beeai_server.domain.constants import DOCKER_MANIFEST_LABEL_NAME, LOCAL_IMAGE_REGISTRY
+from beeai_server.domain.registry import RegistryLocation
 from beeai_server.exceptions import MissingConfigurationError, retry_if_exception_grp_type
 from beeai_server.telemetry import OTEL_HTTP_ENDPOINT
 from beeai_server.utils.docker import DockerImageID, get_registry_image_config_and_labels, replace_localhost_url
-from beeai_server.utils.github import GithubUrl, ResolvedGithubUrl
+from beeai_server.utils.github import ResolvedGithubUrl, GithubUrl
 from beeai_server.utils.logs_container import LogsContainer
 from beeai_server.utils.process import find_free_port
 from httpx import HTTPError, AsyncClient
 from kink import inject
-from pydantic import AnyUrl, BaseModel, Field, PrivateAttr, RootModel, computed_field
+from pydantic import AnyUrl, BaseModel, Field, PrivateAttr, computed_field, RootModel, AnyHttpUrl
 from tenacity import AsyncRetrying, stop_after_attempt, wait_exponential
+
+logger = logging.getLogger(__name__)
 
 
 class EnvVar(BaseModel):
@@ -63,32 +67,30 @@ class ProviderManifest(BaseModel, extra="allow"):
     agents: list[Agent]
 
 
-logger = logging.getLogger(__name__)
-
-
-class LoadedProviderStatus(StrEnum):
-    not_installed = "not_installed"
-    install_error = "install_error"
-    installing = "installing"
-    starting = "starting"
-    ready = "ready"
-    running = "running"
-    error = "error"
-
-
-class LoadProviderErrorMessage(BaseModel):
-    message: str
-
-
-class GithubProviderSource(BaseModel):
-    location: ResolvedGithubUrl
-
-    _resolved: bool = PrivateAttr(False)
+class BaseProviderSource(BaseModel, abc.ABC):
+    location: Any
 
     @computed_field
     @property
-    def id(self) -> str:
+    def id(self) -> ID:
+        return hashlib.sha256(str(self.location).encode()).hexdigest()[:16]
+
+    @abstractmethod
+    async def load_manifest(self) -> ProviderManifest: ...
+    async def install(self, logs_container: LogsContainer | None = None): ...
+    async def uninstall(self): ...
+
+    async def is_installed(self):
+        return True
+
+    def __str__(self):
         return str(self.location)
+
+
+class GithubProviderSource(BaseProviderSource):
+    location: ResolvedGithubUrl
+
+    _resolved: bool = PrivateAttr(False)
 
     @property
     def image_id(self) -> DockerImageID:
@@ -120,24 +122,16 @@ class GithubProviderSource(BaseModel):
             raise ValueError(f"Docker image labels must contain 'beeai.dev.agent.yaml': {self.location}")
         return ProviderManifest.model_validate(yaml.safe_load(base64.b64decode(labels[DOCKER_MANIFEST_LABEL_NAME])))
 
-    def __str__(self):
-        return str(self.location)
 
-
-class DockerImageProviderSource(BaseModel):
+class DockerImageProviderSource(BaseProviderSource):
     location: DockerImageID
-
-    @computed_field
-    @property
-    def id(self) -> str:
-        return str(self.location)
 
     @property
     def image_id(self) -> DockerImageID:
         return self.location
 
     @inject
-    async def load_manifest(self, container_backend: IContainerBackend) -> Agent:
+    async def load_manifest(self, container_backend: IContainerBackend) -> ProviderManifest:
         if await self.is_installed():
             labels = await container_backend.extract_labels(image=self.image_id)
         else:
@@ -158,37 +152,47 @@ class DockerImageProviderSource(BaseModel):
     async def is_installed(self, container_backend: IContainerBackend) -> bool:
         return await container_backend.check_image(image=self.image_id)
 
-    def __str__(self):
-        return str(self.location)
+
+class NetworkProviderSource(BaseProviderSource):
+    location: AnyHttpUrl
+
+    @inject
+    async def load_manifest(self, container_backend: IContainerBackend) -> ProviderManifest:
+        async with AsyncClient() as client:
+            response = await client.get(f"{str(self.location).rstrip('/')}/agents", timeout=1)
+            return ProviderManifest.model_validate(response.json())
 
 
-ProviderSource = GithubProviderSource | DockerImageProviderSource
-
-
-class GithubProviderLocation(RootModel):
-    root: GithubUrl
-
-    async def resolve(self) -> GithubProviderSource:
-        return GithubProviderSource(location=await self.root.resolve_version())
-
-
-class DockerImageProviderLocation(RootModel):
-    root: DockerImageID
-
-    async def resolve(self) -> DockerImageProviderSource:
-        return DockerImageProviderSource(location=self.root)
-
-
-ProviderLocation = GithubProviderLocation | DockerImageProviderLocation
+ManagedProviderSource = GithubProviderSource | DockerImageProviderSource
+UnmanagedProviderSource = NetworkProviderSource
 
 
 class BaseProvider(BaseModel, abc.ABC):
     manifest: ProviderManifest
     auto_stop_timeout: timedelta | None = Field(None, exclude=True)
+    source: UnmanagedProviderSource | ManagedProviderSource
+    registry: RegistryLocation | None = None
+    persistent: bool = True
 
-    @property
-    @abstractmethod
-    def id(self) -> ID: ...
+    @computed_field()
+    @cached_property
+    def id(self) -> ID:
+        return self.source.id
+
+    @computed_field()
+    @cached_property
+    def location(self) -> ID:
+        return str(self.source)
+
+    @classmethod
+    async def load_from_source(
+        cls,
+        source: ManagedProviderSource | UnmanagedProviderSource,
+        registry: RegistryLocation | None = None,
+        persistent: bool = True,
+    ) -> Self:
+        manifest = await source.load_manifest()
+        return cls(manifest=manifest, source=source, registry=registry, persistent=persistent)
 
     @cached_property
     def env(self):
@@ -242,25 +246,9 @@ class BaseProvider(BaseModel, abc.ABC):
 
 
 class ManagedProvider(BaseProvider, extra="allow"):
-    source: ProviderSource
-    registry: ResolvedGithubUrl | None = None
+    source: ManagedProviderSource
     auto_stop_timeout: timedelta | None = Field(timedelta(minutes=5), exclude=True)
     _container_exit_stack: AsyncExitStack = PrivateAttr(default_factory=AsyncExitStack)
-
-    @computed_field()
-    @cached_property
-    def id(self) -> ID:
-        return hashlib.sha256(str(self.source).encode()).hexdigest()[:16]
-
-    @computed_field()
-    @cached_property
-    def source_id(self) -> ID:
-        return str(self.source)
-
-    @classmethod
-    async def load_from_source(cls, source: ProviderSource, registry: ResolvedGithubUrl | None = None) -> Self:
-        manifest = await source.load_manifest()
-        return cls(manifest=manifest, source=source, registry=registry)
 
     @computed_field
     @property
@@ -336,32 +324,75 @@ class ManagedProvider(BaseProvider, extra="allow"):
 
 
 class UnmanagedProvider(BaseProvider, extra="allow"):
-    location: AnyUrl
-    source: ID
-    persistent: bool = False
-
-    @computed_field()
-    @cached_property
-    def id(self) -> ID:
-        return self.source
-
-    @computed_field()
-    @cached_property
-    def source_id(self) -> ID:
-        return self.source
+    source: UnmanagedProviderSource
 
     async def start(self, *_args, **_kwargs) -> str:
-        base_url = f"{str(self.location).rstrip('/')}/"
+        base_url = f"{str(self.source.location).rstrip('/')}/"
         async with AsyncClient(base_url=base_url) as client:
             await client.get("agents")
         return base_url
 
-    @classmethod
-    async def load_from_location(cls, location: AnyUrl, id: str, persistent: bool = False) -> Self:
-        async with AsyncClient() as client:
-            response = await client.get(f"{str(location).rstrip('/')}/agents", timeout=1)
-            manifest = ProviderManifest.model_validate(response.json())
-        return cls(manifest=manifest, location=location, source=id, persistent=persistent)
-
 
 Provider = ManagedProvider | UnmanagedProvider
+
+
+class GithubProviderLocation(RootModel):
+    root: GithubUrl
+
+    async def get_source(self) -> GithubProviderSource:
+        return GithubProviderSource(location=await self.root.resolve_version())
+
+    @inject
+    async def load(
+        self, configuration: Configuration, *, registry: RegistryLocation | None = None, persistent: bool = True
+    ) -> ManagedProvider:
+        if configuration.disable_docker:
+            raise RuntimeError("Cannot load managed provider when docker is disabled in the configuration.")
+        return await ManagedProvider.load_from_source(
+            source=await self.get_source(), registry=registry, persistent=persistent
+        )
+
+
+class DockerImageProviderLocation(RootModel):
+    root: DockerImageID
+
+    async def get_source(self) -> DockerImageProviderSource:
+        return DockerImageProviderSource(location=self.root)
+
+    @inject
+    async def load(
+        self, configuration: Configuration, *, registry: RegistryLocation | None = None, persistent: bool = True
+    ) -> ManagedProvider:
+        if configuration.disable_docker:
+            raise RuntimeError("Cannot load managed provider when docker is disabled in the configuration.")
+        return await ManagedProvider.load_from_source(await self.get_source(), registry=registry, persistent=persistent)
+
+
+class NetworkProviderLocation(RootModel):
+    root: AnyUrl
+
+    async def get_source(self) -> NetworkProviderSource:
+        return NetworkProviderSource(location=self.root)
+
+    async def load(self, *, registry: RegistryLocation | None = None, persistent: bool = True) -> UnmanagedProvider:
+        return await UnmanagedProvider.load_from_source(
+            await self.get_source(), registry=registry, persistent=persistent
+        )
+
+
+ProviderLocation = GithubProviderLocation | DockerImageProviderLocation | NetworkProviderLocation
+
+
+class ProviderStatus(StrEnum):
+    not_loaded = "not_loaded"
+    not_installed = "not_installed"
+    install_error = "install_error"
+    installing = "installing"
+    starting = "starting"
+    ready = "ready"
+    running = "running"
+    error = "error"
+
+
+class ProviderErrorMessage(BaseModel):
+    message: str

@@ -30,6 +30,10 @@ RUN pipx install uv
 COPY --from=build /app/apps/beeai-server/dist/*.tar.gz .
 RUN pipx install ./*.tar.gz
 RUN chmod og+rx /root
-ENV PATH "/root/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-ENV HOME "/tmp"
+ENV PATH="/root/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" \
+    HOME="/tmp" \
+    DISABLE_DOCKER=true \
+    COLLECTOR_MANAGED=false \
+    AGENT_REGISTRY__LOCATION="file:///app/registry.yaml"
+
 CMD ["beeai-server"]

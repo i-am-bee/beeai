@@ -20,7 +20,7 @@ import platform
 import shutil
 import subprocess
 import time
-from contextlib import suppress
+from contextlib import suppress, AsyncExitStack
 from pathlib import Path
 import socket
 import http.client
@@ -43,7 +43,7 @@ from beeai_server.adapters.interface import (
 )
 from beeai_server.configuration import Configuration, get_configuration
 from beeai_server.domain.collector.constants import TELEMETRY_BASE_CONFIG_PATH, TELEMETRY_BEEAI_CONFIG_PATH
-from beeai_server.domain.provider import ProviderContainer
+from beeai_server.domain.provider.container import ProviderContainer
 from beeai_server.domain.telemetry import TelemetryCollectorManager
 from beeai_server.utils.periodic import register_all_crons
 from kink import di
@@ -193,24 +193,25 @@ async def bootstrap_dependencies():
     di.clear_cache()
     di._aliases.clear()  # reset aliases
 
-    di[Configuration] = get_configuration()
+    di[Configuration] = config = get_configuration()
 
-    copy_telemetry_config(di[Configuration])
+    copy_telemetry_config(config)
 
-    di[IProviderRepository] = FilesystemProviderRepository(provider_config_path=di[Configuration].provider_config_path)
-    di[IEnvVariableRepository] = FilesystemEnvVariableRepository(env_variable_path=di[Configuration].env_path)
+    di[IProviderRepository] = FilesystemProviderRepository(provider_config_path=config.provider_config_path)
+    di[IEnvVariableRepository] = FilesystemEnvVariableRepository(env_variable_path=config.env_path)
     di[ITelemetryRepository] = FilesystemTelemetryRepository(
-        telemetry_config_path=di[Configuration].telemetry_config_dir / "telemetry.yaml"
+        telemetry_config_path=config.telemetry_config_dir / "telemetry.yaml"
     )
-    di[IContainerBackend] = await resolve_container_runtime_cmd(di[Configuration])
+
+    di[IContainerBackend] = NotImplemented if config.disable_docker else await resolve_container_runtime_cmd(config)
+    di[TelemetryCollectorManager] = AsyncExitStack() if not config.collector_managed else TelemetryCollectorManager()
 
     di[ProviderContainer] = ProviderContainer(
-        env_repository=di[IEnvVariableRepository], autostart_providers=di[Configuration].autostart_providers
+        env_repository=di[IEnvVariableRepository], autostart_providers=config.autostart_providers
     )
-    di[TelemetryCollectorManager] = TelemetryCollectorManager()
 
     # Ensure cache directory
-    await anyio.Path(di[Configuration].cache_dir).mkdir(parents=True, exist_ok=True)
+    await anyio.Path(config.cache_dir).mkdir(parents=True, exist_ok=True)
     register_all_crons()
 
 

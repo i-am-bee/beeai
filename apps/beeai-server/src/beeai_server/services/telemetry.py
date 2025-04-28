@@ -15,6 +15,7 @@
 from kink import inject
 
 from beeai_server.adapters.interface import ITelemetryRepository
+from beeai_server.configuration import Configuration
 from beeai_server.domain.telemetry import TelemetryCollectorManager
 
 
@@ -24,9 +25,11 @@ class TelemetryService:
         self,
         collector_repository: ITelemetryRepository,
         collector_manager: TelemetryCollectorManager,
+        config: Configuration,
     ):
         self._repository = collector_repository
         self._manager = collector_manager
+        self._config = config
 
     async def read_config(self):
         config = await self._repository.get()
@@ -39,4 +42,5 @@ class TelemetryService:
 
     async def sync(self):
         await self._repository.sync()
-        await self._manager.reload()
+        if self._config.collector_managed:
+            await self._manager.reload()

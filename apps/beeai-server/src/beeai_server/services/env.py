@@ -17,7 +17,7 @@ from typing import Coroutine, Callable
 from kink import inject
 
 from beeai_server.adapters.interface import IEnvVariableRepository
-from beeai_server.domain.provider import ProviderContainer
+from beeai_server.domain.provider.container import ProviderContainer
 
 
 @inject

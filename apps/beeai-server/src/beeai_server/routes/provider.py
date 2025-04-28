@@ -16,7 +16,7 @@ import fastapi
 from starlette.status import HTTP_202_ACCEPTED
 
 from beeai_server.custom_types import ID
-from beeai_server.domain.model import GithubProviderLocation
+from beeai_server.domain.provider.model import GithubProviderLocation
 from beeai_server.routes.dependencies import ProviderServiceDependency
 from beeai_server.schema import (
     CreateManagedProviderRequest,
@@ -51,14 +51,14 @@ async def create_managed_provider(
     else:
         if isinstance(request.location, GithubProviderLocation):
             raise ValueError("Github provider must be installed to be registered, use /register/managed?install=true")
-        return await provider_service.register_managed_provider(location=request.location)
+        return await provider_service.register_provider(location=request.location)
 
 
 @router.post("/register/unmanaged")
 async def add_unmanaged_provider(
     request: RegisterUnmanagedProviderRequest, provider_service: ProviderServiceDependency, persist: bool = Query(False)
 ) -> ProviderWithStatus:
-    return await provider_service.register_unmanaged_provider(location=request.location, id=request.id, persist=persist)
+    return await provider_service.register_provider(location=request.location, persist=persist)
 
 
 @router.put("/{id}/install")

@@ -21,7 +21,7 @@ from beeai_server.utils.logs_container import LogsContainer
 from pydantic import BaseModel
 
 if TYPE_CHECKING:
-    from beeai_server.domain.model import BaseProvider
+    from beeai_server.domain.provider.model import BaseProvider
 
 NOT_SET = object()
 

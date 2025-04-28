@@ -12,17 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from typing import TypeVar, Generic, Any
-from pydantic import BaseModel, RootModel, Field, AnyUrl
+from pydantic import BaseModel, RootModel, Field
 
 from beeai_server.custom_types import ID
-from beeai_server.domain.model import (
+from beeai_server.domain.provider.model import (
     ProviderLocation,
-    LoadedProviderStatus,
-    LoadProviderErrorMessage,
     EnvVar,
     ProviderManifest,
+    ProviderStatus,
+    ProviderErrorMessage,
+    NetworkProviderLocation,
 )
-from beeai_server.utils.github import ResolvedGithubUrl
+from beeai_server.domain.registry import RegistryLocation
 
 BaseModelT = TypeVar("BaseModelT", bound=BaseModel)
 
@@ -41,8 +42,8 @@ class InstallProviderRequest(BaseModel):
 
 
 class RegisterUnmanagedProviderRequest(BaseModel):
-    location: AnyUrl
-    id: ID
+    location: NetworkProviderLocation
+    id: ID | None = Field(default=None, deprecated=True)
 
 
 class UpdateEnvRequest(BaseModel):
@@ -62,10 +63,11 @@ RunAgentInput = RootModel[dict[str, Any]]
 
 class ProviderWithStatus(BaseModel, extra="allow"):
     id: ID
-    registry: ResolvedGithubUrl | None = None
+    location: str
+    registry: RegistryLocation | None = None
     manifest: ProviderManifest
-    status: LoadedProviderStatus
-    last_error: LoadProviderErrorMessage | None = None
+    status: ProviderStatus
+    last_error: ProviderErrorMessage | None = None
     missing_configuration: list[EnvVar] = Field(default_factory=list)
 
 

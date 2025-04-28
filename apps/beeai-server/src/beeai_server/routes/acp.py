@@ -30,7 +30,7 @@ from acp_sdk.models import (
     RunResumeResponse,
 )
 
-from beeai_server.domain.model import Agent
+from beeai_server.domain.provider.model import Agent
 from beeai_server.routes.dependencies import ProviderServiceDependency
 
 router = fastapi.APIRouter()

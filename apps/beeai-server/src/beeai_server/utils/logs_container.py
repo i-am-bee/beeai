@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+import logging
 from collections import deque
 from contextlib import asynccontextmanager
 from datetime import UTC, datetime
@@ -22,7 +22,7 @@ import anyio
 from anyio import WouldBlock
 from pydantic import BaseModel, Field
 
-from beeai_server import logger
+logger = logging.getLogger(__name__)
 
 
 class ProcessLogType(StrEnum):

@@ -30,8 +30,8 @@ from starlette.requests import Request
 
 from beeai_server.adapters.interface import IProviderRepository
 from beeai_server.crons.sync_registry_providers import preinstall_background_tasks
-from beeai_server.domain.model import LoadedProviderStatus
-from beeai_server.domain.provider import ProviderContainer
+from beeai_server.domain.provider.container import ProviderContainer
+from beeai_server.domain.provider.model import ProviderStatus
 from beeai_server.utils.fastapi import NoCacheStaticFiles
 from fastapi import FastAPI, APIRouter
 from fastapi import HTTPException
@@ -138,7 +138,7 @@ def register_telemetry(provider_container: ProviderContainer):
 
     def scrape_providers_by_status(options: CallbackOptions) -> Iterable[Observation]:
         providers = provider_container.loaded_providers.values()
-        for status in LoadedProviderStatus:
+        for status in ProviderStatus:
             count = 0
             for provider in providers:
                 if provider.status == status:
