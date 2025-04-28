@@ -17,22 +17,22 @@
 import { api } from '#api/index.ts';
 import { ensureData } from '#api/utils.ts';
 
-import type { UpdateEnvRequest } from './types';
+import type { UpdateVariablesRequest } from './types';
 
-export async function listEnvs() {
-  const response = await api.GET('/api/v1/env');
+export async function listVariables() {
+  const response = await api.GET('/api/v1/variables');
 
-  return ensureData({ response, errorMessage: 'Failed to list env variables.' });
+  return ensureData({ response, errorMessage: 'Failed to list variables.' });
 }
 
-export async function updateEnv({ body }: { body: UpdateEnvRequest['env'] }) {
-  const response = await api.PUT('/api/v1/env', { body: { env: body } });
+export async function updateVariable({ body }: { body: UpdateVariablesRequest['env'] }) {
+  const response = await api.PUT('/api/v1/variables', { body: { env: body } });
 
-  return ensureData({ response, errorMessage: 'Failed to update env variable.' });
+  return ensureData({ response, errorMessage: 'Failed to update variable.' });
 }
 
-export async function deleteEnv({ name }: { name: string }) {
-  const response = await api.PUT('/api/v1/env', { body: { env: { [name]: null } } });
+export async function deleteVariable({ name }: { name: string }) {
+  const response = await api.PUT('/api/v1/variables', { body: { env: { [name]: null } } });
 
-  return ensureData({ response, errorMessage: 'Failed to delete env variable.' });
+  return ensureData({ response, errorMessage: 'Failed to delete variable.' });
 }

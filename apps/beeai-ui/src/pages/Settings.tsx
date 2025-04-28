@@ -20,8 +20,8 @@ import { Container } from '#components/layouts/Container.tsx';
 import { MainContent } from '#components/layouts/MainContent.tsx';
 import { ViewHeader } from '#components/ViewHeader/ViewHeader.tsx';
 import { ViewStack } from '#components/ViewStack/ViewStack.tsx';
-import { EnvsView } from '#modules/envs/components/EnvsView.tsx';
 import { ProvidersView } from '#modules/providers/components/ProvidersView.tsx';
+import { VariablesView } from '#modules/variables/components/VariablesView.tsx';
 
 export function Settings() {
   return (
@@ -32,14 +32,14 @@ export function Settings() {
 
           <Tabs>
             <TabList>
-              <Tab>Environment variables</Tab>
+              <Tab>Variables</Tab>
 
               <Tab>Agent providers</Tab>
             </TabList>
 
             <TabPanels>
               <TabPanel>
-                <EnvsView />
+                <VariablesView />
               </TabPanel>
 
               <TabPanel>

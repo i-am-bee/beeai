@@ -30,3 +30,17 @@ export function ensureData<T extends Record<string | number, unknown>, O, M exte
 
   return response.data;
 }
+
+export function ensureResponse<T extends Record<string | number, unknown>, O, M extends MediaType>({
+  response,
+  errorMessage = 'API request failed.',
+}: {
+  response: FetchResponse<T, O, M>;
+  errorMessage?: string;
+}) {
+  if ('error' in response) {
+    throw new Error(errorMessage);
+  }
+
+  return response.response;
+}

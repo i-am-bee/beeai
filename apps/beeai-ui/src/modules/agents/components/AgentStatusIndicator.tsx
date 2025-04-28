@@ -36,7 +36,7 @@ export function AgentStatusIndicator({ agent }: Props) {
 
   const handleInstall = useCallback(() => {
     if (provider) {
-      installProvider({ body: { id: provider } });
+      installProvider({ id: provider });
     }
   }, [installProvider, provider]);
 

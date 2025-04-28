@@ -104,6 +104,17 @@ export const ChatInput = memo(function ChatInput({ onMessageSubmit }: Props) {
               }}
             />
           )}
+          <Button
+            renderIcon={StopOutlineFilled}
+            kind="ghost"
+            size="sm"
+            hasIconOnly
+            iconDescription="Cancel"
+            onClick={(e) => {
+              onCancel();
+              e.preventDefault();
+            }}
+          />
         </InputBar>
       </div>
     </FormProvider>

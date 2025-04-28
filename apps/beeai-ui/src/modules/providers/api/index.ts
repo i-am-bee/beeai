@@ -17,22 +17,22 @@
 import { api } from '#api/index.ts';
 import { ensureData } from '#api/utils.ts';
 
-import type { DeleteProviderRequest, InstallProviderRequest, RegisterManagedProviderRequest } from './types';
+import type { DeleteProviderPath, InstallProviderPath, RegisterManagedProviderRequest } from './types';
 
 export async function listProviders() {
-  const response = await api.GET('/api/v1/provider');
+  const response = await api.GET('/api/v1/providers');
 
   return ensureData({ response, errorMessage: 'Failed to list providers.' });
 }
 
-export async function deleteProvider({ body }: { body: DeleteProviderRequest }) {
-  const response = await api.POST('/api/v1/provider/delete', { body });
+export async function deleteProvider({ id }: DeleteProviderPath) {
+  const response = await api.DELETE('/api/v1/providers/{id}', { params: { path: { id } } });
 
   return ensureData({ response, errorMessage: 'Failed to delete provider.' });
 }
 
-export async function installProvider({ body }: { body: InstallProviderRequest }) {
-  const response = await api.POST('/api/v1/provider/install', { body });
+export async function installProvider({ id }: InstallProviderPath) {
+  const response = await api.PUT('/api/v1/providers/{id}/install', { params: { path: { id } } });
 
   // TODO
   // const response = await api.POST('/api/v1/provider/install', {
@@ -61,7 +61,7 @@ export async function installProvider({ body }: { body: InstallProviderRequest }
 }
 
 export async function registerManagedProvider({ body }: { body: RegisterManagedProviderRequest }) {
-  const response = await api.POST('/api/v1/provider/register/managed', { body });
+  const response = await api.POST('/api/v1/providers/register/managed', { body });
 
   return ensureData({ response, errorMessage: 'Failed to register managed provider.' });
 }

@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
+import { events } from 'fetch-event-stream';
+
 import { api } from '#api/index.ts';
-import { ensureData } from '#api/utils.ts';
+import { ensureData, ensureResponse } from '#api/utils.ts';
 
-import type { CancelRunPath, CreateRunRequest, ReadRunPath, ResumeRunPath, ResumeRunRequest } from './types';
+import type { CancelRunPath, CreateRunStreamRequest, ReadRunPath, ResumeRunPath, ResumeRunRequest } from './types';
 
-export async function createRun({ body }: { body: CreateRunRequest }) {
-  const response = await api.POST('/api/v1/acp/runs', { body });
+export async function createRunStream({ body, signal }: { body: CreateRunStreamRequest; signal?: AbortSignal | null }) {
+  const response = await api.POST('/api/v1/acp/runs', { parseAs: 'stream', body, signal });
 
-  return ensureData({ response, errorMessage: 'Failed to create run.' });
+  const stream = events(ensureResponse({ response, errorMessage: 'Failed to create run.' }), signal);
+
+  return stream;
 }
 
 export async function readRun({ run_id }: ReadRunPath) {

@@ -15,13 +15,22 @@
  */
 
 import type { PropsWithChildren } from 'react';
-import { useCallback, useMemo, useRef } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 
 import { useImmerWithGetter } from '#hooks/useImmerWithGetter.ts';
 import type { Agent } from '#modules/agents/api/types.ts';
-import { useCreateRun } from '#modules/runs/api/mutations/useCreateRun.tsx';
-import type { AgentMessage, ChatMessage, SendMessageParams } from '#modules/runs/chat/types.ts';
+import { useCancelRun } from '#modules/runs/api/mutations/useCancelRun.tsx';
+import { useCreateRunStream } from '#modules/runs/api/mutations/useCreateRunStream.tsx';
+import { EventType, type RunId, type SessionId } from '#modules/runs/api/types.ts';
+import {
+  type AssistantMessage,
+  type ChatMessage,
+  MessageStatus,
+  type SendMessageParams,
+} from '#modules/runs/chat/types.ts';
+import { Role } from '#modules/runs/types.ts';
+import { createMessagePart, createRunStreamRequest, handleRunStream, isArtifact } from '#modules/runs/utils.ts';
 
 import { ChatContext, ChatMessagesContext } from './chat-context';
 
@@ -30,15 +39,18 @@ interface Props {
 }
 
 export function ChatProvider({ agent, children }: PropsWithChildren<Props>) {
-  const [messages, getMessages, setMessages] = useImmerWithGetter<ChatMessage[]>([]);
+  const [messages, , setMessages] = useImmerWithGetter<ChatMessage[]>([]);
+  const [runId, setRunId] = useState<RunId>();
+  const [sessionId, setSessionId] = useState<SessionId>();
 
   const abortControllerRef = useRef<AbortController | null>(null);
 
-  const updateLastAgentMessage = useCallback(
-    (updater: (message: AgentMessage) => void) => {
+  const updateLastAssistantMessage = useCallback(
+    (updater: (message: AssistantMessage) => void) => {
       setMessages((messages) => {
         const lastMessage = messages.at(-1);
-        if (lastMessage?.role === 'assistant') {
+
+        if (lastMessage?.role === Role.Assistant) {
           updater(lastMessage);
         }
       });
@@ -46,39 +58,23 @@ export function ChatProvider({ agent, children }: PropsWithChildren<Props>) {
     [setMessages],
   );
 
-  const { isPending } = useCreateRun();
+  const { mutateAsync: createRunStream } = useCreateRunStream();
 
-  // const { runAgent, isPending } = useRunAgent<MessageInput, MessagesNotificationSchema>({
-  //   notifications: {
-  //     handler: (notification) => {
-  //       const text = String(notification.params.delta.messages.at(-1)?.content);
-  //       updateLastAgentMessage((message) => {
-  //         message.content += text;
-  //       });
-  //     },
-  //   },
-  // });
-
-  // const getInputMessages = useCallback(() => {
-  //   return getMessages()
-  //     .slice(0, -1)
-  //     .map(({ role, content }) => ({ role, content }));
-  // }, [getMessages]);
+  const { mutate: cancelRun } = useCancelRun();
 
   const sendMessage = useCallback(
     async ({ input }: SendMessageParams) => {
-      // async ({ input, config }: SendMessageParams) => {
       setMessages((messages) => {
         messages.push({
           key: uuid(),
-          role: 'user',
+          role: Role.User,
           content: input,
         });
         messages.push({
           key: uuid(),
-          role: 'assistant',
+          role: Role.Assistant,
           content: '',
-          status: 'pending',
+          status: MessageStatus.InProgress,
         });
       });
 
@@ -86,53 +82,80 @@ export function ChatProvider({ agent, children }: PropsWithChildren<Props>) {
         const abortController = new AbortController();
         abortControllerRef.current = abortController;
 
-        console.log('send');
+        const stream = await createRunStream({
+          body: createRunStreamRequest({
+            agent: agent.name,
+            messagePart: createMessagePart({ content: input }),
+            sessionId,
+          }),
+          signal: abortController.signal,
+        });
 
-        // const response = await createRun({
-        //   agent,
-        //   input: {
-        //     messages: getInputMessages(),
-        //     config,
-        //   },
-        //   abortController,
-        // });
+        handleRunStream({
+          stream,
+          onEvent: (event) => {
+            switch (event.type) {
+              case EventType.RunCreated:
+                setRunId(event.run.run_id);
+                setSessionId(event.run.session_id);
 
-        // updateLastAgentMessage((message) => {
-        //   message.content = String(response.output.messages.at(-1)?.content);
-        //   message.status = 'success';
-        // });
+                break;
+              case EventType.RunFailed:
+                throw new Error(event.run.error?.message);
+              case EventType.MessagePart:
+                if (!isArtifact(event.part)) {
+                  return;
+                }
+
+                updateLastAssistantMessage((message) => {
+                  message.content += event.part.content;
+                });
+
+                break;
+              case EventType.MessageCompleted:
+                updateLastAssistantMessage((message) => {
+                  message.status = MessageStatus.Completed;
+                });
+            }
+          },
+        });
       } catch (error) {
-        console.error(error);
-
-        updateLastAgentMessage((message) => {
+        updateLastAssistantMessage((message) => {
           message.error = error as Error;
-          message.status = abortControllerRef.current?.signal.aborted ? 'aborted' : 'error';
+          message.status = MessageStatus.Failed;
         });
       }
     },
-    [setMessages, updateLastAgentMessage],
+    [agent.name, sessionId, createRunStream, setMessages, updateLastAssistantMessage],
   );
 
   const handleCancel = useCallback(() => {
+    if (runId) {
+      cancelRun({ run_id: runId });
+    }
+
     abortControllerRef.current?.abort();
-  }, []);
+
+    updateLastAssistantMessage((message) => {
+      message.status = MessageStatus.Aborted;
+    });
+  }, [runId, cancelRun, updateLastAssistantMessage]);
 
   const handleClear = useCallback(() => {
     setMessages([]);
+    setRunId(undefined);
+    setSessionId(undefined);
     handleCancel();
   }, [handleCancel, setMessages]);
 
   const contextValue = useMemo(
     () => ({
       agent,
-      isPending,
       onCancel: handleCancel,
-      getMessages,
-      setMessages,
       onClear: handleClear,
       sendMessage,
     }),
-    [agent, getMessages, handleCancel, handleClear, isPending, sendMessage, setMessages],
+    [agent, handleCancel, handleClear, sendMessage],
   );
 
   return (

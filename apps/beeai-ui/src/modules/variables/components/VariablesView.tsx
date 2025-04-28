@@ -35,15 +35,15 @@ import { TableViewToolbar } from '#components/TableView/TableViewToolbar.tsx';
 import { useModal } from '#contexts/Modal/index.tsx';
 import { useTableSearch } from '#hooks/useTableSearch.ts';
 
-import { useDeleteEnv } from '../api/mutations/useDeleteEnv';
-import { useListEnvs } from '../api/queries/useListEnvs';
-import { AddEnvModal } from './AddEnvModal';
-import classes from './EnvsView.module.scss';
+import { useDeleteVariable } from '../api/mutations/useDeleteVariable';
+import { useListVariables } from '../api/queries/useListVariables';
+import { AddVariableModal } from './AddVariableModal';
+import classes from './VariablesView.module.scss';
 
-export function EnvsView() {
+export function VariablesView() {
   const { openModal, openConfirmation } = useModal();
-  const { data, isPending } = useListEnvs();
-  const { mutate: deleteEnv } = useDeleteEnv();
+  const { data, isPending } = useListVariables();
+  const { mutate: deleteVariable } = useDeleteVariable();
   const entries = useMemo(
     () => (data ? Object.entries(data.env).map(([name, value]) => ({ name, value })) : []),
     [data],
@@ -64,10 +64,10 @@ export function EnvsView() {
             onClick={() =>
               openConfirmation({
                 title: `Delete '${name}'?`,
-                body: 'Are you sure you want to delete this environment variable? It can’t be undone.',
+                body: 'Are you sure you want to delete this variable? It can’t be undone.',
                 primaryButtonText: 'Delete',
                 danger: true,
-                onSubmit: () => deleteEnv({ name }),
+                onSubmit: () => deleteVariable({ name }),
               })
             }
             align="left"
@@ -77,11 +77,11 @@ export function EnvsView() {
         </TableViewActions>
       ),
     }));
-  }, [items, deleteEnv, openConfirmation]);
+  }, [items, deleteVariable, openConfirmation]);
 
   return (
     <TableView
-      description="Your environment variables are sensitive information and should not be shared with anyone. Keep it secure to
+      description="Your variables are sensitive information and should not be shared with anyone. Keep it secure to
         prevent unauthorized access to your account."
     >
       <DataTable headers={HEADERS} rows={rows}>
@@ -93,7 +93,7 @@ export function EnvsView() {
                 disabled: isPending,
               }}
               button={
-                <Button onClick={() => openModal((props) => <AddEnvModal {...props} />)}>Add env variable</Button>
+                <Button onClick={() => openModal((props) => <AddVariableModal {...props} />)}>Add variable</Button>
               }
             />
 

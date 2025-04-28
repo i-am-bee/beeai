@@ -28,8 +28,9 @@ interface Props {
 export function useProvider({ id }: Props) {
   const query = useQuery({
     queryKey: providerKeys.list(),
+    // TODO: We could use the `/api/v1/providers/{id}` endpoint to fetch the exact provider, but currently we are listing all the providers at once, so we can reuse the data here untill the providers have sorting and pagination.
     queryFn: listProviders,
-    select: (data) => data?.items.find((item) => id === item.id),
+    select: (data) => data.items.find((item) => id === item.id),
     enabled: Boolean(id),
   });
 

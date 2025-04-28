@@ -73,7 +73,7 @@ export type ApiQuery<
 
 export type ApiPath<
   Path extends keyof paths,
-  Method extends keyof paths[Path] & ('get' | 'post') = 'get',
+  Method extends keyof paths[Path] & ('get' | 'post' | 'put' | 'delete') = 'get',
 > = paths[Path][Method] extends {
   parameters: { path?: infer P };
 }

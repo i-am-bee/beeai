@@ -14,28 +14,16 @@
  * limitations under the License.
  */
 
-import { useMutation } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 
-import { providerKeys } from '#modules/providers/api/keys.ts';
+import { listVariables } from '..';
+import { variableKeys } from '../keys';
 
-import { updateEnv } from '..';
-import { envKeys } from '../keys';
-
-interface Props {
-  onSuccess?: () => void;
-}
-
-export function useUpdateEnv({ onSuccess }: Props = {}) {
-  const mutation = useMutation({
-    mutationFn: updateEnv,
-    onSuccess,
-    meta: {
-      invalidates: [envKeys.lists(), providerKeys.lists()],
-      errorToast: {
-        title: 'Failed to update env variable.',
-      },
-    },
+export function useListVariables() {
+  const query = useQuery({
+    queryKey: variableKeys.list(),
+    queryFn: listVariables,
   });
 
-  return mutation;
+  return query;
 }

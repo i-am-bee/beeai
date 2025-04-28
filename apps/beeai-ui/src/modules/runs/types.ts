@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+export enum Role {
+  User = 'user',
+  Assistant = 'assistant',
+}
+
 export interface RunStats {
   startTime?: number;
   endTime?: number;

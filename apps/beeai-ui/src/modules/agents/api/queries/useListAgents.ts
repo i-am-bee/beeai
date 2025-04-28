@@ -24,7 +24,7 @@ export function useListAgents() {
   const query = useQuery({
     queryKey: agentKeys.list(),
     queryFn: listAgents,
-    select: (data) => data?.agents as Agent[],
+    select: (data) => data.agents as Agent[],
   });
 
   return query;

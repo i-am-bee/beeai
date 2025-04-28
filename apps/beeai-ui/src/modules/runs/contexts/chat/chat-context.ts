@@ -16,7 +16,6 @@
 
 import { createContext } from 'react';
 
-import type { Updater } from '#hooks/useImmerWithGetter.ts';
 import type { Agent } from '#modules/agents/api/types.ts';
 import type { ChatMessage, SendMessageParams } from '#modules/runs/chat/types.ts';
 
@@ -26,10 +25,7 @@ export const ChatMessagesContext = createContext<ChatMessage[]>([]);
 
 interface ChatContextValue {
   agent: Agent;
-  isPending?: boolean;
-  getMessages: () => ChatMessage[];
   onClear: () => void;
   onCancel: () => void;
-  setMessages: Updater<ChatMessage[]>;
   sendMessage: ({ input }: SendMessageParams) => Promise<void>;
 }

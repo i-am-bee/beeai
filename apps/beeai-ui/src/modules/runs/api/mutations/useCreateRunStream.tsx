@@ -14,24 +14,19 @@
  * limitations under the License.
  */
 
-import { useSyncExternalStore } from 'react';
+import { useMutation } from '@tanstack/react-query';
 
-function subscribe(callback: (event: Event) => void) {
-  window.addEventListener('online', callback);
-  window.addEventListener('offline', callback);
+import { createRunStream } from '..';
 
-  return () => {
-    window.removeEventListener('online', callback);
-    window.removeEventListener('offline', callback);
-  };
-}
+export function useCreateRunStream() {
+  const mutation = useMutation({
+    mutationFn: createRunStream,
+    meta: {
+      errorToast: {
+        title: 'Failed to run agent.',
+      },
+    },
+  });
 
-export function useIsOnline() {
-  const state = useSyncExternalStore(
-    subscribe,
-    () => window.navigator.onLine,
-    () => true,
-  );
-
-  return state;
+  return mutation;
 }

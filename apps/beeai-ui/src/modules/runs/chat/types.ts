@@ -14,18 +14,39 @@
  * limitations under the License.
  */
 
-export interface MessageBase {
+import type { Role } from '../types';
+
+interface Message {
   key: string;
+  role: Role;
   content: string;
   error?: Error;
 }
-export interface ClientMessage extends MessageBase {
-  role: 'user';
+export interface UserMessage extends Message {
+  role: Role.User;
 }
-export interface AgentMessage extends MessageBase {
-  role: 'assistant';
-  status: 'pending' | 'error' | 'aborted' | 'success';
+export interface AssistantMessage extends Message {
+  role: Role.Assistant;
+  status: MessageStatus;
 }
-export type ChatMessage = ClientMessage | AgentMessage;
+
+export type ChatMessage = UserMessage | AssistantMessage;
 
 export type SendMessageParams = { input: string };
+
+export enum MessageStatus {
+  InProgress = 'in-progress',
+  Completed = 'completed',
+  Aborted = 'aborted',
+  Failed = 'failed',
+}
+
+export enum RunStatus {
+  Created = 'created',
+  InProgress = 'in-progress',
+  Awaiting = 'awaiting',
+  Cancelling = 'cancelling',
+  Cancelled = 'cancelled',
+  Completed = 'completed',
+  Failed = 'failed',
+}

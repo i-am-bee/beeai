@@ -16,4 +16,4 @@
 
 import type { ApiRequest } from '#@types/utils.ts';
 
-export type UpdateEnvRequest = ApiRequest<'/api/v1/env', 'put'>;
+export type UpdateVariablesRequest = ApiRequest<'/api/v1/variables', 'put'>;

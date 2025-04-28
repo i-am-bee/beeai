@@ -21,8 +21,9 @@ import { Spinner } from '#components/Spinner/Spinner.tsx';
 
 import { AgentIcon } from '../components/AgentIcon';
 import { useChat } from '../contexts/chat';
+import { Role } from '../types';
 import classes from './Message.module.scss';
-import type { ChatMessage } from './types';
+import { type ChatMessage, MessageStatus } from './types';
 import { UserIcon } from './UserIcon';
 
 interface Props {
@@ -32,7 +33,11 @@ interface Props {
 export function Message({ message }: Props) {
   const { agent } = useChat();
 
-  const isUserMessage = message.role === 'user';
+  const isUserMessage = message.role === Role.User;
+  const isAssistantMessage = message.role === Role.Assistant;
+  const isPending = isAssistantMessage && message.status === MessageStatus.InProgress && !message.content;
+  const isError =
+    isAssistantMessage && (message.status === MessageStatus.Failed || message.status === MessageStatus.Aborted);
 
   return (
     <li className={clsx(classes.root)}>
@@ -42,10 +47,17 @@ export function Message({ message }: Props) {
       </div>
 
       <div className={classes.body}>
-        {!isUserMessage && message.status === 'pending' && !message.content ? (
+        {isPending ? (
           <Spinner />
-        ) : !isUserMessage && message.error && message.status === 'error' ? (
-          <ErrorMessage title="Failed to generate a response message" subtitle={message.error.message} />
+        ) : isError ? (
+          <ErrorMessage
+            title={
+              message.status === MessageStatus.Failed
+                ? 'Failed to generate an assistant message.'
+                : 'Message generation has been cancelled.'
+            }
+            subtitle={message?.error?.message}
+          />
         ) : (
           <div className={classes.content}>
             {message.content || <span className={classes.empty}>Message has no content</span>}

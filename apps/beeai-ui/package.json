@@ -34,6 +34,7 @@
     "@types/react-resizable": "^3.0.8",
     "@types/react-syntax-highlighter": "^15.5.13",
     "clsx": "^2.1.1",
+    "fetch-event-stream": "^0.1.5",
     "framer-motion": "^12.6.2",
     "humanize-duration": "^3.32.1",
     "immer": "^10.1.1",

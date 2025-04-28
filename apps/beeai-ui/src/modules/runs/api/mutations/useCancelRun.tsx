@@ -16,19 +16,13 @@
 
 import { useMutation } from '@tanstack/react-query';
 
-import { providerKeys } from '#modules/providers/api/keys.ts';
+import { cancelRun } from '..';
 
-import { deleteEnv } from '..';
-import { envKeys } from '../keys';
-
-export function useDeleteEnv() {
+export function useCancelRun() {
   const mutation = useMutation({
-    mutationFn: deleteEnv,
+    mutationFn: cancelRun,
     meta: {
-      invalidates: [envKeys.lists(), providerKeys.lists()],
-      errorToast: {
-        title: 'Failed to delete env variable.',
-      },
+      errorToast: false,
     },
   });
 

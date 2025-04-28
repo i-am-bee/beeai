@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-export const envKeys = {
-  all: () => ['envs'] as const,
-  lists: () => [...envKeys.all(), 'list'] as const,
-  list: () => [...envKeys.lists()] as const,
+export const variableKeys = {
+  all: () => ['variables'] as const,
+  lists: () => [...variableKeys.all(), 'list'] as const,
+  list: () => [...variableKeys.lists()] as const,
 };

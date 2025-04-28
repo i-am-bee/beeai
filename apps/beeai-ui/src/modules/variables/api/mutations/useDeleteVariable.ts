@@ -16,14 +16,18 @@
 
 import { useMutation } from '@tanstack/react-query';
 
-import { createRun } from '..';
+import { providerKeys } from '#modules/providers/api/keys.ts';
 
-export function useCreateRun() {
+import { deleteVariable } from '..';
+import { variableKeys } from '../keys';
+
+export function useDeleteVariable() {
   const mutation = useMutation({
-    mutationFn: createRun,
+    mutationFn: deleteVariable,
     meta: {
+      invalidates: [variableKeys.lists(), providerKeys.lists()],
       errorToast: {
-        title: 'Failed to run agent.',
+        title: 'Failed to delete variable.',
       },
     },
   });

@@ -20,10 +20,10 @@ import type { Agent } from '#modules/agents/api/types.ts';
 
 import { ProviderSourcePrefixes } from './constants';
 
-export const getProviderSource = (id: string) => {
+export const getProviderSource = (location: string) => {
   const source =
     Object.entries(ProviderSourcePrefixes)
-      .find(([, prefix]) => id.startsWith(prefix))
+      .find(([, prefix]) => location.startsWith(prefix))
       ?.at(0) ?? 'Unknown';
 
   return source;

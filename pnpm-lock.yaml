@@ -95,6 +95,9 @@ importers:
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
+      fetch-event-stream:
+        specifier: ^0.1.5
+        version: 0.1.5
       framer-motion:
         specifier: ^12.6.2
         version: 12.6.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -3251,6 +3254,9 @@ packages:
     peerDependenciesMeta:
       picomatch:
         optional: true
+
+  fetch-event-stream@0.1.5:
+    resolution: {integrity: sha512-V1PWovkspxQfssq/NnxoEyQo1DV+MRK/laPuPblIZmSjMN8P5u46OhlFQznSr9p/t0Sp8Uc6SbM3yCMfr0KU8g==}
 
   file-entry-cache@10.0.7:
     resolution: {integrity: sha512-txsf5fu3anp2ff3+gOJJzRImtrtm/oa9tYLN0iTuINZ++EyVR/nRrg2fKYwvG/pXDofcrvvb0scEbX3NyW/COw==}
@@ -9154,6 +9160,8 @@ snapshots:
   fdir@6.4.3(picomatch@4.0.2):
     optionalDependencies:
       picomatch: 4.0.2
+
+  fetch-event-stream@0.1.5: {}
 
   file-entry-cache@10.0.7:
     dependencies:

@@ -14,7 +14,20 @@
  * limitations under the License.
  */
 
+import type { ServerSentEventMessage } from 'fetch-event-stream';
 import humanizeDuration from 'humanize-duration';
+
+import type { AgentName } from '#modules/agents/api/types.ts';
+
+import {
+  type Artifact,
+  type CreateRunStreamRequest,
+  type MessagePart,
+  type RunEvent,
+  RunMode,
+  type SessionId,
+} from './api/types';
+import { Role } from './types';
 
 humanizeDuration.languages.shortEn = {
   h: () => 'h',
@@ -32,4 +45,48 @@ export function runDuration(ms: number) {
   });
 
   return duration;
+}
+
+export function createRunStreamRequest({
+  agent,
+  messagePart,
+  sessionId,
+}: {
+  agent: AgentName;
+  messagePart: MessagePart;
+  sessionId?: SessionId;
+}): CreateRunStreamRequest {
+  return {
+    agent_name: agent,
+    input: [{ parts: [messagePart] }],
+    mode: RunMode.Stream,
+    session_id: sessionId,
+  };
+}
+
+export function createMessagePart({ content }: { content: string }): MessagePart {
+  return {
+    content,
+    content_encoding: 'plain',
+    content_type: 'text/plain',
+    role: Role.User,
+  };
+}
+
+export async function handleRunStream({
+  stream,
+  onEvent,
+}: {
+  stream: AsyncGenerator<ServerSentEventMessage>;
+  onEvent: (event: RunEvent) => void;
+}): Promise<void> {
+  for await (const event of stream) {
+    if (event.data) {
+      onEvent(JSON.parse(event.data));
+    }
+  }
+}
+
+export function isArtifact(part: MessagePart): part is Artifact {
+  return typeof part.name === 'string';
 }

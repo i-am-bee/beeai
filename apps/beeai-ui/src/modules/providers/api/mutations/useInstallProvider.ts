@@ -23,7 +23,7 @@ import { useMonitorProvider } from '#modules/providers/hooks/useMonitorProviderS
 
 import { installProvider } from '..';
 import { providerKeys } from '../keys';
-import type { InstallProviderRequest } from '../types';
+import type { InstallProviderPath } from '../types';
 
 export function useInstallProvider() {
   const [id, setId] = useState<AgentProvider>(undefined);
@@ -31,14 +31,12 @@ export function useInstallProvider() {
   useMonitorProvider({ id });
 
   const mutation = useMutation({
-    mutationFn: ({ body }: { body: InstallProviderRequest }) => {
-      const { id } = body;
-
+    mutationFn: ({ id }: InstallProviderPath) => {
       if (id) {
         setId(id);
       }
 
-      return installProvider({ body });
+      return installProvider({ id });
     },
     meta: {
       invalidates: [providerKeys.lists(), agentKeys.lists()],

@@ -57,7 +57,7 @@ export function ImportAgentsModal({ onRequestClose, ...modalProps }: ModalProps)
     onSuccess: (provider) => {
       setRegisteredProviderId(provider.id);
 
-      installProvider({ body: { id: provider.id } });
+      installProvider({ id: provider.id });
     },
   });
 

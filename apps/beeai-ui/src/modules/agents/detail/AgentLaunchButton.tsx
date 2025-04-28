@@ -23,9 +23,9 @@ import { useCallback } from 'react';
 
 import { TransitionLink } from '#components/TransitionLink/TransitionLink.tsx';
 import { useModal } from '#contexts/Modal/index.tsx';
-import { AddRequiredEnvsModal } from '#modules/envs/components/AddRequiredEnvsModal.tsx';
 import { useInstallProvider } from '#modules/providers/api/mutations/useInstallProvider.ts';
 import { SupportedUis } from '#modules/runs/constants.ts';
+import { AddRequiredVariablesModal } from '#modules/variables/components/AddRequiredVariablesModal.tsx';
 import { routes } from '#utils/router.ts';
 
 import type { Agent, UiType } from '../api/types';
@@ -54,7 +54,7 @@ export function AgentLaunchButton({ agent }: Props) {
 
   const handleInstall = useCallback(() => {
     if (provider) {
-      installProvider({ body: { id: provider } });
+      installProvider({ id: provider });
     }
   }, [installProvider, provider]);
 
@@ -97,7 +97,7 @@ export function AgentLaunchButton({ agent }: Props) {
             }
           : {
               onClick: () => {
-                openModal((props) => <AddRequiredEnvsModal {...props} missingEnvs={missingEnvs} />);
+                openModal((props) => <AddRequiredVariablesModal {...props} missingEnvs={missingEnvs} />);
               },
             })}
       >

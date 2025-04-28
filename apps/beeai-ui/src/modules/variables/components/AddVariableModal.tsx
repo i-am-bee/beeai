@@ -21,13 +21,13 @@ import { useForm } from 'react-hook-form';
 import { Modal } from '#components/Modal/Modal.tsx';
 import type { ModalProps } from '#contexts/Modal/modal-context.ts';
 
-import { useUpdateEnv } from '../api/mutations/useUpdateEnv';
-import classes from './AddEnvModal.module.scss';
+import { useUpdateVariable } from '../api/mutations/useUpdateVariable';
+import classes from './AddVariableModal.module.scss';
 
-export function AddEnvModal({ onRequestClose, ...modalProps }: ModalProps) {
+export function AddVariableModal({ onRequestClose, ...modalProps }: ModalProps) {
   const id = useId();
 
-  const { mutate: updateEnv, isPending } = useUpdateEnv({
+  const { mutate: updateVariable, isPending } = useUpdateVariable({
     onSuccess: onRequestClose,
   });
 
@@ -41,15 +41,15 @@ export function AddEnvModal({ onRequestClose, ...modalProps }: ModalProps) {
 
   const onSubmit = useCallback(
     ({ name, value }: FormValues) => {
-      updateEnv({ body: { [name]: value } });
+      updateVariable({ body: { [name]: value } });
     },
-    [updateEnv],
+    [updateVariable],
   );
 
   return (
     <Modal {...modalProps}>
       <ModalHeader buttonOnClick={() => onRequestClose()}>
-        <h2>Add environment variable</h2>
+        <h2>Add variable</h2>
       </ModalHeader>
 
       <ModalBody>
