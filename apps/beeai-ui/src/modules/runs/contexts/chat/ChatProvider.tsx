@@ -40,6 +40,7 @@ interface Props {
 
 export function ChatProvider({ agent, children }: PropsWithChildren<Props>) {
   const [messages, , setMessages] = useImmerWithGetter<ChatMessage[]>([]);
+  const [isPending, setIsPending] = useState(false);
   const [runId, setRunId] = useState<RunId>();
   const [sessionId, setSessionId] = useState<SessionId>();
 
@@ -91,6 +92,8 @@ export function ChatProvider({ agent, children }: PropsWithChildren<Props>) {
           signal: abortController.signal,
         });
 
+        setIsPending(true);
+
         handleRunStream({
           stream,
           onEvent: (event) => {
@@ -101,9 +104,19 @@ export function ChatProvider({ agent, children }: PropsWithChildren<Props>) {
 
                 break;
               case EventType.RunFailed:
+                setIsPending(false);
+
                 throw new Error(event.run.error?.message);
+              case EventType.RunCancelled:
+                setIsPending(false);
+
+                break;
+              case EventType.RunCompleted:
+                setIsPending(false);
+
+                break;
               case EventType.MessagePart:
-                if (!isArtifact(event.part)) {
+                if (isArtifact(event.part)) {
                   return;
                 }
 
@@ -134,6 +147,7 @@ export function ChatProvider({ agent, children }: PropsWithChildren<Props>) {
       cancelRun({ run_id: runId });
     }
 
+    setIsPending(false);
     abortControllerRef.current?.abort();
 
     updateLastAssistantMessage((message) => {
@@ -151,11 +165,12 @@ export function ChatProvider({ agent, children }: PropsWithChildren<Props>) {
   const contextValue = useMemo(
     () => ({
       agent,
+      isPending,
       onCancel: handleCancel,
       onClear: handleClear,
       sendMessage,
     }),
-    [agent, handleCancel, handleClear, sendMessage],
+    [agent, isPending, handleCancel, handleClear, sendMessage],
   );
 
   return (

@@ -65,7 +65,7 @@ const renderUi = ({ agent }: { agent: Agent }) => {
   switch (type) {
     case UiType.Chat:
       return (
-        <MainContent>
+        <MainContent limitHeight>
           <ChatProvider agent={agent}>
             <Chat />
           </ChatProvider>

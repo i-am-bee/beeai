@@ -33,7 +33,7 @@ export const ChatInput = memo(function ChatInput({ onMessageSubmit }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<InputBarFormHandle>(null);
 
-  const { sendMessage, onCancel } = useChat();
+  const { isPending, sendMessage, onCancel } = useChat();
 
   const form = useForm<ChatFormValues>({
     mode: 'onChange',
@@ -42,18 +42,12 @@ export const ChatInput = memo(function ChatInput({ onMessageSubmit }: Props) {
     },
   });
 
-  const {
-    register,
-    watch,
-    handleSubmit,
-    formState: { isSubmitting },
-  } = form;
+  const { register, watch, handleSubmit } = form;
 
   const resetForm = useCallback(() => {
     formRef.current?.resetForm();
   }, []);
 
-  const isPending = isSubmitting;
   const inputValue = watch('input');
 
   const isSubmitDisabled = isPending || !inputValue;
@@ -64,12 +58,10 @@ export const ChatInput = memo(function ChatInput({ onMessageSubmit }: Props) {
         <InputBar
           onSubmit={() => {
             handleSubmit(async ({ input }) => {
-              // handleSubmit(async ({ input, tools }) => {
               onMessageSubmit?.();
               resetForm();
 
               await sendMessage({ input });
-              // await sendMessage({ input, config: { tools } });
             })();
           }}
           isSubmitDisabled={isSubmitDisabled}
@@ -104,17 +96,6 @@ export const ChatInput = memo(function ChatInput({ onMessageSubmit }: Props) {
               }}
             />
           )}
-          <Button
-            renderIcon={StopOutlineFilled}
-            kind="ghost"
-            size="sm"
-            hasIconOnly
-            iconDescription="Cancel"
-            onClick={(e) => {
-              onCancel();
-              e.preventDefault();
-            }}
-          />
         </InputBar>
       </div>
     </FormProvider>

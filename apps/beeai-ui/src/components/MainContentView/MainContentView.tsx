@@ -30,6 +30,7 @@ export interface MainContentViewProps extends PropsWithChildren {
   spacing?: 'md' | 'lg';
   enableToTopButton?: boolean;
   showFooter?: boolean;
+  limitHeight?: boolean;
   className?: string;
 }
 
@@ -37,6 +38,7 @@ export function MainContentView({
   spacing = 'lg',
   enableToTopButton,
   showFooter,
+  limitHeight,
   className,
   children,
 }: MainContentViewProps) {
@@ -49,7 +51,7 @@ export function MainContentView({
       className={clsx(classes.root, classes[spacing], className)}
       {...createScrollbarStyles({ width: scrollbarWidth })}
     >
-      <div className={classes.body}>{children}</div>
+      <div className={clsx(classes.body, limitHeight && classes.limitHeight)}>{children}</div>
 
       {showButton && <ToTopButton onClick={handleToTopClick} />}
 
