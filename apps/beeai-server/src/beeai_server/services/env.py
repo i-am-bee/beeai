@@ -32,6 +32,3 @@ class EnvService:
 
     async def list_env(self) -> dict[str, str]:
         return await self._repository.get_all()
-
-    async def sync(self):
-        await self._repository.sync()

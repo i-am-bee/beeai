@@ -46,11 +46,11 @@ class RegisterUnmanagedProviderRequest(BaseModel):
     id: ID | None = Field(default=None, deprecated=True)
 
 
-class UpdateEnvRequest(BaseModel):
+class UpdateVariablesRequest(BaseModel):
     env: dict[str, str | None]
 
 
-class ListEnvSchema(BaseModel):
+class ListVariablesSchema(BaseModel):
     env: dict[str, str]
 
 

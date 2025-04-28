@@ -116,12 +116,12 @@ async def install_agent(
         provider = (await _get_agent(name_or_location)).metadata.provider
 
     if provider:
-        async for message in api_stream("PUT", f"provider/{provider}/install", params={"stream": True}):
+        async for message in api_stream("PUT", f"providers/{provider}/install", params={"stream": True}):
             _print_log(message, ansi_mode=True)
     else:
         async for message in api_stream(
             "POST",
-            "provider/register/managed",
+            "providers/register/managed",
             json={"location": name_or_location},
             params={"stream": True, "install": True},
         ):
@@ -135,7 +135,7 @@ async def uninstall_agent(name: str = typer.Argument(..., help="Agent name")) ->
     """Remove agent"""
     agent = await _get_agent(name)
     with console.status("Uninstalling agent (may take a few minutes)...", spinner="dots"):
-        await api_request("delete", f"provider/{agent.metadata.provider}")
+        await api_request("delete", f"providers/{agent.metadata.provider}")
     await list_agents()
 
 
@@ -144,7 +144,7 @@ async def stream_logs(name: str = typer.Argument(..., help="Agent name")):
     """Stream agent provider logs"""
     agent = await _get_agent(name)
     provider = agent.metadata.provider
-    async for message in api_stream("get", f"provider/{provider}/logs"):
+    async for message in api_stream("get", f"providers/{provider}/logs"):
         _print_log(message)
 
 
@@ -468,7 +468,7 @@ def _get_config_schema(schema: dict[str, Any] | None) -> dict[str, Any] | None:
 
 
 async def get_provider(provider_id: str):
-    return await api_request("GET", f"provider/{provider_id}")
+    return await api_request("GET", f"providers/{provider_id}")
 
 
 @app.command("run")
@@ -496,7 +496,7 @@ async def run_agent(
             ).execute_async():
                 return
             async for message_part in api_stream(
-                "POST", "provider/install", json={"id": provider["id"]}, params={"stream": True}
+                "POST", "providers/install", json={"id": provider["id"]}, params={"stream": True}
             ):
                 _print_log(message_part, ansi_mode=True)
             provider = await get_provider(agent.metadata.provider)
@@ -571,7 +571,7 @@ def _get_short_location(provider_id: str) -> str:
 async def list_agents():
     """List agents."""
     agents = await _get_agents()
-    providers_by_id = {p["id"]: p for p in (await api_request("GET", "provider"))["items"]}
+    providers_by_id = {p["id"]: p for p in (await api_request("GET", "providers"))["items"]}
     max_provider_len = (
         max(len(_get_short_location(p["location"])) for p in providers_by_id.values()) if providers_by_id else 0
     )

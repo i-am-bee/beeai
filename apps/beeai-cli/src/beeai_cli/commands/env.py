@@ -40,7 +40,7 @@ async def add(
     env_vars = {name: value for name, value in env_vars}
     await api_request(
         "put",
-        "env",
+        "variables",
         json={**({"env": env_vars} if env_vars else {})},
     )
     await list_env()
@@ -50,7 +50,7 @@ async def add(
 async def list_env():
     """List stored environment variables"""
     # TODO: extract server schemas to a separate package
-    resp = await api_request("get", "env")
+    resp = await api_request("get", "variables")
     with create_table(Column("name", style="yellow"), Column("value", ratio=1)) as table:
         for name, value in sorted(resp["env"].items()):
             table.add_row(name, value)
@@ -61,15 +61,8 @@ async def list_env():
 async def remove_env(
     env: list[str] = typer.Argument(help="Environment variable(s) to remove"),
 ):
-    await api_request("put", "env", json={**({"env": {var: None for var in env}})})
+    await api_request("put", "variables", json={**({"env": {var: None for var in env}})})
     await list_env()
-
-
-@app.command("sync", help="Sync external changes to agent registry (if you modified ~/.beeai/providers.yaml manually)")
-async def sync():
-    """Sync external changes to env configuration (if you modified ~/.beeai/.env manually)"""
-    await api_request("put", "env/sync")
-    console.print("Env updated")
 
 
 @app.command("setup", help="Interactive setup for LLM provider environment variables")
@@ -284,7 +277,7 @@ async def setup() -> bool:
     with console.status("Saving configuration...", spinner="dots"):
         await api_request(
             "put",
-            "env",
+            "variables",
             json={"env": {"LLM_API_BASE": api_base, "LLM_API_KEY": api_key, "LLM_MODEL": selected_model}},
         )
 
@@ -305,7 +298,7 @@ async def setup() -> bool:
 
 async def ensure_llm_env():
     try:
-        env = (await api_request("get", "env"))["env"]
+        env = (await api_request("get", "variables"))["env"]
     except httpx.HTTPStatusError:
         return  # Skip for non-conforming servers (like when running directly against an agent provider)
     if all(required_variable in env.keys() for required_variable in ["LLM_MODEL", "LLM_API_KEY", "LLM_API_BASE"]):

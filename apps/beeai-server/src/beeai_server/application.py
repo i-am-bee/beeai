@@ -118,8 +118,8 @@ def mount_routes(app: FastAPI):
 
     server_router = APIRouter()
     server_router.include_router(acp_router, prefix="/acp")
-    server_router.include_router(provider_router, prefix="/provider", tags=["provider"])
-    server_router.include_router(env_router, prefix="/env", tags=["env"])
+    server_router.include_router(provider_router, prefix="/providers", tags=["providers"])
+    server_router.include_router(env_router, prefix="/variables", tags=["variables"])
     server_router.include_router(telemetry_router, prefix="/telemetry", tags=["telemetry"])
 
     app.mount("/healthcheck", lambda: "OK")

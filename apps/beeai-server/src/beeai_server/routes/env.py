@@ -16,25 +16,19 @@ import fastapi
 from fastapi.background import BackgroundTasks
 
 from beeai_server.routes.dependencies import EnvServiceDependency
-from beeai_server.schema import UpdateEnvRequest, ListEnvSchema
+from beeai_server.schema import UpdateVariablesRequest, ListVariablesSchema
 
 router = fastapi.APIRouter()
 
 
 @router.put("", status_code=fastapi.status.HTTP_201_CREATED)
-async def update_env(
-    request: UpdateEnvRequest, env_service: EnvServiceDependency, background_tasks: BackgroundTasks
+async def update_variables(
+    request: UpdateVariablesRequest, env_service: EnvServiceDependency, background_tasks: BackgroundTasks
 ) -> None:
     background_task = await env_service.update_env(env=request.env)
     background_tasks.add_task(background_task)
 
 
 @router.get("")
-async def list_env(env_service: EnvServiceDependency) -> ListEnvSchema:
-    return ListEnvSchema(env=await env_service.list_env())
-
-
-@router.put("/sync")
-async def sync_provider_repository(env_service: EnvServiceDependency):
-    """Sync external changes to an env repository."""
-    await env_service.sync()
+async def list_variables(env_service: EnvServiceDependency) -> ListVariablesSchema:
+    return ListVariablesSchema(env=await env_service.list_env())

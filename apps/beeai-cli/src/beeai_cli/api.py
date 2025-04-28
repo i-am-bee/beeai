@@ -143,7 +143,7 @@ async def wait_for_agents(initial_delay_seconds=5, wait_seconds=180):
         time.sleep(1)
         if all(
             item["status"] in ["ready", "installing", "not_installed", "running"]
-            for item in (await api_request("get", "provider"))["items"]
+            for item in (await api_request("get", "providers"))["items"]
         ):
             return True
     else:
@@ -155,7 +155,7 @@ async def wait_for_api(initial_delay_seconds=5, wait_seconds=300):
     for i in range(wait_seconds):
         time.sleep(1)
         with contextlib.suppress(httpx.ConnectError, ConnectionError):
-            await api_request("get", "provider")
+            await api_request("get", "providers")
             return True
     else:
         return False
