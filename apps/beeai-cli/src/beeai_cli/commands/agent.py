@@ -640,7 +640,7 @@ async def _get_agent(name: str, agents_by_name: dict[str, Agent] | None = None) 
         agents_by_name = await _get_agents()
     if agent := agents_by_name.get(name, None):
         return agent
-    raise ACPError(error=Error(code=ErrorCode.NOT_FOUND, message=f"Agent '{name}' not found in any provider"))
+    raise ACPError(error=Error(code=ErrorCode.NOT_FOUND, message=f"Agent '{name}' not found"))
 
 
 def _render_schema(schema: dict[str, Any] | None):

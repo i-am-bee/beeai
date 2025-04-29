@@ -60,7 +60,7 @@ server = Server()
             )
         ],
         license="Apache 2.0",
-        framework="BeeAI",
+        framework="ACP",
         use_cases=[
             "**Complex Text Processing**: Ideal for tasks that require multiple stages of processing, such as summarization followed by sentiment analysis.",
             "**Automated Workflows**: Suitable for automated content processing pipelines that leverage multiple AI models.",

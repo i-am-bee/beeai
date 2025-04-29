@@ -16,7 +16,7 @@ import asyncio
 import functools
 import logging
 import math
-from asyncio import TimerHandle
+from asyncio import TimerHandle, create_task
 from collections import ChainMap
 from contextlib import asynccontextmanager
 from datetime import timedelta
@@ -42,7 +42,7 @@ BaseModelT = TypeVar("BaseModelT", bound=BaseModel)
 def bind_logging_context(method: Callable) -> Callable:
     @functools.wraps(method)
     async def _fn(self: "LoadedProvider", *args, **kwargs):
-        bind_contextvars(provider=self.id)
+        bind_contextvars(provider=self.provider.location)
         try:
             return await method(self, *args, **kwargs)
         finally:
@@ -212,7 +212,7 @@ class LoadedProvider:
         if self.status == ProviderStatus.not_installed and await self.provider.is_installed():
             self.status = ProviderStatus.ready
             if self._autostart:
-                await self.start()
+                create_task(self.start()).add_done_callback(lambda task: task.exception())  # start in the background
 
     @bind_logging_context
     async def close(self):
@@ -252,14 +252,14 @@ class ProviderContainer:
             if agent_name in {a.name for a in loaded_provider.agents}
         ]
         if not providers:
-            raise ValueError(f"Agent {agent_name} not found in any provider.")
+            raise ValueError(f"Agent {agent_name} not found")
         return providers[0]
 
     def get_provider_by_run(self, run_id: str) -> LoadedProvider:
         provider = ChainMap(*(provider.runs for provider in self.loaded_providers.values())).get(run_id, None)
         if provider:
             return provider
-        raise ValueError(f"Run {run_id} not found in any provider.")
+        raise ValueError(f"Run {run_id} not found")
 
     async def add(self, provider: BaseProvider):
         env = await self._env_repository.get_all()
@@ -289,6 +289,8 @@ class ProviderContainer:
         )
 
     async def __aenter__(self):
+        for provider in self.loaded_providers.values():
+            await provider.initialize()
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):

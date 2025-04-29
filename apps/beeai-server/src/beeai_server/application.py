@@ -16,7 +16,7 @@ import asyncio
 import contextlib
 import logging
 import pathlib
-from contextlib import asynccontextmanager, suppress
+from contextlib import asynccontextmanager
 from typing import Iterable
 
 from acp_sdk import ACPError
@@ -162,25 +162,16 @@ async def lifespan(
     provider_repository: IProviderRepository,
 ):
     register_telemetry()
+    for provider in await provider_repository.list():
+        await provider_container.add(provider)
+
     async with provider_container, telemetry_collector_manager, run_all_crons():
-
-        async def _initialize_providers():
-            await asyncio.gather(*(provider_container.add(provider) for provider in await provider_repository.list()))
-
         try:
-            initialize_task = asyncio.create_task(_initialize_providers())
-            initialize_task.add_done_callback(
-                lambda task: logger.critical(f"Initialization failed: {task.exception()}") if task.exception() else None
-            )
             yield
         finally:
-            with suppress(Exception):
-                await initialize_task
-
             # Cancel unfinished installation tasks
             for task in preinstall_background_tasks.values():
                 task.cancel()
-
             shutdown_telemetry()
 
 

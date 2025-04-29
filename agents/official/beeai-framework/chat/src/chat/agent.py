@@ -25,6 +25,7 @@ logging.getLogger("opentelemetry.exporter.otlp.proto.http.metric_exporter").setL
 
 server = Server()
 
+
 def to_framework_message(role: Role, content: str) -> beeai_framework.backend.Message:
     match role:
         case Role.USER:
