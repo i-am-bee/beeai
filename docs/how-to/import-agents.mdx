@@ -1,14 +1,61 @@
 ---
 title: "Import Agents"
-description: "Under construction"
-# icon: "file-import"
-icon: "spinner"
+description: "Add new agents to the platform"
+icon: "file-import"
 ---
 
-## Oops! Docs Under Construction!
+The beeai-platform comes with a few agents out of the box. However, extending the agent library is an easy task,
+here are a few ways how you can add new agents.
 
-We're buzzing around right now, fueled by caffeine and sheer determination, actively working to complete this documentation. (We promise we're not just buzzing on Reddit. Probably.)
 
-In the meantime, bee 🐝 curious—dive into our [GitHub repository](https://github.com/i-am-bee/beeai) to explore the code or even lend a hand! Your contributions help the community grow and make this documentation bloom faster.
+### Import by magic 🪄
+When developing agents locally with ACP, all you need to do is to run the ACP server as you normally would, and your
+agents should seamlessly pop up in the platform! You should see them both in the UI and `beeai list` and be able to
+work with them the way you're used to in the platform.
 
-Thanks for your patience, and bee-lieve us—we appreciate your support in keeping our hive buzzing with open-source goodness!
+This is the simplest, most straightforward way to use your local agents in the platform and should be your go-to option
+for local development.
+
+
+### Import docker image
+You can also add agents using a pre-built docker image. This can be a public image from the internet or one that you
+have built locally using `beeai build /path/to/agent`.
+
+Importing docker agents is as simple as
+```sh
+beeai add <IMAGE-ID>
+```
+
+
+### Import GitHub repository
+Another way to add agents is to use source code in a public GitHub repository. All you have to do is run:
+```
+beeai add "https://github.com/<org>/<repo>"
+```
+This will download the agent code, build its docker image locally and register it to the platform.
+
+<Tip>
+    You can pin the version or specify a subdirectory using the following URL segments:
+    - `@<version>` - specify branch or tag
+    - `#path=</sub/directory>` - specify agent folder
+
+    For example:
+    ```sh
+    beeai add "https://github.com/i-am-bee/beeai-platform@release-v0.1.0#path=agents/official/beeai-framework/chat"
+    ```
+</Tip>
+
+<Warning>
+    The repository must contain a `Dockerfile`, see [Share Agents](/how-to/share-agents) section to learn how to publish
+    agents to GitHub to make them shareable.
+</Warning>
+
+
+### Removing agents
+
+To remove an agent use
+```
+beeai remove <agent-name>
+```
+This will remove agent docker image from your system. If you remove a locally built agent, you'll need to re-run
+`beeai build /path/to/agent` if you want to add it again.
