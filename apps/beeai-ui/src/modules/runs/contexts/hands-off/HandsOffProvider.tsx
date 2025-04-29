@@ -22,8 +22,7 @@ import type { Agent } from '#modules/agents/api/types.ts';
 import type { RunError } from '#modules/runs/api/types.ts';
 import { useRunAgent } from '#modules/runs/hooks/useRunAgent.ts';
 import type { RunLog, RunStats } from '#modules/runs/types.ts';
-import { isArtifact } from '#modules/runs/utils.ts';
-import { isNotNull } from '#utils/helpers.ts';
+import { extractOutput, isArtifact } from '#modules/runs/utils.ts';
 
 import { HandsOffContext } from './hands-off-context';
 
@@ -39,7 +38,6 @@ export function HandsOffProvider({ agent, children }: PropsWithChildren<Props>) 
   const { addToast } = useToast();
 
   const { input, isPending, runAgent, stopAgent } = useRunAgent({
-    agent,
     onRun: () => {
       handleReset();
       setStats({ startTime: Date.now() });
@@ -56,11 +54,7 @@ export function HandsOffProvider({ agent, children }: PropsWithChildren<Props>) 
       setOutput((output) => (content ? output.concat(content) : output));
     },
     onRunCompleted: (event) => {
-      const output = event.run.output
-        .flatMap(({ parts }) => parts)
-        .map(({ content }) => content)
-        .filter(isNotNull)
-        .join('');
+      const output = extractOutput(event.run.output);
 
       setOutput(output);
     },
@@ -77,7 +71,7 @@ export function HandsOffProvider({ agent, children }: PropsWithChildren<Props>) 
     onRunFailed: (event) => {
       handleError(event.run.error);
     },
-    onError: (error) => {
+    onError: ({ error }) => {
       handleError(error);
     },
   });
@@ -113,9 +107,9 @@ export function HandsOffProvider({ agent, children }: PropsWithChildren<Props>) 
 
   const run = useCallback(
     async (input: string) => {
-      await runAgent({ input });
+      await runAgent({ agent, content: input });
     },
-    [runAgent],
+    [agent, runAgent],
   );
 
   const contextValue = useMemo(

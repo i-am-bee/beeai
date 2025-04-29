@@ -61,7 +61,7 @@ export const ChatInput = memo(function ChatInput({ onMessageSubmit }: Props) {
               onMessageSubmit?.();
               resetForm();
 
-              await sendMessage({ input });
+              await sendMessage(input);
             })();
           }}
           isSubmitDisabled={isSubmitDisabled}

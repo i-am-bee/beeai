@@ -15,39 +15,37 @@
  */
 
 import type { PropsWithChildren } from 'react';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { useSearchParams } from 'react-router';
 
 import { useHandleError } from '#hooks/useHandleError.ts';
 import { usePrevious } from '#hooks/usePrevious.ts';
 import { useListAgents } from '#modules/agents/api/queries/useListAgents.ts';
+import { useRunAgent } from '#modules/runs/hooks/useRunAgent.ts';
+import { extractOutput, isArtifact } from '#modules/runs/utils.ts';
 import { isNotNull } from '#utils/helpers.ts';
 
 import { SEQUENTIAL_COMPOSE_AGENT_NAME } from '../sequential/constants';
 import { getSequentialComposeAgent } from '../sequential/utils';
+import type { ComposeMessagePart } from '../types';
 import type { ComposeStep, RunStatus, SequentialFormValues } from './compose-context';
 import { ComposeContext } from './compose-context';
 
 export function ComposeProvider({ children }: PropsWithChildren) {
   const { data: availableAgents } = useListAgents();
   const [searchParams, setSearchParams] = useSearchParams();
-  const abortControllerRef = useRef<AbortController | null>(null);
-  const handleError = useHandleError();
+  const errorHandler = useHandleError();
 
-  const {
-    handleSubmit,
-    getValues,
-    setValue,
-    watch,
-    formState: { isSubmitting },
-  } = useFormContext<SequentialFormValues>();
+  const { handleSubmit, getValues, setValue, watch } = useFormContext<SequentialFormValues>();
   const stepsFields = useFieldArray<SequentialFormValues>({
     name: 'steps',
   });
 
   const { replace: replaceSteps } = stepsFields;
   const steps = watch('steps');
+
+  let lastAgentIdx = 0;
 
   const updateStep = useCallback(
     (idx: number, value: ComposeStep) => {
@@ -85,93 +83,142 @@ export function ComposeProvider({ children }: PropsWithChildren) {
     }
   }, [availableAgents, replaceSteps, searchParams, steps.length]);
 
-  // const handleSuccessLog = useCallback(
-  //   (logs: ComposeNotificationDelta['logs']) => {
-  //     const successLog = logs.find((log) => log?.level === 'success');
-  //     if (successLog) {
-  //       const steps = getValues('steps');
-  //       const pendingStepIndex = steps.findIndex((step) => step.isPending);
-  //       const pendingStep = steps.at(pendingStepIndex);
-  //       if (pendingStep) {
-  //         const updatedStep = {
-  //           ...pendingStep,
-  //           isPending: false,
-  //           stats: { ...pendingStep.stats, endTime: Date.now() },
-  //         };
-  //         updateStep(pendingStepIndex, updatedStep);
+  const { isPending, runAgent, stopAgent } = useRunAgent({
+    onMessagePart: (event) => {
+      const { part } = event;
 
-  //         const nextStepIndex = pendingStepIndex + 1;
-  //         const nextStep = steps.at(pendingStepIndex + 1);
-  //         if (nextStep) {
-  //           const nextUpdatedStep = {
-  //             ...nextStep,
-  //             isPending: true,
-  //             stats: {
-  //               startTime: nextStep.stats?.startTime ?? Date.now(),
-  //             },
-  //           };
-  //           updateStep(nextStepIndex, nextUpdatedStep);
-  //         }
-  //       }
-  //     }
-  //   },
-  //   [getValues, updateStep],
-  // );
+      if (isArtifact(part)) {
+        return;
+      }
 
-  // const handleRunDelta = useCallback(
-  //   (delta: ComposeNotificationDelta) => {
-  //     if (delta.agent_idx === undefined) {
-  //       handleSuccessLog(delta.logs);
-  //       return;
-  //     }
+      // TODO: we could probably figure out better typing
+      const { agent_idx, content } = part as ComposeMessagePart;
 
-  //     const fieldName = `steps.${delta.agent_idx}` as const;
-  //     const step = getValues(fieldName);
+      const fieldName = `steps.${agent_idx}` as const;
+      const step = getValues(fieldName);
 
-  //     if (!step) return;
+      if (!step) return;
 
-  //     const updatedStep = {
-  //       ...step,
-  //       isPending: true,
-  //       stats: {
-  //         startTime: step.stats?.startTime ?? Date.now(),
-  //       },
-  //       result: `${step.result ?? ''}${delta.text ?? ''}`,
-  //       logs: [...(step.logs ?? []), ...delta.logs.filter(isNotNull).map((item) => item.message)],
-  //     };
+      const updatedStep = {
+        ...step,
+        isPending: true,
+        stats: {
+          startTime: step.stats?.startTime ?? Date.now(),
+        },
+        result: `${step.result ?? ''}${content ?? ''}`,
+      };
 
-  //     updateStep(delta.agent_idx, updatedStep);
+      updateStep(agent_idx, updatedStep);
 
-  //     if (delta.agent_idx > 0) {
-  //       const stepsBefore = getValues('steps').slice(0, delta.agent_idx);
+      if (agent_idx > 0) {
+        const stepsBefore = getValues('steps').slice(0, agent_idx);
 
-  //       stepsBefore.forEach((step, stepsBeforeIndex) => {
-  //         if (step.isPending || !step.stats?.endTime) {
-  //           updateStep(stepsBeforeIndex, { ...step, isPending: false, stats: { ...step.stats, endTime: Date.now() } });
-  //         }
-  //       });
-  //     }
-  //   },
-  //   [getValues, handleSuccessLog, updateStep],
-  // );
+        stepsBefore.forEach((step, stepsBeforeIndex) => {
+          if (step.isPending || !step.stats?.endTime) {
+            updateStep(stepsBeforeIndex, { ...step, isPending: false, stats: { ...step.stats, endTime: Date.now() } });
+          }
+        });
+      }
+    },
+    onRunCompleted: (event) => {
+      const finalAgentIdx = steps.length - 1;
+      const output = extractOutput(
+        event.run.output.map((message) => {
+          return {
+            ...message,
+            parts: message.parts.filter((part) => (part as ComposeMessagePart).agent_idx === finalAgentIdx),
+          };
+        }),
+      );
+      const lastStep = getValues('steps').at(-1);
 
-  // const { runAgent } = useRunAgent<SequentialWorkflowInput, ComposeNotificationSchema>({
-  //   notifications: {
-  //     handler: (notification) => {
-  //       handleRunDelta(notification.params.delta);
-  //     },
-  //   },
-  //   queryMetadata: {
-  //     errorToast: false,
-  //   },
-  // });
+      updateStep(finalAgentIdx, { ...lastStep!, result: output });
+    },
+    onGeneric: (event) => {
+      const { message, agent_idx } = event.generic;
+
+      if (isNotNull(agent_idx)) {
+        if (agent_idx !== lastAgentIdx) {
+          const steps = getValues('steps');
+          const pendingStepIndex = steps.findIndex((step) => step.isPending);
+          const pendingStep = steps.at(pendingStepIndex);
+          if (pendingStep) {
+            const updatedStep = {
+              ...pendingStep,
+              isPending: false,
+              stats: { ...pendingStep.stats, endTime: Date.now() },
+            };
+            updateStep(pendingStepIndex, updatedStep);
+
+            const nextStepIndex = pendingStepIndex + 1;
+            const nextStep = steps.at(pendingStepIndex + 1);
+            if (nextStep) {
+              const nextUpdatedStep = {
+                ...nextStep,
+                isPending: true,
+                stats: {
+                  startTime: nextStep.stats?.startTime ?? Date.now(),
+                },
+              };
+              updateStep(nextStepIndex, nextUpdatedStep);
+            }
+          }
+        }
+
+        if (message) {
+          const fieldName = `steps.${agent_idx}` as const;
+          const step = getValues(fieldName);
+
+          const updatedStep = {
+            ...step,
+            isPending: true,
+            stats: {
+              startTime: step.stats?.startTime ?? Date.now(),
+            },
+            logs: [...(step.logs ?? []), message],
+          };
+
+          updateStep(agent_idx, updatedStep);
+        }
+
+        lastAgentIdx = agent_idx;
+      }
+    },
+    onDone: () => {
+      const steps = getValues('steps');
+
+      replaceSteps(
+        steps.map((step) => {
+          step.isPending = false;
+          if (step.stats && !step.stats?.endTime) {
+            step.stats.endTime = Date.now();
+          }
+          return step;
+        }),
+      );
+    },
+    onRunFailed: (error) => {
+      handleError(error);
+    },
+    onError: ({ error, aborted }) => {
+      if (aborted) {
+        return;
+      }
+
+      handleError(error);
+    },
+  });
+
+  const handleError = useCallback(
+    (error: unknown) => {
+      errorHandler(error, { errorToast: { title: 'Agent run failed', includeErrorMessage: true } });
+    },
+    [errorHandler],
+  );
 
   const send = useCallback(
     async (steps: ComposeStep[]) => {
       try {
-        const abortController = new AbortController();
-        abortControllerRef.current = abortController;
-
         const composeAgent = getSequentialComposeAgent(availableAgents);
         if (!composeAgent) throw Error(`'${SEQUENTIAL_COMPOSE_AGENT_NAME}' agent is not available.`);
 
@@ -190,35 +237,18 @@ export function ComposeProvider({ children }: PropsWithChildren) {
           });
         });
 
-        // const result = await runAgent({
-        //   agent: composeAgent,
-        //   input: {
-        //     steps: steps.map(({ data, instruction }) => ({ agent: data.name, instruction })),
-        //   },
-        //   abortController,
-        // });
-
-        // const lastStep = getValues('steps').at(-1);
-        // updateStep(steps.length - 1, { ...lastStep!, result: result.output.text });
-      } catch (error) {
-        if (abortControllerRef.current?.signal.aborted) return;
-
-        console.error(error);
-        handleError(error, { errorToast: { title: 'Agent run failed', includeErrorMessage: true } });
-      } finally {
-        const steps = getValues('steps');
-        replaceSteps(
-          steps.map((step) => {
-            step.isPending = false;
-            if (step.stats && !step.stats?.endTime) {
-              step.stats.endTime = Date.now();
-            }
-            return step;
+        await runAgent({
+          agent: composeAgent,
+          content: JSON.stringify({
+            steps: steps.map(({ data, instruction }) => ({ agent: data.name, instruction })),
           }),
-        );
+          content_type: 'application/json',
+        });
+      } catch (error) {
+        handleError(error);
       }
     },
-    [availableAgents, getValues, handleError, replaceSteps, updateStep],
+    [availableAgents, runAgent, updateStep, handleError],
   );
 
   const onSubmit = useCallback(() => {
@@ -228,8 +258,22 @@ export function ComposeProvider({ children }: PropsWithChildren) {
   }, [handleSubmit, send]);
 
   const handleCancel = useCallback(() => {
-    abortControllerRef.current?.abort();
-  }, []);
+    const steps = getValues('steps');
+    replaceSteps(
+      steps.map((step) => ({
+        ...step,
+        stats: {
+          ...step.stats,
+          endTime: step.stats?.endTime ?? Date.now(),
+        },
+        isPending: false,
+      })),
+    );
+
+    if (isPending) {
+      stopAgent();
+    }
+  }, [isPending, stopAgent, getValues, replaceSteps]);
 
   const handleReset = useCallback(() => {
     const steps = getValues('steps');
@@ -239,7 +283,11 @@ export function ComposeProvider({ children }: PropsWithChildren) {
         instruction,
       })),
     );
-  }, [getValues, replaceSteps]);
+
+    if (isPending) {
+      stopAgent();
+    }
+  }, [isPending, getValues, replaceSteps, stopAgent]);
 
   const lastStep = steps.at(-1);
   const result = useMemo(() => lastStep?.result, [lastStep]);
@@ -247,14 +295,14 @@ export function ComposeProvider({ children }: PropsWithChildren) {
   const value = useMemo(
     () => ({
       result,
-      status: (isSubmitting ? 'pending' : result ? 'finished' : 'ready') as RunStatus,
+      status: (isPending ? 'pending' : result ? 'finished' : 'ready') as RunStatus,
       stepsFields,
       onSubmit,
       onCancel: handleCancel,
       onClear: () => replaceSteps([]),
       onReset: handleReset,
     }),
-    [handleCancel, handleReset, isSubmitting, onSubmit, replaceSteps, result, stepsFields],
+    [result, isPending, stepsFields, onSubmit, handleCancel, replaceSteps, handleReset],
   );
 
   return <ComposeContext.Provider value={value}>{children}</ComposeContext.Provider>;

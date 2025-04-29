@@ -21,12 +21,7 @@ import { v4 as uuid } from 'uuid';
 import { useImmerWithGetter } from '#hooks/useImmerWithGetter.ts';
 import type { Agent } from '#modules/agents/api/types.ts';
 import type { RunError } from '#modules/runs/api/types.ts';
-import {
-  type AssistantMessage,
-  type ChatMessage,
-  MessageStatus,
-  type SendMessageParams,
-} from '#modules/runs/chat/types.ts';
+import { type AssistantMessage, type ChatMessage, MessageStatus } from '#modules/runs/chat/types.ts';
 import { useRunAgent } from '#modules/runs/hooks/useRunAgent.ts';
 import { Role } from '#modules/runs/types.ts';
 import { isArtifact } from '#modules/runs/utils.ts';
@@ -41,7 +36,6 @@ export function ChatProvider({ agent, children }: PropsWithChildren<Props>) {
   const [messages, , setMessages] = useImmerWithGetter<ChatMessage[]>([]);
 
   const { isPending, runAgent, stopAgent } = useRunAgent({
-    agent,
     onMessagePart: (event) => {
       const { part } = event;
 
@@ -66,7 +60,7 @@ export function ChatProvider({ agent, children }: PropsWithChildren<Props>) {
     onRunFailed: (event) => {
       handleError(event.run.error);
     },
-    onError: (error) => {
+    onError: ({ error }) => {
       handleError(error);
     },
   });
@@ -85,7 +79,7 @@ export function ChatProvider({ agent, children }: PropsWithChildren<Props>) {
   );
 
   const sendMessage = useCallback(
-    async ({ input }: SendMessageParams) => {
+    async (input: string) => {
       setMessages((messages) => {
         messages.push({
           key: uuid(),
@@ -100,9 +94,9 @@ export function ChatProvider({ agent, children }: PropsWithChildren<Props>) {
         });
       });
 
-      await runAgent({ input });
+      await runAgent({ agent, content: input });
     },
-    [runAgent, setMessages],
+    [agent, runAgent, setMessages],
   );
 
   const handleError = useCallback(

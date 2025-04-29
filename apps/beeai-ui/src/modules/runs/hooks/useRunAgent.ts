@@ -33,11 +33,10 @@ import {
   type RunId,
   type SessionId,
 } from '../api/types';
-import type { SendMessageParams } from '../chat/types';
+import type { MessageParams } from '../chat/types';
 import { createMessagePart, createRunStreamRequest, handleRunStream } from '../utils';
 
 interface Props {
-  agent: Agent;
   onRun?: () => void;
   onRunFailed?: (event: RunFailedEvent) => void;
   onRunCancelled?: (event: RunCancelledEvent) => void;
@@ -47,11 +46,10 @@ interface Props {
   onGeneric?: (event: GenericEvent) => void;
   onDone?: () => void;
   onStop?: () => void;
-  onError?: (error: NonNullable<RunError>) => void;
+  onError?: ({ error, aborted }: { error: NonNullable<RunError>; aborted: boolean | undefined }) => void;
 }
 
 export function useRunAgent({
-  agent,
   onRun,
   onRunFailed,
   onRunCancelled,
@@ -62,7 +60,7 @@ export function useRunAgent({
   onDone,
   onStop,
   onError,
-}: Props) {
+}: Props = {}) {
   const abortControllerRef = useRef<AbortController | null>(null);
 
   const [input, setInput] = useState<string>();
@@ -80,12 +78,12 @@ export function useRunAgent({
   }, [onDone]);
 
   const runAgent = useCallback(
-    async ({ input }: SendMessageParams) => {
+    async ({ agent, ...params }: { agent: Agent } & MessageParams) => {
       try {
         onRun?.();
 
         setIsPending(true);
-        setInput(input);
+        setInput(params.content);
 
         const abortController = new AbortController();
         abortControllerRef.current = abortController;
@@ -93,7 +91,7 @@ export function useRunAgent({
         const stream = await createRunStream({
           body: createRunStreamRequest({
             agent: agent.name,
-            messagePart: createMessagePart({ content: input }),
+            messagePart: createMessagePart(params),
             sessionId,
           }),
           signal: abortController.signal,
@@ -132,6 +130,8 @@ export function useRunAgent({
 
                 break;
               case EventType.Generic:
+                console.log(event);
+
                 onGeneric?.(event);
 
                 break;
@@ -145,13 +145,15 @@ export function useRunAgent({
           error instanceof Error ? error.message : typeof error === 'string' ? error : 'Agent run failed.';
 
         onError?.({
-          code: 'server_error',
-          message,
+          error: {
+            code: 'server_error',
+            message,
+          },
+          aborted: abortControllerRef.current?.signal.aborted,
         });
       }
     },
     [
-      agent.name,
       sessionId,
       createRunStream,
       handleDone,

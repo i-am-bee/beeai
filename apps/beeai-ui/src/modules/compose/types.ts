@@ -14,19 +14,6 @@
  * limitations under the License.
  */
 
-import { createContext } from 'react';
+import type { MessagePart } from '#modules/runs/api/types.ts';
 
-import type { Agent } from '#modules/agents/api/types.ts';
-import type { ChatMessage } from '#modules/runs/chat/types.ts';
-
-export const ChatContext = createContext<ChatContextValue | null>(null);
-
-export const ChatMessagesContext = createContext<ChatMessage[]>([]);
-
-interface ChatContextValue {
-  agent: Agent;
-  isPending: boolean;
-  onClear: () => void;
-  onCancel: () => void;
-  sendMessage: (input: string) => Promise<void>;
-}
+export type ComposeMessagePart = MessagePart & { agent_idx: number };

@@ -18,10 +18,12 @@ import type { ServerSentEventMessage } from 'fetch-event-stream';
 import humanizeDuration from 'humanize-duration';
 
 import type { AgentName } from '#modules/agents/api/types.ts';
+import { isNotNull } from '#utils/helpers.ts';
 
 import {
   type Artifact,
   type CreateRunStreamRequest,
+  type Message,
   type MessagePart,
   type RunEvent,
   RunMode,
@@ -64,11 +66,15 @@ export function createRunStreamRequest({
   };
 }
 
-export function createMessagePart({ content }: { content: string }): MessagePart {
+export function createMessagePart({
+  content,
+  content_encoding = 'plain',
+  content_type = 'text/plain',
+}: Partial<Exclude<MessagePart, 'role'>>): MessagePart {
   return {
     content,
-    content_encoding: 'plain',
-    content_type: 'text/plain',
+    content_encoding,
+    content_type,
     role: Role.User,
   };
 }
@@ -89,4 +95,14 @@ export async function handleRunStream({
 
 export function isArtifact(part: MessagePart): part is Artifact {
   return typeof part.name === 'string';
+}
+
+export function extractOutput(messages: Message[]) {
+  const output = messages
+    .flatMap(({ parts }) => parts)
+    .map(({ content }) => content)
+    .filter(isNotNull)
+    .join('');
+
+  return output;
 }

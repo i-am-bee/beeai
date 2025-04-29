@@ -14,9 +14,4 @@
  * limitations under the License.
  */
 
-// import zodToJsonSchema from 'zod-to-json-schema';
-
-export const SEQUENTIAL_COMPOSE_AGENT_NAME = 'sequential-workflow';
-
-// export const textInputJsonSchema = zodToJsonSchema(textInputSchema);
-// export const textOutputJsonSchema = zodToJsonSchema(textOutputSchema);
+export const SEQUENTIAL_COMPOSE_AGENT_NAME = 'sequential_workflow';
