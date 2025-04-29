@@ -130,8 +130,6 @@ export function useRunAgent({
 
                 break;
               case EventType.Generic:
-                console.log(event);
-
                 onGeneric?.(event);
 
                 break;
