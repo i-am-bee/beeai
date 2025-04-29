@@ -9,6 +9,12 @@ from acp_sdk.server import Context, Server
 from beeai_framework.backend import UserMessage, SystemMessage, ChatModelNewTokenEvent, ChatModelSuccessEvent
 from beeai_framework.backend.chat import ChatModel, ChatModelParameters
 from pydantic import AnyUrl
+from openinference.instrumentation.beeai import BeeAIInstrumentor
+
+## TODO: https://github.com/phoenixframework/phoenix/issues/6224
+logging.getLogger("opentelemetry.exporter.otlp.proto.http._log_exporter").setLevel(logging.CRITICAL)
+logging.getLogger("opentelemetry.exporter.otlp.proto.http.metric_exporter").setLevel(logging.CRITICAL)
+BeeAIInstrumentor().instrument()
 
 server = Server()
 logger = logging.getLogger(__name__)
@@ -225,7 +231,7 @@ async def podcast_creator(input: list[Message], context: Context) -> AsyncGenera
 
 
 def run():
-    server.run(host=os.getenv("HOST", "127.0.0.1"), port=int(os.getenv("PORT", 8000)))
+    server.run(host=os.getenv("HOST", "127.0.0.1"), port=int(os.getenv("PORT", 8000)), configure_telemetry=True)
 
 
 if __name__ == "__main__":

@@ -203,6 +203,7 @@ source = { editable = "." }
 dependencies = [
     { name = "acp-sdk" },
     { name = "beeai-framework", extra = ["duckduckgo", "wikipedia"] },
+    { name = "openinference-instrumentation-beeai" },
     { name = "pydantic-settings" },
 ]
 
@@ -210,6 +211,7 @@ dependencies = [
 requires-dist = [
     { name = "acp-sdk", specifier = ">=0.6.0" },
     { name = "beeai-framework", extras = ["duckduckgo", "wikipedia"], specifier = ">=0.1.17" },
+    { name = "openinference-instrumentation-beeai", specifier = ">=0.1.5" },
     { name = "pydantic-settings", specifier = ">=2.9.0" },
 ]
 
@@ -714,6 +716,46 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/84/51/817969ec969b73d8ddad085670ecd8a45ef1af1811d8c3b8a177ca4d1309/openai-1.76.0.tar.gz", hash = "sha256:fd2bfaf4608f48102d6b74f9e11c5ecaa058b60dad9c36e409c12477dfd91fb2", size = 434660 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/59/aa/84e02ab500ca871eb8f62784426963a1c7c17a72fea3c7f268af4bbaafa5/openai-1.76.0-py3-none-any.whl", hash = "sha256:a712b50e78cf78e6d7b2a8f69c4978243517c2c36999756673e07a14ce37dc0a", size = 661201 },
+]
+
+[[package]]
+name = "openinference-instrumentation"
+version = "0.1.28"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "openinference-semantic-conventions" },
+    { name = "opentelemetry-api" },
+    { name = "opentelemetry-sdk" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/a0/9d/545e9c3f502858bfbfcad327d6d56b9daaddbae1bf585d50480f77d241be/openinference_instrumentation-0.1.28.tar.gz", hash = "sha256:7eee22ad63adb7f76a03181a3b0d972f5616fd6d0504c502b30a525f6f664f6a", size = 20090 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/1b/bb/323e5ca59369775f7c12c5f55de1af5b8d00e5cbd24065d43cd57f965362/openinference_instrumentation-0.1.28-py3-none-any.whl", hash = "sha256:4eee3b06fc6fdd777b587762a03d68f470821afe783b21e2460218ad9e158e82", size = 25512 },
+]
+
+[[package]]
+name = "openinference-instrumentation-beeai"
+version = "0.1.5"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "openinference-instrumentation" },
+    { name = "openinference-semantic-conventions" },
+    { name = "opentelemetry-api" },
+    { name = "opentelemetry-instrumentation" },
+    { name = "opentelemetry-semantic-conventions" },
+    { name = "wrapt" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/77/e9/ba8c1517b9c57869d32299c35f5ced3789876f60d85fa740297ace2b57c4/openinference_instrumentation_beeai-0.1.5.tar.gz", hash = "sha256:236383d52809e55819d7c24dade93260a3af9a8a3b2e274e963e8a1409ba0581", size = 10528 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b5/91/0723efd8dfb23a7d195d0807f0ebdc64b7bb27c7d5940adb0f7d161be566/openinference_instrumentation_beeai-0.1.5-py3-none-any.whl", hash = "sha256:b44c51ec678160275d9359d6df5c2cd5b53d8225b50fbfe428fbbac088b94386", size = 15399 },
+]
+
+[[package]]
+name = "openinference-semantic-conventions"
+version = "0.1.17"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/ea/c1/851eed629ee65d38395f586eb4d82d9cc7c61c31de4c523394cc84ee4940/openinference_semantic_conventions-0.1.17.tar.gz", hash = "sha256:8c382f756344887c77f03c8def1702318d8d8cc8b4055f46924aabb7c89ed8bd", size = 9635 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/fb/99/306c007c3a2accafcf47fc5c20ea81648c039292ca6770c9c1ab7914dd6b/openinference_semantic_conventions-0.1.17-py3-none-any.whl", hash = "sha256:919b7f2c0b0bdd406377288337d77046efb84866ad4805ad7a73a09368147398", size = 9384 },
 ]
 
 [[package]]

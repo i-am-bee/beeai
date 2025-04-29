@@ -1,4 +1,5 @@
 import os
+import logging
 from collections.abc import AsyncGenerator
 from textwrap import dedent
 
@@ -15,9 +16,14 @@ from beeai_framework.tools.search.wikipedia import WikipediaTool
 from beeai_framework.tools.tool import AnyTool
 from beeai_framework.tools.weather.openmeteo import OpenMeteoTool
 from pydantic import AnyUrl
+from openinference.instrumentation.beeai import BeeAIInstrumentor
+
+BeeAIInstrumentor().instrument()
+## TODO: https://github.com/phoenixframework/phoenix/issues/6224
+logging.getLogger("opentelemetry.exporter.otlp.proto.http._log_exporter").setLevel(logging.CRITICAL)
+logging.getLogger("opentelemetry.exporter.otlp.proto.http.metric_exporter").setLevel(logging.CRITICAL)
 
 server = Server()
-
 
 def to_framework_message(role: Role, content: str) -> beeai_framework.backend.Message:
     match role:
@@ -133,7 +139,7 @@ async def chat(input: list[Message], context: Context) -> AsyncGenerator:
 
 
 def run():
-    server.run(host=os.getenv("HOST", "127.0.0.1"), port=int(os.getenv("PORT", 8000)))
+    server.run(host=os.getenv("HOST", "127.0.0.1"), port=int(os.getenv("PORT", 8000)), configure_telemetry=True)
 
 
 if __name__ == "__main__":
