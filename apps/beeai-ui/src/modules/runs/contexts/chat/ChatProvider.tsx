@@ -15,22 +15,20 @@
  */
 
 import type { PropsWithChildren } from 'react';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 import { v4 as uuid } from 'uuid';
 
 import { useImmerWithGetter } from '#hooks/useImmerWithGetter.ts';
 import type { Agent } from '#modules/agents/api/types.ts';
-import { useCancelRun } from '#modules/runs/api/mutations/useCancelRun.tsx';
-import { useCreateRunStream } from '#modules/runs/api/mutations/useCreateRunStream.tsx';
-import { EventType, type RunId, type SessionId } from '#modules/runs/api/types.ts';
 import {
   type AssistantMessage,
   type ChatMessage,
   MessageStatus,
   type SendMessageParams,
 } from '#modules/runs/chat/types.ts';
+import { useRunAgent } from '#modules/runs/hooks/useRunAgent.ts';
 import { Role } from '#modules/runs/types.ts';
-import { createMessagePart, createRunStreamRequest, handleRunStream, isArtifact } from '#modules/runs/utils.ts';
+import { isArtifact } from '#modules/runs/utils.ts';
 
 import { ChatContext, ChatMessagesContext } from './chat-context';
 
@@ -40,11 +38,37 @@ interface Props {
 
 export function ChatProvider({ agent, children }: PropsWithChildren<Props>) {
   const [messages, , setMessages] = useImmerWithGetter<ChatMessage[]>([]);
-  const [isPending, setIsPending] = useState(false);
-  const [runId, setRunId] = useState<RunId>();
-  const [sessionId, setSessionId] = useState<SessionId>();
 
-  const abortControllerRef = useRef<AbortController | null>(null);
+  const { isPending, runAgent, stopAgent } = useRunAgent({
+    agent,
+    onMessagePart: (event) => {
+      const { part } = event;
+
+      if (isArtifact(part)) {
+        return;
+      }
+
+      updateLastAssistantMessage((message) => {
+        message.content += part.content;
+      });
+    },
+    onMessageCompleted: () => {
+      updateLastAssistantMessage((message) => {
+        message.status = MessageStatus.Completed;
+      });
+    },
+    onStop: () => {
+      updateLastAssistantMessage((message) => {
+        message.status = MessageStatus.Aborted;
+      });
+    },
+    onError: (error) => {
+      updateLastAssistantMessage((message) => {
+        message.error = error as Error;
+        message.status = MessageStatus.Failed;
+      });
+    },
+  });
 
   const updateLastAssistantMessage = useCallback(
     (updater: (message: AssistantMessage) => void) => {
@@ -58,10 +82,6 @@ export function ChatProvider({ agent, children }: PropsWithChildren<Props>) {
     },
     [setMessages],
   );
-
-  const { mutateAsync: createRunStream } = useCreateRunStream();
-
-  const { mutate: cancelRun } = useCancelRun();
 
   const sendMessage = useCallback(
     async ({ input }: SendMessageParams) => {
@@ -79,98 +99,25 @@ export function ChatProvider({ agent, children }: PropsWithChildren<Props>) {
         });
       });
 
-      try {
-        const abortController = new AbortController();
-        abortControllerRef.current = abortController;
-
-        const stream = await createRunStream({
-          body: createRunStreamRequest({
-            agent: agent.name,
-            messagePart: createMessagePart({ content: input }),
-            sessionId,
-          }),
-          signal: abortController.signal,
-        });
-
-        setIsPending(true);
-
-        handleRunStream({
-          stream,
-          onEvent: (event) => {
-            switch (event.type) {
-              case EventType.RunCreated:
-                setRunId(event.run.run_id);
-                setSessionId(event.run.session_id);
-
-                break;
-              case EventType.RunFailed:
-                setIsPending(false);
-
-                throw new Error(event.run.error?.message);
-              case EventType.RunCancelled:
-                setIsPending(false);
-
-                break;
-              case EventType.RunCompleted:
-                setIsPending(false);
-
-                break;
-              case EventType.MessagePart:
-                if (isArtifact(event.part)) {
-                  return;
-                }
-
-                updateLastAssistantMessage((message) => {
-                  message.content += event.part.content;
-                });
-
-                break;
-              case EventType.MessageCompleted:
-                updateLastAssistantMessage((message) => {
-                  message.status = MessageStatus.Completed;
-                });
-            }
-          },
-        });
-      } catch (error) {
-        updateLastAssistantMessage((message) => {
-          message.error = error as Error;
-          message.status = MessageStatus.Failed;
-        });
-      }
+      await runAgent({ input });
     },
-    [agent.name, sessionId, createRunStream, setMessages, updateLastAssistantMessage],
+    [runAgent, setMessages],
   );
 
-  const handleCancel = useCallback(() => {
-    if (runId) {
-      cancelRun({ run_id: runId });
-    }
-
-    setIsPending(false);
-    abortControllerRef.current?.abort();
-
-    updateLastAssistantMessage((message) => {
-      message.status = MessageStatus.Aborted;
-    });
-  }, [runId, cancelRun, updateLastAssistantMessage]);
-
   const handleClear = useCallback(() => {
+    stopAgent();
     setMessages([]);
-    setRunId(undefined);
-    setSessionId(undefined);
-    handleCancel();
-  }, [handleCancel, setMessages]);
+  }, [stopAgent, setMessages]);
 
   const contextValue = useMemo(
     () => ({
       agent,
       isPending,
-      onCancel: handleCancel,
+      onCancel: stopAgent,
       onClear: handleClear,
       sendMessage,
     }),
-    [agent, isPending, handleCancel, handleClear, sendMessage],
+    [agent, isPending, stopAgent, handleClear, sendMessage],
   );
 
   return (

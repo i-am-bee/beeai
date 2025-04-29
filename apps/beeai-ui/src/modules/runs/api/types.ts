@@ -128,6 +128,7 @@ export interface GenericEvent {
     tool_name?: string;
     tool_input?: string;
     tool_output?: string;
+    message?: string;
   };
 }
 

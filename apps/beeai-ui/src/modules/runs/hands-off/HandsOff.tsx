@@ -25,18 +25,18 @@ import { HandsOffView } from './HandsOffView';
 import { TaskStatusBar } from './TaskStatusBar';
 
 export function HandsOff() {
-  const { agent, logs, text, isPending, onClear } = useHandsOff();
+  const { agent, logs, output, isPending, onClear } = useHandsOff();
   const userGreeting = agent.metadata.ui?.user_greeting;
 
-  const isPendingOrText = Boolean(isPending || text);
-  const isFinal = Boolean(text && !isPending);
+  const isPendingOrOutput = Boolean(isPending || output);
+  const isFinal = Boolean(output && !isPending);
 
   return (
     <HandsOffView>
-      <div className={clsx(classes.root, { [classes.isPendingOrText]: isPendingOrText })}>
+      <div className={clsx(classes.root, { [classes.isPendingOrOutput]: isPendingOrOutput })}>
         <div className={classes.holder}>
           <div className={classes.header}>
-            <AgentHeader agent={agent} onNewSessionClick={isPendingOrText ? onClear : undefined} />
+            <AgentHeader agent={agent} onNewSessionClick={isPendingOrOutput ? onClear : undefined} />
 
             <h2 className={classes.heading}>{isFinal ? 'Task input:' : userGreeting || 'What is your task?'}</h2>
           </div>
@@ -44,7 +44,7 @@ export function HandsOff() {
           <div className={classes.body}>
             <HandsOffInput />
 
-            {logs && <AgentRunLogs logs={logs} toggleable={Boolean(text)} />}
+            {logs && <AgentRunLogs logs={logs} toggleable={Boolean(output)} />}
 
             <TaskStatusBar />
           </div>

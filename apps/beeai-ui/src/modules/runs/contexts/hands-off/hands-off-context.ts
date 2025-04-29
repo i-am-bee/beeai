@@ -17,21 +17,17 @@
 import { createContext } from 'react';
 
 import type { Agent } from '#modules/agents/api/types.ts';
-import type { RunStats } from '#modules/runs/types.ts';
+import type { RunLog, RunStats } from '#modules/runs/types.ts';
 
 export const HandsOffContext = createContext<HandsOffContextValue | undefined>(undefined);
 
 interface HandsOffContextValue {
   agent: Agent;
-  // TODO
-  input?: { text: string };
+  input?: string;
   stats?: RunStats;
-  // TODO
-  logs?: [];
-  text?: string;
+  logs?: RunLog[];
+  output?: string;
   isPending: boolean;
   onSubmit: (input: string) => Promise<void>;
-  onCancel: () => void;
-  onReset: () => void;
   onClear: () => void;
 }

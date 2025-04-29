@@ -22,7 +22,7 @@ import { useHandsOff } from '../contexts/hands-off';
 import { HandsOffText } from './HandsOffText';
 
 export function HandsOffView({ children }: PropsWithChildren) {
-  const { text } = useHandsOff();
+  const { output } = useHandsOff();
 
-  return <SplitPanesView leftPane={children} rightPane={<HandsOffText />} isSplit={Boolean(text)} spacing="md" />;
+  return <SplitPanesView leftPane={children} rightPane={<HandsOffText />} isSplit={Boolean(output)} spacing="md" />;
 }

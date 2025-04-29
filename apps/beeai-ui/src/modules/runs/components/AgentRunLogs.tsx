@@ -20,12 +20,12 @@ import { useState } from 'react';
 
 import { useAutoScroll } from '#hooks/useAutoScroll.ts';
 
+import type { RunLog } from '../types';
 import { AgentRunLogItem } from './AgentRunLogItem';
 import classes from './AgentRunLogs.module.scss';
 
 interface Props {
-  // TODO
-  logs: [];
+  logs: RunLog[];
   toggleable?: boolean;
 }
 

@@ -20,12 +20,12 @@ import { AgentOutputBox } from '../components/AgentOutputBox';
 import { useHandsOff } from '../contexts/hands-off';
 
 export function HandsOffText() {
-  const { agent, text, isPending } = useHandsOff();
-  const { ref: autoScrollRef } = useAutoScroll([text]);
+  const { agent, output, isPending } = useHandsOff();
+  const { ref: autoScrollRef } = useAutoScroll([output]);
 
   return (
     <>
-      <AgentOutputBox text={text} isPending={isPending} downloadFileName={`${agent.name}-output`} />
+      <AgentOutputBox text={output} isPending={isPending} downloadFileName={`${agent.name}-output`} />
 
       <div ref={autoScrollRef} />
     </>

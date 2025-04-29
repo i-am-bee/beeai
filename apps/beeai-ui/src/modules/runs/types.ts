@@ -23,3 +23,5 @@ export interface RunStats {
   startTime?: number;
   endTime?: number;
 }
+
+export type RunLog = { message: string };

@@ -15,10 +15,13 @@
  */
 
 import type { PropsWithChildren } from 'react';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import type { Agent } from '#modules/agents/api/types.ts';
-import type { RunStats } from '#modules/runs/types.ts';
+import { useRunAgent } from '#modules/runs/hooks/useRunAgent.ts';
+import type { RunLog, RunStats } from '#modules/runs/types.ts';
+import { isArtifact } from '#modules/runs/utils.ts';
+import { isNotNull } from '#utils/helpers.ts';
 
 import { HandsOffContext } from './hands-off-context';
 
@@ -27,91 +30,78 @@ interface Props {
 }
 
 export function HandsOffProvider({ agent, children }: PropsWithChildren<Props>) {
-  // TODO
-  const [input, setInput] = useState<{ text: string }>();
+  const [output, setOutput] = useState<string>('');
   const [stats, setStats] = useState<RunStats>();
-  // TODO
-  const [logs, setLogs] = useState<[]>([]);
-  const [text, setText] = useState<string>('');
-  const [isPending, setIsPending] = useState<boolean>(false);
-  const abortControllerRef = useRef<AbortController | null>(null);
+  const [logs, setLogs] = useState<RunLog[]>([]);
 
-  // const { runAgent } = useRunAgent<TextInput, TextNotificationSchema>({
-  //   notifications: {
-  //     handler: (notification) => handleNotification(notification),
-  //   },
-  // });
+  const { input, isPending, runAgent, stopAgent } = useRunAgent({
+    agent,
+    onRun: () => {
+      handleReset();
+      setStats({ startTime: Date.now() });
+    },
+    onMessagePart: (event) => {
+      const { part } = event;
 
-  // const handleNotification = useCallback((notification: TextNotification) => {
-  //   const { logs: logsDelta, text: textDelta } = notification.params.delta;
+      if (isArtifact(part)) {
+        return;
+      }
 
-  //   setLogs((logs) => [
-  //     ...logs,
-  //     ...logsDelta.filter((log): log is NonNullable<typeof log> => isNotNull(log) && log.message !== ''),
-  //   ]);
-  //   setText((text) => (textDelta ? text.concat(textDelta) : text));
-  // }, []);
+      const { content } = part;
 
-  const handleCancel = useCallback(() => {
-    abortControllerRef.current?.abort();
-    abortControllerRef.current = null;
-  }, []);
+      setOutput((output) => (content ? output.concat(content) : output));
+    },
+    onRunCompleted: (event) => {
+      const output = event.run.output
+        .flatMap(({ parts }) => parts)
+        .map(({ content }) => content)
+        .filter(isNotNull)
+        .join('');
+
+      setStats((stats) => ({ ...stats, endTime: Date.now() }));
+      setOutput(output);
+    },
+    onGeneric: (event) => {
+      const log = event.generic;
+
+      if (log.message) {
+        setLogs((logs) => [...logs, log as RunLog]);
+      }
+    },
+  });
 
   const handleReset = useCallback(() => {
-    setInput(undefined);
+    setOutput('');
     setStats(undefined);
     setLogs([]);
-    setText('');
   }, []);
 
   const handleClear = useCallback(() => {
-    handleCancel();
+    if (isPending) {
+      stopAgent();
+    }
     handleReset();
-  }, [handleCancel, handleReset]);
+  }, [isPending, stopAgent, handleReset]);
 
   const run = useCallback(
-    async (inputText: string) => {
-      try {
-        const input = { text: inputText };
-        const abortController = new AbortController();
-        abortControllerRef.current = abortController;
-
-        handleReset();
-        setInput(input);
-        setStats({ startTime: Date.now() });
-        setIsPending(true);
-
-        // const response = (await runAgent({
-        //   agent,
-        //   input,
-        //   abortController,
-        // }));
-
-        // setText(response.output.text);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setStats((stats) => ({ ...stats, endTime: Date.now() }));
-        setIsPending(false);
-      }
+    async (input: string) => {
+      await runAgent({ input });
     },
-    [handleReset],
+    [runAgent],
   );
 
   const contextValue = useMemo(
     () => ({
       agent,
       input,
+      output,
       stats,
       logs,
-      text,
       isPending,
       onSubmit: run,
-      onCancel: handleCancel,
-      onReset: handleReset,
       onClear: handleClear,
     }),
-    [agent, input, stats, logs, text, isPending, run, handleCancel, handleReset, handleClear],
+    [agent, input, output, stats, logs, isPending, run, handleClear],
   );
 
   return <HandsOffContext.Provider value={contextValue}>{children}</HandsOffContext.Provider>;
