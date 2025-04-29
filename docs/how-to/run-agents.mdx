@@ -4,9 +4,6 @@ description: "Learn how to run agents"
 icon: "play"
 ---
 
-import OutdatedWarning from "/snippets/outdated-warning.mdx";
-
-<OutdatedWarning />
 
 ## GUI
 
@@ -114,20 +111,29 @@ Example usage:
 
 ```python
 import asyncio
-import json
-from beeai_framework.agents.experimental.remote.agent import RemoteAgent
+import sys
+import traceback
 
+from beeai_framework.agents.experimental.remote import RemoteAgent
+from beeai_framework.errors import FrameworkError
+from beeai_framework.memory.unconstrained_memory import UnconstrainedMemory
+from examples.helpers.io import ConsoleReader
 
-async def run():
-    response = await RemoteAgent(
-        url="http://localhost:8333/mcp/sse", agent_name="gpt-researcher"
-    ).run("why is Nvidia stock going up?")
+async def main() -> None:
+    reader = ConsoleReader()
 
-    print(json.loads(response.result.text))
+    agent = RemoteAgent(agent_name="chat", url="http://127.0.0.1:8333/api/v1/acp/", memory=UnconstrainedMemory())
+    for prompt in reader:
+        # Run the agent and observe events
+        response = await agent.run(prompt).on(
+            "update",
+            lambda data, event: (reader.write("Agent 🤖 (debug) : ", data)),
+        )
 
+        reader.write("Agent 🤖 : ", response.result.text)
 
-def main():
-    asyncio.run(run())
+if __name__ == "__main__":
+    asyncio.run(main())
 ```
 
 For more advanced examples, including partial updates and error logging, refer to the [BeeAI Framework repository](https://github.com/i-am-bee/beeai-framework).
