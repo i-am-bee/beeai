@@ -135,9 +135,7 @@ async def sequential_workflow(input: list[Message]) -> AsyncIterator:
 
                 async for event in client.run_stream(
                     agent=step.agent,
-                    inputs=[
-                        Message(parts=[MessagePart(content=format_agent_input(step.instruction, previous_output))])
-                    ],
+                    input=[Message(parts=[MessagePart(content=format_agent_input(step.instruction, previous_output))])],
                 ):
                     match event:
                         case MessagePartEvent(part=part):

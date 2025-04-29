@@ -68,6 +68,8 @@ jobs:
           context: ./agents/${{ matrix.agent }}
           push: true
           platforms: linux/amd64,linux/arm64
+          build-args: |
+            RELEASE_VERSION:${{ github.ref_name }}
           tags: ghcr.io/${{ github.repository }}/${{ matrix.agent }}:${{ github.ref_name }},ghcr.io/${{ github.repository }}/${{ matrix.agent }}:latest
           labels: |
             beeai.dev.agent.yaml=${{ steps.agent-manifest.outputs.content }}
