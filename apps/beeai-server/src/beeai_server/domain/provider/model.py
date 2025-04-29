@@ -94,8 +94,10 @@ class GithubProviderSource(BaseProviderSource):
 
     @property
     def image_id(self) -> DockerImageID:
-        tag = f"{LOCAL_IMAGE_REGISTRY}/{self.location.org}/{self.location.repo}:{self.location.version}"
-        return DockerImageID(root=tag)
+        base_tag = f"{LOCAL_IMAGE_REGISTRY}/{self.location.org}/{self.location.repo}"
+        if self.location.path:
+            base_tag += f"/{self.location.path.replace('/', '_')}"
+        return DockerImageID(root=f"{base_tag}:{self.location.version}")
 
     @inject
     async def install(self, container_backend: IContainerBackend, logs_container: LogsContainer | None = None):

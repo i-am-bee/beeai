@@ -134,29 +134,34 @@ class GithubUrl(RootModel):
         return url
 
     async def resolve_version(self) -> ResolvedGithubUrl:
-        async with httpx.AsyncClient() as client:
-            if not (version := self._version):
-                manifest_url = f"https://github.com/{self.org}/{self.repo}/blob/-/dummy"
-                resp = await client.head(manifest_url)
-                if not resp.headers.get("location", None):
-                    raise ValueError(f"{self.path} not found in github repository.")
-                version = re.search("/blob/([^/]*)", resp.headers["location"]).group(1)
+        try:
+            async with httpx.AsyncClient() as client:
+                if not (version := self._version):
+                    manifest_url = f"https://github.com/{self.org}/{self.repo}/blob/-/dummy"
+                    resp = await client.head(manifest_url)
+                    if not resp.headers.get("location", None):
+                        raise ValueError(f"{self.path} not found in github repository.")
+                    version = re.search("/blob/([^/]*)", resp.headers["location"]).group(1)
 
-            resp = await client.get(
-                f"https://github.com/{self._org}/{self._repo}.git/info/refs?service=git-upload-pack"
-            )
-            resp = resp.text.split("\n")
-            [version_line] = [line for line in resp if line.endswith(f"/{version}")]
-            [commit_hash, _ref_name] = version_line[4:].split()
-            version_type = GithubVersionType.head if "/refs/heads" in _ref_name else GithubVersionType.tag
-            return ResolvedGithubUrl(
-                org=self._org,
-                repo=self._repo,
-                version=version,
-                commit_hash=commit_hash,
-                path=self._path,
-                version_type=version_type,
-            )
+                resp = await client.get(
+                    f"https://github.com/{self._org}/{self._repo}.git/info/refs?service=git-upload-pack"
+                )
+                resp = resp.text.split("\n")
+                [version_line] = [line for line in resp if line.endswith(f"/{version}")]
+                [commit_hash, _ref_name] = version_line[4:].split()
+                version_type = GithubVersionType.head if "/refs/heads" in _ref_name else GithubVersionType.tag
+                return ResolvedGithubUrl(
+                    org=self._org,
+                    repo=self._repo,
+                    version=version,
+                    commit_hash=commit_hash,
+                    path=self._path,
+                    version_type=version_type,
+                )
+        except Exception as exc:
+            raise ValueError(
+                f"Failed to resolve github version, does the tag or branch {version} exist?: {exc!r}"
+            ) from exc
 
     def __str__(self):
         version = f"@{self._version}" if self._version else ""
