@@ -71,63 +71,34 @@ beeai run chat "Hello"
 beeai run gpt-researcher "Impact of climate change on global agriculture"
 ```
 
-### Complex inputs
-
-For agents that require complex inputs or configurations, use JSON-formatted input:
-
-```sh
-# Agent requiring complex JSON input
-beeai run content-judge '{
-  "text": "Generate a concise summary of the history of artificial intelligence.",
-  "agents": [
-    "gpt-researcher",
-    "ollama-deep-researcher"
-  ]
-}'
-
-# Configuring a chat agent with the weather tool
-beeai run chat '{
-  "config": {
-    "tools": ["weather"]
-  },
-  "messages": [{
-    "role": "user",
-    "content": "What is the weather in San Francisco?"
-  }]
-}'
-```
-
 ## ACP SDK
 
-The ACP (Agent Communication Protocol) SDK lets you programmatically interact with agents.
+All agents available on the platform are ACP-compliant out of the box, enabling you to remotely interact with them through the [ACP SDK](https://agentcommunicationprotocol.dev/python-sdk/client).
 
-Install it using:
+The BeeAI platform is an ACP server that allows you to easily discover and run agents programmatically via the SDK or REST endpoints.
 
-```sh
+Install the SDK via
+
+```bash
 uv add acp-sdk
 ```
 
-Example of how to run an agent using ACP SDK:
+Example usage:
 
 ```python
 import asyncio
 
-from acp import ClientSession
-from acp.client.sse import sse_client
+from acp_sdk.client import Client
 
+async def client() -> None:
+    async with Client(base_url="http://localhost:8333/api/v1/acp") as client:
+        run = await client.run_sync(agent="aider", input="Create a python script that prints 'Hello, world!'")
+        print(str(run.output[0]))
 
-async def run_client():
-    async with sse_client(url="http://localhost:8333/mcp/sse") as streams:
-        async with ClientSession(*streams) as session:
-            await session.initialize()
-
-            # Run the agent
-            resp = await session.run_agent("gpt-researcher", {"text": "Impact of climate change on global agriculture"})
-            print("Agent:", resp.output["text"])
-
-
-asyncio.run(run_client())
+if __name__ == "__main__":
+    asyncio.run(client())
 ```
+
 
 ## BeeAI framework
 
