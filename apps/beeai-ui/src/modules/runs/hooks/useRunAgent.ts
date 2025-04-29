@@ -26,7 +26,10 @@ import {
   type GenericEvent,
   type MessageCompletedEvent,
   type MessagePartEvent,
+  type RunCancelledEvent,
   type RunCompletedEvent,
+  type RunError,
+  type RunFailedEvent,
   type RunId,
   type SessionId,
 } from '../api/types';
@@ -36,23 +39,29 @@ import { createMessagePart, createRunStreamRequest, handleRunStream } from '../u
 interface Props {
   agent: Agent;
   onRun?: () => void;
+  onRunFailed?: (event: RunFailedEvent) => void;
+  onRunCancelled?: (event: RunCancelledEvent) => void;
   onRunCompleted?: (event: RunCompletedEvent) => void;
   onMessagePart?: (event: ArtifactEvent | MessagePartEvent) => void;
   onMessageCompleted?: (event: MessageCompletedEvent) => void;
   onGeneric?: (event: GenericEvent) => void;
-  onError?: (error: unknown) => void;
+  onDone?: () => void;
   onStop?: () => void;
+  onError?: (error: NonNullable<RunError>) => void;
 }
 
 export function useRunAgent({
   agent,
   onRun,
+  onRunFailed,
+  onRunCancelled,
   onRunCompleted,
   onMessagePart,
   onMessageCompleted,
   onGeneric,
-  onError,
+  onDone,
   onStop,
+  onError,
 }: Props) {
   const abortControllerRef = useRef<AbortController | null>(null);
 
@@ -63,6 +72,12 @@ export function useRunAgent({
 
   const { mutateAsync: createRunStream } = useCreateRunStream();
   const { mutate: cancelRun } = useCancelRun();
+
+  const handleDone = useCallback(() => {
+    setIsPending(false);
+
+    onDone?.();
+  }, [onDone]);
 
   const runAgent = useCallback(
     async ({ input }: SendMessageParams) => {
@@ -94,16 +109,17 @@ export function useRunAgent({
 
                 break;
               case EventType.RunFailed:
-                setIsPending(false);
+                handleDone();
+                onRunFailed?.(event);
 
-                throw new Error(event.run.error?.message);
+                break;
               case EventType.RunCancelled:
-                setIsPending(false);
+                handleDone();
+                onRunCancelled?.(event);
 
                 break;
               case EventType.RunCompleted:
-                setIsPending(false);
-
+                handleDone();
                 onRunCompleted?.(event);
 
                 break;
@@ -123,14 +139,25 @@ export function useRunAgent({
           },
         });
       } catch (error) {
-        onError?.(error);
+        handleDone();
+
+        const message =
+          error instanceof Error ? error.message : typeof error === 'string' ? error : 'Agent run failed.';
+
+        onError?.({
+          code: 'server_error',
+          message,
+        });
       }
     },
     [
       agent.name,
       sessionId,
       createRunStream,
+      handleDone,
       onRun,
+      onRunFailed,
+      onRunCancelled,
       onRunCompleted,
       onMessagePart,
       onMessageCompleted,

@@ -42,6 +42,8 @@ export type RunId = CreateRunResponse['run_id'];
 
 export type SessionId = CreateRunResponse['session_id'];
 
+export type RunError = CreateRunResponse['error'];
+
 export enum RunMode {
   Sync = 'sync',
   Async = 'async',

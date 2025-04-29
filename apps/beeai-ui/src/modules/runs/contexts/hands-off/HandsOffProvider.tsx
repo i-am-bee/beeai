@@ -17,7 +17,9 @@
 import type { PropsWithChildren } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 
+import { useToast } from '#contexts/Toast/index.ts';
 import type { Agent } from '#modules/agents/api/types.ts';
+import type { RunError } from '#modules/runs/api/types.ts';
 import { useRunAgent } from '#modules/runs/hooks/useRunAgent.ts';
 import type { RunLog, RunStats } from '#modules/runs/types.ts';
 import { isArtifact } from '#modules/runs/utils.ts';
@@ -33,6 +35,8 @@ export function HandsOffProvider({ agent, children }: PropsWithChildren<Props>) 
   const [output, setOutput] = useState<string>('');
   const [stats, setStats] = useState<RunStats>();
   const [logs, setLogs] = useState<RunLog[]>([]);
+
+  const { addToast } = useToast();
 
   const { input, isPending, runAgent, stopAgent } = useRunAgent({
     agent,
@@ -58,7 +62,6 @@ export function HandsOffProvider({ agent, children }: PropsWithChildren<Props>) 
         .filter(isNotNull)
         .join('');
 
-      setStats((stats) => ({ ...stats, endTime: Date.now() }));
       setOutput(output);
     },
     onGeneric: (event) => {
@@ -68,7 +71,32 @@ export function HandsOffProvider({ agent, children }: PropsWithChildren<Props>) 
         setLogs((logs) => [...logs, log as RunLog]);
       }
     },
+    onDone: () => {
+      handleDone();
+    },
+    onRunFailed: (event) => {
+      handleError(event.run.error);
+    },
+    onError: (error) => {
+      handleError(error);
+    },
   });
+
+  const handleDone = useCallback(() => {
+    setStats((stats) => ({ ...stats, endTime: Date.now() }));
+  }, []);
+
+  const handleError = useCallback(
+    (error: RunError) => {
+      if (error) {
+        addToast({
+          title: error.code,
+          subtitle: error.message,
+        });
+      }
+    },
+    [addToast],
+  );
 
   const handleReset = useCallback(() => {
     setOutput('');

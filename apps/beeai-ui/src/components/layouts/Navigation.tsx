@@ -39,12 +39,11 @@ export function Navigation() {
         href: routes.agents(),
         section: sections.agents,
       },
-      // TODO: Temporarily hidden, needs to be refactored for the new ACP.
-      // {
-      //   label: 'Compose playground',
-      //   href: routes.compose(),
-      //   section: sections.compose,
-      // },
+      {
+        label: 'Compose playground',
+        href: routes.compose(),
+        section: sections.compose,
+      },
       {
         label: 'Traces',
         href: `${PHOENIX_SERVER_TARGET}/projects`,

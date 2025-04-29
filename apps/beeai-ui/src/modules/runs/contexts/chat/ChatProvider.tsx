@@ -20,6 +20,7 @@ import { v4 as uuid } from 'uuid';
 
 import { useImmerWithGetter } from '#hooks/useImmerWithGetter.ts';
 import type { Agent } from '#modules/agents/api/types.ts';
+import type { RunError } from '#modules/runs/api/types.ts';
 import {
   type AssistantMessage,
   type ChatMessage,
@@ -62,11 +63,11 @@ export function ChatProvider({ agent, children }: PropsWithChildren<Props>) {
         message.status = MessageStatus.Aborted;
       });
     },
+    onRunFailed: (event) => {
+      handleError(event.run.error);
+    },
     onError: (error) => {
-      updateLastAssistantMessage((message) => {
-        message.error = error as Error;
-        message.status = MessageStatus.Failed;
-      });
+      handleError(error);
     },
   });
 
@@ -104,10 +105,24 @@ export function ChatProvider({ agent, children }: PropsWithChildren<Props>) {
     [runAgent, setMessages],
   );
 
+  const handleError = useCallback(
+    (error: RunError) => {
+      if (error) {
+        updateLastAssistantMessage((message) => {
+          message.error = error;
+          message.status = MessageStatus.Failed;
+        });
+      }
+    },
+    [updateLastAssistantMessage],
+  );
+
   const handleClear = useCallback(() => {
-    stopAgent();
+    if (isPending) {
+      stopAgent();
+    }
     setMessages([]);
-  }, [stopAgent, setMessages]);
+  }, [isPending, stopAgent, setMessages]);
 
   const contextValue = useMemo(
     () => ({
