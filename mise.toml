@@ -108,3 +108,10 @@ nwa add    -l apache -c '© BeeAI a Series of LF Projects, LLC' --skip 'packages
 # sources don't support {a,b} -- https://github.com/jdx/mise/discussions/4469
 sources = ["apps/*/src/**/*.py", "packages/*/src/**/*.py", "apps/*/src/**/*.js", "packages/*/src/**/*.js", "apps/*/src/**/*.js*", "packages/*/src/**/*.js*", "apps/*/src/**/*.ts", "packages/*/src/**/*.ts", "apps/*/src/**/*.ts*", "packages/*/src/**/*.ts*", "apps/*/src/**/*.html", "packages/*/src/**/*.html", "apps/*/src/**/*.css", "packages/*/src/**/*.css", "apps/*/src/**/*.scss", "packages/*/src/**/*.scss"]
 outputs = { auto = true }
+
+### test
+
+# Empty tests in case there are no tests
+
+[tasks."common:test"]
+run = "true"
