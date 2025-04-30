@@ -163,7 +163,7 @@ class ProviderService:
         provider = await self.get_provider(id=id)
         provider = self._loaded_provider_container.loaded_providers[provider.id]
 
-        if getattr(provider, "registry", None) and not force:
+        if getattr(provider.provider, "registry", None) and not force:
             await provider.uninstall()
         else:
             await provider.uninstall()
