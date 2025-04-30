@@ -177,10 +177,8 @@ async def resolve_container_runtime_cmd(configuration: Configuration) -> IContai
 
 def copy_telemetry_config(config: Configuration) -> IContainerBackend:
     config.telemetry_config_dir.mkdir(parents=True, exist_ok=True)
-    if not (config.telemetry_config_dir / "base.yaml").is_file():
-        shutil.copy(TELEMETRY_BASE_CONFIG_PATH, config.telemetry_config_dir / "base.yaml")
-    if not (config.telemetry_config_dir / "beeai.yaml").is_file():
-        shutil.copy(TELEMETRY_BEEAI_CONFIG_PATH, config.telemetry_config_dir / "beeai.yaml")
+    shutil.copy(TELEMETRY_BASE_CONFIG_PATH, config.telemetry_config_dir / "base.yaml")
+    shutil.copy(TELEMETRY_BEEAI_CONFIG_PATH, config.telemetry_config_dir / "beeai.yaml")
 
 
 async def bootstrap_dependencies():
