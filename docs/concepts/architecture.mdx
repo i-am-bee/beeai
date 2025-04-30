@@ -4,10 +4,6 @@ description: "An overview of BeeAI core concepts and architecture"
 icon: "sitemap"
 ---
 
-import OutdatedWarning from "/snippets/outdated-warning.mdx";
-
-<OutdatedWarning />
-
 ## Architecture
 
 BeeAI enables a local-first experience, running all agents on your laptop for full data control and seamless integration with local inference engines like `ollama`.
@@ -15,12 +11,12 @@ BeeAI enables a local-first experience, running all agents on your laptop for fu
 The platform is made up of several core concepts as shown in the following diagram:
 
 <img
-  className="block mx-auto max-h-[648px] dark:hidden"
-  src="/images/architecture-light.svg"
+    className="block mx-auto max-h-[648px] dark:hidden"
+    src="/images/architecture-light.svg"
 />
 <img
-  className="hidden mx-auto max-h-[648px] dark:block"
-  src="/images/architecture-dark.svg"
+    className="hidden mx-auto max-h-[648px] dark:block"
+    src="/images/architecture-dark.svg"
 />
 
 ## Agents
@@ -30,29 +26,33 @@ An agent is a container that communicates using the [Agent Communication Protoco
 For details on registering agents, see [agents](/concepts/agents).
 
 <Info>
-  BeeAI includes several built-in agents, see our [agent
-  catalog](https://beeai.dev/agents).
+    BeeAI includes several built-in agents, see our [agent
+    catalog](https://beeai.dev/agents).
 </Info>
 
 ## BeeAI Server
 
 <Info>
-  Explore the
-  [beeai-server](https://github.com/i-am-bee/beeai/tree/main/apps/beeai-server)
-  source code.
+    Explore the
+    [beeai-server](https://github.com/i-am-bee/beeai/tree/main/apps/beeai-server)
+    source code.
 </Info>
 
-BeeAI server manages agents, spawns/destroys agent processes, and provides a unified endpoint for routing requests and notifications between agents and clients.
+BeeAI server manages agents, spawns/destroys agent containers, and provides a unified ACP interface for routing requests between agents and clients.
 
-It also manages agent configurations and environment variables and offers a simple REST API for agent communication and telemetry data forwarding to the Arize Phoenix OTEL backend.
+It also manages agent configurations and environment variables and collects telemetry data which is forwarded to the Arize Phoenix OTEL backend.
+
+The server discovers a catalog of agents from an official registry hosted on GitHub, see
+[agent-registry.yaml](https://github.com/i-am-bee/beeai-platform/blob/main/agent-registry.yaml). The agents are not
+downloaded automatically, a manual step `beeai install <agent-name>` is required.
 
 ## BeeAI CLI and UI
 
 <Info>
-  Explore the
-  [beeai-cli](https://github.com/i-am-bee/beeai/tree/main/apps/beeai-cli) and
-  [beeai-ui](https://github.com/i-am-bee/beeai/tree/main/apps/beeai-ui) source
-  code.
+    Explore the
+    [beeai-cli](https://github.com/i-am-bee/beeai/tree/main/apps/beeai-cli) and
+    [beeai-ui](https://github.com/i-am-bee/beeai/tree/main/apps/beeai-ui) source
+    code.
 </Info>
 
 These components offer interfaces for interacting with agents.
@@ -61,9 +61,9 @@ Agents can have custom input/output interfaces, but the platform provides standa
 
 Use `beeai run <name>` or the graphical chat at [localhost:8333](http://localhost:8333) to interact with agents.
 
-## Python and TypeScript clients
+## Python client
 
-You can use the ACP SDK to programmatically interact with the agents and integrate multiple agents into a workflow for your application.
+You can use the [ACP SDK](https://github.com/i-am-bee/acp) to programmatically interact with the agents and integrate multiple agents into a workflow for your application.
 
 ## Arize Phoenix
 
