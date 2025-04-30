@@ -61,7 +61,7 @@ class AgentRegistryConfiguration(BaseModel):
     location: RegistryLocation = GithubRegistryLocation(
         root=GithubUrl(root="https://github.com/i-am-bee/beeai-platform@main#path=agent-registry.yaml")
     )
-    preinstall: bool = True
+    preinstall: bool = False
 
 
 class Configuration(BaseSettings):

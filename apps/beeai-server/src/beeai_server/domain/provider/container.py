@@ -97,7 +97,11 @@ class LoadedProvider:
             ProviderStatus.not_installed,
             ProviderStatus.install_error,
         }:
-            raise ProviderNotInstalledError(f"Cannot initialize session to provider with status: {self.status}")
+            if self.status == ProviderStatus.not_installed:
+                message = "Agent is not installed, use 'beeai install <name>' to install"
+            else:
+                message = f"Cannot install agent (retry using 'beeai install <name>'): {self.last_error.message}"
+            raise ProviderNotInstalledError(message)
 
         async def _on_response(response: Response):
             if "Run-ID" in response.headers:
