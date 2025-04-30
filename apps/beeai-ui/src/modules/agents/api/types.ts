@@ -16,6 +16,8 @@
 
 import type { ApiPath, ApiResponse } from '#@types/utils.ts';
 
+export type AgentsListResponse = ApiResponse<'/api/v1/acp/agents'>;
+
 export type Agent = ApiResponse<'/api/v1/acp/agents/{name}'> & {
   metadata: {
     ui?: {
@@ -31,9 +33,7 @@ export type Agent = ApiResponse<'/api/v1/acp/agents/{name}'> & {
 
 export type AgentName = Agent['name'];
 
-export type AgentMetadata = Agent['metadata'];
-
-export type AgentProvider = AgentMetadata['provider'];
+export type AgentProvider = Agent['metadata']['provider'];
 
 export type ReadAgentPath = ApiPath<'/api/v1/acp/agents/{name}'>;
 

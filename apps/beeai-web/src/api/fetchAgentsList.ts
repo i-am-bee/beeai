@@ -22,10 +22,9 @@ import { fetchAgentRegistry } from '@/utils/fetchAgentRegistry';
 export async function fetchAgentsList() {
   const registry = await fetchAgentRegistry();
   const { providers } = registry;
-  const agents = await Promise.all(
-    providers.map(async ({ location }) => await fetchAgentMetadata({ dockerImageId: location })),
-  );
+  const agents = (
+    await Promise.all(providers.map(async ({ location }) => await fetchAgentMetadata({ dockerImageId: location })))
+  ).flatMap(({ agents }) => agents);
 
-  /* The agents actually lack inputSchema and outputSchema, but we don't use them anywhere, so we can use type assertion. */
   return agents as Agent[];
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { type AgentMetadata } from '@i-am-bee/beeai-ui';
+import { type AgentsListResponse } from '@i-am-bee/beeai-ui';
 
 import { DOCKER_MANIFEST_LABEL_NAME, SupportedDockerRegistries } from '@/constants';
 
@@ -27,7 +27,7 @@ type ManifestJson = { config: { digest: string } };
 type ManifestListJson = { manifests: { digest: string }[] };
 type ConfigJson = { config: { Labels: { [key: string]: string } } };
 
-export async function fetchAgentMetadata({ dockerImageId }: { dockerImageId: string }): Promise<AgentMetadata> {
+export async function fetchAgentMetadata({ dockerImageId }: { dockerImageId: string }): Promise<AgentsListResponse> {
   const { registry, repository, tag } = parseDockerImageId(dockerImageId);
 
   assertSupportedRegistry(registry);
@@ -41,7 +41,7 @@ export async function fetchAgentMetadata({ dockerImageId }: { dockerImageId: str
   } = await fetchConfig({ registry, repository, digest, headers });
   const label = ensureLabel(Labels);
 
-  return decodeBase64Yaml<AgentMetadata>(label);
+  return decodeBase64Yaml<AgentsListResponse>(label);
 }
 
 const ACCEPT_HEADERS = [

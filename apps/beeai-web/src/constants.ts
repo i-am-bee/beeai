@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
+export const RELEASE_VERSION = 'v0.1.0';
+
 export const DOCKER_MANIFEST_LABEL_NAME = 'beeai.dev.agent.yaml';
 
-export const AGENT_REGISTRY_URL =
-  'https://raw.githubusercontent.com/i-am-bee/beeai/refs/heads/release-v0.0.11/agent-registry.yaml';
+export const AGENT_REGISTRY_URL = `https://raw.githubusercontent.com/i-am-bee/beeai/refs/heads/release-${RELEASE_VERSION}/agent-registry.yaml`;
 
 export const SupportedDockerRegistries = ['ghcr.io'];
