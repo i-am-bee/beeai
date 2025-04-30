@@ -37,9 +37,9 @@ export function HandsOffProvider({ agent, children }: PropsWithChildren<Props>) 
 
   const { addToast } = useToast();
 
-  const { input, isPending, runAgent, stopAgent } = useRunAgent({
-    onRun: () => {
-      handleReset();
+  const { input, isPending, runAgent, reset } = useRunAgent({
+    onBeforeRun: () => {
+      handleClear();
       setStats({ startTime: Date.now() });
     },
     onMessagePart: (event) => {
@@ -92,18 +92,12 @@ export function HandsOffProvider({ agent, children }: PropsWithChildren<Props>) 
     [addToast],
   );
 
-  const handleReset = useCallback(() => {
+  const handleClear = useCallback(() => {
+    reset();
     setOutput('');
     setStats(undefined);
     setLogs([]);
-  }, []);
-
-  const handleClear = useCallback(() => {
-    if (isPending) {
-      stopAgent();
-    }
-    handleReset();
-  }, [isPending, stopAgent, handleReset]);
+  }, [reset]);
 
   const run = useCallback(
     async (input: string) => {

@@ -29,7 +29,6 @@ interface ComposeContextValue {
   stepsFields: UseFieldArrayReturn<SequentialFormValues, 'steps'>;
   onSubmit: () => void;
   onCancel: () => void;
-  onClear: () => void;
   onReset: () => void;
 }
 

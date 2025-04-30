@@ -83,7 +83,7 @@ export function ComposeProvider({ children }: PropsWithChildren) {
     }
   }, [availableAgents, replaceSteps, searchParams, steps.length]);
 
-  const { isPending, runAgent, stopAgent } = useRunAgent({
+  const { isPending, runAgent, stopAgent, reset } = useRunAgent({
     onMessagePart: (event) => {
       const { part } = event;
 
@@ -270,24 +270,13 @@ export function ComposeProvider({ children }: PropsWithChildren) {
       })),
     );
 
-    if (isPending) {
-      stopAgent();
-    }
-  }, [isPending, stopAgent, getValues, replaceSteps]);
+    stopAgent();
+  }, [stopAgent, getValues, replaceSteps]);
 
   const handleReset = useCallback(() => {
-    const steps = getValues('steps');
-    replaceSteps(
-      steps.map(({ data, instruction }) => ({
-        data,
-        instruction,
-      })),
-    );
-
-    if (isPending) {
-      stopAgent();
-    }
-  }, [isPending, getValues, replaceSteps, stopAgent]);
+    reset();
+    replaceSteps([]);
+  }, [replaceSteps, reset]);
 
   const lastStep = steps.at(-1);
   const result = useMemo(() => lastStep?.result, [lastStep]);
@@ -299,10 +288,9 @@ export function ComposeProvider({ children }: PropsWithChildren) {
       stepsFields,
       onSubmit,
       onCancel: handleCancel,
-      onClear: () => replaceSteps([]),
       onReset: handleReset,
     }),
-    [result, isPending, stepsFields, onSubmit, handleCancel, replaceSteps, handleReset],
+    [result, isPending, stepsFields, onSubmit, handleCancel, handleReset],
   );
 
   return <ComposeContext.Provider value={value}>{children}</ComposeContext.Provider>;

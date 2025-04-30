@@ -35,7 +35,7 @@ interface Props {
 export function ChatProvider({ agent, children }: PropsWithChildren<Props>) {
   const [messages, , setMessages] = useImmerWithGetter<ChatMessage[]>([]);
 
-  const { isPending, runAgent, stopAgent } = useRunAgent({
+  const { isPending, runAgent, stopAgent, reset } = useRunAgent({
     onMessagePart: (event) => {
       const { part } = event;
 
@@ -112,11 +112,9 @@ export function ChatProvider({ agent, children }: PropsWithChildren<Props>) {
   );
 
   const handleClear = useCallback(() => {
-    if (isPending) {
-      stopAgent();
-    }
+    reset();
     setMessages([]);
-  }, [isPending, stopAgent, setMessages]);
+  }, [reset, setMessages]);
 
   const contextValue = useMemo(
     () => ({

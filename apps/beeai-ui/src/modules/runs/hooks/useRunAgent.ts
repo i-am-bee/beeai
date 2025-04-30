@@ -37,7 +37,7 @@ import type { MessageParams } from '../chat/types';
 import { createMessagePart, createRunStreamRequest, handleRunStream } from '../utils';
 
 interface Props {
-  onRun?: () => void;
+  onBeforeRun?: () => void;
   onRunFailed?: (event: RunFailedEvent) => void;
   onRunCancelled?: (event: RunCancelledEvent) => void;
   onRunCompleted?: (event: RunCompletedEvent) => void;
@@ -50,7 +50,7 @@ interface Props {
 }
 
 export function useRunAgent({
-  onRun,
+  onBeforeRun,
   onRunFailed,
   onRunCancelled,
   onRunCompleted,
@@ -80,7 +80,7 @@ export function useRunAgent({
   const runAgent = useCallback(
     async ({ agent, ...params }: { agent: Agent } & MessageParams) => {
       try {
-        onRun?.();
+        onBeforeRun?.();
 
         setIsPending(true);
         setInput(params.content);
@@ -155,7 +155,7 @@ export function useRunAgent({
       sessionId,
       createRunStream,
       handleDone,
-      onRun,
+      onBeforeRun,
       onRunFailed,
       onRunCancelled,
       onRunCompleted,
@@ -167,6 +167,10 @@ export function useRunAgent({
   );
 
   const stopAgent = useCallback(() => {
+    if (!isPending) {
+      return;
+    }
+
     setIsPending(false);
 
     if (runId) {
@@ -177,12 +181,20 @@ export function useRunAgent({
     abortControllerRef.current = null;
 
     onStop?.();
-  }, [runId, cancelRun, onStop]);
+  }, [isPending, runId, cancelRun, onStop]);
+
+  const reset = useCallback(() => {
+    stopAgent();
+    setInput(undefined);
+    setRunId(undefined);
+    setSessionId(undefined);
+  }, [stopAgent]);
 
   return {
     input,
     isPending,
     runAgent,
     stopAgent,
+    reset,
   };
 }
