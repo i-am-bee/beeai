@@ -30,7 +30,7 @@
       },
       {
         "group": "Core Concepts",
-        "pages": ["/concepts/architecture", "/concepts/agents"]
+        "pages": ["/concepts/architecture"]
       },
       {
         "group": "Agents",
