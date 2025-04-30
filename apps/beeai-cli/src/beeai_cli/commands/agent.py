@@ -487,7 +487,7 @@ async def run_agent(
     agent = await _get_agent(name, agents_by_name)
 
     # Agent#provider is only available in platform, not when directly communicating with the agent
-    if hasattr(agent, "provider"):
+    if hasattr(agent.metadata, "provider"):
         provider = await get_provider(agent.metadata.provider)
         if provider["status"] == "not_installed":
             if not await inquirer.confirm(
@@ -495,9 +495,7 @@ async def run_agent(
                 default=True,
             ).execute_async():
                 return
-            async for message_part in api_stream(
-                "POST", "providers/install", json={"id": provider["id"]}, params={"stream": True}
-            ):
+            async for message_part in api_stream("PUT", f"providers/{provider['id']}/install", params={"stream": True}):
                 _print_log(message_part, ansi_mode=True)
             provider = await get_provider(agent.metadata.provider)
             if provider["status"] == "install_error":
