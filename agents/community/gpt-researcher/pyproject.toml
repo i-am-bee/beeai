@@ -6,7 +6,7 @@ authors = [{ name = "IBM Corp." }]
 readme = "README.md"
 requires-python = ">=3.11,<4.0"
 dependencies = [
-    "acp-sdk>=0.5.0",
+    "acp-sdk>=0.8.1",
     "gpt-researcher>=0.10.11,<0.11.0",
     "duckduckgo-search~=7.5.5",
     "pydantic-settings>=2.7.1",

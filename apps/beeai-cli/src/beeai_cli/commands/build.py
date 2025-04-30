@@ -77,12 +77,12 @@ async def build(
 
     container_id = uuid.uuid4()
 
-    try:
-        async with (
-            await open_process(
-                f"docker run --name {container_id} --rm -p {port}:8000 -e HOST=0.0.0.0 -e PORT=8000 {image_id}"
-            ) as process,
-        ):
+    async with (
+        await open_process(
+            f"docker run --name {container_id} --rm -p {port}:8000 -e HOST=0.0.0.0 -e PORT=8000 {image_id}"
+        ) as process,
+    ):
+        try:
             with console.status("extracting agent metadata", spinner="dots"):
                 async for attempt in AsyncRetrying(
                     stop=stop_after_delay(timedelta(seconds=30)),
@@ -93,16 +93,17 @@ async def build(
                     with attempt:
                         async with AsyncClient() as client:
                             resp = await client.get(f"http://localhost:{port}/agents", timeout=1)
+                            resp.raise_for_status()
                             response = resp.json()
                 with anyio.move_on_after(delay=1):
                     process.terminate()
                 with suppress(ProcessLookupError):
                     process.kill()
-    except BaseException as ex:
-        raise RuntimeError(f"Failed to build agent: {extract_messages(ex)}") from ex
-    finally:
-        with suppress(BaseException):
-            await run_process(f"docker kill {container_id}")
+        except BaseException as ex:
+            raise RuntimeError(f"Failed to build agent: {extract_messages(ex)}") from ex
+        finally:
+            with suppress(BaseException):
+                await run_process(f"docker kill {container_id}")
 
     if len(response["agents"]) > 1 and not tag:
         raise ValueError(

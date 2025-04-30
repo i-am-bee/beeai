@@ -102,7 +102,7 @@ async def gpt_researcher(input: list[Message], context: Context) -> None:
                 case "logs":
                     await context.yield_async({"message": f"{data['output']}\n"})
                 case "report":
-                    await context.yield_async(Message(parts=[MessagePart(content=data["output"])]))
+                    await context.yield_async(MessagePart(content=data["output"]))
 
     researcher = GPTResearcher(query=str(input[-1]), report_type="research_report", websocket=CustomLogsHandler())
     await researcher.conduct_research()
