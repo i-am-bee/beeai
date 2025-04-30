@@ -15,6 +15,7 @@
 import contextlib
 import enum
 import json
+import re
 import subprocess
 import time
 import urllib
@@ -198,8 +199,9 @@ async def api_stream(
                 except Exception:
                     response.raise_for_status()
                 raise HTTPStatusError(message=error, request=response.request, response=response)
-            async for line in response.aiter_text():
-                yield jsonlib.loads(line)
+            async for line in response.aiter_lines():
+                if line:
+                    yield jsonlib.loads(re.sub("^data:", "", line).strip())
 
 
 @asynccontextmanager

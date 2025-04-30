@@ -33,7 +33,7 @@ def streaming_response(content: AsyncContentStream):
     async def wrapper(stream):
         try:
             async for chunk in stream:
-                yield chunk
+                yield f"data: {chunk}\n\n"
         except Exception as ex:
             errors = extract_messages(ex)
             if len(errors) == 1:

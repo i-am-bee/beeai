@@ -24,7 +24,7 @@ from beeai_server.schema import (
     ProviderWithStatus,
     RegisterUnmanagedProviderRequest,
 )
-from fastapi import Query, BackgroundTasks
+from fastapi import Query, BackgroundTasks, HTTPException
 from fastapi.responses import Response
 from starlette.responses import StreamingResponse
 
@@ -41,6 +41,8 @@ async def create_managed_provider(
     install: bool = Query(True),
     stream: bool = Query(False),
 ) -> ProviderWithStatus:
+    if not install and stream:
+        raise HTTPException(status_code=400, detail="Streaming is supported only when install=true")
     if install:
         iterator_or_awaitable = await provider_service.install_provider(location=request.location, stream=stream)
         if stream:
