@@ -26,7 +26,7 @@ export * from './components/ToTopButton/ToTopButton';
 export * from './components/TryLocallyButton/TryLocallyButton';
 export * from './components/ViewStack/ViewStack';
 export * from './contexts/Theme/ThemeProvider';
-export * from './modules/agents/api/types';
+export type * from './modules/agents/api/types';
 export * from './modules/agents/components/AgentCard';
 export * from './modules/agents/components/AgentDetail';
 export * from './modules/agents/components/AgentsFilters';
