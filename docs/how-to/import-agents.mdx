@@ -16,24 +16,22 @@ work with them the way you're used to in the platform.
 This is the simplest, most straightforward way to use your local agents in the platform and should be your go-to option
 for local development.
 
-```sh
-uv init agent
-uv add acp-sdk
-```
-
-Then adjust the code in `hello.py`
+For example, write your agent code in `hello.py`
 
 ```python hello.py
+# /// script
+# dependencies = [
+#   "acp-sdk>=0.8.1",
+# ]
+# ///
+
 import asyncio
 from collections.abc import AsyncGenerator
 
-from acp_sdk.models import (
-    Message,
-)
+from acp_sdk.models import Message
 from acp_sdk.server import Context, RunYield, RunYieldResume, Server
 
 server = Server()
-
 
 @server.agent()
 async def echo(
@@ -45,7 +43,6 @@ async def echo(
         yield {"thought": "I should echo everything"}
         await asyncio.sleep(0.5)
         yield message
-
 
 server.run()
 ```
