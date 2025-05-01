@@ -1,0 +1,16 @@
+# check
+
+["helm:check"]
+depends = ["helm:check:*"]
+
+["helm:check:lint"]
+dir = "{{config_root}}/helm"
+run = "helm lint beeai-platform --with-subcharts --strict"
+sources = ["beeai-platform/**/*"]
+outputs = { auto = true }
+
+["helm:check:render"]
+dir = "{{config_root}}/helm"
+run = "helm template beeai-platform -f ../agent-registry.yaml | kubeconform -strict -summary"
+sources = ["beeai-platform/**/*"]
+outputs = { auto = true }
