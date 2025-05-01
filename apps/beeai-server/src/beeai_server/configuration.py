@@ -59,7 +59,7 @@ class OCIRegistryConfiguration(BaseModel, extra="allow"):
 class AgentRegistryConfiguration(BaseModel):
     enabled: bool = True
     location: RegistryLocation = GithubRegistryLocation(
-        root=GithubUrl(root="https://github.com/i-am-bee/beeai-platform@release-v0.1.2#path=agent-registry.yaml")
+        root=GithubUrl(root="https://github.com/i-am-bee/beeai-platform@release-v0.1.3#path=agent-registry.yaml")
     )
     preinstall: bool = False
 
