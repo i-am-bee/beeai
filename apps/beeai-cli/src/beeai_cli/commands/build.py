@@ -28,12 +28,11 @@ from anyio import Path, open_process
 
 from anyio import run_process
 from httpx import HTTPError, AsyncClient
-from tenacity import AsyncRetrying, wait_fixed, stop_after_delay
+from tenacity import AsyncRetrying, wait_fixed, stop_after_delay, retry_if_exception_type
 
 from beeai_cli.async_typer import AsyncTyper
 from beeai_cli.console import console
 from beeai_cli.utils import extract_messages
-from beeai_server.exceptions import retry_if_exception_grp_type
 
 
 async def find_free_port():
@@ -87,7 +86,7 @@ async def build(
                 async for attempt in AsyncRetrying(
                     stop=stop_after_delay(timedelta(seconds=30)),
                     wait=wait_fixed(timedelta(seconds=0.5)),
-                    retry=retry_if_exception_grp_type(HTTPError),
+                    retry=retry_if_exception_type(HTTPError),
                     reraise=True,
                 ):
                     with attempt:
