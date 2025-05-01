@@ -20,13 +20,13 @@ export type ProvidersList = ApiResponse<'/api/v1/providers'>;
 
 export type Provider = ProvidersList['items'][number];
 
+export type ProviderLocation = Provider['location'];
+
 export type DeleteProviderPath = ApiPath<'/api/v1/providers/{id}', 'delete'>;
 
 export type InstallProviderPath = ApiPath<'/api/v1/providers/{id}/install', 'put'>;
 
 export type RegisterManagedProviderRequest = ApiRequest<'/api/v1/providers/register/managed'>;
-
-export type RegisterManagedProviderResponse = ApiResponse<'/api/v1/providers/register/managed', 'post'>;
 
 export enum ProviderStatus {
   NotLoaded = 'not_loaded',
@@ -40,3 +40,19 @@ export enum ProviderStatus {
 }
 
 export type MissingEnvs = Provider['missing_configuration'];
+
+export interface ProviderImportMessageEvent {
+  message: string;
+  stream: string;
+  time: string;
+}
+
+export interface ProviderImportErrorEvent {
+  error: {
+    status_code: number;
+    type: string;
+    detail: string;
+  };
+}
+
+export type ProviderImportEvent = ProviderImportMessageEvent | ProviderImportErrorEvent;

@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
+import { events } from 'fetch-event-stream';
+
 import { api } from '#api/index.ts';
-import { ensureData } from '#api/utils.ts';
+import { ensureData, ensureResponse } from '#api/utils.ts';
 
 import type { DeleteProviderPath, InstallProviderPath, RegisterManagedProviderRequest } from './types';
 
@@ -34,34 +36,16 @@ export async function deleteProvider({ id }: DeleteProviderPath) {
 export async function installProvider({ id }: InstallProviderPath) {
   const response = await api.PUT('/api/v1/providers/{id}/install', { params: { path: { id } } });
 
-  // TODO
-  // const response = await api.POST('/api/v1/provider/install', {
-  //   body,
-  //   params: { query: { stream: true } },
-  //   parseAs: 'stream',
-  // });
-
-  // const reader = response.response.body?.getReader();
-  // const decoder = new TextDecoder();
-
-  // if (!reader) throw new Error('No reader found');
-
-  // while (true) {
-  //   const { done, value } = await reader.read();
-  //   if (done) break;
-
-  //   const chunk = decoder.decode(value);
-
-  //   console.log({ chunk });
-  // }
-
-  // console.log('done');
-
   return ensureData({ response, errorMessage: 'Failed to install provider.' });
 }
 
 export async function registerManagedProvider({ body }: { body: RegisterManagedProviderRequest }) {
-  const response = await api.POST('/api/v1/providers/register/managed', { body });
+  const response = await api.POST('/api/v1/providers/register/managed', {
+    parseAs: 'stream',
+    body,
+    params: { query: { stream: true, install: true } },
+  });
+  const stream = events(ensureResponse({ response, errorMessage: 'Failed to register managed provider.' }));
 
-  return ensureData({ response, errorMessage: 'Failed to register managed provider.' });
+  return stream;
 }

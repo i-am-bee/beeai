@@ -17,31 +17,55 @@
 import { useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
 
+import { handleStream } from '#api/utils.ts';
 import { agentKeys } from '#modules/agents/api/keys.ts';
 import type { AgentProvider } from '#modules/agents/api/types.ts';
 import { useMonitorProvider } from '#modules/providers/hooks/useMonitorProviderStatus.ts';
 
-import { installProvider } from '..';
+import { registerManagedProvider } from '..';
 import { providerKeys } from '../keys';
-import type { InstallProviderPath } from '../types';
+import { useProvider } from '../queries/useProvider';
+import type { Provider, ProviderImportEvent, ProviderLocation, RegisterManagedProviderRequest } from '../types';
 
-export function useInstallProvider() {
-  const [id, setId] = useState<AgentProvider>(undefined);
+interface Props {
+  onSuccess?: (data?: Provider) => void;
+}
+
+export function useImportProvider({ onSuccess }: Props = {}) {
+  const [id, setId] = useState<AgentProvider>();
+  const [location, setLocation] = useState<ProviderLocation>();
+  const { refetch } = useProvider({ id: location });
 
   useMonitorProvider({ id });
 
   const mutation = useMutation({
-    mutationFn: ({ id }: InstallProviderPath) => {
-      if (id) {
-        setId(id);
+    mutationFn: async ({ body }: { body: RegisterManagedProviderRequest }) => {
+      setLocation(body.location);
+
+      const stream = await registerManagedProvider({ body });
+
+      await handleStream<ProviderImportEvent>({
+        stream,
+        onEvent: (event) => {
+          if ('error' in event) {
+            throw new Error(event.error.detail);
+          }
+        },
+      });
+
+      const { data: provider } = await refetch();
+
+      if (provider) {
+        setId(provider.id);
       }
 
-      return installProvider({ id });
+      return provider;
     },
+    onSuccess,
     meta: {
       invalidates: [providerKeys.lists(), agentKeys.lists()],
       errorToast: {
-        title: 'Failed to install provider.',
+        title: 'Failed to import provider.',
         includeErrorMessage: true,
       },
     },

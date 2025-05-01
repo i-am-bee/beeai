@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import type { ServerSentEventMessage } from 'fetch-event-stream';
 import humanizeDuration from 'humanize-duration';
 
 import type { AgentName } from '#modules/agents/api/types.ts';
@@ -25,7 +24,6 @@ import {
   type CreateRunStreamRequest,
   type Message,
   type MessagePart,
-  type RunEvent,
   RunMode,
   type SessionId,
 } from './api/types';
@@ -77,20 +75,6 @@ export function createMessagePart({
     content_type,
     role: Role.User,
   };
-}
-
-export async function handleRunStream({
-  stream,
-  onEvent,
-}: {
-  stream: AsyncGenerator<ServerSentEventMessage>;
-  onEvent: (event: RunEvent) => void;
-}): Promise<void> {
-  for await (const event of stream) {
-    if (event.data) {
-      onEvent(JSON.parse(event.data));
-    }
-  }
 }
 
 export function isArtifact(part: MessagePart): part is Artifact {

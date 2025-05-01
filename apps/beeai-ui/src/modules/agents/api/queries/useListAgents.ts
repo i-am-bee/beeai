@@ -24,7 +24,8 @@ export function useListAgents() {
   const query = useQuery({
     queryKey: agentKeys.list(),
     queryFn: listAgents,
-    select: (data) => data.agents as Agent[],
+    select: (data) => data?.agents as Agent[],
+    refetchInterval: 30_000,
   });
 
   return query;

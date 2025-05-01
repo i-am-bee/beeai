@@ -34,8 +34,7 @@ import { useController, useForm } from 'react-hook-form';
 import { ErrorMessage } from '#components/ErrorMessage/ErrorMessage.tsx';
 import { Modal } from '#components/Modal/Modal.tsx';
 import type { ModalProps } from '#contexts/Modal/modal-context.ts';
-import { useInstallProvider } from '#modules/providers/api/mutations/useInstallProvider.ts';
-import { useRegisterManagedProvider } from '#modules/providers/api/mutations/useRegisterManagedProvider.ts';
+import { useImportProvider } from '#modules/providers/api/mutations/useImportProvider.ts';
 import type { RegisterManagedProviderRequest } from '#modules/providers/api/types.ts';
 import { ProviderSourcePrefixes } from '#modules/providers/constants.ts';
 import { ProviderSource } from '#modules/providers/types.ts';
@@ -47,17 +46,15 @@ import classes from './ImportAgentsModal.module.scss';
 export function ImportAgentsModal({ onRequestClose, ...modalProps }: ModalProps) {
   const id = useId();
   const [registeredProviderId, setRegisteredProviderId] = useState<string>();
-  const { isNotInstalled, isInstalling, isInstallError, isReady } = useAgentStatus({ provider: registeredProviderId });
+  const { isNotInstalled, isInstallError, isReady } = useAgentStatus({ provider: registeredProviderId });
   const { data: agents } = useListProviderAgents({ provider: registeredProviderId });
   const agentsCount = agents?.length ?? 0;
 
-  const { mutate: installProvider } = useInstallProvider();
-
-  const { mutate: registerManagedProvider, isPending } = useRegisterManagedProvider({
+  const { mutateAsync: importProvider, isPending } = useImportProvider({
     onSuccess: (provider) => {
-      setRegisteredProviderId(provider.id);
-
-      installProvider({ id: provider.id });
+      if (provider) {
+        setRegisteredProviderId(provider.id);
+      }
     },
   });
 
@@ -77,12 +74,10 @@ export function ImportAgentsModal({ onRequestClose, ...modalProps }: ModalProps)
   const { field: sourceField } = useController<FormValues, 'source'>({ name: 'source', control });
 
   const onSubmit = useCallback(
-    ({ location, source }: FormValues) => {
-      registerManagedProvider({
-        body: { location: `${ProviderSourcePrefixes[source]}${location}` },
-      });
+    async ({ location, source }: FormValues) => {
+      await importProvider({ body: { location: `${ProviderSourcePrefixes[source]}${location}` } });
     },
-    [registerManagedProvider],
+    [importProvider],
   );
 
   const locationInputProps = INPUTS_PROPS[sourceField.value];
@@ -96,7 +91,7 @@ export function ImportAgentsModal({ onRequestClose, ...modalProps }: ModalProps)
       <ModalHeader buttonOnClick={() => onRequestClose()}>
         <h2>Import your agents</h2>
 
-        {isInstalling && (
+        {isPending && (
           <p className={classes.description}>
             This could take a few minutes, you will be notified once your agents have been installed successfully.
           </p>
@@ -105,7 +100,7 @@ export function ImportAgentsModal({ onRequestClose, ...modalProps }: ModalProps)
 
       <ModalBody>
         <form onSubmit={handleSubmit(onSubmit)}>
-          {!isNotInstalled && !isInstalling && !isReady && (
+          {!isNotInstalled && !isPending && !isReady && (
             <div className={classes.stack}>
               <RadioButtonGroup
                 name={sourceField.name}
@@ -140,7 +135,7 @@ export function ImportAgentsModal({ onRequestClose, ...modalProps }: ModalProps)
             </div>
           )}
 
-          {isInstalling && <InlineLoading description="Installing agents&hellip;" />}
+          {isPending && <InlineLoading description="Installing agents&hellip;" />}
 
           {isInstallError && <ErrorMessage subtitle="Agents failed to install." />}
         </form>
@@ -148,10 +143,10 @@ export function ImportAgentsModal({ onRequestClose, ...modalProps }: ModalProps)
 
       <ModalFooter>
         <Button kind="ghost" onClick={() => onRequestClose()}>
-          {isInstalling || isReady ? 'Close' : 'Cancel'}
+          {isPending || isReady ? 'Close' : 'Cancel'}
         </Button>
 
-        {!isNotInstalled && !isInstalling && !isReady && (
+        {!isNotInstalled && !isPending && !isReady && (
           <Button onClick={() => handleSubmit(onSubmit)()} disabled={isPending || !isValid}>
             {isPending ? <InlineLoading description="Importing&hellip;" /> : 'Continue'}
           </Button>

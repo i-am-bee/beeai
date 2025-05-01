@@ -23,7 +23,6 @@ import type { CancelRunPath, CreateRunStreamRequest, ReadRunPath, ResumeRunPath,
 
 export async function createRunStream({ body, signal }: { body: CreateRunStreamRequest; signal?: AbortSignal | null }) {
   const response = await api.POST('/api/v1/acp/runs', { parseAs: 'stream', body, signal });
-
   const stream = events(ensureResponse({ response, errorMessage: 'Failed to create run.' }), signal);
 
   return stream;

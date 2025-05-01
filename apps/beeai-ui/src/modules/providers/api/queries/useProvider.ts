@@ -20,9 +20,10 @@ import type { AgentProvider } from '#modules/agents/api/types.ts';
 
 import { listProviders } from '..';
 import { providerKeys } from '../keys';
+import type { ProviderLocation } from '../types';
 
 interface Props {
-  id: AgentProvider;
+  id: AgentProvider | ProviderLocation;
 }
 
 export function useProvider({ id }: Props) {
@@ -30,7 +31,7 @@ export function useProvider({ id }: Props) {
     queryKey: providerKeys.list(),
     // TODO: We could use the `/api/v1/providers/{id}` endpoint to fetch the exact provider, but currently we are listing all the providers at once, so we can reuse the data here untill the providers have sorting and pagination.
     queryFn: listProviders,
-    select: (data) => data.items.find((item) => id === item.id),
+    select: (data) => data?.items.find((item) => id === item.id || id === item.location),
     enabled: Boolean(id),
   });
 

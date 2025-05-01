@@ -55,9 +55,10 @@ export function ProvidersView() {
         ? providers.items.map(({ id, location }) => {
             const agents = agentsByProvider[id];
             const source = getProviderSource(location);
+            const url = stripProviderSourcePrefix(location);
             return {
               id,
-              url: stripProviderSourcePrefix(location),
+              url,
               source,
               runtime: getAgentsProgrammingLanguages(agents).join(', '),
               agents: agents?.length ?? 0,
@@ -71,7 +72,7 @@ export function ProvidersView() {
                       openConfirmation({
                         title: (
                           <>
-                            Delete <span className={classes.deleteModalProviderId}>{id}</span>?
+                            Delete <span className={classes.deleteModalProviderId}>{url}</span>?
                           </>
                         ),
                         body: 'Are you sure you want to delete this provider? It can’t be undone.',

@@ -16,6 +16,7 @@
 
 import { useCallback, useRef, useState } from 'react';
 
+import { handleStream } from '#api/utils.ts';
 import type { Agent } from '#modules/agents/api/types.ts';
 
 import { useCancelRun } from '../api/mutations/useCancelRun';
@@ -29,12 +30,13 @@ import {
   type RunCancelledEvent,
   type RunCompletedEvent,
   type RunError,
+  type RunEvent,
   type RunFailedEvent,
   type RunId,
   type SessionId,
 } from '../api/types';
 import type { MessageParams } from '../chat/types';
-import { createMessagePart, createRunStreamRequest, handleRunStream } from '../utils';
+import { createMessagePart, createRunStreamRequest } from '../utils';
 
 interface Props {
   onBeforeRun?: () => void;
@@ -97,7 +99,7 @@ export function useRunAgent({
           signal: abortController.signal,
         });
 
-        handleRunStream({
+        handleStream<RunEvent>({
           stream,
           onEvent: (event) => {
             switch (event.type) {

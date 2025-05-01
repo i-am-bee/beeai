@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
+import type { ServerSentEventMessage } from 'fetch-event-stream';
 import type { FetchResponse } from 'openapi-fetch';
 import type { MediaType } from 'openapi-typescript-helpers';
+
+import { isNotNull } from '#utils/helpers.ts';
 
 export function ensureData<T extends Record<string | number, unknown>, O, M extends MediaType>({
   response,
@@ -25,7 +28,7 @@ export function ensureData<T extends Record<string | number, unknown>, O, M exte
   errorMessage?: string;
 }) {
   if ('error' in response) {
-    throw new Error(errorMessage);
+    handleError({ response, fallbackMessage: errorMessage });
   }
 
   return response.data;
@@ -39,8 +42,38 @@ export function ensureResponse<T extends Record<string | number, unknown>, O, M 
   errorMessage?: string;
 }) {
   if ('error' in response) {
-    throw new Error(errorMessage);
+    handleError({ response, fallbackMessage: errorMessage });
   }
 
   return response.response;
+}
+
+function handleError<T extends Record<string | number, unknown>, O, M extends MediaType>({
+  response,
+  fallbackMessage,
+}: {
+  response: FetchResponse<T, O, M>;
+  fallbackMessage: string;
+}) {
+  const { error } = response;
+
+  if (typeof error === 'object' && isNotNull(error) && 'detail' in error) {
+    throw new Error((error as { detail?: string }).detail ?? fallbackMessage);
+  }
+
+  throw new Error(fallbackMessage);
+}
+
+export async function handleStream<T>({
+  stream,
+  onEvent,
+}: {
+  stream: AsyncGenerator<ServerSentEventMessage>;
+  onEvent?: (event: T) => void;
+}): Promise<void> {
+  for await (const event of stream) {
+    if (event.data) {
+      onEvent?.(JSON.parse(event.data));
+    }
+  }
 }

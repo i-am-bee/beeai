@@ -30,7 +30,7 @@ export function useListProviderAgents({ provider, enabled = true }: Props) {
     queryKey: agentKeys.list({ provider }),
     queryFn: listAgents,
     enabled: Boolean(enabled && provider),
-    select: (data) => data.agents.filter((agent) => agent.metadata.provider === provider),
+    select: (data) => data?.agents.filter((agent) => agent.metadata.provider === provider),
   });
 
   return query;
