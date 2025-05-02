@@ -80,9 +80,11 @@ export async function handleStream<T>({
 }
 
 export function getErrorMessage(error: unknown) {
-  return error instanceof Error ? error.message : undefined;
+  return typeof error === 'object' && isNotNull(error) && 'message' in error ? (error.message as string) : undefined;
 }
 
 export function getErrorCode(error: unknown) {
-  return error instanceof Error && 'code' in error ? (error.code as number | ApiErrorCode) : undefined;
+  return typeof error === 'object' && isNotNull(error) && 'code' in error
+    ? (error.code as number | ApiErrorCode)
+    : undefined;
 }
