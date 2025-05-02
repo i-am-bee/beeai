@@ -7,7 +7,7 @@
   BeeAI
 </h1>
 
-<h4 align="center">Discover, run, and compose AI agents from any framework</h4>
+<h4 align="center">Discover, run, and orchestrate AI agents from any framework</h4>
 
 <div align="center">
 
@@ -19,10 +19,10 @@
 </div>
 
 <p align="center">
-    <a href="#key-features">Key features</a> •
+    <a href="#key-features">Key Features</a> •
     <a href="#quickstart">Quickstart</a> •
     <a href="#documentation">Documentation</a> •
-    <a href="#agent-library">Agent library</a>
+    <a href="#agent-catalog">Agent Catalog</a>
 </p>
 
 <div align="center">
@@ -31,14 +31,27 @@ https://github.com/user-attachments/assets/dc6cc4d7-4577-44c9-acf7-ec0133268a2d
 
 </div>
 
-BeeAI is an open platform to help you discover, run, and compose AI agents from any framework and language. Whether building your agents or looking for powerful existing solutions, BeeAI makes it easy to find, connect, and orchestrate AI agents seamlessly.
+<br />
 
+**BeeAI** is the first open-source platform built on the [Agent Communication Protocol (ACP)](https://agentcommunicationprotocol.dev/), an open standard designed to enable smooth communication between AI agents, no matter what framework they’re built on. Hosted by the **Linux Foundation**, BeeAI is driven by open governance and community collaboration.
+
+With ACP at its core, BeeAI makes it easy to:
+- **Discover** agents across a wide range of frameworks via our growing catalog
+- **Run** agents locally using your preferred LLM provider
+- **Orchestrate** agents into workflows — regardless of how or where they were built
+​
 ## Key features
 
-- 🌐 **Framework agnostic**: Integrate AI agents seamlessly, no matter the language or platform.
-- ⚙️ **Composition**: Build complex, multi-agent workflows from simple building blocks.
-- 🔍 **Discoverability**: Explore a [powerful agent catalog](https://beeai.dev/agents) with integrated search.
-- 🐝 **BeeAI ecosystem:** First-class support for [Python](https://github.com/i-am-bee/beeai-framework/tree/main/python) and [TypeScript](https://github.com/i-am-bee/beeai-framework/tree/main/typescript) agent developers via [BeeAI Framework](https://github.com/i-am-bee/beeai-framework).
+| Feature                 | Description                                                                                                                                                                                     |
+| :---------------------  | :---------------------------------------------------------------------------------------------------------------- |
+| 🏗️ **ACP Native**  | Built from the ground up around ACP as the official reference implementation for the protocol |
+| 🔄 **Lifecycle Management** | Discover, install, configure, and run agents with simple commands |
+| 🛠️ **Orchestration** | Connect specialized agents through standardized interfaces to create powerful workflows |
+| 🔍 **Discovery**     | Browse our curated catalog of ACP-compliant agents across multiple frameworks |
+| 🗂️ **Catalog**       | Access ready-to-use agents for research, content creation, coding, and more |
+| 🧠 **LLM Integration** | Connect to any LLM provider (Ollama, OpenAI, Anthropic, etc.) with simple configuration |
+| 💻 **Dual Interface Access** | Interact through both web UI and CLI depending on your preference |
+| 🚢 **Containerized Deployment** | Run agents in isolated containers with automated resource management for consistent performance |
 
 ## Quickstart
 
