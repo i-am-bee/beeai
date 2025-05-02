@@ -20,7 +20,6 @@ import { v4 as uuid } from 'uuid';
 
 import { useImmerWithGetter } from '#hooks/useImmerWithGetter.ts';
 import type { Agent } from '#modules/agents/api/types.ts';
-import type { RunError } from '#modules/runs/api/types.ts';
 import { type AssistantMessage, type ChatMessage, MessageStatus } from '#modules/runs/chat/types.ts';
 import { useRunAgent } from '#modules/runs/hooks/useRunAgent.ts';
 import { Role } from '#modules/runs/types.ts';
@@ -60,9 +59,6 @@ export function ChatProvider({ agent, children }: PropsWithChildren<Props>) {
     onRunFailed: (event) => {
       handleError(event.run.error);
     },
-    onError: ({ error }) => {
-      handleError(error);
-    },
   });
 
   const updateLastAssistantMessage = useCallback(
@@ -76,6 +72,18 @@ export function ChatProvider({ agent, children }: PropsWithChildren<Props>) {
       });
     },
     [setMessages],
+  );
+
+  const handleError = useCallback(
+    (error: unknown) => {
+      if (error) {
+        updateLastAssistantMessage((message) => {
+          message.error = error;
+          message.status = MessageStatus.Failed;
+        });
+      }
+    },
+    [updateLastAssistantMessage],
   );
 
   const sendMessage = useCallback(
@@ -94,21 +102,13 @@ export function ChatProvider({ agent, children }: PropsWithChildren<Props>) {
         });
       });
 
-      await runAgent({ agent, content: input });
-    },
-    [agent, runAgent, setMessages],
-  );
-
-  const handleError = useCallback(
-    (error: RunError) => {
-      if (error) {
-        updateLastAssistantMessage((message) => {
-          message.error = error;
-          message.status = MessageStatus.Failed;
-        });
+      try {
+        await runAgent({ agent, content: input });
+      } catch (error) {
+        handleError(error);
       }
     },
-    [updateLastAssistantMessage],
+    [agent, runAgent, setMessages, handleError],
   );
 
   const handleClear = useCallback(() => {

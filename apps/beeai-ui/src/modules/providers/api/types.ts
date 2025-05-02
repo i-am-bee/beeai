@@ -15,6 +15,7 @@
  */
 
 import type { ApiPath, ApiRequest, ApiResponse } from '#@types/utils.ts';
+import type { StreamErrorResponse } from '#api/types.ts';
 
 export type ProvidersList = ApiResponse<'/api/v1/providers'>;
 
@@ -42,17 +43,13 @@ export enum ProviderStatus {
 export type MissingEnvs = Provider['missing_configuration'];
 
 export interface ProviderImportMessageEvent {
+  stream: 'stdout' | 'stderr';
   message: string;
-  stream: string;
   time: string;
 }
 
 export interface ProviderImportErrorEvent {
-  error: {
-    status_code: number;
-    type: string;
-    detail: string;
-  };
+  error: StreamErrorResponse;
 }
 
 export type ProviderImportEvent = ProviderImportMessageEvent | ProviderImportErrorEvent;

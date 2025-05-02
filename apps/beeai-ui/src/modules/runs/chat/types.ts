@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import type { MessagePart, RunError } from '../api/types';
+import type { MessagePart } from '../api/types';
 import type { Role } from '../types';
 
 interface Message {
   key: string;
   role: Role;
   content: string;
-  error?: RunError;
+  error?: unknown;
 }
 export interface UserMessage extends Message {
   role: Role.User;

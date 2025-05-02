@@ -49,6 +49,7 @@ export function useDeleteProvider() {
       invalidates: [providerKeys.lists()],
       errorToast: {
         title: 'Failed to delete provider.',
+        includeErrorMessage: true,
       },
     },
   });

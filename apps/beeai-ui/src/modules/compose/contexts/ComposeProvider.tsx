@@ -19,6 +19,7 @@ import { useCallback, useEffect, useMemo } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { useSearchParams } from 'react-router';
 
+import { getErrorCode } from '#api/utils.ts';
 import { useHandleError } from '#hooks/useHandleError.ts';
 import { usePrevious } from '#hooks/usePrevious.ts';
 import { useListAgents } from '#modules/agents/api/queries/useListAgents.ts';
@@ -197,21 +198,18 @@ export function ComposeProvider({ children }: PropsWithChildren) {
         }),
       );
     },
-    onRunFailed: (error) => {
-      handleError(error);
-    },
-    onError: ({ error, aborted }) => {
-      if (aborted) {
-        return;
-      }
-
-      handleError(error);
+    onRunFailed: (event) => {
+      handleError(event.run.error);
     },
   });
 
   const handleError = useCallback(
     (error: unknown) => {
-      errorHandler(error, { errorToast: { title: 'Agent run failed', includeErrorMessage: true } });
+      const errorCode = getErrorCode(error);
+
+      errorHandler(error, {
+        errorToast: { title: errorCode?.toString() ?? 'Failed to run agent.', includeErrorMessage: true },
+      });
     },
     [errorHandler],
   );
@@ -220,7 +218,10 @@ export function ComposeProvider({ children }: PropsWithChildren) {
     async (steps: ComposeStep[]) => {
       try {
         const composeAgent = getSequentialComposeAgent(availableAgents);
-        if (!composeAgent) throw Error(`'${SEQUENTIAL_COMPOSE_AGENT_NAME}' agent is not available.`);
+
+        if (!composeAgent) {
+          throw new Error(`'${SEQUENTIAL_COMPOSE_AGENT_NAME}' agent is not available.`);
+        }
 
         steps.forEach((step, idx) => {
           updateStep(idx, {

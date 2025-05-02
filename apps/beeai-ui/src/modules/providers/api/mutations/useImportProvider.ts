@@ -17,6 +17,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
 
+import { StreamError } from '#api/errors.ts';
 import { handleStream } from '#api/utils.ts';
 import { agentKeys } from '#modules/agents/api/keys.ts';
 import type { AgentProvider } from '#modules/agents/api/types.ts';
@@ -48,7 +49,7 @@ export function useImportProvider({ onSuccess }: Props = {}) {
         stream,
         onEvent: (event) => {
           if ('error' in event) {
-            throw new Error(event.error.detail);
+            throw new StreamError({ error: event.error });
           }
         },
       });

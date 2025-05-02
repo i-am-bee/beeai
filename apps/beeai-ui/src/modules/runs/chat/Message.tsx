@@ -16,6 +16,7 @@
 
 import clsx from 'clsx';
 
+import { getErrorMessage } from '#api/utils.ts';
 import { ErrorMessage } from '#components/ErrorMessage/ErrorMessage.tsx';
 import { Spinner } from '#components/Spinner/Spinner.tsx';
 
@@ -56,7 +57,7 @@ export function Message({ message }: Props) {
                 ? 'Failed to generate an assistant message.'
                 : 'Message generation has been cancelled.'
             }
-            subtitle={message?.error?.message}
+            subtitle={getErrorMessage(message.error)}
           />
         ) : (
           <div className={classes.content}>

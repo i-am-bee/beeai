@@ -14,17 +14,22 @@
  * limitations under the License.
  */
 
-import { useMutation } from '@tanstack/react-query';
+import type { components } from './schema';
 
-import { createRunStream } from '..';
+export type ApiErrorResponse = components['schemas']['Error'];
 
-export function useCreateRunStream() {
-  const mutation = useMutation({
-    mutationFn: createRunStream,
-    meta: {
-      errorToast: false,
-    },
-  });
+export type ApiErrorCode = ApiErrorResponse['code'];
 
-  return mutation;
-}
+export type AcpErrorResponse = { error: ApiErrorResponse };
+
+export type ApiValidationErrorResponse = components['schemas']['HTTPValidationError'];
+
+export type HttpErrorResponse = {
+  detail?: string;
+};
+
+export type StreamErrorResponse = {
+  status_code: number;
+  type: string;
+  detail: string;
+};

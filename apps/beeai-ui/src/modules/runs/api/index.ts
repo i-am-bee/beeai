@@ -23,7 +23,7 @@ import type { CancelRunPath, CreateRunStreamRequest, ReadRunPath, ResumeRunPath,
 
 export async function createRunStream({ body, signal }: { body: CreateRunStreamRequest; signal?: AbortSignal | null }) {
   const response = await api.POST('/api/v1/acp/runs', { parseAs: 'stream', body, signal });
-  const stream = events(ensureResponse({ response, errorMessage: 'Failed to create run.' }), signal);
+  const stream = events(ensureResponse(response), signal);
 
   return stream;
 }
@@ -31,17 +31,17 @@ export async function createRunStream({ body, signal }: { body: CreateRunStreamR
 export async function readRun({ run_id }: ReadRunPath) {
   const response = await api.GET('/api/v1/acp/runs/{run_id}', { params: { path: { run_id } } });
 
-  return ensureData({ response, errorMessage: 'Failed to read run.' });
+  return ensureData(response);
 }
 
 export async function resumeRun({ run_id, body }: ResumeRunPath & { body: ResumeRunRequest }) {
   const response = await api.POST('/api/v1/acp/runs/{run_id}', { params: { path: { run_id } }, body });
 
-  return ensureData({ response, errorMessage: 'Failed to resume run.' });
+  return ensureData(response);
 }
 
 export async function cancelRun({ run_id }: CancelRunPath) {
   const response = await api.POST('/api/v1/acp/runs/{run_id}/cancel', { params: { path: { run_id } } });
 
-  return ensureData({ response, errorMessage: 'Failed to cancel run.' });
+  return ensureData(response);
 }

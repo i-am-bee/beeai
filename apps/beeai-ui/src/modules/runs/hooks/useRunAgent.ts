@@ -21,20 +21,19 @@ import type { Agent } from '#modules/agents/api/types.ts';
 
 import { useCancelRun } from '../api/mutations/useCancelRun';
 import { useCreateRunStream } from '../api/mutations/useCreateRunStream';
-import {
-  type ArtifactEvent,
-  EventType,
-  type GenericEvent,
-  type MessageCompletedEvent,
-  type MessagePartEvent,
-  type RunCancelledEvent,
-  type RunCompletedEvent,
-  type RunError,
-  type RunEvent,
-  type RunFailedEvent,
-  type RunId,
-  type SessionId,
+import type {
+  ArtifactEvent,
+  GenericEvent,
+  MessageCompletedEvent,
+  MessagePartEvent,
+  RunCancelledEvent,
+  RunCompletedEvent,
+  RunEvent,
+  RunFailedEvent,
+  RunId,
+  SessionId,
 } from '../api/types';
+import { EventType } from '../api/types';
 import type { MessageParams } from '../chat/types';
 import { createMessagePart, createRunStreamRequest } from '../utils';
 
@@ -48,7 +47,6 @@ interface Props {
   onGeneric?: (event: GenericEvent) => void;
   onDone?: () => void;
   onStop?: () => void;
-  onError?: ({ error, aborted }: { error: NonNullable<RunError>; aborted: boolean | undefined }) => void;
 }
 
 export function useRunAgent({
@@ -61,7 +59,6 @@ export function useRunAgent({
   onGeneric,
   onDone,
   onStop,
-  onError,
 }: Props = {}) {
   const abortControllerRef = useRef<AbortController | null>(null);
 
@@ -141,16 +138,7 @@ export function useRunAgent({
       } catch (error) {
         handleDone();
 
-        const message =
-          error instanceof Error ? error.message : typeof error === 'string' ? error : 'Agent run failed.';
-
-        onError?.({
-          error: {
-            code: 'server_error',
-            message,
-          },
-          aborted: abortControllerRef.current?.signal.aborted,
-        });
+        throw error;
       }
     },
     [
@@ -164,7 +152,6 @@ export function useRunAgent({
       onMessagePart,
       onMessageCompleted,
       onGeneric,
-      onError,
     ],
   );
 
