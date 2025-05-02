@@ -62,14 +62,23 @@ class ProviderService:
     ) -> ProviderWithStatus:
         try:
             provider = await location.load(registry=registry, persistent=persist)
+            all_agents = {a.name for a in await self.list_agents()}
+            provider_agents = {a.name for a in provider.manifest.agents}
             env = await self._env_repository.get_all()
+            if would_override := set(provider_agents) & set(all_agents):
+                loaded_providers = self._loaded_provider_container.loaded_providers.values()
+                loaded_persistent_agents = {a.name for p in loaded_providers if p.provider.persistent for a in p.agents}
+                if duplicate_agents := set(provider_agents) & set(loaded_persistent_agents):
+                    raise ValueError(f"Duplicate agents: {duplicate_agents} are already registered to the platform.")
+                else:
+                    logger.warning(f"Overriding unpersisted agents: {would_override}")
             if persist:
                 await self._repository.create(provider=provider)
         except ValueError as ex:
             raise ManifestLoadError(location=location, message=str(ex), status_code=HTTP_400_BAD_REQUEST) from ex
         except Exception as ex:
             raise ManifestLoadError(location=location, message=str(ex)) from ex
-        await self._loaded_provider_container.add(provider)
+        await self._loaded_provider_container.add_or_replace(provider)
         return self._get_providers_with_status(providers=[provider], env=env)[0]
 
     async def preview_provider(self, location: ProviderLocation):

@@ -501,8 +501,10 @@ async def run_agent(
             if provider["status"] == "install_error":
                 raise RuntimeError(f"Error during installation: {provider['last_error']}")
             console.print("\n")
-        if provider["status"] not in {"ready", "running"}:
-            raise RuntimeError(f"Agent is not in a ready state: {provider['status']}, error: {provider['last_error']}")
+        if provider["status"] not in {"ready", "running", "starting"}:
+            err_console.print(
+                f":boom: Agent is not in a ready state: {provider['status']}, {provider['last_error']}\nRetrying..."
+            )
 
     ui = agent.metadata.model_dump().get("ui", {}) or {}
     ui_type = ui.get("type", None)
