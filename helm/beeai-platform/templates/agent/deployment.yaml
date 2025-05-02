@@ -61,6 +61,8 @@ spec:
           env:
             - name: HOST
               value: 0.0.0.0
+            - name: HOME
+              value: '/tmp'
           envFrom:
             - secretRef:
                 name: agent-variables
