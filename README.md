@@ -4,7 +4,7 @@
     <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/i-am-bee/beeai/master/docs/logo/beeai_framework_dark.svg">
     <img alt="BeeAI" src="https://raw.githubusercontent.com/i-am-bee/beeai/master/docs/logo/beeai_framework_dark.svg" width="60"><br><br>
   </picture>
-  BeeAI
+  BeeAI Platform
 </h1>
 
 <h4 align="center">Discover, run, and orchestrate AI agents from any framework</h4>
