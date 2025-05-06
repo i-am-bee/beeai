@@ -14,7 +14,22 @@
  * limitations under the License.
  */
 
-export type SequentialWorkflowInput = {
-  steps: { agent: string; instruction: string }[];
-  input?: string;
+import type { components } from './schema';
+
+export type ApiErrorResponse = components['schemas']['Error'];
+
+export type ApiErrorCode = ApiErrorResponse['code'];
+
+export type AcpErrorResponse = { error: ApiErrorResponse };
+
+export type ApiValidationErrorResponse = components['schemas']['HTTPValidationError'];
+
+export type HttpErrorResponse = {
+  detail?: string;
+};
+
+export type StreamErrorResponse = {
+  status_code: number;
+  type: string;
+  detail: string;
 };

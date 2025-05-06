@@ -19,6 +19,7 @@ import { useCallback, useEffect, useMemo } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { useSearchParams } from 'react-router';
 
+import { getErrorCode } from '#api/utils.ts';
 import { useHandleError } from '#hooks/useHandleError.ts';
 import { usePrevious } from '#hooks/usePrevious.ts';
 import { useListAgents } from '#modules/agents/api/queries/useListAgents.ts';
@@ -26,11 +27,11 @@ import { useRunAgent } from '#modules/runs/hooks/useRunAgent.ts';
 import { extractOutput, formatLog, isArtifact } from '#modules/runs/utils.ts';
 import { isNotNull } from '#utils/helpers.ts';
 
-import { SEQUENTIAL_COMPOSE_AGENT_NAME } from '../sequential/constants';
-import { getSequentialComposeAgent } from '../sequential/utils';
+import { useSequentialAgent } from '../hooks/useSequentialAgent';
+import { SEQUENTIAL_WORKFLOW_AGENT_NAME, SEQUENTIAL_WORKFLOW_AGENTS_URL_PARAM } from '../sequential/constants';
 import type { ComposeMessagePart } from '../types';
-import type { ComposeStep, RunStatus, SequentialFormValues } from './compose-context';
-import { ComposeContext } from './compose-context';
+import type { ComposeStep, SequentialFormValues } from './compose-context';
+import { ComposeContext, ComposeStatus } from './compose-context';
 
 export function ComposeProvider({ children }: PropsWithChildren) {
   const { data: availableAgents } = useListAgents();
@@ -38,28 +39,24 @@ export function ComposeProvider({ children }: PropsWithChildren) {
   const errorHandler = useHandleError();
 
   const { handleSubmit, getValues, setValue, watch } = useFormContext<SequentialFormValues>();
-  const stepsFields = useFieldArray<SequentialFormValues>({
-    name: 'steps',
-  });
-
+  const stepsFields = useFieldArray<SequentialFormValues>({ name: 'steps' });
   const { replace: replaceSteps } = stepsFields;
   const steps = watch('steps');
 
-  let lastAgentIdx = 0;
-
-  const updateStep = useCallback(
-    (idx: number, value: ComposeStep) => {
-      setValue(`steps.${idx}`, value);
-    },
-    [setValue],
-  );
+  const sequentialAgent = useSequentialAgent();
 
   const previousSteps = usePrevious(steps);
+
+  const lastStep = steps.at(-1);
+  const result = useMemo(() => lastStep?.result, [lastStep]);
+
+  let lastAgentIdx = 0;
+
   useEffect(() => {
     if (!availableAgents || steps.length === previousSteps.length) return;
 
     setSearchParams((searchParams) => {
-      searchParams.set('agents', steps.map(({ data }) => data.name).join(','));
+      searchParams.set(SEQUENTIAL_WORKFLOW_AGENTS_URL_PARAM, steps.map(({ agent }) => agent.name).join(','));
       return searchParams;
     });
   }, [availableAgents, previousSteps.length, setSearchParams, steps]);
@@ -68,7 +65,7 @@ export function ComposeProvider({ children }: PropsWithChildren) {
     if (!availableAgents) return;
 
     const agentNames = searchParams
-      .get(URL_PARAM_AGENTS)
+      .get(SEQUENTIAL_WORKFLOW_AGENTS_URL_PARAM)
       ?.split(',')
       .filter((item) => item.length);
     if (agentNames?.length && !steps.length) {
@@ -76,7 +73,7 @@ export function ComposeProvider({ children }: PropsWithChildren) {
         agentNames
           .map((name) => {
             const agent = availableAgents.find((agent) => name === agent.name);
-            return agent ? { data: agent, instruction: '' } : null;
+            return agent ? { agent, instruction: '' } : null;
           })
           .filter(isNotNull),
       );
@@ -93,11 +90,11 @@ export function ComposeProvider({ children }: PropsWithChildren) {
 
       // TODO: we could probably figure out better typing
       const { agent_idx, content } = part as ComposeMessagePart;
+      const step = getStep(agent_idx);
 
-      const fieldName = `steps.${agent_idx}` as const;
-      const step = getValues(fieldName);
-
-      if (!step) return;
+      if (!step) {
+        return;
+      }
 
       const updatedStep = {
         ...step,
@@ -167,8 +164,7 @@ export function ComposeProvider({ children }: PropsWithChildren) {
         }
 
         if (log) {
-          const fieldName = `steps.${agent_idx}` as const;
-          const step = getValues(fieldName);
+          const step = getStep(agent_idx);
 
           const updatedStep = {
             ...step,
@@ -198,21 +194,27 @@ export function ComposeProvider({ children }: PropsWithChildren) {
         }),
       );
     },
-    onRunFailed: (error) => {
-      handleError(error);
-    },
-    onError: ({ error, aborted }) => {
-      if (aborted) {
-        return;
-      }
-
-      handleError(error);
+    onRunFailed: (event) => {
+      handleError(event.run.error);
     },
   });
 
+  const getStep = useCallback((idx: number) => getValues(`steps.${idx}`), [getValues]);
+
+  const updateStep = useCallback(
+    (idx: number, value: ComposeStep) => {
+      setValue(`steps.${idx}`, value);
+    },
+    [setValue],
+  );
+
   const handleError = useCallback(
     (error: unknown) => {
-      errorHandler(error, { errorToast: { title: 'Agent run failed', includeErrorMessage: true } });
+      const errorCode = getErrorCode(error);
+
+      errorHandler(error, {
+        errorToast: { title: errorCode?.toString() ?? 'Failed to run agent.', includeErrorMessage: true },
+      });
     },
     [errorHandler],
   );
@@ -220,8 +222,9 @@ export function ComposeProvider({ children }: PropsWithChildren) {
   const send = useCallback(
     async (steps: ComposeStep[]) => {
       try {
-        const composeAgent = getSequentialComposeAgent(availableAgents);
-        if (!composeAgent) throw Error(`'${SEQUENTIAL_COMPOSE_AGENT_NAME}' agent is not available.`);
+        if (!sequentialAgent) {
+          throw new Error(`'${SEQUENTIAL_WORKFLOW_AGENT_NAME}' agent is not available.`);
+        }
 
         steps.forEach((step, idx) => {
           updateStep(idx, {
@@ -239,9 +242,9 @@ export function ComposeProvider({ children }: PropsWithChildren) {
         });
 
         await runAgent({
-          agent: composeAgent,
+          agent: sequentialAgent,
           content: JSON.stringify({
-            steps: steps.map(({ data, instruction }) => ({ agent: data.name, instruction })),
+            steps: steps.map(({ agent, instruction }) => ({ agent: agent.name, instruction })),
           }),
           content_type: 'application/json',
         });
@@ -249,7 +252,7 @@ export function ComposeProvider({ children }: PropsWithChildren) {
         handleError(error);
       }
     },
-    [availableAgents, runAgent, updateStep, handleError],
+    [sequentialAgent, runAgent, updateStep, handleError],
   );
 
   const onSubmit = useCallback(() => {
@@ -279,13 +282,10 @@ export function ComposeProvider({ children }: PropsWithChildren) {
     replaceSteps([]);
   }, [replaceSteps, reset]);
 
-  const lastStep = steps.at(-1);
-  const result = useMemo(() => lastStep?.result, [lastStep]);
-
   const value = useMemo(
     () => ({
       result,
-      status: (isPending ? 'pending' : result ? 'finished' : 'ready') as RunStatus,
+      status: isPending ? ComposeStatus.InProgress : result ? ComposeStatus.Completed : ComposeStatus.Ready,
       stepsFields,
       onSubmit,
       onCancel: handleCancel,
@@ -296,5 +296,3 @@ export function ComposeProvider({ children }: PropsWithChildren) {
 
   return <ComposeContext.Provider value={value}>{children}</ComposeContext.Provider>;
 }
-
-const URL_PARAM_AGENTS = 'agents';

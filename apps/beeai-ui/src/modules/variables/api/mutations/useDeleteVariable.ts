@@ -28,6 +28,7 @@ export function useDeleteVariable() {
       invalidates: [variableKeys.lists(), providerKeys.lists()],
       errorToast: {
         title: 'Failed to delete variable.',
+        includeErrorMessage: true,
       },
     },
   });

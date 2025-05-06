@@ -22,9 +22,7 @@ export function useCreateRunStream() {
   const mutation = useMutation({
     mutationFn: createRunStream,
     meta: {
-      errorToast: {
-        title: 'Failed to run agent.',
-      },
+      errorToast: false,
     },
   });
 

@@ -22,11 +22,11 @@ import type { ReadAgentPath } from './types';
 export async function listAgents() {
   const response = await api.GET('/api/v1/acp/agents');
 
-  return ensureData({ response, errorMessage: 'Failed to list agents.' });
+  return ensureData(response);
 }
 
 export async function readAgent({ name }: ReadAgentPath) {
   const response = await api.GET('/api/v1/acp/agents/{name}', { params: { path: { name } } });
 
-  return ensureData({ response, errorMessage: 'Failed to get agent.' });
+  return ensureData(response);
 }

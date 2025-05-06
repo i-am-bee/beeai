@@ -16,6 +16,7 @@
 
 import { useCallback } from 'react';
 
+import { getErrorMessage } from '#api/utils.ts';
 import type { QueryMetadata } from '#contexts/QueryProvider/types.ts';
 import { useToast } from '#contexts/Toast/index.ts';
 
@@ -27,9 +28,11 @@ export function useHandleError() {
       const { errorToast } = options;
 
       if (errorToast !== false) {
+        const errorMessage = errorToast?.includeErrorMessage ? getErrorMessage(error) : undefined;
+
         addToast({
           title: errorToast?.title ?? 'An error occured',
-          subtitle: error instanceof Error && errorToast?.includeErrorMessage ? error.message : undefined,
+          subtitle: errorMessage,
         });
       } else {
         console.error(error);

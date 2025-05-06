@@ -22,17 +22,17 @@ import type { UpdateVariablesRequest } from './types';
 export async function listVariables() {
   const response = await api.GET('/api/v1/variables');
 
-  return ensureData({ response, errorMessage: 'Failed to list variables.' });
+  return ensureData(response);
 }
 
 export async function updateVariable({ body }: { body: UpdateVariablesRequest['env'] }) {
   const response = await api.PUT('/api/v1/variables', { body: { env: body } });
 
-  return ensureData({ response, errorMessage: 'Failed to update variable.' });
+  return ensureData(response);
 }
 
 export async function deleteVariable({ name }: { name: string }) {
   const response = await api.PUT('/api/v1/variables', { body: { env: { [name]: null } } });
 
-  return ensureData({ response, errorMessage: 'Failed to delete variable.' });
+  return ensureData(response);
 }

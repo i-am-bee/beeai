@@ -24,19 +24,19 @@ import type { DeleteProviderPath, InstallProviderPath, RegisterManagedProviderRe
 export async function listProviders() {
   const response = await api.GET('/api/v1/providers');
 
-  return ensureData({ response, errorMessage: 'Failed to list providers.' });
+  return ensureData(response);
 }
 
 export async function deleteProvider({ id }: DeleteProviderPath) {
   const response = await api.DELETE('/api/v1/providers/{id}', { params: { path: { id } } });
 
-  return ensureData({ response, errorMessage: 'Failed to delete provider.' });
+  return ensureData(response);
 }
 
 export async function installProvider({ id }: InstallProviderPath) {
   const response = await api.PUT('/api/v1/providers/{id}/install', { params: { path: { id } } });
 
-  return ensureData({ response, errorMessage: 'Failed to install provider.' });
+  return ensureData(response);
 }
 
 export async function registerManagedProvider({ body }: { body: RegisterManagedProviderRequest }) {
@@ -45,7 +45,7 @@ export async function registerManagedProvider({ body }: { body: RegisterManagedP
     body,
     params: { query: { stream: true, install: true } },
   });
-  const stream = events(ensureResponse({ response, errorMessage: 'Failed to register managed provider.' }));
+  const stream = events(ensureResponse(response));
 
   return stream;
 }

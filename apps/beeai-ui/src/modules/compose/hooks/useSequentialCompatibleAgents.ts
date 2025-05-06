@@ -14,6 +14,20 @@
  * limitations under the License.
  */
 
-export const SEQUENTIAL_WORKFLOW_AGENT_NAME = 'sequential_workflow';
+import { useMemo } from 'react';
 
-export const SEQUENTIAL_WORKFLOW_AGENTS_URL_PARAM = 'agents';
+import { useListAgents } from '#modules/agents/api/queries/useListAgents.ts';
+import { UiType } from '#modules/agents/api/types.ts';
+import { sortAgentsByName } from '#modules/agents/utils.ts';
+
+const SupportedUis: UiType[] = [UiType.HandsOff];
+
+export function useSequentialCompatibleAgents() {
+  const { data, isPending } = useListAgents();
+  const agents = useMemo(
+    () => data?.filter((agent) => SupportedUis.includes(agent.metadata.ui?.type as UiType)).sort(sortAgentsByName),
+    [data],
+  );
+
+  return { agents, isPending };
+}

@@ -20,48 +20,49 @@ import type { MediaType } from 'openapi-typescript-helpers';
 
 import { isNotNull } from '#utils/helpers.ts';
 
-export function ensureData<T extends Record<string | number, unknown>, O, M extends MediaType>({
-  response,
-  errorMessage = 'API request failed.',
-}: {
-  response: FetchResponse<T, O, M>;
-  errorMessage?: string;
-}) {
+import { AcpError, ApiError, ApiValidatioError, HttpError } from './errors';
+import type { AcpErrorResponse, ApiErrorCode, ApiErrorResponse, ApiValidationErrorResponse } from './types';
+
+export function ensureData<T extends Record<string | number, unknown>, O, M extends MediaType>(
+  response: FetchResponse<T, O, M>,
+) {
   if ('error' in response) {
-    handleError({ response, fallbackMessage: errorMessage });
+    handleFailedError({ response: response.response, error: response.error });
   }
 
   return response.data;
 }
 
-export function ensureResponse<T extends Record<string | number, unknown>, O, M extends MediaType>({
-  response,
-  errorMessage = 'API request failed.',
-}: {
-  response: FetchResponse<T, O, M>;
-  errorMessage?: string;
-}) {
+export function ensureResponse<T extends Record<string | number, unknown>, O, M extends MediaType>(
+  response: FetchResponse<T, O, M>,
+) {
   if ('error' in response) {
-    handleError({ response, fallbackMessage: errorMessage });
+    handleFailedError({ response: response.response, error: response.error });
   }
 
   return response.response;
 }
 
-function handleError<T extends Record<string | number, unknown>, O, M extends MediaType>({
-  response,
-  fallbackMessage,
-}: {
-  response: FetchResponse<T, O, M>;
-  fallbackMessage: string;
-}) {
-  const { error } = response;
+function handleFailedError({ response, error }: { response: Response; error: unknown }) {
+  if (typeof error === 'object' && isNotNull(error)) {
+    if ('detail' in error) {
+      const { detail } = error;
 
-  if (typeof error === 'object' && isNotNull(error) && 'detail' in error) {
-    throw new Error((error as { detail?: string }).detail ?? fallbackMessage);
+      if (typeof detail === 'object') {
+        throw new ApiValidatioError({ error: error as ApiValidationErrorResponse, response });
+      } else if (typeof detail === 'string') {
+        throw new HttpError({ message: detail, response });
+      }
+
+      throw new HttpError({ message: 'An error occured', response });
+    } else if ('error' in error) {
+      throw new AcpError({ error: error as AcpErrorResponse, response });
+    }
+
+    throw new ApiError({ error: error as ApiErrorResponse, response });
   }
 
-  throw new Error(fallbackMessage);
+  throw new HttpError({ message: 'An error occured.', response });
 }
 
 export async function handleStream<T>({
@@ -76,4 +77,14 @@ export async function handleStream<T>({
       onEvent?.(JSON.parse(event.data));
     }
   }
+}
+
+export function getErrorMessage(error: unknown) {
+  return typeof error === 'object' && isNotNull(error) && 'message' in error ? (error.message as string) : undefined;
+}
+
+export function getErrorCode(error: unknown) {
+  return typeof error === 'object' && isNotNull(error) && 'code' in error
+    ? (error.code as number | ApiErrorCode)
+    : undefined;
 }

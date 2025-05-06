@@ -28,7 +28,7 @@ import { routes } from '#utils/router.ts';
 import { AddAgentButton } from '../components/AddAgentButton';
 import { ComposeStepListItem } from '../components/ComposeStepListItem';
 import { useCompose } from '../contexts';
-import type { SequentialFormValues } from '../contexts/compose-context';
+import { ComposeStatus, type SequentialFormValues } from '../contexts/compose-context';
 import classes from './SequentialSetup.module.scss';
 
 export function SequentialSetup() {
@@ -40,16 +40,18 @@ export function SequentialSetup() {
     status,
     stepsFields: { append, fields },
   } = useCompose();
-
   const { isValid } = useFormState<SequentialFormValues>();
 
-  const isPending = status === 'pending';
+  const isReady = status === ComposeStatus.Ready;
+  const isPending = status === ComposeStatus.InProgress;
+  const isCompleted = status === ComposeStatus.Completed;
 
   return (
     <form
       className={clsx(classes.form, { [classes.isSplitView]: Boolean(result) })}
       onSubmit={(e) => {
         e.preventDefault();
+
         if (!isValid) return;
 
         onSubmit();
@@ -77,11 +79,11 @@ export function SequentialSetup() {
             <ComposeStepListItem key={field.id} idx={idx} />
           ))}
 
-          {status === 'ready' && (
+          {isReady && (
             <AddAgentButton
               isDisabled={isPending}
               onSelectAgent={(agent: Agent) => {
-                append({ data: agent, instruction: '' });
+                append({ agent, instruction: '' });
               }}
             />
           )}
@@ -95,7 +97,7 @@ export function SequentialSetup() {
           </Button>
         </TransitionLink>
 
-        {status !== 'finished' &&
+        {!isCompleted &&
           (!isPending ? (
             <Button
               type="submit"

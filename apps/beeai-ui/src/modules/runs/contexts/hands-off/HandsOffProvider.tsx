@@ -17,9 +17,9 @@
 import type { PropsWithChildren } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 
-import { useToast } from '#contexts/Toast/index.ts';
+import { getErrorCode } from '#api/utils.ts';
+import { useHandleError } from '#hooks/useHandleError.ts';
 import type { Agent } from '#modules/agents/api/types.ts';
-import type { RunError } from '#modules/runs/api/types.ts';
 import { useRunAgent } from '#modules/runs/hooks/useRunAgent.ts';
 import type { RunLog, RunStats } from '#modules/runs/types.ts';
 import { extractOutput, isArtifact } from '#modules/runs/utils.ts';
@@ -35,7 +35,7 @@ export function HandsOffProvider({ agent, children }: PropsWithChildren<Props>) 
   const [stats, setStats] = useState<RunStats>();
   const [logs, setLogs] = useState<RunLog[]>([]);
 
-  const { addToast } = useToast();
+  const errorHandler = useHandleError();
 
   const { input, isPending, runAgent, reset } = useRunAgent({
     onBeforeRun: () => {
@@ -75,11 +75,6 @@ export function HandsOffProvider({ agent, children }: PropsWithChildren<Props>) 
         setLogs((logs) => [...logs, error]);
       }
     },
-    onError: ({ error }) => {
-      handleError(error);
-
-      setLogs((logs) => [...logs, error]);
-    },
   });
 
   const handleDone = useCallback(() => {
@@ -87,15 +82,14 @@ export function HandsOffProvider({ agent, children }: PropsWithChildren<Props>) 
   }, []);
 
   const handleError = useCallback(
-    (error: RunError) => {
-      if (error) {
-        addToast({
-          title: error.code,
-          subtitle: error.message,
-        });
-      }
+    (error: unknown) => {
+      const errorCode = getErrorCode(error);
+
+      errorHandler(error, {
+        errorToast: { title: errorCode?.toString() ?? 'Failed to run agent.', includeErrorMessage: true },
+      });
     },
-    [addToast],
+    [errorHandler],
   );
 
   const handleClear = useCallback(() => {
@@ -107,9 +101,13 @@ export function HandsOffProvider({ agent, children }: PropsWithChildren<Props>) 
 
   const run = useCallback(
     async (input: string) => {
-      await runAgent({ agent, content: input });
+      try {
+        await runAgent({ agent, content: input });
+      } catch (error) {
+        handleError(error);
+      }
     },
-    [agent, runAgent],
+    [agent, runAgent, handleError],
   );
 
   const contextValue = useMemo(

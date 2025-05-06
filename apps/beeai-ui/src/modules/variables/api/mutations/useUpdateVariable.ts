@@ -33,6 +33,7 @@ export function useUpdateVariable({ onSuccess }: Props = {}) {
       invalidates: [variableKeys.lists(), providerKeys.lists()],
       errorToast: {
         title: 'Failed to update variable.',
+        includeErrorMessage: true,
       },
     },
   });

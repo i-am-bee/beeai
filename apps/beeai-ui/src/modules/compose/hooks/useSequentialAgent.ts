@@ -14,6 +14,14 @@
  * limitations under the License.
  */
 
-export const SEQUENTIAL_WORKFLOW_AGENT_NAME = 'sequential_workflow';
+import { useAgent } from '#modules/agents/api/queries/useAgent.ts';
+import { useAgentStatus } from '#modules/agents/hooks/useAgentStatus.ts';
 
-export const SEQUENTIAL_WORKFLOW_AGENTS_URL_PARAM = 'agents';
+import { SEQUENTIAL_WORKFLOW_AGENT_NAME } from '../sequential/constants';
+
+export function useSequentialAgent() {
+  const { data: agent } = useAgent({ name: SEQUENTIAL_WORKFLOW_AGENT_NAME });
+  const { isReady } = useAgentStatus({ provider: agent?.metadata.provider });
+
+  return isReady ? agent : undefined;
+}

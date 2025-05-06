@@ -22,10 +22,14 @@ import type { RunStats } from '#modules/runs/types.ts';
 
 export const ComposeContext = createContext<ComposeContextValue | null>(null);
 
-export type RunStatus = 'ready' | 'pending' | 'finished';
+export enum ComposeStatus {
+  Ready = 'ready',
+  InProgress = 'in-progress',
+  Completed = 'completed',
+}
 interface ComposeContextValue {
   result?: string;
-  status: RunStatus;
+  status: ComposeStatus;
   stepsFields: UseFieldArrayReturn<SequentialFormValues, 'steps'>;
   onSubmit: () => void;
   onCancel: () => void;
@@ -33,12 +37,12 @@ interface ComposeContextValue {
 }
 
 export interface ComposeStep {
-  data: Agent;
+  agent: Agent;
+  instruction: string;
+  result?: string;
   isPending?: boolean;
   logs?: string[];
-  result?: string;
   stats?: RunStats;
-  instruction: string;
 }
 
 export interface SequentialFormValues {
