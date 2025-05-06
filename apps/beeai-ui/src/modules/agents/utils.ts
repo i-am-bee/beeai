@@ -16,7 +16,7 @@
 
 import uniq from 'lodash/uniq';
 
-import { isNotNull } from '#utils/helpers.ts';
+import { compareStrings, isNotNull } from '#utils/helpers.ts';
 
 import { type Agent, LinkType } from './api/types';
 
@@ -41,4 +41,8 @@ export function getAgentSourceCodeUrl(agent: Agent) {
   const link = links?.find(({ type }) => type === LinkType.SourceCode);
 
   return link?.url;
+}
+
+export function sortAgentsByName(a: Agent, b: Agent) {
+  return compareStrings(a.name, b.name);
 }

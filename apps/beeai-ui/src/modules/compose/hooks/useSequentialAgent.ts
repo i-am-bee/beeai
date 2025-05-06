@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-export type SequentialWorkflowInput = {
-  steps: { agent: string; instruction: string }[];
-  input?: string;
-};
+import { useAgent } from '#modules/agents/api/queries/useAgent.ts';
+import { useAgentStatus } from '#modules/agents/hooks/useAgentStatus.ts';
+
+import { SEQUENTIAL_WORKFLOW_AGENT_NAME } from '../sequential/constants';
+
+export function useSequentialAgent() {
+  const { data: agent } = useAgent({ name: SEQUENTIAL_WORKFLOW_AGENT_NAME });
+  const { isReady } = useAgentStatus({ provider: agent?.metadata.provider });
+
+  return isReady ? agent : undefined;
+}

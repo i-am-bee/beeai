@@ -45,8 +45,7 @@ export function ComposeStepListItem({ idx }: Props) {
   };
 
   const step = watch(`steps.${idx}`);
-  const { data, isPending, stats, instruction } = step;
-  const { name } = data;
+  const { agent, isPending, stats, instruction } = step;
 
   const isViewMode = status !== 'ready';
   const isFinished = Boolean(!isPending && stats?.endTime);
@@ -57,7 +56,7 @@ export function ComposeStepListItem({ idx }: Props) {
         <div className={classes.bullet}>{isPending ? <Spinner /> : <span>{idx + 1}</span>}</div>
       </div>
       <div className={classes.content}>
-        <div className={classes.name}>{name}</div>
+        <div className={classes.name}>{agent.name}</div>
 
         <div className={classes.actions}>
           {!isViewMode && (

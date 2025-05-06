@@ -38,7 +38,6 @@
     "framer-motion": "^12.6.2",
     "humanize-duration": "^3.32.1",
     "immer": "^10.1.1",
-    "json-schema-to-ts": "^3.1.1",
     "ky": "^1.7.5",
     "lodash": "^4.17.21",
     "lottie-react": "^2.4.1",

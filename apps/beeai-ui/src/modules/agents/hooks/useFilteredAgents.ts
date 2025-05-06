@@ -16,10 +16,9 @@
 
 import { useMemo } from 'react';
 
-import { compareStrings } from '#utils/helpers.ts';
-
 import type { Agent } from '../api/types';
 import type { AgentsFiltersParams } from '../providers/AgentsFiltersProvider';
+import { sortAgentsByName } from '../utils';
 
 interface Props {
   agents: Agent[];
@@ -62,7 +61,7 @@ export function useFilteredAgents({ agents, filters }: Props) {
 
         return true;
       })
-      .sort((a, b) => compareStrings(a.name, b.name));
+      .sort(sortAgentsByName);
   }, [agents, filters]);
 
   return { filteredAgents, filteredCount: filteredAgents.length };

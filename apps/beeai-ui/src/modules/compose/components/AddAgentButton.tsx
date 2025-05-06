@@ -17,15 +17,13 @@
 import { Add } from '@carbon/icons-react';
 import { Button } from '@carbon/react';
 import type { RefObject } from 'react';
-import { useId, useMemo, useRef, useState } from 'react';
+import { useId, useRef, useState } from 'react';
 import { useOnClickOutside } from 'usehooks-ts';
 
 import { SkeletonItems } from '#components/SkeletonItems/SkeletonItems.tsx';
-import { useListAgents } from '#modules/agents/api/queries/useListAgents.ts';
 import type { Agent } from '#modules/agents/api/types.ts';
-import { compareStrings } from '#utils/helpers.ts';
 
-import { isValidForSequentialWorkflow } from '../sequential/utils';
+import { useSequentialCompatibleAgents } from '../hooks/useSequentialCompatibleAgents';
 import classes from './AddAgentButton.module.scss';
 import { AgentListOption } from './AgentListOption';
 
@@ -39,16 +37,12 @@ export function AddAgentButton({ onSelectAgent, isDisabled }: Props) {
   const [expanded, setExpanded] = useState(false);
 
   const selectorRef = useRef<HTMLDivElement>(null);
-  useOnClickOutside(selectorRef as RefObject<HTMLElement>, () => {
+
+  useOnClickOutside(selectorRef as RefObject<HTMLDivElement>, () => {
     setExpanded(false);
   });
 
-  const { data, isPending } = useListAgents();
-
-  const availableAgents = useMemo(
-    () => data?.filter(isValidForSequentialWorkflow).sort((a, b) => compareStrings(a.name, b.name)),
-    [data],
-  );
+  const { agents, isPending } = useSequentialCompatibleAgents();
 
   return (
     <div className={classes.root} ref={selectorRef}>
@@ -68,7 +62,7 @@ export function AddAgentButton({ onSelectAgent, isDisabled }: Props) {
       </Button>
       <ul className={classes.list} role="listbox" tabIndex={0} id={`${id}:options`} aria-expanded={expanded}>
         {!isPending ? (
-          availableAgents?.map((agent) => (
+          agents?.map((agent) => (
             <AgentListOption
               agent={agent}
               key={agent.name}

@@ -41,13 +41,3 @@ export enum MessageStatus {
   Aborted = 'aborted',
   Failed = 'failed',
 }
-
-export enum RunStatus {
-  Created = 'created',
-  InProgress = 'in-progress',
-  Awaiting = 'awaiting',
-  Cancelling = 'cancelling',
-  Cancelled = 'cancelled',
-  Completed = 'completed',
-  Failed = 'failed',
-}
