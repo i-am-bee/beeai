@@ -16,8 +16,8 @@
 
 import type { Components } from 'react-markdown';
 
+import { Code } from './Code';
 import { Table } from './Table';
-import { Code } from './temp';
 
 export const components: Components = {
   code: Code,
