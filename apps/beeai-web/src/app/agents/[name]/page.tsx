@@ -24,6 +24,12 @@ interface Props {
   params: Promise<{ name: string }>;
 }
 
+export async function generateStaticParams() {
+  const agents = await fetchAgentsList();
+
+  return agents.map(({ name }) => ({ name }));
+}
+
 export default async function AgentPage({ params }: Props) {
   const { name } = await params;
   const agents = await fetchAgentsList();
