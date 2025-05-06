@@ -18,6 +18,7 @@ import clsx from 'clsx';
 
 import { getErrorMessage } from '#api/utils.ts';
 import { ErrorMessage } from '#components/ErrorMessage/ErrorMessage.tsx';
+import { MarkdownContent } from '#components/MarkdownContent/MarkdownContent.tsx';
 import { Spinner } from '#components/Spinner/Spinner.tsx';
 
 import { AgentIcon } from '../components/AgentIcon';
@@ -33,12 +34,14 @@ interface Props {
 
 export function Message({ message }: Props) {
   const { agent } = useChat();
+  const { content, role, error } = message;
 
-  const isUserMessage = message.role === Role.User;
-  const isAssistantMessage = message.role === Role.Assistant;
-  const isPending = isAssistantMessage && message.status === MessageStatus.InProgress && !message.content;
+  const isUserMessage = role === Role.User;
+  const isAssistantMessage = role === Role.Assistant;
+  const isPending = isAssistantMessage && message.status === MessageStatus.InProgress && !content;
   const isError =
     isAssistantMessage && (message.status === MessageStatus.Failed || message.status === MessageStatus.Aborted);
+  const isFailed = isAssistantMessage && message.status === MessageStatus.Failed;
 
   return (
     <li className={clsx(classes.root)}>
@@ -52,16 +55,16 @@ export function Message({ message }: Props) {
           <Spinner />
         ) : isError ? (
           <ErrorMessage
-            title={
-              message.status === MessageStatus.Failed
-                ? 'Failed to generate an assistant message.'
-                : 'Message generation has been cancelled.'
-            }
-            subtitle={getErrorMessage(message.error)}
+            title={isFailed ? 'Failed to generate an assistant message.' : 'Message generation has been cancelled.'}
+            subtitle={getErrorMessage(error)}
           />
         ) : (
           <div className={classes.content}>
-            {message.content || <span className={classes.empty}>Message has no content</span>}
+            {content ? (
+              <MarkdownContent>{content}</MarkdownContent>
+            ) : (
+              <span className={classes.empty}>Message has no content</span>
+            )}
           </div>
         )}
       </div>

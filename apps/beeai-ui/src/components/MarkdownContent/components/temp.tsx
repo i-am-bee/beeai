@@ -15,13 +15,15 @@
  */
 
 import { isString } from 'lodash';
-import type { Components } from 'react-markdown';
+import type { HTMLAttributes } from 'react';
+import type { ExtraProps } from 'react-markdown';
 
 import { CopySnippet } from '#components/CopySnippet/CopySnippet.tsx';
 import { SyntaxHighlighter } from '#components/SyntaxHighlighter/SyntaxHighlighter.tsx';
 
-export const code: Components['code'] = ({ className = '', children }) => {
+export function Code({ className, children }: HTMLAttributes<HTMLElement> & ExtraProps) {
   const language = getLanguage(className);
+
   if (!language) {
     return <code className={className}>{children}</code>;
   }
@@ -35,8 +37,8 @@ export const code: Components['code'] = ({ className = '', children }) => {
       <SyntaxHighlighter language={language}>{children}</SyntaxHighlighter>
     </CopySnippet>
   );
-};
+}
 
-function getLanguage(className: string): string | undefined {
-  return /language-(\w+)/.exec(className)?.[1];
+function getLanguage(className?: string): string | undefined {
+  return className ? /language-(\w+)/.exec(className)?.[1] : undefined;
 }

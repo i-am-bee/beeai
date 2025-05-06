@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
-import clsx from 'clsx';
-import Markdown from 'react-markdown';
+@use 'styles/common' as *;
 
-import { components } from './components';
-import classes from './MarkdownContent.module.scss';
-import { remarkPlugins } from './remark';
-
-interface Props {
-  children?: string;
-  className?: string;
+.root {
+  overflow-x: auto;
 }
 
-export function MarkdownContent({ className, children }: Props) {
-  return (
-    <div className={clsx(classes.root, className)}>
-      <Markdown remarkPlugins={remarkPlugins} components={components}>
-        {children}
-      </Markdown>
-    </div>
-  );
+.table {
+  @include type-style(body-01);
+  &,
+  th,
+  td {
+    border: 1px solid $border-subtle-00;
+  }
+  th,
+  td {
+    padding: $spacing-03 $spacing-04;
+  }
+  th {
+    font-weight: bold;
+  }
 }

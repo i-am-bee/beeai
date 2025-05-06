@@ -16,8 +16,10 @@
 
 import type { Components } from 'react-markdown';
 
-import { code } from './code';
+import { Table } from './Table';
+import { Code } from './temp';
 
 export const components: Components = {
-  code,
+  code: Code,
+  table: Table,
 };

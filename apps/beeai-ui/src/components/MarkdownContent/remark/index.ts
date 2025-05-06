@@ -14,24 +14,7 @@
  * limitations under the License.
  */
 
-import clsx from 'clsx';
-import Markdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import type { PluggableList } from 'unified';
 
-import { components } from './components';
-import classes from './MarkdownContent.module.scss';
-import { remarkPlugins } from './remark';
-
-interface Props {
-  children?: string;
-  className?: string;
-}
-
-export function MarkdownContent({ className, children }: Props) {
-  return (
-    <div className={clsx(classes.root, className)}>
-      <Markdown remarkPlugins={remarkPlugins} components={components}>
-        {children}
-      </Markdown>
-    </div>
-  );
-}
+export const remarkPlugins = [remarkGfm] satisfies PluggableList;

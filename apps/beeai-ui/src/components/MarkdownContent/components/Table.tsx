@@ -15,23 +15,16 @@
  */
 
 import clsx from 'clsx';
-import Markdown from 'react-markdown';
+import type { TableHTMLAttributes } from 'react';
+import type { ExtraProps } from 'react-markdown';
 
-import { components } from './components';
-import classes from './MarkdownContent.module.scss';
-import { remarkPlugins } from './remark';
+import classes from './Table.module.scss';
 
-interface Props {
-  children?: string;
-  className?: string;
-}
-
-export function MarkdownContent({ className, children }: Props) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function Table({ node, className, ...props }: TableHTMLAttributes<HTMLTableElement> & ExtraProps) {
   return (
-    <div className={clsx(classes.root, className)}>
-      <Markdown remarkPlugins={remarkPlugins} components={components}>
-        {children}
-      </Markdown>
+    <div className={classes.root}>
+      <table {...props} className={clsx(classes.table, className)} />
     </div>
   );
 }
