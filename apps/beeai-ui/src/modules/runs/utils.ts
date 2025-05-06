@@ -15,6 +15,7 @@
  */
 
 import humanizeDuration from 'humanize-duration';
+import JSON5 from 'json5';
 
 import type { AgentName } from '#modules/agents/api/types.ts';
 import { isNotNull } from '#utils/helpers.ts';
@@ -27,7 +28,7 @@ import {
   RunMode,
   type SessionId,
 } from './api/types';
-import { Role } from './types';
+import { Role, type RunLog } from './types';
 
 humanizeDuration.languages.shortEn = {
   h: () => 'h',
@@ -90,3 +91,23 @@ export function extractOutput(messages: Message[]) {
 
   return output;
 }
+
+export function formatLog(log: RunLog) {
+  const { message } = log;
+
+  if (message && typeof parseJsonLikeString(message) === 'string') {
+    return message;
+  }
+
+  return JSON.stringify(log);
+}
+
+const parseJsonLikeString = (string: string): unknown | string => {
+  try {
+    const json = JSON5.parse(string);
+
+    return json;
+  } catch {
+    return string;
+  }
+};

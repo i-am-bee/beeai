@@ -61,18 +61,24 @@ export function HandsOffProvider({ agent, children }: PropsWithChildren<Props>) 
     onGeneric: (event) => {
       const log = event.generic;
 
-      if (log.message) {
-        setLogs((logs) => [...logs, log as RunLog]);
-      }
+      setLogs((logs) => [...logs, log]);
     },
     onDone: () => {
       handleDone();
     },
     onRunFailed: (event) => {
-      handleError(event.run.error);
+      const { error } = event.run;
+
+      handleError(error);
+
+      if (error) {
+        setLogs((logs) => [...logs, error]);
+      }
     },
     onError: ({ error }) => {
       handleError(error);
+
+      setLogs((logs) => [...logs, error]);
     },
   });
 

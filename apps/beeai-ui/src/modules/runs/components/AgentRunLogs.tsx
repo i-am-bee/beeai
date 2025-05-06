@@ -21,6 +21,7 @@ import { useState } from 'react';
 import { useAutoScroll } from '#hooks/useAutoScroll.ts';
 
 import type { RunLog } from '../types';
+import { formatLog } from '../utils';
 import { AgentRunLogItem } from './AgentRunLogItem';
 import classes from './AgentRunLogs.module.scss';
 
@@ -49,9 +50,9 @@ export function AgentRunLogs({ logs, toggleable }: Props) {
 
       {(!toggleable || (toggleable && isExpanded)) && (
         <ul>
-          {logs.map(({ message }, idx) => (
+          {logs.map((log, idx) => (
             <li key={idx}>
-              <AgentRunLogItem>{message}</AgentRunLogItem>
+              <AgentRunLogItem>{formatLog(log)}</AgentRunLogItem>
             </li>
           ))}
         </ul>

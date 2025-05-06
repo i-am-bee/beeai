@@ -23,7 +23,7 @@ import { useHandleError } from '#hooks/useHandleError.ts';
 import { usePrevious } from '#hooks/usePrevious.ts';
 import { useListAgents } from '#modules/agents/api/queries/useListAgents.ts';
 import { useRunAgent } from '#modules/runs/hooks/useRunAgent.ts';
-import { extractOutput, isArtifact } from '#modules/runs/utils.ts';
+import { extractOutput, formatLog, isArtifact } from '#modules/runs/utils.ts';
 import { isNotNull } from '#utils/helpers.ts';
 
 import { SEQUENTIAL_COMPOSE_AGENT_NAME } from '../sequential/constants';
@@ -135,7 +135,8 @@ export function ComposeProvider({ children }: PropsWithChildren) {
       updateStep(finalAgentIdx, { ...lastStep!, result: output });
     },
     onGeneric: (event) => {
-      const { message, agent_idx } = event.generic;
+      const log = event.generic;
+      const { agent_idx } = log;
 
       if (isNotNull(agent_idx)) {
         if (agent_idx !== lastAgentIdx) {
@@ -165,7 +166,7 @@ export function ComposeProvider({ children }: PropsWithChildren) {
           }
         }
 
-        if (message) {
+        if (log) {
           const fieldName = `steps.${agent_idx}` as const;
           const step = getValues(fieldName);
 
@@ -175,7 +176,7 @@ export function ComposeProvider({ children }: PropsWithChildren) {
             stats: {
               startTime: step.stats?.startTime ?? Date.now(),
             },
-            logs: [...(step.logs ?? []), message],
+            logs: [...(step.logs ?? []), formatLog(log)],
           };
 
           updateStep(agent_idx, updatedStep);

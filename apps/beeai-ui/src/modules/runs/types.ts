@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import type { GenericEvent } from './api/types';
+
 export enum Role {
   User = 'user',
   Assistant = 'assistant',
@@ -24,4 +26,4 @@ export interface RunStats {
   endTime?: number;
 }
 
-export type RunLog = { message: string };
+export type RunLog = GenericEvent['generic'];
