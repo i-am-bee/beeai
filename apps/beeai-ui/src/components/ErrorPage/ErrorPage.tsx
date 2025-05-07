@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-import { ArrowRight } from '@carbon/icons-react';
-import { Button } from '@carbon/react';
+import type { ReactNode } from 'react';
 
 import NotFound from '#svgs/NotFound.svg';
-import { routes } from '#utils/router.ts';
 
 import { Container } from '../layouts/Container';
-import { TransitionLink } from '../TransitionLink/TransitionLink';
 import classes from './ErrorPage.module.scss';
 
-export function ErrorPage() {
+interface Props {
+  renderButton: (props: { className: string }) => ReactNode;
+}
+
+export function ErrorPage({ renderButton }: Props) {
   return (
     <div className={classes.root}>
       <Container size="xs">
@@ -34,9 +35,7 @@ export function ErrorPage() {
 
         <p className={classes.description}>We couldn’t find the page you are looking for.</p>
 
-        <Button as={TransitionLink} href={routes.home()} renderIcon={ArrowRight} className={classes.button}>
-          Buzz back to safety!
-        </Button>
+        {renderButton({ className: classes.button })}
       </Container>
     </div>
   );
