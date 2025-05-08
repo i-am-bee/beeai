@@ -102,7 +102,7 @@ Visit [beeai.dev/agents](https://beeai.dev/agents) for the list of reference age
 
 The BeeAI community is active on [GitHub Discussions](https://github.com/i-am-bee/beeai/discussions) where you can ask questions, voice ideas, and share your projects.
 
-To chat with other community members, you can join the BeeAI [Discord](https://discord.gg/AZFrp3UF5k) server.
+To chat with other community members, you can join the BeeAI [Discord](https://discord.gg/NradeA6ZNF) server.
 
 Please note that our [Code of Conduct](./CODE_OF_CONDUCT.md) applies to all BeeAI community channels. We strongly encourage you to read and follow it.
 
