@@ -23,9 +23,7 @@
         "pages": [
           "/how-to/run-agents",
           "/how-to/compose-agents",
-          "/how-to/build-agents",
-          "/how-to/import-agents",
-          "/how-to/share-agents"
+          "/how-to/import-agents"
         ]
       },
       {
@@ -33,7 +31,7 @@
         "pages": ["/concepts/architecture"]
       },
       {
-        "group": "Agents",
+        "group": "Agent Catalog",
         "pages": ["/agents/official-list", "/agents/community-list"]
       },
       {
