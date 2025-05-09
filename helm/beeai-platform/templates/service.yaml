@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: beeai-platform-svc
+  labels:
+    app: beeai-platform-server
+    {{- include "beeai-platform.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app: beeai-platform-server
+    {{- include "beeai-platform.selectorLabels" . | nindent 4 }}

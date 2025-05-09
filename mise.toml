@@ -2,6 +2,8 @@
 python = "3.11"
 nodejs = "22"
 uv = "latest"
+helm = "latest"
+kubeconform = "latest"
 pnpm = "latest"
 "ubi:B1NARY-GR0UP/nwa" = "latest"
 
@@ -18,6 +20,7 @@ postinstall = "{{ mise_bin }} setup"
 
 [task_config]
 includes = [
+    "helm/tasks.toml",
     "apps/beeai-cli/tasks.toml",
     "apps/beeai-server/tasks.toml",
     "apps/beeai-ui/tasks.toml",

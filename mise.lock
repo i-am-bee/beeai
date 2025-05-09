@@ -1,3 +1,17 @@
+[tools.helm]
+version = "3.17.3"
+backend = "aqua:helm/helm"
+
+[tools.helm.checksums]
+"helm-v3.17.3-darwin-arm64.tar.gz" = "sha256:89aec43ce07b06239f1bba4a6507236bb48ae487bc5065a8e254d3ce58a16997"
+
+[tools.kubeconform]
+version = "0.6.7"
+backend = "aqua:yannh/kubeconform"
+
+[tools.kubeconform.checksums]
+"kubeconform-darwin-arm64.tar.gz" = "sha256:cbb47d938a8d18eb5f79cb33663b2cecdee0c8ac0bf562ebcfca903df5f0802f"
+
 [tools.node]
 version = "22.14.0"
 backend = "core:node"
